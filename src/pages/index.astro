@@ -171,6 +171,8 @@
 				margin-top: 15px;
 				font-weight: bold;
 				letter-spacing: 0.5px;
+				text-decoration: none;
+				display: inline-block;
 			}
 
 			.button:hover {
@@ -181,6 +183,22 @@
 
 			.button:active {
 				transform: scale(0.95);
+			}
+
+			.buttons-group {
+				display: flex;
+				gap: 15px;
+				flex-wrap: wrap;
+				justify-content: center;
+				margin-top: 20px;
+			}
+
+			.button-github {
+				animation: fadeUp 0.8s ease-out 1.3s both;
+			}
+
+			.button-telegram {
+				animation: fadeUp 0.8s ease-out 1.4s both;
 			}
 
 			@media (max-width: 768px) {
@@ -236,7 +254,11 @@
 				<p>Скоро здесь будет что-то интересное</p>
 			</div>
 
-			<button class="button" onclick="window.location.href='/donate'">Гоблину на кофе</button>
+			<div class="buttons-group">
+				<button class="button" onclick="window.location.href='/donate'">Гоблину на кофе</button>
+				<a href="https://github.com/Dionis404/goblincodex" target="_blank" rel="noopener noreferrer" class="button button-github">GitHub</a>
+				<a href="https://t.me/URGSFL" target="_blank" rel="noopener noreferrer" class="button button-telegram">Telegram</a>
+			</div>
 		</div>
 	</body>
 </html>
