@@ -20,5 +20,5 @@ jobs:
                 git config --global --add safe.directory /opt/goblincodex
                 cd /opt/goblincodex
                 git pull origin main
-                sudo docker-compose up --build --force-recreate -d
+                sudo /usr/local/bin/docker-compose up --build --force-recreate -d
                 echo "✅ Deployed successfully"
