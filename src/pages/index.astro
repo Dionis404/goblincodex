@@ -10,6 +10,9 @@
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>GoblinCodex</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
 		<style>
 			* {
 				margin: 0;
@@ -17,71 +20,223 @@
 				box-sizing: border-box;
 			}
 
-			html {
-				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+			html, body {
+				width: 100%;
+				height: 100%;
 			}
 
 			body {
-				background-color: #fafafa;
-				color: #333;
+				background-color: #2a2d45;
+				background-image: url('/images/bg.png');
+				background-size: cover;
+				background-attachment: fixed;
+				background-position: center;
 				min-height: 100vh;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				padding: 20px;
+				overflow: hidden;
 			}
 
 			.container {
-				max-width: 600px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
 				text-align: center;
+				gap: 20px;
+				max-width: 800px;
+				padding: 20px;
 			}
 
-			h1 {
-				font-size: 3.5rem;
-				font-weight: 700;
-				margin-bottom: 20px;
-				letter-spacing: -1px;
+			@keyframes fadeUp {
+				from {
+					opacity: 0;
+					transform: translateY(30px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
 			}
 
-			.status {
-				font-size: 1.25rem;
-				color: #666;
-				margin-bottom: 40px;
-				line-height: 1.6;
+			@keyframes swing {
+				0%, 100% {
+					transform: translateY(0px);
+				}
+				50% {
+					transform: translateY(-20px);
+				}
 			}
 
-			.emoji {
-				font-size: 2rem;
-				margin-bottom: 20px;
+			@keyframes spin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
+
+			.goblin {
+				width: 338px;
+				animation: swing 2s ease-in-out infinite, fadeUp 0.8s ease-out 0.2s both;
+				margin-bottom: 10px;
+			}
+
+			.title {
+				font-family: 'Press Start 2P', cursive;
+				font-size: 3rem;
+				color: #ffac31;
+				letter-spacing: 3px;
+				margin-bottom: 25px;
+				line-height: 1.2;
+				animation: fadeUp 0.8s ease-out 0.4s both;
+			}
+
+			.spinner-container {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				margin-bottom: 30px;
+				height: 50px;
+				animation: fadeUp 0.8s ease-out 0.6s both;
+			}
+
+			.spinner {
+				width: 50px;
+				height: 50px;
+				position: relative;
 				display: inline-block;
+				animation: spin 3s linear infinite;
+			}
+
+			.spinner-dot {
+				position: absolute;
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				left: 50%;
+				top: 50%;
+				margin-left: -3px;
+				margin-top: -3px;
+			}
+
+			.spinner-dot:nth-child(1) { background-color: #ffac31; transform: rotate(0deg) translateY(-17px); opacity: 1; }
+			.spinner-dot:nth-child(2) { background-color: #ffac31; transform: rotate(30deg) translateY(-17px); opacity: 0.95; }
+			.spinner-dot:nth-child(3) { background-color: #ffac31; transform: rotate(60deg) translateY(-17px); opacity: 0.9; }
+			.spinner-dot:nth-child(4) { background-color: #ffac31; transform: rotate(90deg) translateY(-17px); opacity: 0.85; }
+			.spinner-dot:nth-child(5) { background-color: #ffac31; transform: rotate(120deg) translateY(-17px); opacity: 0.8; }
+			.spinner-dot:nth-child(6) { background-color: #ffac31; transform: rotate(150deg) translateY(-17px); opacity: 0.75; }
+			.spinner-dot:nth-child(7) { background-color: #ffeed6; transform: rotate(180deg) translateY(-17px); opacity: 0.8; }
+			.spinner-dot:nth-child(8) { background-color: #ffeed6; transform: rotate(210deg) translateY(-17px); opacity: 0.85; }
+			.spinner-dot:nth-child(9) { background-color: #ffeed6; transform: rotate(240deg) translateY(-17px); opacity: 0.9; }
+			.spinner-dot:nth-child(10) { background-color: #ffeed6; transform: rotate(270deg) translateY(-17px); opacity: 0.95; }
+			.spinner-dot:nth-child(11) { background-color: #ffeed6; transform: rotate(300deg) translateY(-17px); opacity: 1; }
+			.spinner-dot:nth-child(12) { background-color: #ffeed6; transform: rotate(330deg) translateY(-17px); opacity: 0.9; }
+
+			.status-text {
+				color: #ffeed6;
+				font-size: 1.1rem;
+				font-family: Arial, sans-serif;
+				line-height: 1.8;
+				animation: fadeUp 0.8s ease-out 0.8s both;
+				letter-spacing: 0.5px;
 			}
 
 			.divider {
-				width: 40px;
+				width: 200px;
 				height: 1px;
-				background-color: #ddd;
-				margin: 40px auto;
+				background-color: #ffeed6;
+				margin: 15px auto;
+				animation: fadeUp 0.8s ease-out 1s both;
 			}
 
-			.footer {
-				font-size: 0.9rem;
-				color: #999;
-				margin-top: 60px;
+			.subtext {
+				color: rgba(245, 190, 112, 0.84);
+				font-size: 1rem;
+				font-family: Arial, sans-serif;
+				animation: fadeUp 0.8s ease-out 1.1s both;
+				letter-spacing: 0.5px;
+			}
+
+			.button {
+				background-color: #6d3e8f;
+				color: #ffeed6;
+				border: 2px solid #ffeed6;
+				padding: 14px 40px;
+				border-radius: 40px;
+				font-size: 1rem;
+				font-family: Arial, sans-serif;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				animation: fadeUp 0.8s ease-out 1.2s both;
+				margin-top: 15px;
+				font-weight: bold;
+				letter-spacing: 0.5px;
+			}
+
+			.button:hover {
+				background-color: #8b5bb5;
+				transform: scale(1.05);
+				box-shadow: 0 0 20px rgba(139, 91, 181, 0.5);
+			}
+
+			.button:active {
+				transform: scale(0.95);
+			}
+
+			@media (max-width: 768px) {
+				.title {
+					font-size: 2rem;
+				}
+
+				.goblin {
+					width: 260px;
+				}
+
+				.status-text {
+					font-size: 1rem;
+				}
+
+				.subtext {
+					font-size: 0.9rem;
+				}
 			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
-			<div class="emoji">🧙‍♂️</div>
-			<h1>GoblinCodex</h1>
-			<div class="status">
+			<img src="/images/goblin.png" alt="Goblin" class="goblin" />
+
+			<h1 class="title">GoblinCodex</h1>
+
+			<div class="spinner-container">
+				<div class="spinner">
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+					<div class="spinner-dot"></div>
+				</div>
+			</div>
+
+			<div class="status-text">
 				<p>Гоблины заняты разработкой</p>
 				<p>Сайт находится в процессе создания</p>
 			</div>
+
 			<div class="divider"></div>
-			<div class="footer">
+
+			<div class="subtext">
 				<p>Скоро здесь будет что-то интересное</p>
 			</div>
+
+			<button class="button" onclick="window.location.href='/donate'">Гоблину на кофе</button>
 		</div>
 	</body>
 </html>
