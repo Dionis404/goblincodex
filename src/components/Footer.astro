@@ -1,24 +1,36 @@
 ---
+const navLinks = [
+  { href: '/guides',    label: 'Гайды'      },
+  { href: '/news',      label: 'Новости'    },
+  { href: '/tools',     label: 'Инструменты'},
+  { href: '/community', label: 'Сообщество' },
+  { href: '/donate',    label: 'Поддержать' },
+];
 ---
 
 <footer class="gc-footer">
   <div class="gc-footer-inner">
-    <p style="font-size: 13px; color: var(--text-sec);">
-      © 2024 GoblinCodex. Гайды по <a href="https://sunflower-land.com" target="_blank" rel="noopener" style="color: var(--green-mid); font-weight: 600;">Sunflower Land</a>
-    </p>
-    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-      <a href="https://github.com/Dionis404/goblincodex" target="_blank" rel="noopener" style="font-size: 13px; color: var(--green-mid); transition: color 0.15s;">
-        GitHub
-      </a>
-      <a href="https://t.me/URGSFL" target="_blank" rel="noopener" style="font-size: 13px; color: var(--green-mid); transition: color 0.15s;">
-        Telegram
+
+    <div class="gc-footer-brand">
+      <a href="/" class="gc-logo">
+        <div class="gc-logo-icon">🧙</div>
+        <div>
+          <span class="gc-logo-text">Goblin<span>Codex</span></span>
+          <p class="gc-footer-tagline">фан-сайт по Sunflower Land</p>
+        </div>
       </a>
     </div>
+
+    <nav class="gc-footer-nav">
+      {navLinks.map(link => (
+        <a href={link.href} class="gc-footer-link">{link.label}</a>
+      ))}
+    </nav>
+
+    <div class="gc-footer-copy">
+      <p>© 2026 GoblinCodex</p>
+      <p>Не аффилирован с Sunflower Land</p>
+    </div>
+
   </div>
 </footer>
-
-<style>
-.gc-footer a:hover {
-  color: var(--green-dark);
-}
-</style>

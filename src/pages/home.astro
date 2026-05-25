@@ -1,92 +1,277 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ChapterTimer from '../components/ChapterTimer.tsx';
+
+const news = [
+  { title: 'Обновление 1.3.4 — Новый сезон Урожая!', date: '20 мая 2026', tag: 'Обновление', tagColor: 'blue' },
+  { title: 'Новые семена и рецепты в обновлении',     date: '18 мая 2026', tag: 'Контент',    tagColor: 'green' },
+  { title: 'Изменения в экономике и балансе токенов', date: '16 мая 2026', tag: 'Экономика',  tagColor: 'amber' },
+  { title: 'Ивент: Праздник фермеров начинается',     date: '14 мая 2026', tag: 'Ивент',      tagColor: 'purple' },
+];
+
+const guides = [
+  { title: 'Как заработать первые токены', time: '5 мин' },
+  { title: 'Лучшие культуры для старта',   time: '7 мин' },
+  { title: 'Как зарабатывать на рынке',    time: '6 мин' },
+];
 ---
 
-<BaseLayout currentPage="/home" title="Главная — GoblinCodex">
-  <div class="gc-hero">
-    <div class="gc-hero-text gc-page-enter">
-      <div class="gc-eyebrow">
-        <div class="gc-eyebrow-dot"></div>
-        Добро пожаловать на GoblinCodex
-      </div>
-      <h1 class="gc-h1">Всё о <em>Sunflower Land</em></h1>
+<BaseLayout currentPage="home" title="Главная — GoblinCodex">
 
-      <div class="gc-season-block">
-        <div>
-          <div style="font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 4px;">Текущий сезон</div>
-          <div style="font-size: 18px; font-weight: 700; color: #fff;">Весна 2024</div>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 4px;">Дней осталось</div>
-          <div style="font-size: 18px; font-weight: 700; color: #fff;">14</div>
-        </div>
-      </div>
-
-      <p style="font-size: 15px; line-height: 1.6; color: var(--text-sec); margin-bottom: 20px;">
-        Полная база гайдов, калькуляторов и полезной информации для фермеров Sunflower Land. Развивайте свою ферму вместе с нами!
+  <!-- ── Hero ── -->
+  <section class="gc-hero gc-page-enter">
+    <div class="gc-hero-text">
+      <h1 class="gc-h1">
+        Всё о <em>Sunflower<br/>Land</em> — здесь
+      </h1>
+      <p class="gc-hero-desc">
+        Лаконичные гайды, актуальные новости, инструменты и база данных для фермеров SFL.
       </p>
-
-      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <button class="gc-btn-primary">Начать изучение</button>
-        <button class="gc-btn-secondary">Узнать больше</button>
+      <div class="gc-hero-actions">
+        <a href="/guides" class="gc-btn-primary">📖 Быстрый старт</a>
+        <a href="/news" class="gc-btn-secondary">Что нового?</a>
       </div>
     </div>
-
     <div class="gc-hero-art">
       <div class="gc-farm-frame">
-        <div style="width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, var(--green-pale), var(--green-light)); display: flex; align-items: center; justify-content: center; color: var(--text-sec); font-size: 14px; text-align: center;">
-          🌻🌽🎃<br/>Ферма гобличьей мечты
-        </div>
+        <img src="/images/UsualGoblin.png" alt="Гоблин фермер" class="gc-hero-img gc-hero-img--light" />
+        <img src="/images/UsualGoblinNight.png" alt="Гоблин фермер" class="gc-hero-img gc-hero-img--dark" />
       </div>
     </div>
-  </div>
+  </section>
 
   <div class="gc-content">
-    <section style="margin-bottom: 60px;">
-      <h2 class="gc-page-title">Основные разделы</h2>
-      <div class="gc-grid-3" style="margin-top: 24px;">
-        <a href="/guides" class="gc-card gc-card-hover" style="padding: 24px; cursor: pointer; text-decoration: none;">
-          <div style="font-size: 28px; margin-bottom: 12px;">📚</div>
-          <div style="font-family: var(--font-head); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px;">База знаний</div>
-          <div style="font-size: 13px; color: var(--text-sec);">Гайды и механики игры</div>
-        </a>
-        <a href="/news" class="gc-card gc-card-hover" style="padding: 24px; cursor: pointer; text-decoration: none;">
-          <div style="font-size: 28px; margin-bottom: 12px;">📰</div>
-          <div style="font-family: var(--font-head); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Новости</div>
-          <div style="font-size: 13px; color: var(--text-sec);">Обновления и события</div>
-        </a>
-        <a href="/tools" class="gc-card gc-card-hover" style="padding: 24px; cursor: pointer; text-decoration: none;">
-          <div style="font-size: 28px; margin-bottom: 12px;">🔧</div>
-          <div style="font-family: var(--font-head); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Инструменты</div>
-          <div style="font-size: 13px; color: var(--text-sec);">Калькуляторы и помощники</div>
-        </a>
-      </div>
-    </section>
 
-    <section>
-      <h2 class="gc-page-title">Сообщество</h2>
-      <div class="gc-card" style="padding: 32px; text-align: center;">
-        <div style="font-size: 24px; margin-bottom: 16px;">👥</div>
-        <h3 style="font-family: var(--font-head); font-size: 18px; font-weight: 600; margin-bottom: 12px;">Присоединитесь к нам</h3>
-        <p style="font-size: 14px; color: var(--text-sec); margin-bottom: 20px; line-height: 1.6;">
-          Общайтесь с другими фермерами, делитесь советами и помогайте друг другу развиваться.
-        </p>
-        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-          <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-primary">Telegram сообщество</a>
-          <a href="/community" class="gc-btn-secondary">Узнать больше</a>
+    <!-- ── Блок главы + таймер ── -->
+    <div class="gc-chapter-block">
+      <div class="gc-chapter-banner">
+        <img src="/images/Chapter14.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--light" />
+        <img src="/images/Chapter14Night.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--dark" />
+      </div>
+      <div class="gc-chapter-timer">
+        <ChapterTimer client:load />
+        <a href="/news" class="gc-btn-cta">Узнать больше</a>
+      </div>
+    </div>
+
+    <!-- ── 4 карточки разделов ── -->
+    <div class="gc-grid-4" style="margin-bottom: 40px;">
+      <a href="/guides" class="gc-card gc-card-hover gc-section-card">
+        <div class="gc-section-icon">📚</div>
+        <div>
+          <div class="gc-section-title">База знаний</div>
+          <div class="gc-section-desc">Гайды и разборы механик для всех уровней</div>
+        </div>
+      </a>
+      <a href="/news" class="gc-card gc-card-hover gc-section-card">
+        <div class="gc-section-icon">📰</div>
+        <div>
+          <div class="gc-section-title">Новости и обновления</div>
+          <div class="gc-section-desc">Будь в курсе последних изменений в SFL</div>
+        </div>
+      </a>
+      <a href="/tools" class="gc-card gc-card-hover gc-section-card">
+        <div class="gc-section-icon">🔧</div>
+        <div>
+          <div class="gc-section-title">Инструменты</div>
+          <div class="gc-section-desc">Калькуляторы и полезные утилиты</div>
+        </div>
+      </a>
+      <a href="/community" class="gc-card gc-card-hover gc-section-card">
+        <div class="gc-section-icon">👥</div>
+        <div>
+          <div class="gc-section-title">Сообщество</div>
+          <div class="gc-section-desc">База фермеров и чат нашей банды</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- ── 3 колонки ── -->
+    <div class="gc-grid-3c" style="margin-bottom: 40px;">
+
+      <!-- Новости -->
+      <div class="gc-card" style="padding: 24px;">
+        <div class="gc-block-header">
+          <span class="gc-block-title">🔥 Что нового в SFL</span>
+          <a href="/news" class="gc-block-link">Все новости →</a>
+        </div>
+        <div class="gc-news-list">
+          {news.map(item => (
+            <div class="gc-list-item">
+              <div class="gc-news-dot"></div>
+              <div>
+                <div class="gc-news-title">{item.title}</div>
+                <div class="gc-news-meta">
+                  {item.date} · <span class={`gc-tag gc-tag--${item.tagColor}`}>{item.tag}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    </section>
+
+      <!-- Гайды -->
+      <div class="gc-card" style="padding: 24px;">
+        <div class="gc-block-header">
+          <span class="gc-block-title">📗 Популярные гайды</span>
+          <a href="/guides" class="gc-block-link">Все гайды →</a>
+        </div>
+        <div>
+          {guides.map(guide => (
+            <div class="gc-guide-item">
+              <div class="gc-guide-icon">📄</div>
+              <div>
+                <div class="gc-guide-title">{guide.title}</div>
+                <div class="gc-guide-time">{guide.time}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Каналы -->
+      <div class="gc-card gc-channels-card" style="padding: 24px;">
+        <div class="gc-channels-header">
+          <span class="gc-channels-dot"></span>
+          <span class="gc-channels-title">Наши каналы</span>
+        </div>
+        <p class="gc-channels-sub">Подписывайся чтобы не пропускать обновления</p>
+
+        <div class="gc-channel-item gc-channel-item--tg">
+          <div class="gc-channel-logo gc-channel-logo--tg">✈</div>
+          <div class="gc-channel-info">
+            <div class="gc-channel-name">Telegram канал</div>
+            <div class="gc-channel-desc">Новости, обновления, гайды</div>
+          </div>
+          <a href="https://t.me/goblincodex" target="_blank" class="gc-channel-link gc-channel-link--tg">Подписаться →</a>
+        </div>
+
+        <div class="gc-channel-item gc-channel-item--yt">
+          <div class="gc-channel-logo gc-channel-logo--yt">▶</div>
+          <div class="gc-channel-info">
+            <div class="gc-channel-name">YouTube</div>
+            <div class="gc-channel-desc">Видеогайды и разборы</div>
+          </div>
+          <a href="https://youtube.com" target="_blank" class="gc-channel-link gc-channel-link--yt">Подписаться →</a>
+        </div>
+
+        <div class="gc-channels-stats">
+          <div class="gc-stat-card">
+            <div class="gc-stat-icon">👥</div>
+            <div class="gc-stat-num">1 284</div>
+            <div class="gc-stat-label">подписчиков</div>
+          </div>
+          <div class="gc-stat-card">
+            <div class="gc-stat-icon">📝</div>
+            <div class="gc-stat-num">48</div>
+            <div class="gc-stat-label">статей</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── CTA баннер ── -->
+    <div class="gc-cta-banner">
+      <div>
+        <div class="gc-cta-title">🌻 Присоединяйся к сообществу фермеров!</div>
+        <div class="gc-cta-desc">Общайся, делись опытом и развивай свою ферму вместе с нами</div>
+      </div>
+      <a href="https://t.me/goblincodex" target="_blank" class="gc-btn-cta">Открыть чат →</a>
+    </div>
+
   </div>
+
 </BaseLayout>
 
 <style>
-.gc-page-enter {
-  animation: pageEnter 0.35s ease both;
+/* ── Hero ── */
+.gc-hero-desc {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-sec);
+  margin-bottom: 28px;
+  max-width: 480px;
 }
+.gc-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.gc-hero-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+.gc-hero-img--dark { display: none; }
+:global([data-theme="dark"]) .gc-hero-img--light { display: none; }
+:global([data-theme="dark"]) .gc-hero-img--dark  { display: block; }
 
-.gc-card:hover {
-  text-decoration: none;
-  color: var(--text);
+/* ── Блок главы ── */
+:global(.gc-chapter-img) {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+}
+:global(.gc-chapter-img--dark)  { display: none; }
+:global([data-theme="dark"]) :global(.gc-chapter-img--light) { display: none; }
+:global([data-theme="dark"]) :global(.gc-chapter-img--dark)  { display: block; }
+
+.gc-chapter-block {
+  position: relative;
+  margin-bottom: 32px;
+}
+.gc-chapter-banner {
+  width: 100%;
+  line-height: 0;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+  position: relative;
+  z-index: 2;
+}
+:global(.gc-chapter-timer) {
+  background: #5C3D1E;
+  border-radius: 14px;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 75%;
+  margin: -20px auto 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+:global(.gc-timer-row) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  padding-top: 10px;
+}
+:global(.gc-timer-label) {
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+}
+:global(.gc-timer-digits) {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  justify-content: center;
+}
+:global(.gc-timer-value) {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 28px;
+  color: #e8ece3;
+  letter-spacing: 3px;
 }
 </style>
