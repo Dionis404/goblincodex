@@ -1,0 +1,277 @@
+---
+interface Props {
+  currentPage?: string;
+}
+const { currentPage = 'home' } = Astro.props;
+
+const navLinks = [
+  { href: '/guides',    label: 'База знаний' },
+  { href: '/news',      label: 'Новости'     },
+  { href: '/community', label: 'Сообщество'  },
+  { href: '/tools',     label: 'Инструменты' },
+  { href: '/donate',    label: 'Поддержать'  },
+];
+---
+
+<header class="gc-header">
+  <div class="gc-header-inner">
+
+    <a href="/" class="gc-logo">
+      <div class="gc-logo-icon">🧙</div>
+      <span class="gc-logo-text">Goblin<span>Codex</span></span>
+    </a>
+
+    <nav class="gc-nav">
+      {navLinks.map(link => (
+        <a
+          href={link.href}
+          class={currentPage === link.href ? 'gc-nav-link active' : 'gc-nav-link'}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="gc-header-right">
+      <button class="gc-icon-btn" id="themeToggle" title="Сменить тему">
+        ☀️
+      </button>
+      <button class="gc-icon-btn" id="paletteToggle" title="Цветовая палитра">
+        🎨
+      </button>
+    </div>
+
+    <button class="gc-hamburger" id="hamburger" aria-label="Меню">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+  </div>
+
+  <div class="gc-mobile-menu" id="mobileMenu" style="display: none;">
+    {navLinks.map(link => (
+      <a
+        href={link.href}
+        class={currentPage === link.href ? 'active' : ''}
+      >
+        {link.label}
+      </a>
+    ))}
+    <div class="gc-mobile-menu-footer">
+      <button class="gc-tweak-btn" id="mobileThemeToggle">☀️ Тема</button>
+      <button class="gc-tweak-btn" id="mobilePaletteToggle">🎨 Палитра</button>
+    </div>
+  </div>
+
+  <div class="gc-palette-panel" id="palettePanel" style="display: none;">
+    <div class="gc-tweaks-header">
+      <span style="font-family: var(--font-head); font-size: 12px; font-weight: 600; color: #EAF3DE; letter-spacing: 0.02em;">🎨 Палитра</span>
+      <button id="closePalette" style="background: none; border: none; color: #C0DD97; cursor: pointer; font-size: 16px;">✕</button>
+    </div>
+    <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+      <div>
+        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-ter); margin-bottom: 8px;">Палитра</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="paletteSwitches">
+          <!-- Populated by script -->
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+.gc-header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  transition: background 0.3s, border-color 0.3s;
+}
+.gc-header-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+.gc-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.gc-logo-icon {
+  width: 34px;
+  height: 34px;
+  background: var(--green-dark);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.gc-logo-text {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.gc-logo-text span { color: var(--green-mid); }
+.gc-nav {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+.gc-nav-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-sec);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 7px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.gc-nav-link:hover {
+  color: var(--green-dark);
+  background: var(--green-pale);
+}
+.gc-nav-link.active {
+  color: var(--green-dark);
+  background: var(--green-pale);
+  font-weight: 600;
+}
+.gc-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.gc-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text-sec);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.gc-icon-btn:hover {
+  background: var(--green-pale);
+  border-color: var(--green-mid);
+  color: var(--green-dark);
+}
+
+.gc-palette-panel {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 260px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  z-index: 500;
+  overflow: hidden;
+  animation: pageEnter 0.2s ease;
+}
+</style>
+
+<script>
+const PALETTES = {
+  forest: {
+    light: { '--green-dark': '#3E6B2F', '--green-mid': '#6E8F3D', '--green-light': '#9FCB5A', '--green-pale': '#EAF3D8', '--amber': '#D9A15B', '--amber-pale': '#FAF0DC', '--bg': '#F3E7C9', '--card-bg': '#FAF4E4', '--border': '#D4C09A', '--text': '#2B241D', '--text-sec': '#5A6468', '--text-ter': '#8A5A34' },
+    dark: { '--green-dark': '#7ED957', '--green-mid': '#9FCB5A', '--green-light': '#6E8F3D', '--green-pale': '#0C2010', '--amber': '#D9A15B', '--amber-pale': '#231A06', '--bg': '#0B1120', '--card-bg': '#111D30', '--border': '#1C3050', '--text': '#F3E7C9', '--text-sec': '#9FCB5A', '--text-ter': '#B8B0A0' },
+  },
+  ember: {
+    light: { '--green-dark': '#C94B3D', '--green-mid': '#D4553D', '--green-light': '#D9A15B', '--green-pale': '#FAEDE8', '--amber': '#B86A3B', '--amber-pale': '#FAF0E0', '--bg': '#F5E8D5', '--card-bg': '#FBF2E5', '--border': '#D9B99A', '--text': '#2B241D', '--text-sec': '#5A6468', '--text-ter': '#8A5A34' },
+    dark: { '--green-dark': '#D4553D', '--green-mid': '#B86A3B', '--green-light': '#D9A15B', '--green-pale': '#28100C', '--amber': '#D9A15B', '--amber-pale': '#241208', '--bg': '#160A08', '--card-bg': '#221210', '--border': '#3C1E18', '--text': '#F3E7C9', '--text-sec': '#D9A15B', '--text-ter': '#B8B0A0' },
+  },
+  ash: {
+    light: { '--green-dark': '#5A6468', '--green-mid': '#6E8F3D', '--green-light': '#89C15D', '--green-pale': '#E8EDEC', '--amber': '#D9A15B', '--amber-pale': '#F2EDEA', '--bg': '#EDE8DF', '--card-bg': '#F5F2EC', '--border': '#C8C0B0', '--text': '#2B241D', '--text-sec': '#5A6468', '--text-ter': '#8A5A34' },
+    dark: { '--green-dark': '#89C15D', '--green-mid': '#6E8F3D', '--green-light': '#5A6468', '--green-pale': '#101614', '--amber': '#D9A15B', '--amber-pale': '#1A1610', '--bg': '#0A0E10', '--card-bg': '#121A1E', '--border': '#1E2A2E', '--text': '#F3E7C9', '--text-sec': '#B8B0A0', '--text-ter': '#7A8488' },
+  },
+};
+
+const html = document.documentElement;
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+const themeToggle = document.getElementById('themeToggle');
+const paletteToggle = document.getElementById('paletteToggle');
+const palettePanel = document.getElementById('palettePanel');
+const closePalette = document.getElementById('closePalette');
+const paletteSwitches = document.getElementById('paletteSwitches');
+
+// Load saved settings
+const saved = JSON.parse(localStorage.getItem('gcSettings') || '{"theme":"light","palette":"forest"}');
+let currentTheme = saved.theme || 'light';
+let currentPalette = saved.palette || 'forest';
+
+// Apply saved theme and palette
+const applyTheme = (theme, palette) => {
+  html.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+  const colors = PALETTES[palette]?.[theme === 'dark' ? 'dark' : 'light'] || PALETTES.forest.light;
+  Object.entries(colors).forEach(([k, v]) => html.style.setProperty(k, v));
+};
+
+applyTheme(currentTheme, currentPalette);
+
+// Theme toggle
+themeToggle?.addEventListener('click', () => {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(currentTheme, currentPalette);
+  localStorage.setItem('gcSettings', JSON.stringify({ theme: currentTheme, palette: currentPalette }));
+});
+
+// Hamburger menu
+hamburger?.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.style.display = mobileMenu.style.display === 'none' ? 'block' : 'none';
+});
+
+// Close mobile menu when clicking a link
+document.querySelectorAll('.gc-mobile-menu a').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger?.classList.remove('open');
+    mobileMenu.style.display = 'none';
+  });
+});
+
+// Palette panel
+paletteToggle?.addEventListener('click', () => {
+  palettePanel.style.display = palettePanel.style.display === 'none' ? 'block' : 'none';
+});
+
+closePalette?.addEventListener('click', () => {
+  palettePanel.style.display = 'none';
+});
+
+// Populate palette switches
+['forest', 'ember', 'ash'].forEach(p => {
+  const colors = PALETTES[p].light;
+  const btn = document.createElement('button');
+  btn.className = `gc-tweak-btn ${p === currentPalette ? 'active' : ''}`;
+  btn.textContent = { forest: 'Лесной', ember: 'Огонь', ash: 'Пепел' }[p];
+  btn.style.display = 'flex';
+  btn.style.alignItems = 'center';
+  btn.style.gap = '6px';
+  btn.onclick = () => {
+    currentPalette = p;
+    applyTheme(currentTheme, currentPalette);
+    localStorage.setItem('gcSettings', JSON.stringify({ theme: currentTheme, palette: currentPalette }));
+    document.querySelectorAll('#paletteSwitches .gc-tweak-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+  paletteSwitches?.appendChild(btn);
+});
+</script>

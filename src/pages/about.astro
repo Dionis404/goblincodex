@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout currentPage="/about" title="О сайте — GoblinCodex">
+  <div class="gc-content">
+    <h1 class="gc-page-title" style="margin-top: 32px; margin-bottom: 24px;">ℹ️ О GoblinCodex</h1>
+
+    <div class="gc-grid-2" style="margin-bottom: 40px; gap: 24px;">
+      <div style="grid-column: 1 / -1;">
+        <div class="gc-card" style="padding: 32px;">
+          <h2 style="font-family: var(--font-head); font-size: 24px; font-weight: 600; color: var(--text); margin-bottom: 16px;">Кто мы?</h2>
+          <p style="font-size: 14px; color: var(--text-sec); line-height: 1.8; margin-bottom: 16px;">
+            GoblinCodex — это независимый сайт, созданный энтузиастами игры <strong>Sunflower Land</strong>. Наша миссия — создать лучшую базу знаний и инструментов для сообщества игроков.
+          </p>
+          <p style="font-size: 14px; color: var(--text-sec); line-height: 1.8;">
+            Мы верим, что хороший гайд и удобные инструменты помогают игрокам получать больше удовольствия от игры и достигать своих целей эффективнее.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <div class="gc-card" style="padding: 24px;">
+          <div style="font-size: 28px; margin-bottom: 12px;">🎯</div>
+          <h3 style="font-family: var(--font-head); font-weight: 600; font-size: 16px; color: var(--text); margin-bottom: 12px;">Наша миссия</h3>
+          <p style="font-size: 13px; color: var(--text-sec); line-height: 1.6;">
+            Предоставить лучшие гайды, калькуляторы и сообщество для фермеров Sunflower Land.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <div class="gc-card" style="padding: 24px;">
+          <div style="font-size: 28px; margin-bottom: 12px;">💪</div>
+          <h3 style="font-family: var(--font-head); font-weight: 600; font-size: 16px; color: var(--text); margin-bottom: 12px;">Наши ценности</h3>
+          <p style="font-size: 13px; color: var(--text-sec); line-height: 1.6;">
+            Открытость, качество контента и активное участие сообщества.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <section style="margin-bottom: 40px;">
+      <h2 class="gc-page-title" style="margin-bottom: 20px;">Часто задаваемые вопросы</h2>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <details class="gc-card" style="padding: 24px; cursor: pointer;">
+          <summary style="font-family: var(--font-head); font-weight: 600; font-size: 15px; color: var(--text);">
+            Когда был создан GoblinCodex?
+          </summary>
+          <p style="font-size: 13px; color: var(--text-sec); margin-top: 12px; line-height: 1.6;">
+            GoblinCodex был создан в 2024 году как независимый проект сообщества игроков Sunflower Land.
+          </p>
+        </details>
+
+        <details class="gc-card" style="padding: 24px; cursor: pointer;">
+          <summary style="font-family: var(--font-head); font-weight: 600; font-size: 15px; color: var(--text);">
+            Это официальный сайт Sunflower Land?
+          </summary>
+          <p style="font-size: 13px; color: var(--text-sec); margin-top: 12px; line-height: 1.6;">
+            Нет, GoblinCodex является независимым проектом сообщества и не является официальным сайтом Sunflower Land.
+          </p>
+        </details>
+
+        <details class="gc-card" style="padding: 24px; cursor: pointer;">
+          <summary style="font-family: var(--font-head); font-weight: 600; font-size: 15px; color: var(--text);">
+            Как я могу помочь проекту?
+          </summary>
+          <p style="font-size: 13px; color: var(--text-sec); margin-top: 12px; line-height: 1.6;">
+            Вы можете помочь, написав гайды, сообщив об ошибках, предложив улучшения или поделившись сайтом с другими игроками.
+          </p>
+        </details>
+
+        <details class="gc-card" style="padding: 24px; cursor: pointer;">
+          <summary style="font-family: var(--font-head); font-weight: 600; font-size: 15px; color: var(--text);">
+            Есть ли исходный код?
+          </summary>
+          <p style="font-size: 13px; color: var(--text-sec); margin-top: 12px; line-height: 1.6;">
+            Да! Исходный код GoblinCodex открыт и доступен на <a href="https://github.com/Dionis404/goblincodex" target="_blank" rel="noopener" style="color: var(--green-mid); font-weight: 600;">GitHub</a>.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="gc-page-title" style="margin-bottom: 20px;">Контакты</h2>
+      <div class="gc-card" style="padding: 32px;">
+        <p style="font-size: 14px; color: var(--text-sec); line-height: 1.8; margin-bottom: 16px;">
+          Есть вопросы? Свяжитесь с нами в нашем Telegram сообществе или откройте issue на GitHub.
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-primary">Telegram</a>
+          <a href="https://github.com/Dionis404/goblincodex" target="_blank" rel="noopener" class="gc-btn-secondary">GitHub</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+details summary {
+  cursor: pointer;
+  user-select: none;
+}
+
+details[open] summary {
+  color: var(--green-dark);
+}
+</style>

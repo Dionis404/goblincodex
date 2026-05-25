@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout currentPage="/home" title="Главная — GoblinCodex">
+  <div class="gc-hero">
+    <div class="gc-hero-text gc-page-enter">
+      <div class="gc-eyebrow">
+        <div class="gc-eyebrow-dot"></div>
+        Добро пожаловать на GoblinCodex
+      </div>
+      <h1 class="gc-h1">Всё о <em>Sunflower Land</em></h1>
+
+      <div class="gc-season-block">
+        <div>
+          <div style="font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 4px;">Текущий сезон</div>
+          <div style="font-size: 18px; font-weight: 700; color: #fff;">Весна 2024</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 4px;">Дней осталось</div>
+          <div style="font-size: 18px; font-weight: 700; color: #fff;">14</div>
+        </div>
+      </div>
+
+      <p style="font-size: 15px; line-height: 1.6; color: var(--text-sec); margin-bottom: 20px;">
+        Полная база гайдов, калькуляторов и полезной информации для фермеров Sunflower Land. Развивайте свою ферму вместе с нами!
+      </p>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="gc-btn-primary">Начать изучение</button>
+        <button class="gc-btn-secondary">Узнать больше</button>
+      </div>
+    </div>
+
+    <div class="gc-hero-art">
+      <div class="gc-farm-frame">
+        <div style="width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, var(--green-pale), var(--green-light)); display: flex; align-items: center; justify-content: center; color: var(--text-sec); font-size: 14px; text-align: center;">
+          🌻🌽🎃<br/>Ферма гобличьей мечты
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gc-content">
+    <section style="margin-bottom: 60px;">
+      <h2 class="gc-page-title">Основные разделы</h2>
+      <div class="gc-grid-3" style="margin-top: 24px;">
+        <a href="/guides" class="gc-card gc-card-hover" style="padding: 24px; cursor: pointer; text-decoration: none;">
+          <div style="font-size: 28px; margin-bottom: 12px;">📚</div>
+          <div style="font-family: var(--font-head); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px;">База знаний</div>
+          <div style="font-size: 13px; color: var(--text-sec);">Гайды и механики игры</div>
+        </a>
+        <a href="/news" class="gc-card gc-card-hover" style="padding: 24px; cursor: pointer; text-decoration: none;">
+          <div style="font-size: 28px; margin-bottom: 12px;">📰</div>
+          <div style="font-family: var(--font-head); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Новости</div>
+          <div style="font-size: 13px; color: var(--text-sec);">Обновления и события</div>
+        </a>
+        <a href="/tools" class="gc-card gc-card-hover" style="padding: 24px; cursor: pointer; text-decoration: none;">
+          <div style="font-size: 28px; margin-bottom: 12px;">🔧</div>
+          <div style="font-family: var(--font-head); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Инструменты</div>
+          <div style="font-size: 13px; color: var(--text-sec);">Калькуляторы и помощники</div>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="gc-page-title">Сообщество</h2>
+      <div class="gc-card" style="padding: 32px; text-align: center;">
+        <div style="font-size: 24px; margin-bottom: 16px;">👥</div>
+        <h3 style="font-family: var(--font-head); font-size: 18px; font-weight: 600; margin-bottom: 12px;">Присоединитесь к нам</h3>
+        <p style="font-size: 14px; color: var(--text-sec); margin-bottom: 20px; line-height: 1.6;">
+          Общайтесь с другими фермерами, делитесь советами и помогайте друг другу развиваться.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-primary">Telegram сообщество</a>
+          <a href="/community" class="gc-btn-secondary">Узнать больше</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+.gc-page-enter {
+  animation: pageEnter 0.35s ease both;
+}
+
+.gc-card:hover {
+  text-decoration: none;
+  color: var(--text);
+}
+</style>
