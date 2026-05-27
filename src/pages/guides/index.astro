@@ -1,0 +1,305 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allGuides = await getCollection('guides', ({ data }) => !data.draft);
+allGuides.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime());
+
+const sections = [
+  { id: 'guides',    label: 'Гайды',        icon: '📗', sub: 'Как играть'       },
+  { id: 'mechanics', label: 'Механики',      icon: '⚙️', sub: 'Глубокий разбор'  },
+  { id: 'nft',       label: 'NFT Предметы',  icon: '💎', sub: 'Бонусы и буферы'  },
+];
+
+const tagColors: Record<string, string> = {
+  'Новичкам':   'green',
+  'Экономика':  'amber',
+  'Фермерство': 'green',
+  'Крафт':      'purple',
+  'Основы':     'blue',
+  'Квесты':     'amber',
+  'NPC':        'purple',
+  'Достижения': 'blue',
+  'Предметы':   'green',
+};
+---
+
+<BaseLayout currentPage="guides" title="База знаний — GoblinCodex">
+  <div class="gc-content gc-page-enter">
+
+    <!-- Заголовок -->
+    <div class="gc-guides-header">
+      <h1 class="gc-page-title">📚 База знаний</h1>
+      <p class="gc-guides-sub">Гайды для новичков и глубокие разборы механик</p>
+    </div>
+
+    <!-- Вкладки секций -->
+    <div class="gc-section-tabs" id="sectionTabs">
+      {sections.map((sec, i) => (
+        <button
+          class={`gc-section-tab${i === 0 ? ' active' : ''}`}
+          data-section={sec.id}
+        >
+          <span class="gc-section-tab-icon">{sec.icon}</span>
+          <div>
+            <div class="gc-section-tab-label">{sec.label}</div>
+            <div class="gc-section-tab-sub">{sec.sub}</div>
+          </div>
+        </button>
+      ))}
+    </div>
+
+    <!-- Поиск -->
+    <div class="gc-search-wrap">
+      <input
+        type="text"
+        id="guideSearch"
+        placeholder="Найти гайд..."
+        class="gc-search-input"
+        autocomplete="off"
+      />
+    </div>
+
+    <!-- Фильтр категорий -->
+    <div class="gc-tag-filter" id="categoryFilter">
+      <button class="gc-tag-btn active" data-cat="all">⚡ Все</button>
+    </div>
+
+    <!-- Счётчик -->
+    <div class="gc-guides-count" id="guidesCount"></div>
+
+    <!-- Сетка гайдов -->
+    <div class="gc-guides-grid" id="guidesGrid">
+      {allGuides.map(guide => (
+        <a
+          href={`/guides/${guide.id}`}
+          class="gc-card gc-card-hover gc-guide-card"
+          data-section={guide.data.section ?? 'guides'}
+          data-category={guide.data.category}
+          data-title={guide.data.title.toLowerCase()}
+        >
+          <div class="gc-guide-card-top">
+            <div class="gc-guide-card-icon">{guide.data.icon}</div>
+            <div class="gc-guide-card-info">
+              <div class="gc-guide-card-title">{guide.data.title}</div>
+              <div class="gc-guide-card-meta">
+                <span class={`gc-tag gc-tag--${tagColors[guide.data.category] ?? 'green'}`}>
+                  {guide.data.category}
+                </span>
+                <span class="gc-guide-card-time">⏱ {guide.data.readTime} мин</span>
+              </div>
+            </div>
+          </div>
+          <div class="gc-guide-card-desc">{guide.data.description}</div>
+        </a>
+      ))}
+    </div>
+
+    <div class="gc-guides-no-results" id="noResults" style="display:none;">
+      Ничего не найдено. Попробуй другой запрос или категорию.
+    </div>
+
+    <div class="gc-guides-empty" id="emptySection" style="display:none;">
+      В этом разделе пока нет материалов. Скоро появятся!
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script>
+  const sectionBtns  = document.querySelectorAll<HTMLButtonElement>('.gc-section-tab');
+  const filterBtns   = document.querySelectorAll<HTMLButtonElement>('.gc-tag-btn');
+  const cards        = document.querySelectorAll<HTMLElement>('.gc-guide-card');
+  const searchInput  = document.getElementById('guideSearch') as HTMLInputElement;
+  const countEl      = document.getElementById('guidesCount');
+  const noResults    = document.getElementById('noResults');
+  const emptySection = document.getElementById('emptySection');
+  const categoryFilter = document.getElementById('categoryFilter');
+
+  let activeSection  = 'guides';
+  let activeCategory = 'all';
+  let searchQuery    = '';
+
+  function getCategories(section: string): string[] {
+    const cats = new Set<string>();
+    cards.forEach(card => {
+      if (card.dataset.section === section) {
+        cats.add(card.dataset.category ?? '');
+      }
+    });
+    return [...cats].filter(Boolean);
+  }
+
+  function updateCategoryButtons(section: string) {
+    const cats = getCategories(section);
+    // Очищаем кнопки кроме "Все"
+    const btns = categoryFilter?.querySelectorAll('.gc-tag-btn:not([data-cat="all"])');
+    btns?.forEach(b => b.remove());
+    // Добавляем новые
+    cats.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'gc-tag-btn';
+      btn.dataset.cat = cat;
+      btn.textContent = cat;
+      btn.addEventListener('click', () => {
+        activeCategory = cat;
+        categoryFilter?.querySelectorAll('.gc-tag-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterCards();
+      });
+      categoryFilter?.appendChild(btn);
+    });
+    // Сброс активной категории
+    activeCategory = 'all';
+    categoryFilter?.querySelector('[data-cat="all"]')?.classList.add('active');
+  }
+
+  function filterCards() {
+    let visible = 0;
+    cards.forEach(card => {
+      const sec   = card.dataset.section ?? 'guides';
+      const cat   = card.dataset.category ?? '';
+      const title = card.dataset.title ?? '';
+      const matchSec    = sec === activeSection;
+      const matchCat    = activeCategory === 'all' || cat === activeCategory;
+      const matchSearch = title.includes(searchQuery);
+      const show = matchSec && matchCat && matchSearch;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    if (countEl) countEl.textContent = `Показано: ${visible} гайдов`;
+
+    const totalInSection = [...cards].filter(c => c.dataset.section === activeSection).length;
+    if (noResults)    noResults.style.display    = visible === 0 && totalInSection > 0 ? 'block' : 'none';
+    if (emptySection) emptySection.style.display = totalInSection === 0 ? 'block' : 'none';
+  }
+
+  // Вкладки секций
+  sectionBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeSection = btn.dataset.section ?? 'guides';
+      sectionBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      searchInput.value = '';
+      searchQuery = '';
+      updateCategoryButtons(activeSection);
+      filterCards();
+    });
+  });
+
+  // Кнопка "Все" категорий
+  categoryFilter?.querySelector('[data-cat="all"]')?.addEventListener('click', () => {
+    activeCategory = 'all';
+    categoryFilter?.querySelectorAll('.gc-tag-btn').forEach(b => b.classList.remove('active'));
+    categoryFilter?.querySelector('[data-cat="all"]')?.classList.add('active');
+    filterCards();
+  });
+
+  // Поиск
+  searchInput?.addEventListener('input', () => {
+    searchQuery = searchInput.value.toLowerCase().trim();
+    filterCards();
+  });
+
+  // Инициализация
+  updateCategoryButtons('guides');
+  filterCards();
+</script>
+
+<style>
+.gc-guides-header { padding: 40px 0 24px; }
+.gc-guides-sub { font-size: 15px; color: var(--text-sec); margin-top: 6px; }
+
+.gc-section-tabs
+/* ── Поиск ── */
+.gc-search-wrap { margin-bottom: 16px; }
+.gc-search-input {
+  width: 100%;
+  padding: 12px 16px 12px 40px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235A6468' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 14px center;
+}
+.gc-search-input:focus {
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px var(--green-pale);
+}
+.gc-search-input::placeholder { color: var(--text-sec); }
+
+/* ── Счётчик ── */
+.gc-guides-count { font-size: 12px; color: var(--text-ter); margin-bottom: 20px; }
+
+/* ── Сетка ── */
+.gc-guides-empty, .gc-guides-no-results {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-sec);
+  font-size: 14px;
+}
+.gc-guides-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+/* ── Карточка ── */
+.gc-guide-card {
+  text-decoration: none;
+  color: var(--text);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gc-guide-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.gc-guide-card-icon {
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--green-pale);
+  border-radius: 10px;
+}
+.gc-guide-card-info { flex: 1; }
+.gc-guide-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.gc-guide-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gc-guide-card-time { font-size: 11px; color: var(--text-sec); }
+.gc-guide-card-desc { font-size: 12px; color: var(--text-sec); line-height: 1.5; }
+
+@media (max-width: 900px) {
+  .gc-section-tabs { grid-template-columns: 1fr !important; }
+  .gc-guides-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .gc-guides-grid { grid-template-columns: 1fr !important; }
+  .gc-guides-header { padding: 24px 0 16px; }
+}
+</style>

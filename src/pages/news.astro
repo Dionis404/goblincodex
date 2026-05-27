@@ -1,0 +1,236 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const BLOG_RSS = 'https://blog.goblincodex.fun/data/rss';
+
+const tagColors: Record<string, string> = {
+  'Стримы':     'purple',
+  'Обновление': 'blue',
+  'Гайд':       'green',
+  'Экономика':  'amber',
+  'Ивент':      'amber',
+  'Контент':    'green',
+  'Бродкаст':   'purple',
+  'Новость':    'green',
+};
+
+type NewsItem = {
+  title:    string;
+  date:     string;
+  tag:      string;
+  tagColor: string;
+  link:     string;
+  image:    string;
+  desc:     string;
+};
+
+let news: NewsItem[] = [];
+let tags: string[]   = [];
+
+try {
+  const res  = await fetch(BLOG_RSS);
+  const xml  = await res.text();
+  const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
+
+  news = items.map(item => {
+    const title    = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/)?.[1]?.trim() ?? '';
+    const link     = item.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() ?? '#';
+    const pubDate  = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() ?? '';
+    const category = item.match(/<category>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/category>/)?.[1]?.trim() ?? 'Новость';
+    const image    = item.match(/media:content[^>]*url="([^"]+)"/)?.[1] ?? '';
+    const descRaw  = item.match(/<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/description>/)?.[1]?.trim() ?? '';
+    const desc     = descRaw.replace(/<[^>]+>/g, '').trim().slice(0, 120) + (descRaw.length > 120 ? '...' : '');
+    const date     = pubDate
+      ? new Date(pubDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+      : '';
+    return { title, date, tag: category, tagColor: tagColors[category] ?? 'green', link, image, desc };
+  });
+
+  // Уникальные теги из статей
+  tags = [...new Set(news.map(n => n.tag).filter(Boolean))];
+
+} catch (e) {
+  news = [];
+}
+---
+
+<BaseLayout currentPage="news" title="Новости — GoblinCodex">
+  <div class="gc-content gc-page-enter">
+
+    <div class="gc-news-page-header">
+      <h1 class="gc-page-title">🔥 Новости Sunflower Land</h1>
+      <p class="gc-news-page-sub">Актуальные обновления, стримы и события из мира SFL</p>
+    </div>
+
+    <!-- Фильтр тегов -->
+    <div class="gc-tag-filter" id="tagFilter">
+      <button class="gc-tag-btn active" data-tag="all">Всё</button>
+      {tags.map(tag => (
+        <button class="gc-tag-btn" data-tag={tag}>{tag}</button>
+      ))}
+    </div>
+
+    {news.length === 0 ? (
+      <div class="gc-news-empty">Не удалось загрузить новости. Попробуйте позже.</div>
+    ) : (
+      <div class="gc-news-grid" id="newsGrid">
+        {news.map(item => (
+          <a
+            href={item.link}
+            target="_blank"
+            rel="noopener"
+            class="gc-card gc-card-hover gc-news-card"
+            data-tag={item.tag}
+          >
+            {item.image && (
+              <div class="gc-news-card-img">
+                <img src={item.image} alt={item.title} loading="lazy" />
+              </div>
+            )}
+            <div class="gc-news-card-body">
+              <div class="gc-news-card-meta">
+                {item.tag && <span class={`gc-tag gc-tag--${item.tagColor}`}>{item.tag}</span>}
+                <span class="gc-news-card-date">{item.date}</span>
+              </div>
+              <div class="gc-news-card-title">{item.title}</div>
+              {item.desc && <div class="gc-news-card-desc">{item.desc}</div>}
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+
+  </div>
+</BaseLayout>
+
+<script>
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.gc-tag-btn');
+  const cards      = document.querySelectorAll<HTMLElement>('.gc-news-card');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tag = btn.dataset.tag ?? 'all';
+
+      // Активная кнопка
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Показываем/скрываем карточки
+      cards.forEach(card => {
+        const cardTag = card.dataset.tag ?? '';
+        card.style.display = (tag === 'all' || cardTag === tag) ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+.gc-news-page-header {
+  padding: 40px 0 24px;
+}
+.gc-news-page-sub {
+  font-size: 15px;
+  color: var(--text-sec);
+  margin-top: 6px;
+}
+
+/* ── Фильтр тегов ── */
+.gc-tag-filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.gc-tag-btn {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-sec);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.15s;
+}
+.gc-tag-btn:hover {
+  border-color: var(--green-mid);
+  color: var(--green-dark);
+  background: var(--green-pale);
+}
+.gc-tag-btn.active {
+  background: var(--green-dark);
+  color: var(--green-pale);
+  border-color: var(--green-dark);
+}
+
+/* ── Сетка ── */
+.gc-news-empty {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-sec);
+}
+.gc-news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 48px;
+}
+.gc-news-card {
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.gc-news-card-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+.gc-news-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+.gc-news-card:hover .gc-news-card-img img {
+  transform: scale(1.04);
+}
+.gc-news-card-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gc-news-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gc-news-card-date {
+  font-size: 11px;
+  color: var(--text-sec);
+}
+.gc-news-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+}
+.gc-news-card-desc {
+  font-size: 12px;
+  color: var(--text-sec);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .gc-news-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .gc-news-grid { grid-template-columns: 1fr !important; }
+  .gc-news-page-header { padding: 24px 0 16px; }
+}
+</style>

@@ -2,17 +2,69 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ChapterTimer from '../components/ChapterTimer.tsx';
 
-const news = [
-  { title: 'Обновление 1.3.4 — Новый сезон Урожая!', date: '20 мая 2026', tag: 'Обновление', tagColor: 'blue' },
-  { title: 'Новые семена и рецепты в обновлении',     date: '18 мая 2026', tag: 'Контент',    tagColor: 'green' },
-  { title: 'Изменения в экономике и балансе токенов', date: '16 мая 2026', tag: 'Экономика',  tagColor: 'amber' },
-  { title: 'Ивент: Праздник фермеров начинается',     date: '14 мая 2026', tag: 'Ивент',      tagColor: 'purple' },
-];
+// ── RSS fetch ──
+const RSS_URL = 'https://blog.goblincodex.fun/data/rss';
+
+// Цвета тегов по категории
+const tagColors: Record<string, string> = {
+  'Стримы':      'purple',
+  'Обновление':  'blue',
+  'Гайд':        'green',
+  'Экономика':   'amber',
+  'Ивент':       'amber',
+  'Контент':     'green',
+};
+
+type NewsItem = {
+  title: string;
+  date: string;
+  tag: string;
+  tagColor: string;
+  link: string;
+  image: string;
+};
+
+let news: NewsItem[] = [];
+
+try {
+  const res  = await fetch(RSS_URL);
+  const xml  = await res.text();
+
+  // Парсим items из XML
+  const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
+
+  news = items.slice(0, 4).map(item => {
+    const title    = item.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.trim() ?? '';
+    const link     = item.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() ?? '#';
+    const pubDate  = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() ?? '';
+    const category = item.match(/<category>([\s\S]*?)<\/category>/)?.[1]?.trim() ?? 'Новость';
+    const image    = item.match(/media:content[^>]*url="([^"]+)"/)?.[1] ?? '';
+
+    // Форматируем дату
+    const date = pubDate
+      ? new Date(pubDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+      : '';
+
+    return {
+      title,
+      date,
+      tag: category,
+      tagColor: tagColors[category] ?? 'green',
+      link,
+      image,
+    };
+  });
+} catch (e) {
+  // Fallback если RSS недоступен
+  news = [
+    { title: 'Загрузка новостей...', date: '', tag: '', tagColor: 'green', link: '/news', image: '' },
+  ];
+}
 
 const guides = [
-  { title: 'Как заработать первые токены', time: '5 мин' },
-  { title: 'Лучшие культуры для старта',   time: '7 мин' },
-  { title: 'Как зарабатывать на рынке',    time: '6 мин' },
+  { title: 'Как заработать первые токены', time: '5 мин', link: '/guides/first-tokens' },
+  { title: 'Лучшие культуры для старта',   time: '7 мин', link: '/guides/best-crops'   },
+  { title: 'Как зарабатывать на рынке',    time: '6 мин', link: '/guides/market'        },
 ];
 ---
 
@@ -89,7 +141,7 @@ const guides = [
     <!-- ── 3 колонки ── -->
     <div class="gc-grid-3c" style="margin-bottom: 40px;">
 
-      <!-- Новости -->
+      <!-- Новости из RSS -->
       <div class="gc-card" style="padding: 24px;">
         <div class="gc-block-header">
           <span class="gc-block-title">🔥 Что нового в SFL</span>
@@ -97,15 +149,16 @@ const guides = [
         </div>
         <div class="gc-news-list">
           {news.map(item => (
-            <div class="gc-list-item">
+            <a href={item.link} target="_blank" rel="noopener" class="gc-list-item gc-news-item">
               <div class="gc-news-dot"></div>
               <div>
                 <div class="gc-news-title">{item.title}</div>
                 <div class="gc-news-meta">
-                  {item.date} · <span class={`gc-tag gc-tag--${item.tagColor}`}>{item.tag}</span>
+                  {item.date}
+                  {item.tag && <span class={`gc-tag gc-tag--${item.tagColor}`}>{item.tag}</span>}
                 </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
@@ -118,13 +171,13 @@ const guides = [
         </div>
         <div>
           {guides.map(guide => (
-            <div class="gc-guide-item">
+            <a href={guide.link} class="gc-guide-item">
               <div class="gc-guide-icon">📄</div>
               <div>
                 <div class="gc-guide-title">{guide.title}</div>
                 <div class="gc-guide-time">{guide.time}</div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
@@ -143,7 +196,7 @@ const guides = [
             <div class="gc-channel-name">Telegram канал</div>
             <div class="gc-channel-desc">Новости, обновления, гайды</div>
           </div>
-          <a href="https://t.me/goblincodex" target="_blank" class="gc-channel-link gc-channel-link--tg">Подписаться →</a>
+          <a href="https://t.me/URG" target="_blank" class="gc-channel-link gc-channel-link--tg">Подписаться →</a>
         </div>
 
         <div class="gc-channel-item gc-channel-item--yt">
@@ -177,7 +230,7 @@ const guides = [
         <div class="gc-cta-title">🌻 Присоединяйся к сообществу фермеров!</div>
         <div class="gc-cta-desc">Общайся, делись опытом и развивай свою ферму вместе с нами</div>
       </div>
-      <a href="https://t.me/goblincodex" target="_blank" class="gc-btn-cta">Открыть чат →</a>
+      <a href="https://t.me/URG" target="_blank" class="gc-btn-cta">Открыть чат →</a>
     </div>
 
   </div>
@@ -185,7 +238,6 @@ const guides = [
 </BaseLayout>
 
 <style>
-/* ── Hero ── */
 .gc-hero-desc {
   font-size: 16px;
   line-height: 1.6;
@@ -209,7 +261,6 @@ const guides = [
 :global([data-theme="dark"]) .gc-hero-img--light { display: none; }
 :global([data-theme="dark"]) .gc-hero-img--dark  { display: block; }
 
-/* ── Блок главы ── */
 :global(.gc-chapter-img) {
   width: 100%;
   height: auto;
@@ -274,4 +325,14 @@ const guides = [
   color: #e8ece3;
   letter-spacing: 3px;
 }
+
+/* Новости — ссылки */
+.gc-news-item {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  transition: padding-left 0.15s;
+}
+.gc-news-item:hover { padding-left: 4px; }
+.gc-news-item:hover .gc-news-title { color: var(--green-dark); }
 </style>
