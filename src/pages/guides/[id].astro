@@ -1,0 +1,412 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides', ({ data }) => !data.draft);
+  return guides.map(guide => ({
+    params: { id: guide.id },
+    props:  { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+const { Content, headings } = await render(guide);
+
+const tagColors: Record<string, string> = {
+  'Новичкам':   'green',
+  'Экономика':  'amber',
+  'Фермерство': 'green',
+  'Крафт':      'purple',
+  'Основы':     'blue',
+  'Лайфхаки':     'amber',
+  'NPC':        'purple',
+  'Достижения': 'blue',
+  'Предметы':   'green',
+};
+
+const tagColor = tagColors[guide.data.category] ?? 'green';
+---
+
+<BaseLayout currentPage="guides" title={`${guide.data.title} — GoblinCodex`}>
+  <div class="gc-content gc-page-enter">
+
+    <!-- Кнопка назад (сверху) -->
+    <a href="/guides" class="gc-btn-secondary gc-guide-back-top">← Назад к гайдам</a>
+
+    <!-- Основной двухколоночный layout -->
+    <div class="gc-guide-layout">
+
+      <!-- Левая колонка: весь контент -->
+      <div class="gc-guide-main">
+
+        <!-- Хлебные крошки -->
+        <nav class="gc-breadcrumb">
+          <a href="/guides">База знаний</a>
+          <span>›</span>
+          <a href="/guides">Гайды</a>
+          <span>›</span>
+          <span>{guide.data.title}</span>
+        </nav>
+
+        <!-- Мета -->
+        <div class="gc-guide-page-meta">
+          <span class={`gc-tag gc-tag--${tagColor}`}>{guide.data.category}</span>
+          <span class="gc-guide-page-time">⏱ {guide.data.readTime} мин чтения</span>
+          {guide.data.publishDate && (
+            <span class="gc-guide-page-date">
+              📅 {new Date(guide.data.publishDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </span>
+          )}
+          {guide.data.updatedDate && (
+            <span class="gc-guide-page-date">
+              ✏️ {new Date(guide.data.updatedDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </span>
+          )}
+        </div>
+
+        <!-- Заголовок -->
+        <h1 class="gc-guide-page-title">
+          {guide.data.icon} {guide.data.title}
+        </h1>
+
+        <!-- Автор -->
+        {guide.data.author && (
+          <div class="gc-guide-author">
+            <div class="gc-guide-author-avatar">🧙</div>
+            <div>
+              <div class="gc-guide-author-name">@{guide.data.author}</div>
+              <div class="gc-guide-author-role">Автор гайда</div>
+            </div>
+          </div>
+        )}
+
+        <hr class="gc-guide-divider" />
+
+        <!-- Контент -->
+        <article class="gc-guide-article">
+          <Content />
+        </article>
+
+      </div>
+
+      <!-- Правая колонка: оглавление -->
+      {headings.length > 0 && (
+        <aside class="gc-guide-toc">
+          <div class="gc-guide-toc-inner" id="tocPanel">
+            <div class="gc-guide-toc-title">Содержание</div>
+            <nav>
+              {headings.map(h => (
+                <a
+                  href={`#${h.slug}`}
+                  class={`gc-toc-link gc-toc-link--h${h.depth}`}
+                >
+                  {h.text}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </aside>
+      )}
+
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+/* ── Хлебные крошки ── */
+.gc-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-sec);
+  padding: 24px 0 16px;
+}
+.gc-breadcrumb a {
+  color: var(--green-dark);
+  text-decoration: none;
+}
+.gc-breadcrumb a:hover { text-decoration: underline; }
+
+/* ── Мета ── */
+.gc-guide-page-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.gc-guide-page-time,
+.gc-guide-page-date {
+  font-size: 13px;
+  color: var(--text-sec);
+}
+
+/* ── Заголовок ── */
+.gc-guide-page-title {
+  font-family: var(--font-head);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+/* ── Автор ── */
+.gc-guide-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.gc-guide-author-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--green-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.gc-guide-author-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.gc-guide-author-role {
+  font-size: 11px;
+  color: var(--green-dark);
+}
+
+/* ── Кнопка назад (сверху) ── */
+.gc-guide-back-top {
+  display: inline-flex;
+  margin: 20px 0 16px;
+}
+
+/* ── Layout ── */
+.gc-guide-layout {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 40px;
+}
+.gc-guide-main { min-width: 0; }
+
+/* ── Контент статьи ── */
+.gc-guide-article {
+  min-width: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 36px;
+  box-shadow: var(--shadow);
+}
+.gc-guide-article :global(h2) {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin: 32px 0 12px;
+  letter-spacing: -0.02em;
+}
+.gc-guide-article :global(h3) {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 24px 0 10px;
+}
+.gc-guide-article :global(p) {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.gc-guide-article :global(ul),
+.gc-guide-article :global(ol) {
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+.gc-guide-article :global(li) {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.gc-guide-article :global(ol) {
+  list-style: none;
+  padding-left: 34px;
+  counter-reset: ol-counter;
+}
+.gc-guide-article :global(ol li) {
+  counter-increment: ol-counter;
+  position: relative;
+}
+.gc-guide-article :global(li > p) {
+  margin-bottom: 0;
+}
+.gc-guide-article :global(ol li)::before {
+  content: counter(ol-counter);
+  background: var(--green-dark);
+  color: var(--green-pale);
+  font-size: 12px;
+  font-weight: 700;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: -34px;
+  top: 3px;
+}
+.gc-guide-article :global(blockquote) {
+  border-left: 3px solid var(--green-mid);
+  background: var(--green-pale);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin: 20px 0;
+}
+.gc-guide-article :global(blockquote p) {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+}
+.gc-guide-article :global(code) {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+.gc-guide-article :global(pre) {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+.gc-guide-article :global(pre code) {
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  color: var(--text);
+}
+.gc-guide-article :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.gc-guide-article :global(th) {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  font-weight: 700;
+  padding: 10px 14px;
+  text-align: left;
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+.gc-guide-article :global(td) {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+.gc-guide-article :global(tbody tr:nth-child(even) td) {
+  background: var(--green-pale);
+}
+.gc-guide-article :global(strong) { font-weight: 700; }
+.gc-guide-article :global(a) {
+  color: var(--green-dark);
+  text-decoration: underline;
+}
+.gc-guide-article :global(hr) {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 28px 0;
+}
+
+/* ── Разделитель ── */
+.gc-guide-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0 24px;
+}
+
+/* ── Оглавление ── */
+.gc-guide-toc { position: sticky; top: 20px; }
+.gc-guide-toc-inner {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.gc-guide-toc-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-ter);
+  margin-bottom: 12px;
+}
+.gc-toc-link {
+  display: block;
+  font-size: 13px;
+  color: var(--text-sec);
+  text-decoration: none;
+  padding: 5px 0;
+  border-left: 2px solid transparent;
+  padding-left: 10px;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+.gc-toc-link--h3 { padding-left: 20px; font-size: 12px; }
+.gc-toc-link:hover {
+  color: var(--green-dark);
+  border-left-color: var(--green-mid);
+}
+.gc-toc-link.active {
+  color: var(--green-dark);
+  border-left-color: var(--green-dark);
+  font-weight: 600;
+}
+
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .gc-guide-layout { grid-template-columns: 1fr !important; }
+  .gc-guide-toc { display: none; }
+  .gc-guide-page-title { font-size: 24px; }
+}
+</style>
+
+<script>
+  // Подсветка активного пункта оглавления при скролле
+  const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.gc-toc-link');
+  const headings = document.querySelectorAll<HTMLElement>('h2, h3');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  headings.forEach(h => observer.observe(h));
+</script>

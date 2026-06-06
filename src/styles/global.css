@@ -21,19 +21,24 @@
 }
 
 [data-theme="dark"] {
-  --bg:          #0B1120;
-  --card-bg:     #111D30;
-  --border:      #1C3050;
-  --text:        #F3E7C9;
-  --text-sec:    #9FCB5A;
-  --text-ter:    #B8B0A0;
-  --green-dark:  #7ED957;
-  --green-mid:   #9FCB5A;
-  --green-light: #6E8F3D;
-  --green-pale:  #0C2010;
-  --amber:       #D9A15B;
-  --amber-pale:  #231A06;
-  --red:         #D4553D;
+  --bg:            #0B1120;
+  --card-bg:       #111D30;
+  --border:        #1C3050;
+  --text:          #F3E7C9;
+  --text-sec:      #ae6dd4;
+  --text-ter:      #B8B0A0;
+  --purple-dark:   #c98de0;
+  --purple-mid:    #ae6dd4;
+  --purple-light:  #7d4a9e;
+  --purple-pale:   #1a0b2e;
+  /* remap green tokens → purple so all var(--green-*) usage picks up dark palette */
+  --green-dark:    #c98de0;
+  --green-mid:     #ae6dd4;
+  --green-light:   #7d4a9e;
+  --green-pale:    #1a0b2e;
+  --amber:         #D9A15B;
+  --amber-pale:    #231A06;
+  --red:           #D4553D;
   --shadow:      0 1px 3px rgba(0,0,0,0.40), 0 4px 12px rgba(0,0,0,0.30);
   --shadow-hover:0 4px 8px rgba(0,0,0,0.50), 0 12px 28px rgba(0,0,0,0.38);
 }

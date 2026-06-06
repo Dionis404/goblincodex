@@ -61,11 +61,16 @@ try {
   ];
 }
 
-const guides = [
-  { title: 'Как заработать первые токены', time: '5 мин', link: '/guides/first-tokens' },
-  { title: 'Лучшие культуры для старта',   time: '7 мин', link: '/guides/best-crops'   },
-  { title: 'Как зарабатывать на рынке',    time: '6 мин', link: '/guides/market'        },
-];
+import { getCollection } from 'astro:content';
+
+const latestGuides = await getCollection('guides', ({ data }) => !data.draft);
+latestGuides.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime());
+const guides = latestGuides.slice(0, 3).map(g => ({
+  title: g.data.title,
+  time:  `${g.data.readTime} мин`,
+  link:  `/guides/${g.id}`,
+  icon:  g.data.icon,
+}));
 ---
 
 <BaseLayout currentPage="home" title="Главная — GoblinCodex">
@@ -166,13 +171,13 @@ const guides = [
       <!-- Гайды -->
       <div class="gc-card" style="padding: 24px;">
         <div class="gc-block-header">
-          <span class="gc-block-title">📗 Популярные гайды</span>
+          <span class="gc-block-title">📗 Последние гайды</span>
           <a href="/guides" class="gc-block-link">Все гайды →</a>
         </div>
         <div>
           {guides.map(guide => (
             <a href={guide.link} class="gc-guide-item">
-              <div class="gc-guide-icon">📄</div>
+              <div class="gc-guide-icon">{guide.icon}</div>
               <div>
                 <div class="gc-guide-title">{guide.title}</div>
                 <div class="gc-guide-time">{guide.time}</div>

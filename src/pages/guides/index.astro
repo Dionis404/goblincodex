@@ -1,9 +1,19 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
 const allGuides = await getCollection('guides', ({ data }) => !data.draft);
-allGuides.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime());
+allGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
+
+const allMechanics = await getCollection('mechanics', ({ data }) => !data.draft);
+allMechanics.sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
+
+const mechanicsRendered = await Promise.all(
+  allMechanics.map(async (m) => {
+    const { Content } = await render(m);
+    return { entry: m, Content };
+  })
+);
 
 const sections = [
   { id: 'guides',    label: 'Гайды',        icon: '📗', sub: 'Как играть'       },
@@ -49,8 +59,8 @@ const tagColors: Record<string, string> = {
       ))}
     </div>
 
-    <!-- Поиск -->
-    <div class="gc-search-wrap">
+    <!-- Поиск (скрыт для механик) -->
+    <div class="gc-search-wrap" id="searchWrap">
       <input
         type="text"
         id="guideSearch"
@@ -60,15 +70,15 @@ const tagColors: Record<string, string> = {
       />
     </div>
 
-    <!-- Фильтр категорий -->
+    <!-- Фильтр категорий (скрыт для механик) -->
     <div class="gc-tag-filter" id="categoryFilter">
       <button class="gc-tag-btn active" data-cat="all">⚡ Все</button>
     </div>
 
-    <!-- Счётчик -->
+    <!-- Счётчик (скрыт для механик) -->
     <div class="gc-guides-count" id="guidesCount"></div>
 
-    <!-- Сетка гайдов -->
+    <!-- Сетка гайдов (скрыта для механик) -->
     <div class="gc-guides-grid" id="guidesGrid">
       {allGuides.map(guide => (
         <a
@@ -103,40 +113,109 @@ const tagColors: Record<string, string> = {
       В этом разделе пока нет материалов. Скоро появятся!
     </div>
 
+    <!-- ═══════════════════════════════════════════════
+         ДВУХПАНЕЛЬНЫЙ LAYOUT ДЛЯ МЕХАНИК
+         ═══════════════════════════════════════════════ -->
+    <div id="mechanicsPanel" class="gc-mechanics-layout" style="display:none">
+
+      {mechanicsRendered.length === 0 ? (
+        <div class="gc-guides-empty" style="display:block">
+          В этом разделе пока нет материалов. Скоро появятся!
+        </div>
+      ) : (
+        <>
+          <!-- Левое меню -->
+          <aside class="gc-mech-sidebar">
+            {mechanicsRendered.map((m, i) => (
+              <button
+                class={`gc-mech-nav-item${i === 0 ? ' active' : ''}`}
+                data-mech-id={m.entry.id}
+              >
+                <span class="gc-mech-nav-icon">{m.entry.data.icon}</span>
+                <span class="gc-mech-nav-label">{m.entry.data.title}</span>
+              </button>
+            ))}
+          </aside>
+
+          <!-- Правая панель с контентом -->
+          <div class="gc-mech-content">
+            {mechanicsRendered.map((m, i) => {
+              const MechContent = m.Content;
+              return (
+                <div
+                  id={`mech-article-${m.entry.id}`}
+                  class="gc-mech-article"
+                  style={i > 0 ? 'display:none' : ''}
+                >
+                  <article class="gc-guide-article">
+                    <MechContent />
+                  </article>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+    </div>
+
   </div>
 </BaseLayout>
 
 <script>
-  const sectionBtns  = document.querySelectorAll<HTMLButtonElement>('.gc-section-tab');
-  const filterBtns   = document.querySelectorAll<HTMLButtonElement>('.gc-tag-btn');
-  const cards        = document.querySelectorAll<HTMLElement>('.gc-guide-card');
-  const searchInput  = document.getElementById('guideSearch') as HTMLInputElement;
-  const countEl      = document.getElementById('guidesCount');
-  const noResults    = document.getElementById('noResults');
-  const emptySection = document.getElementById('emptySection');
+  const sectionBtns    = document.querySelectorAll<HTMLButtonElement>('.gc-section-tab');
+  const filterBtns     = document.querySelectorAll<HTMLButtonElement>('.gc-tag-btn');
+  const cards          = document.querySelectorAll<HTMLElement>('.gc-guide-card');
+  const searchInput    = document.getElementById('guideSearch') as HTMLInputElement;
+  const countEl        = document.getElementById('guidesCount');
+  const noResults      = document.getElementById('noResults');
+  const emptySection   = document.getElementById('emptySection');
   const categoryFilter = document.getElementById('categoryFilter');
+  const searchWrap     = document.getElementById('searchWrap');
+  const guidesGrid     = document.getElementById('guidesGrid');
+  const mechanicsPanel = document.getElementById('mechanicsPanel');
+
+  // Механики: навигация по левому меню
+  const mechNavItems  = document.querySelectorAll<HTMLButtonElement>('.gc-mech-nav-item');
+  const mechArticles  = document.querySelectorAll<HTMLElement>('.gc-mech-article');
+
+  mechNavItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const id = item.dataset.mechId;
+      mechNavItems.forEach(b => b.classList.remove('active'));
+      item.classList.add('active');
+      mechArticles.forEach(a => {
+        a.style.display = a.id === `mech-article-${id}` ? '' : 'none';
+      });
+    });
+  });
 
   let activeSection  = 'guides';
   let activeCategory = 'all';
   let searchQuery    = '';
 
+  function setMechanicsMode(on: boolean) {
+    if (mechanicsPanel) mechanicsPanel.style.display = on ? 'flex' : 'none';
+    if (guidesGrid)     guidesGrid.style.display     = on ? 'none' : '';
+    if (searchWrap)     searchWrap.style.display      = on ? 'none' : '';
+    if (categoryFilter) (categoryFilter as HTMLElement).style.display = on ? 'none' : '';
+    if (countEl)        countEl.style.display         = on ? 'none' : '';
+    if (noResults)      noResults.style.display       = 'none';
+    if (emptySection)   emptySection.style.display    = 'none';
+  }
+
   function getCategories(section: string): string[] {
     const cats = new Set<string>();
     cards.forEach(card => {
-      if (card.dataset.section === section) {
-        cats.add(card.dataset.category ?? '');
-      }
+      if (card.dataset.section === section) cats.add(card.dataset.category ?? '');
     });
     return [...cats].filter(Boolean);
   }
 
   function updateCategoryButtons(section: string) {
-    const cats = getCategories(section);
-    // Очищаем кнопки кроме "Все"
     const btns = categoryFilter?.querySelectorAll('.gc-tag-btn:not([data-cat="all"])');
     btns?.forEach(b => b.remove());
-    // Добавляем новые
-    cats.forEach(cat => {
+    getCategories(section).forEach(cat => {
       const btn = document.createElement('button');
       btn.className = 'gc-tag-btn';
       btn.dataset.cat = cat;
@@ -149,7 +228,6 @@ const tagColors: Record<string, string> = {
       });
       categoryFilter?.appendChild(btn);
     });
-    // Сброс активной категории
     activeCategory = 'all';
     categoryFilter?.querySelector('[data-cat="all"]')?.classList.add('active');
   }
@@ -160,35 +238,45 @@ const tagColors: Record<string, string> = {
       const sec   = card.dataset.section ?? 'guides';
       const cat   = card.dataset.category ?? '';
       const title = card.dataset.title ?? '';
-      const matchSec    = sec === activeSection;
-      const matchCat    = activeCategory === 'all' || cat === activeCategory;
-      const matchSearch = title.includes(searchQuery);
-      const show = matchSec && matchCat && matchSearch;
+      const show  = sec === activeSection
+        && (activeCategory === 'all' || cat === activeCategory)
+        && title.includes(searchQuery);
       card.style.display = show ? '' : 'none';
       if (show) visible++;
     });
-
     if (countEl) countEl.textContent = `Показано: ${visible} гайдов`;
-
     const totalInSection = [...cards].filter(c => c.dataset.section === activeSection).length;
     if (noResults)    noResults.style.display    = visible === 0 && totalInSection > 0 ? 'block' : 'none';
     if (emptySection) emptySection.style.display = totalInSection === 0 ? 'block' : 'none';
   }
 
-  // Вкладки секций
+  const placeholders: Record<string, string> = {
+    guides: 'Найти гайд...',
+    nft:    'Найти NFT предмет...',
+  };
+
   sectionBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       activeSection = btn.dataset.section ?? 'guides';
       sectionBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      searchInput.value = '';
+
+      if (activeSection === 'mechanics') {
+        setMechanicsMode(true);
+        return;
+      }
+
+      setMechanicsMode(false);
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.placeholder = placeholders[activeSection] ?? 'Найти...';
+      }
       searchQuery = '';
       updateCategoryButtons(activeSection);
       filterCards();
     });
   });
 
-  // Кнопка "Все" категорий
   categoryFilter?.querySelector('[data-cat="all"]')?.addEventListener('click', () => {
     activeCategory = 'all';
     categoryFilter?.querySelectorAll('.gc-tag-btn').forEach(b => b.classList.remove('active'));
@@ -196,7 +284,6 @@ const tagColors: Record<string, string> = {
     filterCards();
   });
 
-  // Поиск
   searchInput?.addEventListener('input', () => {
     searchQuery = searchInput.value.toLowerCase().trim();
     filterCards();
@@ -211,7 +298,41 @@ const tagColors: Record<string, string> = {
 .gc-guides-header { padding: 40px 0 24px; }
 .gc-guides-sub { font-size: 15px; color: var(--text-sec); margin-top: 6px; }
 
-.gc-section-tabs
+/* ── Вкладки ── */
+.gc-section-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  background: var(--card-bg);
+}
+.gc-section-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  font-family: var(--font-body);
+  transition: background 0.15s, border-color 0.15s;
+}
+.gc-section-tab:last-child { border-right: none; }
+.gc-section-tab:hover { background: var(--green-pale); }
+.gc-section-tab.active {
+  background: var(--green-pale);
+  border-bottom-color: var(--green-mid);
+}
+.gc-section-tab-icon { font-size: 22px; flex-shrink: 0; }
+.gc-section-tab-label { font-size: 14px; font-weight: 600; line-height: 1.3; }
+.gc-section-tab-sub { font-size: 11px; color: var(--green-mid); margin-top: 2px; }
+
 /* ── Поиск ── */
 .gc-search-wrap { margin-bottom: 16px; }
 .gc-search-input {
@@ -234,6 +355,41 @@ const tagColors: Record<string, string> = {
   box-shadow: 0 0 0 3px var(--green-pale);
 }
 .gc-search-input::placeholder { color: var(--text-sec); }
+
+/* ── Фильтр категорий ── */
+.gc-tag-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+:global(.gc-tag-btn) {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+:global(.gc-tag-btn:hover) {
+  background: var(--green-pale);
+  border-color: var(--green-mid);
+  color: var(--green-dark);
+}
+:global(.gc-tag-btn.active) {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: #fff;
+}
 
 /* ── Счётчик ── */
 .gc-guides-count { font-size: 12px; color: var(--text-ter); margin-bottom: 20px; }
@@ -294,12 +450,163 @@ const tagColors: Record<string, string> = {
 .gc-guide-card-time { font-size: 11px; color: var(--text-sec); }
 .gc-guide-card-desc { font-size: 12px; color: var(--text-sec); line-height: 1.5; }
 
+/* ═══════════════════════════════════════════════
+   МЕХАНИКИ: ДВУХПАНЕЛЬНЫЙ LAYOUT
+   ═══════════════════════════════════════════════ */
+.gc-mechanics-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 48px;
+}
+
+/* ── Левое меню ── */
+.gc-mech-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  position: sticky;
+  top: 20px;
+}
+.gc-mech-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.gc-mech-nav-item:last-child { border-bottom: none; }
+.gc-mech-nav-item:hover {
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.gc-mech-nav-item.active {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  font-weight: 600;
+  border-left: 3px solid var(--green-mid);
+}
+.gc-mech-nav-icon { font-size: 18px; flex-shrink: 0; }
+.gc-mech-nav-label { line-height: 1.3; }
+
+/* ── Правая панель ── */
+.gc-mech-content { flex: 1; min-width: 0; }
+.gc-mech-article { }
+
+/* Переиспользуем стили gc-guide-article из [id].astro через глобальные */
+.gc-mech-article :global(.gc-guide-article) {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 36px;
+  box-shadow: var(--shadow);
+}
+.gc-mech-article :global(h2) {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin: 32px 0 12px;
+  letter-spacing: -0.02em;
+}
+.gc-mech-article :global(h2:first-child) { margin-top: 0; }
+.gc-mech-article :global(h3) {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 24px 0 10px;
+}
+.gc-mech-article :global(p) {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.gc-mech-article :global(ul),
+.gc-mech-article :global(ol) {
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+.gc-mech-article :global(li) {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.gc-mech-article :global(blockquote) {
+  border-left: 3px solid var(--green-mid);
+  background: var(--green-pale);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin: 20px 0;
+}
+.gc-mech-article :global(blockquote p) {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+}
+.gc-mech-article :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.gc-mech-article :global(th) {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  font-weight: 700;
+  padding: 10px 14px;
+  text-align: left;
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+.gc-mech-article :global(td) {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.gc-mech-article :global(tbody tr:nth-child(even) td) {
+  background: var(--green-pale);
+}
+.gc-mech-article :global(strong) { font-weight: 700; }
+.gc-mech-article :global(code) {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+.gc-mech-article :global(hr) {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 28px 0;
+}
+
+/* ── Responsive ── */
 @media (max-width: 900px) {
   .gc-section-tabs { grid-template-columns: 1fr !important; }
   .gc-guides-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+  .gc-mechanics-layout { flex-direction: column; }
+  .gc-mech-sidebar { width: 100%; position: static; }
 }
 @media (max-width: 640px) {
   .gc-guides-grid { grid-template-columns: 1fr !important; }
   .gc-guides-header { padding: 24px 0 16px; }
+  .gc-mech-article :global(.gc-guide-article) { padding: 20px; }
 }
 </style>
