@@ -1,264 +1,343 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ChapterTimer from '../components/ChapterTimer.tsx';
 
+// ── RSS fetch ──
+const RSS_URL = 'https://blog.goblincodex.fun/data/rss';
+
+// Цвета тегов по категории
+const tagColors: Record<string, string> = {
+  'Стримы':      'purple',
+  'Обновление':  'blue',
+  'Гайд':        'green',
+  'Экономика':   'amber',
+  'Ивент':       'amber',
+  'Контент':     'green',
+};
+
+type NewsItem = {
+  title: string;
+  date: string;
+  tag: string;
+  tagColor: string;
+  link: string;
+  image: string;
+};
+
+let news: NewsItem[] = [];
+
+try {
+  const res  = await fetch(RSS_URL);
+  const xml  = await res.text();
+
+  // Парсим items из XML
+  const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
+
+  news = items.slice(0, 4).map(item => {
+    const title    = item.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.trim() ?? '';
+    const link     = item.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() ?? '#';
+    const pubDate  = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() ?? '';
+    const category = item.match(/<category>([\s\S]*?)<\/category>/)?.[1]?.trim() ?? 'Новость';
+    const image    = item.match(/media:content[^>]*url="([^"]+)"/)?.[1] ?? '';
+
+    // Форматируем дату
+    const date = pubDate
+      ? new Date(pubDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+      : '';
+
+    return {
+      title,
+      date,
+      tag: category,
+      tagColor: tagColors[category] ?? 'green',
+      link,
+      image,
+    };
+  });
+} catch (e) {
+  // Fallback если RSS недоступен
+  news = [
+    { title: 'Загрузка новостей...', date: '', tag: '', tagColor: 'green', link: '/news', image: '' },
+  ];
+}
+
+import { getCollection } from 'astro:content';
+
+const latestGuides = await getCollection('guides', ({ data }) => !data.draft);
+latestGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
+const guides = latestGuides.slice(0, 3).map(g => ({
+  title: g.data.title,
+  time:  `${g.data.readTime} мин`,
+  link:  `/guides/${g.id}`,
+  icon:  g.data.icon,
+}));
 ---
 
-<html lang="ru">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>GoblinCodex</title>
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-		<style>
-			* {
-				margin: 0;
-				padding: 0;
-				box-sizing: border-box;
-			}
+<BaseLayout currentPage="home" title="Главная — GoblinCodex">
 
-			html, body {
-				width: 100%;
-				height: 100%;
-			}
+  <!-- ── Hero ── -->
+  <section class="gc-hero gc-page-enter">
+    <div class="gc-hero-text">
+      <h1 class="gc-h1">
+        Всё о <em>Sunflower<br/>Land</em> — здесь
+      </h1>
+      <p class="gc-hero-desc">
+        Лаконичные гайды, актуальные новости, инструменты и база данных для фермеров SFL.
+      </p>
+      <div class="gc-hero-actions">
+        <a href="/guides" class="gc-btn-primary">📖 Быстрый старт</a>
+        <a href="/news" class="gc-btn-secondary">Что нового?</a>
+      </div>
+    </div>
+    <div class="gc-hero-art">
+      <div class="gc-farm-frame">
+        <img src="/images/UsualGoblin.png" alt="Гоблин фермер" class="gc-hero-img gc-hero-img--light" />
+        <img src="/images/UsualGoblinNight.png" alt="Гоблин фермер" class="gc-hero-img gc-hero-img--dark" />
+      </div>
+    </div>
+  </section>
 
-			body {
-				background-color: #2a2d45;
-				background-image: url('/images/bg.png');
-				background-size: cover;
-				background-attachment: fixed;
-				background-position: center;
-				min-height: 100vh;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				overflow: hidden;
-			}
+  <div class="gc-content">
 
-			.container {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				text-align: center;
-				gap: 20px;
-				max-width: 800px;
-				padding: 20px;
-			}
+    <!-- ── Блок главы + таймер ── -->
+    <div class="gc-chapter-block">
+      <div class="gc-chapter-banner">
+        <img src="/images/Chapter14.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--light" />
+        <img src="/images/Chapter14Night.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--dark" />
+      </div>
+      <div class="gc-chapter-timer">
+        <ChapterTimer client:load />
+        <a href="/news" class="gc-btn-cta">Узнать больше</a>
+      </div>
+    </div>
 
-			@keyframes fadeUp {
-				from {
-					opacity: 0;
-					transform: translateY(30px);
-				}
-				to {
-					opacity: 1;
-					transform: translateY(0);
-				}
-			}
+    <!-- ── 4 карточки разделов ── -->
+    <div class="gc-grid-4" style="margin-bottom: 40px;">
+      <a href="/guides" class="gc-card gc-card-hover gc-section-card">
+        <div class="gc-section-icon">📚</div>
+        <div>
+          <div class="gc-section-title">База знаний</div>
+          <div class="gc-section-desc">Гайды и разборы механик для всех уровней</div>
+        </div>
+      </a>
+      <a href="/news" class="gc-card gc-card-hover gc-section-card">
+        <div class="gc-section-icon">📰</div>
+        <div>
+          <div class="gc-section-title">Новости и обновления</div>
+          <div class="gc-section-desc">Будь в курсе последних изменений в SFL</div>
+        </div>
+      </a>
+      <a href="/tools" class="gc-card gc-card-hover gc-section-card">
+        <div class="gc-section-icon">🔧</div>
+        <div>
+          <div class="gc-section-title">Инструменты</div>
+          <div class="gc-section-desc">Калькуляторы и полезные утилиты</div>
+        </div>
+      </a>
+      <a href="/community" class="gc-card gc-card-hover gc-section-card">
+        <div class="gc-section-icon">👥</div>
+        <div>
+          <div class="gc-section-title">Сообщество</div>
+          <div class="gc-section-desc">База фермеров и чат нашей банды</div>
+        </div>
+      </a>
+    </div>
 
-			@keyframes swing {
-				0%, 100% {
-					transform: translateY(0px);
-				}
-				50% {
-					transform: translateY(-20px);
-				}
-			}
+    <!-- ── 3 колонки ── -->
+    <div class="gc-grid-3c" style="margin-bottom: 40px;">
 
-			@keyframes spin {
-				to {
-					transform: rotate(360deg);
-				}
-			}
+      <!-- Новости из RSS -->
+      <div class="gc-card" style="padding: 24px;">
+        <div class="gc-block-header">
+          <span class="gc-block-title">🔥 Что нового в SFL</span>
+          <a href="/news" class="gc-block-link">Все новости →</a>
+        </div>
+        <div class="gc-news-list">
+          {news.map(item => (
+            <a href={item.link} target="_blank" rel="noopener" class="gc-list-item gc-news-item">
+              <div class="gc-news-dot"></div>
+              <div>
+                <div class="gc-news-title">{item.title}</div>
+                <div class="gc-news-meta">
+                  {item.date}
+                  {item.tag && <span class={`gc-tag gc-tag--${item.tagColor}`}>{item.tag}</span>}
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
 
-			.goblin {
-				width: 338px;
-				animation: swing 2s ease-in-out infinite, fadeUp 0.8s ease-out 0.2s both;
-				margin-bottom: 10px;
-			}
+      <!-- Гайды -->
+      <div class="gc-card" style="padding: 24px;">
+        <div class="gc-block-header">
+          <span class="gc-block-title">📗 Последние гайды</span>
+          <a href="/guides" class="gc-block-link">Все гайды →</a>
+        </div>
+        <div>
+          {guides.map(guide => (
+            <a href={guide.link} class="gc-guide-item">
+              <div class="gc-guide-icon">{guide.icon}</div>
+              <div>
+                <div class="gc-guide-title">{guide.title}</div>
+                <div class="gc-guide-time">{guide.time}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
 
-			.title {
-				font-family: 'Press Start 2P', cursive;
-				font-size: 3rem;
-				color: #ffac31;
-				letter-spacing: 3px;
-				margin-bottom: 25px;
-				line-height: 1.2;
-				animation: fadeUp 0.8s ease-out 0.4s both;
-			}
+      <!-- Каналы -->
+      <div class="gc-card gc-channels-card" style="padding: 24px;">
+        <div class="gc-channels-header">
+          <span class="gc-channels-dot"></span>
+          <span class="gc-channels-title">Наши каналы</span>
+        </div>
+        <p class="gc-channels-sub">Подписывайся чтобы не пропускать обновления</p>
 
-			.spinner-container {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				margin-bottom: 30px;
-				height: 50px;
-				animation: fadeUp 0.8s ease-out 0.6s both;
-			}
+        <div class="gc-channel-item gc-channel-item--tg">
+          <div class="gc-channel-logo gc-channel-logo--tg">✈</div>
+          <div class="gc-channel-info">
+            <div class="gc-channel-name">Telegram канал</div>
+            <div class="gc-channel-desc">Новости, обновления, гайды</div>
+          </div>
+          <a href="https://t.me/URG" target="_blank" class="gc-channel-link gc-channel-link--tg">Подписаться →</a>
+        </div>
 
-			.spinner {
-				width: 50px;
-				height: 50px;
-				position: relative;
-				display: inline-block;
-				animation: spin 3s linear infinite;
-			}
+        <div class="gc-channel-item gc-channel-item--yt">
+          <div class="gc-channel-logo gc-channel-logo--yt">▶</div>
+          <div class="gc-channel-info">
+            <div class="gc-channel-name">YouTube</div>
+            <div class="gc-channel-desc">Видеогайды и разборы</div>
+          </div>
+          <a href="https://youtube.com" target="_blank" class="gc-channel-link gc-channel-link--yt">Подписаться →</a>
+        </div>
 
-			.spinner-dot {
-				position: absolute;
-				width: 6px;
-				height: 6px;
-				border-radius: 50%;
-				left: 50%;
-				top: 50%;
-				margin-left: -3px;
-				margin-top: -3px;
-			}
+        <div class="gc-channels-stats">
+          <div class="gc-stat-card">
+            <div class="gc-stat-icon">👥</div>
+            <div class="gc-stat-num">1 284</div>
+            <div class="gc-stat-label">подписчиков</div>
+          </div>
+          <div class="gc-stat-card">
+            <div class="gc-stat-icon">📝</div>
+            <div class="gc-stat-num">48</div>
+            <div class="gc-stat-label">статей</div>
+          </div>
+        </div>
+      </div>
 
-			.spinner-dot:nth-child(1) { background-color: #ffac31; transform: rotate(0deg) translateY(-17px); opacity: 1; }
-			.spinner-dot:nth-child(2) { background-color: #ffac31; transform: rotate(30deg) translateY(-17px); opacity: 0.95; }
-			.spinner-dot:nth-child(3) { background-color: #ffac31; transform: rotate(60deg) translateY(-17px); opacity: 0.9; }
-			.spinner-dot:nth-child(4) { background-color: #ffac31; transform: rotate(90deg) translateY(-17px); opacity: 0.85; }
-			.spinner-dot:nth-child(5) { background-color: #ffac31; transform: rotate(120deg) translateY(-17px); opacity: 0.8; }
-			.spinner-dot:nth-child(6) { background-color: #ffac31; transform: rotate(150deg) translateY(-17px); opacity: 0.75; }
-			.spinner-dot:nth-child(7) { background-color: #ffeed6; transform: rotate(180deg) translateY(-17px); opacity: 0.8; }
-			.spinner-dot:nth-child(8) { background-color: #ffeed6; transform: rotate(210deg) translateY(-17px); opacity: 0.85; }
-			.spinner-dot:nth-child(9) { background-color: #ffeed6; transform: rotate(240deg) translateY(-17px); opacity: 0.9; }
-			.spinner-dot:nth-child(10) { background-color: #ffeed6; transform: rotate(270deg) translateY(-17px); opacity: 0.95; }
-			.spinner-dot:nth-child(11) { background-color: #ffeed6; transform: rotate(300deg) translateY(-17px); opacity: 1; }
-			.spinner-dot:nth-child(12) { background-color: #ffeed6; transform: rotate(330deg) translateY(-17px); opacity: 0.9; }
+    </div>
 
-			.status-text {
-				color: #ffeed6;
-				font-size: 1.1rem;
-				font-family: Arial, sans-serif;
-				line-height: 1.8;
-				animation: fadeUp 0.8s ease-out 0.8s both;
-				letter-spacing: 0.5px;
-			}
+    <!-- ── CTA баннер ── -->
+    <div class="gc-cta-banner">
+      <div>
+        <div class="gc-cta-title">🌻 Присоединяйся к сообществу фермеров!</div>
+        <div class="gc-cta-desc">Общайся, делись опытом и развивай свою ферму вместе с нами</div>
+      </div>
+      <a href="https://t.me/URG" target="_blank" class="gc-btn-cta">Открыть чат →</a>
+    </div>
 
-			.divider {
-				width: 200px;
-				height: 1px;
-				background-color: #ffeed6;
-				margin: 15px auto;
-				animation: fadeUp 0.8s ease-out 1s both;
-			}
+  </div>
 
-			.subtext {
-				color: rgba(245, 190, 112, 0.84);
-				font-size: 1rem;
-				font-family: Arial, sans-serif;
-				animation: fadeUp 0.8s ease-out 1.1s both;
-				letter-spacing: 0.5px;
-			}
+</BaseLayout>
 
-			.button {
-				background-color: #6d3e8f;
-				color: #ffeed6;
-				border: 2px solid #ffeed6;
-				padding: 14px 40px;
-				border-radius: 40px;
-				font-size: 1rem;
-				font-family: Arial, sans-serif;
-				cursor: pointer;
-				transition: all 0.3s ease;
-				animation: fadeUp 0.8s ease-out 1.2s both;
-				margin-top: 15px;
-				font-weight: bold;
-				letter-spacing: 0.5px;
-				text-decoration: none;
-				display: inline-block;
-			}
+<style>
+.gc-hero-desc {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-sec);
+  margin-bottom: 28px;
+  max-width: 480px;
+}
+.gc-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.gc-hero-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+.gc-hero-img--dark { display: none; }
+:global([data-theme="dark"]) .gc-hero-img--light { display: none; }
+:global([data-theme="dark"]) .gc-hero-img--dark  { display: block; }
 
-			.button:hover {
-				background-color: #8b5bb5;
-				transform: scale(1.05);
-				box-shadow: 0 0 20px rgba(139, 91, 181, 0.5);
-			}
+:global(.gc-chapter-img) {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+}
+:global(.gc-chapter-img--dark)  { display: none; }
+:global([data-theme="dark"]) :global(.gc-chapter-img--light) { display: none; }
+:global([data-theme="dark"]) :global(.gc-chapter-img--dark)  { display: block; }
 
-			.button:active {
-				transform: scale(0.95);
-			}
+.gc-chapter-block {
+  position: relative;
+  margin-bottom: 32px;
+}
+.gc-chapter-banner {
+  width: 100%;
+  line-height: 0;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+  position: relative;
+  z-index: 2;
+}
+:global(.gc-chapter-timer) {
+  background: #5C3D1E;
+  border-radius: 14px;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 75%;
+  margin: -20px auto 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+:global(.gc-timer-row) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  padding-top: 10px;
+}
+:global(.gc-timer-label) {
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+}
+:global(.gc-timer-digits) {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  justify-content: center;
+}
+:global(.gc-timer-value) {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 28px;
+  color: #e8ece3;
+  letter-spacing: 3px;
+}
 
-			.buttons-group {
-				display: flex;
-				gap: 15px;
-				flex-wrap: wrap;
-				justify-content: center;
-				margin-top: 20px;
-			}
-
-			.button-github {
-				animation: fadeUp 0.8s ease-out 1.3s both;
-			}
-
-			.button-telegram {
-				animation: fadeUp 0.8s ease-out 1.4s both;
-			}
-
-			@media (max-width: 768px) {
-				.title {
-					font-size: 2rem;
-				}
-
-				.goblin {
-					width: 260px;
-				}
-
-				.status-text {
-					font-size: 1rem;
-				}
-
-				.subtext {
-					font-size: 0.9rem;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<div class="container">
-			<img src="/images/goblin.png" alt="Goblin" class="goblin" />
-
-			<h1 class="title">GoblinCodex</h1>
-
-			<div class="spinner-container">
-				<div class="spinner">
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-					<div class="spinner-dot"></div>
-				</div>
-			</div>
-
-			<div class="status-text">
-				<p>Гоблины заняты разработкой</p>
-				<p>Сайт находится в процессе создания</p>
-			</div>
-
-			<div class="divider"></div>
-
-			<div class="subtext">
-				<p>Скоро здесь будет что-то интересное</p>
-			</div>
-
-			<div class="buttons-group">
-				<button class="button" onclick="window.location.href='/donate'">Гоблину на кофе</button>
-				<a href="https://github.com/Dionis404/goblincodex" target="_blank" rel="noopener noreferrer" class="button button-github">GitHub</a>
-				<a href="https://t.me/URGSFL" target="_blank" rel="noopener noreferrer" class="button button-telegram">Telegram</a>
-			</div>
-		</div>
-	</body>
-</html>
+/* Новости — ссылки */
+.gc-news-item {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  transition: padding-left 0.15s;
+}
+.gc-news-item:hover { padding-left: 4px; }
+.gc-news-item:hover .gc-news-title { color: var(--green-dark); }
+</style>
