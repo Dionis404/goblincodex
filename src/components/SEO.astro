@@ -1,0 +1,56 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  image = '/og-default.png',
+  type = 'website',
+  noindex = false,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const imageURL = new URL(image, Astro.site);
+const siteName = 'GoblinCodex — гайды по Sunflower Land';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": type === 'article' ? 'Article' : 'WebSite',
+  "name": title,
+  "description": description,
+  "url": canonicalURL.toString(),
+  "image": imageURL.toString(),
+  "inLanguage": "ru",
+  "publisher": {
+    "@type": "Organization",
+    "name": "GoblinCodex",
+    "url": "https://goblincodex.fun"
+  }
+};
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={imageURL} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:locale" content="ru_RU" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageURL} />
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

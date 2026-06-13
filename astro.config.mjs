@@ -1,10 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import node from '@astrojs/node';
-
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
+  site: 'https://goblincodex.fun',
+
   adapter: node({
     mode: 'standalone'
   }),
@@ -14,5 +16,5 @@ export default defineConfig({
     port: 4321
   },
 
-  integrations: [react()]
+  integrations: [react(), sitemap()],
 });

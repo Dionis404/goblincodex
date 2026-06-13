@@ -28,7 +28,12 @@ const tagColors: Record<string, string> = {
 const tagColor = tagColors[guide.data.category] ?? 'green';
 ---
 
-<BaseLayout currentPage="guides" title={`${guide.data.title} — GoblinCodex`}>
+<BaseLayout
+  currentPage="guides"
+  title={`${guide.data.title} — GoblinCodex`}
+  description={guide.data.description ?? guide.data.title}
+  type="article"
+>
   <div class="gc-content gc-page-enter">
 
     <!-- Кнопка назад (сверху) -->
