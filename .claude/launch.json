@@ -5,7 +5,7 @@
       "name": "goblincodex",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 4323
+      "port": 4321
     }
   ]
 }

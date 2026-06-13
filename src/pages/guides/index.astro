@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
+import BoostsCatalog from '../../components/BoostsCatalog.tsx';
+import catalog from '../../data/boosts-catalog.json';
 
 const allGuides = await getCollection('guides', ({ data }) => !data.draft);
 allGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
@@ -59,7 +61,7 @@ const tagColors: Record<string, string> = {
       ))}
     </div>
 
-    <!-- Поиск (скрыт для механик) -->
+    <!-- Поиск (только для гайдов) -->
     <div class="gc-search-wrap" id="searchWrap">
       <input
         type="text"
@@ -70,15 +72,15 @@ const tagColors: Record<string, string> = {
       />
     </div>
 
-    <!-- Фильтр категорий (скрыт для механик) -->
+    <!-- Фильтр категорий (только для гайдов) -->
     <div class="gc-tag-filter" id="categoryFilter">
       <button class="gc-tag-btn active" data-cat="all">⚡ Все</button>
     </div>
 
-    <!-- Счётчик (скрыт для механик) -->
+    <!-- Счётчик (только для гайдов) -->
     <div class="gc-guides-count" id="guidesCount"></div>
 
-    <!-- Сетка гайдов (скрыта для механик) -->
+    <!-- Сетка гайдов -->
     <div class="gc-guides-grid" id="guidesGrid">
       {allGuides.map(guide => (
         <a
@@ -159,6 +161,17 @@ const tagColors: Record<string, string> = {
 
     </div>
 
+    <!-- ═══════════════════════════════════════════════
+         NFT КАТАЛОГ
+         ═══════════════════════════════════════════════ -->
+    <div id="nftPanel" style="display:none">
+      <div class="gc-boosts-hint">
+        <span class="gc-boosts-hint-icon">💡</span>
+        <span><strong>Как пользоваться:</strong> выбери тип ресурса → смотри какие NFT-предметы дают бонус к нему. Клик по карточке — подробности.</span>
+      </div>
+      <BoostsCatalog client:load items={catalog.items} />
+    </div>
+
   </div>
 </BaseLayout>
 
@@ -174,6 +187,7 @@ const tagColors: Record<string, string> = {
   const searchWrap     = document.getElementById('searchWrap');
   const guidesGrid     = document.getElementById('guidesGrid');
   const mechanicsPanel = document.getElementById('mechanicsPanel');
+  const nftPanel       = document.getElementById('nftPanel');
 
   // Механики: навигация по левому меню
   const mechNavItems  = document.querySelectorAll<HTMLButtonElement>('.gc-mech-nav-item');
@@ -194,14 +208,19 @@ const tagColors: Record<string, string> = {
   let activeCategory = 'all';
   let searchQuery    = '';
 
-  function setMechanicsMode(on: boolean) {
-    if (mechanicsPanel) mechanicsPanel.style.display = on ? 'flex' : 'none';
-    if (guidesGrid)     guidesGrid.style.display     = on ? 'none' : '';
-    if (searchWrap)     searchWrap.style.display      = on ? 'none' : '';
-    if (categoryFilter) (categoryFilter as HTMLElement).style.display = on ? 'none' : '';
-    if (countEl)        countEl.style.display         = on ? 'none' : '';
+  function showSection(section: string) {
+    const isGuides    = section === 'guides';
+    const isMechanics = section === 'mechanics';
+    const isNft       = section === 'nft';
+
+    if (guidesGrid)     guidesGrid.style.display     = isGuides ? '' : 'none';
+    if (searchWrap)     searchWrap.style.display      = isGuides ? '' : 'none';
+    if (categoryFilter) (categoryFilter as HTMLElement).style.display = isGuides ? '' : 'none';
+    if (countEl)        countEl.style.display         = isGuides ? '' : 'none';
     if (noResults)      noResults.style.display       = 'none';
     if (emptySection)   emptySection.style.display    = 'none';
+    if (mechanicsPanel) mechanicsPanel.style.display  = isMechanics ? 'flex' : 'none';
+    if (nftPanel)       nftPanel.style.display        = isNft ? '' : 'none';
   }
 
   function getCategories(section: string): string[] {
@@ -250,30 +269,23 @@ const tagColors: Record<string, string> = {
     if (emptySection) emptySection.style.display = totalInSection === 0 ? 'block' : 'none';
   }
 
-  const placeholders: Record<string, string> = {
-    guides: 'Найти гайд...',
-    nft:    'Найти NFT предмет...',
-  };
-
   sectionBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       activeSection = btn.dataset.section ?? 'guides';
       sectionBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      if (activeSection === 'mechanics') {
-        setMechanicsMode(true);
-        return;
-      }
+      showSection(activeSection);
 
-      setMechanicsMode(false);
-      if (searchInput) {
-        searchInput.value = '';
-        searchInput.placeholder = placeholders[activeSection] ?? 'Найти...';
+      if (activeSection === 'guides') {
+        if (searchInput) {
+          searchInput.value = '';
+          searchInput.placeholder = 'Найти гайд...';
+        }
+        searchQuery = '';
+        updateCategoryButtons(activeSection);
+        filterCards();
       }
-      searchQuery = '';
-      updateCategoryButtons(activeSection);
-      filterCards();
     });
   });
 
@@ -289,9 +301,20 @@ const tagColors: Record<string, string> = {
     filterCards();
   });
 
-  // Инициализация
-  updateCategoryButtons('guides');
-  filterCards();
+  // Инициализация: проверяем ?tab= параметр
+  const urlTab = new URLSearchParams(window.location.search).get('tab');
+  if (urlTab) {
+    const targetBtn = [...sectionBtns].find(b => b.dataset.section === urlTab);
+    if (targetBtn) {
+      targetBtn.click();
+    } else {
+      updateCategoryButtons('guides');
+      filterCards();
+    }
+  } else {
+    updateCategoryButtons('guides');
+    filterCards();
+  }
 </script>
 
 <style>
@@ -596,6 +619,24 @@ const tagColors: Record<string, string> = {
   border-top: 1px solid var(--border);
   margin: 28px 0;
 }
+
+/* ═══════════════════════════════════════════════
+   NFT КАТАЛОГ — ПОДСКАЗКА
+   ═══════════════════════════════════════════════ */
+.gc-boosts-hint {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--amber-pale);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.gc-boosts-hint-icon { font-size: 20px; flex-shrink: 0; }
 
 /* ── Responsive ── */
 @media (max-width: 900px) {

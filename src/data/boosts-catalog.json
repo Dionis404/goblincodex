@@ -1,0 +1,7198 @@
+{
+  "version": "auto",
+  "updatedAt": "2026-06-13T08:25:38Z",
+  "stats": {
+    "collectibles": 187,
+    "wearables": 125,
+    "total": 312,
+    "withSprite": 303
+  },
+  "items": [
+    {
+      "name": "Alien Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "A peculiar chicken from another galaxy, here to boost your feather production!",
+        "ru": "Необычная курица из другой галактики поможет тебе увеличить производство перьев!"
+      },
+      "boosts": [
+        {
+          "key": "description.alien.chicken.boost",
+          "en": "+0.1 Feathers",
+          "ru": "+0.1 перо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/alien_chicken.webp",
+      "tokenId": 2162
+    },
+    {
+      "name": "Ancient Tree",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.ancientTree.buff",
+          "en": "+0.5 Wood",
+          "ru": "+0.5 древесина",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": null,
+      "tokenId": 2702
+    },
+    {
+      "name": "Anemone Flower",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.anemoneFlower.boost",
+          "en": "+1 Fishing minigame attempt",
+          "ru": "+1 бесплатная попытка в мини-игре на рыбалке",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "sfts/anemone_flower.webp",
+      "tokenId": 2539
+    },
+    {
+      "name": "Apprentice Beaver",
+      "type": "collectible",
+      "description": {
+        "en": "Trees recover 50% faster",
+        "ru": "Деревья восстанавливаются на 50% быстрее"
+      },
+      "boosts": [
+        {
+          "key": "description.woody.beaver.boost",
+          "en": "+20% Wood",
+          "ru": "+20% к древесине",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        },
+        {
+          "key": "description.apprentice.beaver.boost",
+          "en": "-50% Tree Recovery Time",
+          "ru": "-50% времени восстановления деревьев",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        },
+        {
+          "key": "description.apprentice.beaver.warning",
+          "en": "Disabled if Foreman Beaver Active",
+          "ru": "Не работает, если Foreman Beaver активен",
+          "type": "danger",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/apprentice_beaver.gif",
+      "tokenId": 416
+    },
+    {
+      "name": "Astronaut Sheep",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.astronautSheep.boost",
+          "en": "+0.1 Wool",
+          "ru": "+0.1 шерсть",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/sheep_astronaut.webp",
+      "tokenId": 2532
+    },
+    {
+      "name": "Autumn Guardian",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.autumnGuardian.boost",
+          "en": "Autumn Disaster Protection",
+          "ru": "Защита от осенних бедствий",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        },
+        {
+          "key": "description.autumnGuardian.boost2",
+          "en": "Blessed Autumn Events",
+          "ru": "Благословенные осенние события",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/autumn_guardian.webp",
+      "tokenId": 2264
+    },
+    {
+      "name": "Ayam Cemani",
+      "type": "collectible",
+      "description": {
+        "en": "The rarest chicken in Sunflower Land!",
+        "ru": "Самая редкая курица в Sunflower Land!"
+      },
+      "boosts": [
+        {
+          "key": "description.ayam.cemani.boost",
+          "en": "+0.2 Egg",
+          "ru": "+0.2 яйцо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/ayam_cemani.webp",
+      "tokenId": 445
+    },
+    {
+      "name": "Baby Cow",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.babyCow.boost",
+          "en": "+10 cow xp from animal affection tools",
+          "ru": "+10 опыта коровам от инструментов для ухода",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/baby_cow.webp",
+      "tokenId": 2525
+    },
+    {
+      "name": "Badger Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.badgerShrine.buff",
+          "en": "-25% Tree Recovery Time",
+          "ru": "-25% времени восстановления дерева",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        },
+        {
+          "key": "description.badgerShrine.buff.2",
+          "en": "-25% Stone Recovery Time",
+          "ru": "-25% времени восстановления камня",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "stone"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/badger_shrine.webp",
+      "tokenId": 2663
+    },
+    {
+      "name": "Banana Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "A chicken that boosts bananas. What a world we live in.",
+        "ru": "Курица, которая повышает урожай бананов. В каком мире мы живем."
+      },
+      "boosts": [
+        {
+          "key": "description.banana.chicken.boost",
+          "en": "+0.1 Banana",
+          "ru": "+0.1 банан",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/banana_chicken.webp",
+      "tokenId": 488
+    },
+    {
+      "name": "Bantam Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.bantamShrine.buff",
+          "en": "-25% Chicken Sleep Time",
+          "ru": "-25% времени сна куриц",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        },
+        {
+          "key": "description.bantamShrine.buff.2",
+          "en": "-5% Feed to feed chickens",
+          "ru": "-5% корма для кур",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/bantam_shrine.webp",
+      "tokenId": 2664
+    },
+    {
+      "name": "Barn Blueprint",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.barnBlueprint.boost1",
+          "en": "+5 Base Barn Animals",
+          "ru": "+5 животных в базовом амбаре",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        },
+        {
+          "key": "description.barnBlueprint.boost2",
+          "en": "+5 Max Barn Animals per Upgrade",
+          "ru": "Максимальное количество животных в амбаре: +5 за каждое улучшение",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/barn_blueprint.webp",
+      "tokenId": 2194
+    },
+    {
+      "name": "Basic Scarecrow",
+      "type": "collectible",
+      "description": {
+        "en": "Boost nearby Basic Crops.",
+        "ru": "Укрепляйте близлежащие основные культуры."
+      },
+      "boosts": [
+        {
+          "key": "description.basic.scarecrow.boost.skill",
+          "en": "-30% Basic Crops Growth Time",
+          "ru": "-30% времени роста базовых культур",
+          "type": "info",
+          "withSkill": true,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.basic.scarecrow.boost",
+          "en": "-20% Basic Crops Growth Time",
+          "ru": "-20% времени роста базовых культур",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.basic.scarecrow.boost.aoe.skill",
+          "en": "Area of Effect (7x7) below",
+          "ru": "Область действия (7x7) ниже",
+          "type": "success",
+          "withSkill": true,
+          "resource": []
+        },
+        {
+          "key": "description.basic.scarecrow.boost.aoe",
+          "en": "Area of Effect (3x3) below",
+          "ru": "Область действия (3x3) ниже",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/aoe/basic_scarecrow.png",
+      "tokenId": 462
+    },
+    {
+      "name": "Battle Fish",
+      "type": "collectible",
+      "description": {
+        "en": "The rare armored swimmer of faction season!",
+        "ru": "Редчайший бронированный пловец из сезона фракций!"
+      },
+      "boosts": [
+        {
+          "key": "description.battle.fish.boost",
+          "en": "+0.05 Oil",
+          "ru": "+0.05 нефть",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "oil"
+          ]
+        }
+      ],
+      "sprite": "fish/battle_fish.webp",
+      "tokenId": 1538
+    },
+    {
+      "name": "Bear Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.bearShrine.buff",
+          "en": "+0.5 Honey Production Speed",
+          "ru": "+0.5 к скорости производства мёда",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "honey"
+          ]
+        },
+        {
+          "key": "description.bearShrine.buff.2",
+          "en": "+20% chance of bee swarm",
+          "ru": "+20% к шансу появления пчелиного роя",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/shrines/bear_shrine.webp",
+      "tokenId": 2656
+    },
+    {
+      "name": "Black Bearry",
+      "type": "collectible",
+      "description": {
+        "en": "His favorite treat - plump, juicy blueberries. Gobbles them up by the handful!",
+        "ru": "Его любимое лакомство - пухлая, сочная голубика. Съедает её горстями!"
+      },
+      "boosts": [
+        {
+          "key": "description.black.bearry.boost",
+          "en": "+1 Blueberry",
+          "ru": "+1 черника",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/black_bear.gif",
+      "tokenId": 444
+    },
+    {
+      "name": "Blossom Hourglass",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.blossom.hourglass.boost",
+          "en": "-25% Flower Growth Time",
+          "ru": "-25% времени роста цветов",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "flower"
+          ]
+        }
+      ],
+      "sprite": "factions/boosts/flower_boost_full.webp",
+      "tokenId": 2076
+    },
+    {
+      "name": "Boar Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.boarShrine.buff",
+          "en": "-20% Cooking Time",
+          "ru": "-20% времени готовки",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/boar_shrine.webp",
+      "tokenId": 2651
+    },
+    {
+      "name": "Cabbage Boy",
+      "type": "collectible",
+      "description": {
+        "en": "Don't wake the baby!",
+        "ru": "Не разбуди ребенка!"
+      },
+      "boosts": [
+        {
+          "key": "description.cabbage.boy.boost.boosted",
+          "en": "+0.5 Cabbage (Cabbage Girl boost)",
+          "ru": "+0.5 капуста с Cabbage Girl",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.cabbage.boy.boost",
+          "en": "+0.25 Cabbage",
+          "ru": "+0.25 капуста",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/cabbage_boy.gif",
+      "tokenId": 434
+    },
+    {
+      "name": "Cabbage Girl",
+      "type": "collectible",
+      "description": {
+        "en": "Shhh it's sleeping",
+        "ru": "Тссс, она спит"
+      },
+      "boosts": [
+        {
+          "key": "description.cabbage.girl.boost",
+          "en": "-50% Cabbage Plot Growth Time",
+          "ru": "-50% времени роста капусты на грядках",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/cabbage_girl.gif",
+      "tokenId": 435
+    },
+    {
+      "name": "Carrot Sword",
+      "type": "collectible",
+      "description": {
+        "en": "Increase chance of a mutant crop appearing",
+        "ru": "Увеличивает шанс на появление растений-мутантов"
+      },
+      "boosts": [
+        {
+          "key": "description.carrot.sword.boost",
+          "en": "4x Chance of Mutant Crop",
+          "ru": "4x шанс выпадения мутанта с волшебного боба",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/carrot_sword.png",
+      "tokenId": 419
+    },
+    {
+      "name": "Chicken Coop",
+      "type": "collectible",
+      "description": {
+        "en": "A chicken coop that can be used to raise chickens. Increase egg production with this rare coop.",
+        "ru": "Курятник, в котором можно выращивать цыплят. Увеличьте яйценоскость с помощью этого редкого курятника."
+      },
+      "boosts": [
+        {
+          "key": "description.chicken.coop.boost",
+          "en": "+1 Egg",
+          "ru": "+1 яйцо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        },
+        {
+          "key": "description.chicken.coop.boost.two",
+          "en": "+5 Base Chickens",
+          "ru": "+5 куриц в курятнике",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        },
+        {
+          "key": "description.chicken.coop.boost.three",
+          "en": "+5 Max Chickens per Hen House Upgrade",
+          "ru": "+5 куриц в курятнике за каждое улучшение",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/chicken_coop.png",
+      "tokenId": 408
+    },
+    {
+      "name": "Christmas Tree",
+      "type": "collectible",
+      "description": {
+        "en": "Receive a Santa Airdrop on Christmas day",
+        "ru": "Получает подарок от Санты на Рождество"
+      },
+      "boosts": [
+        {
+          "key": "description.christmas.festive.tree.boost",
+          "en": "Free Gift at Christmas",
+          "ru": "Бесплатный подарок на рождество",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/christmas_tree.png",
+      "tokenId": 403
+    },
+    {
+      "name": "Collie Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.collieShrine.buff",
+          "en": "-25% Cow Sleep Time",
+          "ru": "-25% времени сна коров",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        },
+        {
+          "key": "description.collieShrine.buff.2",
+          "en": "-25% Sheep Sleep Time",
+          "ru": "-25% времени сна овец",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        },
+        {
+          "key": "description.collieShrine.buff.3",
+          "en": "-5% Feed to feed barn animals",
+          "ru": "-5% корма для животных в амбаре",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/collie_shrine.webp",
+      "tokenId": 2662
+    },
+    {
+      "name": "Crab House",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.crabHouse.boost",
+          "en": "+2 Crustacean yield",
+          "ru": "+2 к улову ракообразных",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/crab_house.webp",
+      "tokenId": 2994
+    },
+    {
+      "name": "Crim Peckster",
+      "type": "collectible",
+      "description": {
+        "en": "A gem detective with a knack for unearthing Crimstones.",
+        "ru": "Талантливый детектив со сноровкой на кримстоуны."
+      },
+      "boosts": [
+        {
+          "key": "description.crim.peckster.boost",
+          "en": "+0.1 Crimstone",
+          "ru": "+0.1 кримстоун",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crimstone"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/crim_peckster.png",
+      "tokenId": 494
+    },
+    {
+      "name": "Crimson Carp",
+      "type": "collectible",
+      "description": {
+        "en": "A rare, vibrant jewel of the Spring waters.",
+        "ru": "Редкая и яркая драгоценность весенних вод."
+      },
+      "boosts": [
+        {
+          "key": "description.crimson.carp.boost",
+          "en": "+0.05 Crimstone",
+          "ru": "+0.05 кримстоун",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crimstone"
+          ]
+        }
+      ],
+      "sprite": "fish/crimson_carp.png",
+      "tokenId": 1537
+    },
+    {
+      "name": "Crimstone Clam",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.crimstoneClam.boost",
+          "en": "-10% Crimstone recovery time",
+          "ru": "-10% времени восстановления кримстоуна",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crimstone"
+          ]
+        },
+        {
+          "key": "description.crimstoneClam.boost.two",
+          "en": "10% chance for Crimstone to recover instantly",
+          "ru": "10% шанс мгновенного восстановления кримстоуна",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crimstone"
+          ]
+        }
+      ],
+      "sprite": "sfts/crimstone_clam.webp",
+      "tokenId": 2828
+    },
+    {
+      "name": "Crystal Altar",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.crystalAltar.boost",
+          "en": "-5% Crab Pot & Mariner Pot time",
+          "ru": "-5% времени ловли ракообразных",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "monuments/crystal_altar_3.webp",
+      "tokenId": 3017
+    },
+    {
+      "name": "Deep Sea Slug",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.deepSeaSlug.boost",
+          "en": "+5 daily fishing reels",
+          "ru": "+5 ежедневных попыток рыбалки",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        },
+        {
+          "key": "description.deepSeaSlug.boost.2",
+          "en": "+1 Worm from Composting",
+          "ru": "+1 червь с компоста",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "fish/deep_sea_slug.webp",
+      "tokenId": 3001
+    },
+    {
+      "name": "Desert Gnome",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.desertgnome.boost",
+          "en": "-10% Cooking Time",
+          "ru": "-10% времени готовки",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "sfts/desert_gnome.webp",
+      "tokenId": 2017
+    },
+    {
+      "name": "Desert Rose",
+      "type": "collectible",
+      "description": {
+        "en": "A mutant flower that can be found during the Pharaoh's Treasure season.",
+        "ru": "Цветок-мутант, который можно найти во время сезона «Сокровища фараона»."
+      },
+      "boosts": [
+        {
+          "key": "description.desert.rose.boost",
+          "en": "10% Chance for +1 Flower",
+          "ru": "10% шанс получить +1 цветок",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        }
+      ],
+      "sprite": "sfts/desert_rose.webp",
+      "tokenId": 2100
+    },
+    {
+      "name": "Dino Egg Trophy",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "dinoEggTrophy.boost.description",
+          "en": "Speed up with Coins instead of Gems (50 Coins/Gem, up to 20,000 Coins/day).",
+          "ru": "Ускоряй за монеты вместо гемов (50 монет/гем, до 20 000 монет в день).",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/dino_egg_trophy.webp",
+      "tokenId": 3018
+    },
+    {
+      "name": "Dr Cow",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.drCow.boost",
+          "en": "5% less feeding cost for cows",
+          "ru": "-5% корма для коров",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/dr_cow.webp",
+      "tokenId": 2256
+    },
+    {
+      "name": "Easter Bunny",
+      "type": "collectible",
+      "description": {
+        "en": "Earn 20% more Carrots",
+        "ru": "Приносит на 20% больше моркови"
+      },
+      "boosts": [
+        {
+          "key": "description.easter.bunny.boost",
+          "en": "+20% Carrot",
+          "ru": "+20% к моркови",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/easter/easter_bunny.gif",
+      "tokenId": 909
+    },
+    {
+      "name": "El Pollo Veloz",
+      "type": "collectible",
+      "description": {
+        "en": "Your chickens will lay eggs 2 hours faster!",
+        "ru": "Курицы несут яйца быстрее - на целых 2 часа!"
+      },
+      "boosts": [
+        {
+          "key": "description.el.pollo.veloz.boost",
+          "en": "-2h Chicken Sleep Time",
+          "ru": "-2 часа времени сна куриц",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/el_pollo_veloz.webp",
+      "tokenId": 470
+    },
+    {
+      "name": "Emerald Turtle",
+      "type": "collectible",
+      "description": {
+        "en": "The Emerald Turtle gives +0.5 to any minerals you mine within its Area of Effect.",
+        "ru": "Emerald Turtle добавляет +0.5 к минералам при добыче в области её действия."
+      },
+      "boosts": [
+        {
+          "key": "description.emerald.turtle.boost",
+          "en": "+0.5 Stone, Iron, Gold (AOE 3x3)",
+          "ru": "+0.5 камень, железо, золото (область 3x3)",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "stone",
+            "gold",
+            "iron"
+          ]
+        },
+        {
+          "key": "description.turtle.boost.aoe",
+          "en": "Affects plots around (3x3)",
+          "ru": "Влияет на грядки вокруг (3x3)",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/aoe/emerald_turtle.webp",
+      "tokenId": 463
+    },
+    {
+      "name": "Fairy Circle",
+      "type": "collectible",
+      "description": {
+        "en": "Circle of fairy mushrooms.",
+        "ru": "Круг сказочных грибов."
+      },
+      "boosts": [
+        {
+          "key": "description.fairy.circle.boost",
+          "en": "+0.2 Wild Mushroom",
+          "ru": "+0.2 дикий гриб",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/fairy_circle.webp",
+      "tokenId": 2132
+    },
+    {
+      "name": "Farm Dog",
+      "type": "collectible",
+      "description": {
+        "en": "Herd sheep with your farm dog",
+        "ru": "Паси овец вместе со своим фермерским песиком"
+      },
+      "boosts": [
+        {
+          "key": "description.farm.dog.boost",
+          "en": "-25% Sheep Sleep Time",
+          "ru": "-25% времени сна овец",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/farm_dog.webp",
+      "tokenId": 406
+    },
+    {
+      "name": "Farmer's Monument",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.monument.buff",
+          "en": "+1 Help Limit",
+          "ru": "+1 лимит помощи",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "monuments/shovel_monument.webp",
+      "tokenId": 2284
+    },
+    {
+      "name": "Fat Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "Your chickens will now require 10% less food each time they are fed.",
+        "ru": "Теперь твои курицы будут просить на 10% меньше еды."
+      },
+      "boosts": [
+        {
+          "key": "description.fat.chicken.boost",
+          "en": "-10% Feed to Chicken",
+          "ru": "-10% корма для куриц",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/fat_chicken.webp",
+      "tokenId": 611
+    },
+    {
+      "name": "Festive Tree",
+      "type": "collectible",
+      "description": {
+        "en": "A festive tree that can be attained each festive season. I wonder if it is big enough for santa to see?",
+        "ru": "Праздничное дерево, которое можно собрать в любой праздничный сезон. Интересно, достаточно ли оно велико, чтобы его мог увидеть Санта?"
+      },
+      "boosts": [
+        {
+          "key": "description.christmas.festive.tree.boost",
+          "en": "Free Gift at Christmas",
+          "ru": "Бесплатный подарок на рождество",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/festive_tree.png",
+      "tokenId": 1299
+    },
+    {
+      "name": "Fisher's Hourglass",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.fishers.hourglass.boost",
+          "en": "50% Chance of +1 Fish",
+          "ru": "Вероятность получения +1 рыбы: 50%",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "factions/boosts/fish_boost_full.webp",
+      "tokenId": 2077
+    },
+    {
+      "name": "Flamingo Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.flamingoChicken.boost",
+          "en": "-2.5% Chicken Sleep Time",
+          "ru": "-2.5% времени сна кур",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/flamingo_chicken.webp",
+      "tokenId": 2996
+    },
+    {
+      "name": "Flower Fox",
+      "type": "collectible",
+      "description": {
+        "en": "The Flower Fox, a playful creature adorned with petals, brings joy to the garden.",
+        "ru": "Цветочная лиса, игривое существо, украшенное лепестками, приносит в сад радость."
+      },
+      "boosts": [
+        {
+          "key": "description.flower.fox.boost",
+          "en": "-10% Flower Growth Time",
+          "ru": "-10% времени роста цветов",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "flower"
+          ]
+        }
+      ],
+      "sprite": "sfts/flower_fox.webp",
+      "tokenId": 492
+    },
+    {
+      "name": "Foreman Beaver",
+      "type": "collectible",
+      "description": {
+        "en": "Cut trees without axes",
+        "ru": "Рубит деревья без топоров"
+      },
+      "boosts": [
+        {
+          "key": "description.woody.beaver.boost",
+          "en": "+20% Wood",
+          "ru": "+20% к древесине",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        },
+        {
+          "key": "description.apprentice.beaver.boost",
+          "en": "-50% Tree Recovery Time",
+          "ru": "-50% времени восстановления деревьев",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        },
+        {
+          "key": "description.foreman.beaver.boost",
+          "en": "Chop Trees without Axes",
+          "ru": "Деревья рубятся без использования топоров",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": "sfts/construction_beaver.gif",
+      "tokenId": 417
+    },
+    {
+      "name": "Fox Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.foxShrine.buff",
+          "en": "-25% Crafting Box Time",
+          "ru": "-25% времени крафта в мастерской",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        },
+        {
+          "key": "description.foxShrine.buff.2",
+          "en": "10% chance to instantly craft a recipe",
+          "ru": "10% шанс мгновенно скрафтить рецепт",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/shrines/fox_shrine.webp",
+      "tokenId": 2650
+    },
+    {
+      "name": "Freya Fox",
+      "type": "collectible",
+      "description": {
+        "en": "Enchanting guardian, boosts pumpkin growth with her mystical charm. Harvest abundant pumpkins under her watchful gaze.",
+        "ru": "Очаровательная хранительница, своим мистическим шармом увеличивающая скорость роста тыквы. Собери много урожая под ее пристальным взглядом."
+      },
+      "boosts": [
+        {
+          "key": "description.freya.fox.boost",
+          "en": "+0.5 Pumpkin",
+          "ru": "+0.5 тыква",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/freya_fox.png",
+      "tokenId": 469
+    },
+    {
+      "name": "Frozen Cow",
+      "type": "collectible",
+      "description": {
+        "en": "A cow that has been frozen solid by the winter winds.",
+        "ru": "Корова, промёрзшая до костей под холодными зимними ветрами."
+      },
+      "boosts": [
+        {
+          "key": "description.frozen.cow.boost",
+          "en": "Cows cannot get sick during winter",
+          "ru": "Зимой коровы не болеют",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/frozen_mutant_cow.webp",
+      "tokenId": 2199
+    },
+    {
+      "name": "Frozen Sheep",
+      "type": "collectible",
+      "description": {
+        "en": "A sheep that has been frozen solid by the winter winds.",
+        "ru": "Овца, промёрзшая до костей под холодными зимними ветрами."
+      },
+      "boosts": [
+        {
+          "key": "description.frozen.sheep.boost",
+          "en": "Sheep cannot get sick during winter",
+          "ru": "Зимой овцы не болеют",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/frozen_mutant_sheep.webp",
+      "tokenId": 2200
+    },
+    {
+      "name": "Fruit Tune Box",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.fruitTuneBox.boost",
+          "en": "-20% Fruit Patch Growth Time",
+          "ru": "-20% времени роста на фруктовых грядках",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/fruit_tune_box.webp",
+      "tokenId": 2301
+    },
+    {
+      "name": "Fused Stone Rock",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.fusedStoneRock.buff",
+          "en": "+0.5 Stone",
+          "ru": "+0.5 камень",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "stone"
+          ]
+        }
+      ],
+      "sprite": null,
+      "tokenId": 2700
+    },
+    {
+      "name": "Genie Lamp",
+      "type": "collectible",
+      "description": {
+        "en": "A magical lamp that contains a genie who will grant you three wishes and burn the lamp after the third wish. Wish list: Genie Bear, Pirate Bounty, Pearl, Bumpkin Roast, Goblin Brunch and Sand Drill x10",
+        "ru": "Волшебная лампа с джинном внутри. Он исполнит три твоих желания, а после третьего сожжёт лампу. Список желаний: Genie Bear, пиратская добыча, жемчуг, бампкинское жаркое, гоблинский бранч и песчаный бур x10"
+      },
+      "boosts": [
+        {
+          "key": "description.genie.lamp.boost",
+          "en": "Grants 3 Wishes from the Wish list",
+          "ru": "Исполняет 3 желания из списка желаний",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/genie_lamp.png",
+      "tokenId": 460
+    },
+    {
+      "name": "Giant Artichoke",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.giantArtichoke.boost",
+          "en": "+2 Artichokes",
+          "ru": "+2 артишок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/giant_artichoke.webp",
+      "tokenId": 2303
+    },
+    {
+      "name": "Giant Gold Bone",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.giantGoldBone.buff",
+          "en": "+2 Daily Cheers",
+          "ru": "+2 ежедневных жетона поддержки",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/giant_gold_bone.webp",
+      "tokenId": 2713
+    },
+    {
+      "name": "Giant Kale",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.giantKale.boost",
+          "en": "+2 Kale",
+          "ru": "+2 кейл",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/giant_kale.webp",
+      "tokenId": 2272
+    },
+    {
+      "name": "Giant Onion",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.giantOnion.boost",
+          "en": "+3 Onions",
+          "ru": "+3 лук",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/giant_onion.webp",
+      "tokenId": 2307
+    },
+    {
+      "name": "Giant Turnip",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.giantTurnip.boost",
+          "en": "-50% Turnip Growth Time",
+          "ru": "-50% времени роста репы",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/giant_turnip.webp",
+      "tokenId": 2308
+    },
+    {
+      "name": "Giant Yam",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.giantYam.boost",
+          "en": "+0.5 Yams",
+          "ru": "+0.5 ямс",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/giant_yam.webp",
+      "tokenId": 2268
+    },
+    {
+      "name": "Giant Zucchini",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.giantZucchini.boost",
+          "en": "-50% Zucchini Plot Growth Time",
+          "ru": "-50% времени роста цукини на грядках",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/giant_zucchini.webp",
+      "tokenId": 2270
+    },
+    {
+      "name": "Gilded Swordfish",
+      "type": "collectible",
+      "description": {
+        "en": "A swordfish with scales that sparkle like gold, the ultimate catch!",
+        "ru": "Рыба-меч с чешуей, сверкающей, как золото. Лучший улов!"
+      },
+      "boosts": [
+        {
+          "key": "description.boost.gilded.swordfish",
+          "en": "+0.1 Gold",
+          "ru": "+0.1 золото",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "gold"
+          ]
+        }
+      ],
+      "sprite": "fish/gilded_swordfish.png",
+      "tokenId": 1532
+    },
+    {
+      "name": "Gold Beetle",
+      "type": "collectible",
+      "description": {
+        "en": "Beetle made of gold.",
+        "ru": "Жук, сделанный из золота."
+      },
+      "boosts": [
+        {
+          "key": "description.gold.beetle.boost",
+          "en": "+0.1 Gold",
+          "ru": "+0.1 золото",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "gold"
+          ]
+        }
+      ],
+      "sprite": "sfts/gold_beetle.webp",
+      "tokenId": 2131
+    },
+    {
+      "name": "Gold Egg",
+      "type": "collectible",
+      "description": {
+        "en": "A golden egg. What lays inside is known to be the bearer of good fortune.",
+        "ru": "Золотое яйцо. Известно, что то, что лежит внутри, приносит удачу."
+      },
+      "boosts": [
+        {
+          "key": "description.gold.egg.boost",
+          "en": "Feed Chickens for free",
+          "ru": "Бесплатное кормление куриц",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/gold_egg.png",
+      "tokenId": 409
+    },
+    {
+      "name": "Golden Cauliflower",
+      "type": "collectible",
+      "description": {
+        "en": "Doubles cauliflower yield",
+        "ru": "Удваивает урожай с цветной капусты"
+      },
+      "boosts": [
+        {
+          "key": "description.golden.cauliflower.boost",
+          "en": "+100% Cauliflower",
+          "ru": "+100% к цветной капусте",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/golden_cauliflower.webp",
+      "tokenId": 410
+    },
+    {
+      "name": "Golden Cow",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.golden.cow.boost",
+          "en": "Feed cows for free!",
+          "ru": "Корми коров бесплатно!",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/golden_cow.webp",
+      "tokenId": 2178
+    },
+    {
+      "name": "Golden Sheep",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.goldenSheep.boost",
+          "en": "Feed Sheeps for free!",
+          "ru": "Корми овец бесплатно!",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/golden_sheep.webp",
+      "tokenId": 2193
+    },
+    {
+      "name": "Gourmet Hourglass",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.gourmet.hourglass.boost",
+          "en": "-50% Cooking Time",
+          "ru": "-50% времени готовки",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "factions/boosts/cooking_boost_full.webp",
+      "tokenId": 2071
+    },
+    {
+      "name": "Grain Grinder",
+      "type": "collectible",
+      "description": {
+        "en": "Grind your grain and experience a delectable surge in Bumpkin XP from Cakes.",
+        "ru": "Перемалывай зерно и получай вкусный прирост опыта для бампкина от тортов."
+      },
+      "boosts": [
+        {
+          "key": "description.grain.grinder.boost",
+          "en": "+20% Bumpkin XP from Cakes",
+          "ru": "+20% к опыту бампкина с тортов",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/grain_grinder.png",
+      "tokenId": 472
+    },
+    {
+      "name": "Grape Granny",
+      "type": "collectible",
+      "description": {
+        "en": "Wise matriarch nurturing grapes to flourish with +1 yield.",
+        "ru": "Мудрая матушка выращивает виноград так, чтобы он процветал и давал +1 к урожаю.."
+      },
+      "boosts": [
+        {
+          "key": "description.grape.granny.boost",
+          "en": "+1 Grape",
+          "ru": "+1 виноград",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/grape_granny.webp",
+      "tokenId": 497
+    },
+    {
+      "name": "Greenhouse Glow",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.greenhouse.glow.boost",
+          "en": "-20% Greenhouse Pot Growth Time",
+          "ru": "-20% времени роста в теплице",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "icons/greenhouse_glow.webp",
+      "tokenId": 2982
+    },
+    {
+      "name": "Greenhouse Goodie",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.greenhouse.goodie.boost",
+          "en": "+0.2 Greenhouse Produce Yield",
+          "ru": "+0.2 к урожаю в теплице",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "icons/greenhouse_goodie.webp",
+      "tokenId": 2983
+    },
+    {
+      "name": "Grinx's Hammer",
+      "type": "collectible",
+      "description": {
+        "en": "The magical hammer from Grinx, the legendary Goblin Blacksmith.",
+        "ru": "Волшебный молот от Гринкса, легендарного кузнеца-гоблина."
+      },
+      "boosts": [
+        {
+          "key": "description.grinxs.hammer.boost",
+          "en": "Halves expansion costs",
+          "ru": "Снижает стоимость расширений вдвое",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/grinx_hammer.png",
+      "tokenId": 489
+    },
+    {
+      "name": "Groovy Gramophone",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.groovy.gramophone.boost",
+          "en": "-50% Growth Time in Crop Machine",
+          "ru": "-50% времени роста в агромашине",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/groovy_gramophone.webp",
+      "tokenId": 2309
+    },
+    {
+      "name": "Harvest Hourglass",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.harvest.hourglass.boost",
+          "en": "-25% Crop Growth Time",
+          "ru": "-25% времени роста растений",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "factions/boosts/crop_boost_full.webp",
+      "tokenId": 2072
+    },
+    {
+      "name": "Heart of Davy Jones",
+      "type": "collectible",
+      "description": {
+        "en": "Whoever possesses it holds immense power over the seven seas, can dig for treasure without tiring",
+        "ru": "Тот, кто владеет этим, обладает огромной властью над семью морями, может без устали копать сокровища"
+      },
+      "boosts": [
+        {
+          "key": "description.heart.of.davy.jones.boost",
+          "en": "+20 daily Desert Dig attempts",
+          "ru": "+20 ежедневных раскопок на пляже",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/heart_of_davy_jones.gif",
+      "tokenId": 450
+    },
+    {
+      "name": "Honey Treat",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.honey.treat.boost",
+          "en": "-25% Animal Feed",
+          "ru": "-25% корма для животных",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "food/honey_treat.webp",
+      "tokenId": 668
+    },
+    {
+      "name": "Hound Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.houndShrine.buff",
+          "en": "+100 Pet XP per food request",
+          "ru": "+100 XP для питомца за каждый запрос на еду",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/hound_shrine.webp",
+      "tokenId": 2652
+    },
+    {
+      "name": "Humming Bird",
+      "type": "collectible",
+      "description": {
+        "en": "A tiny jewel of the sky, the Humming Bird flits with colorful grace.",
+        "ru": "Крошечная жемчужина неба, колибри сияет красочным изяществом."
+      },
+      "boosts": [
+        {
+          "key": "description.humming.bird.boost",
+          "en": "20% Chance for +1 Flower",
+          "ru": "20% шанс получить +1 цветок",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        }
+      ],
+      "sprite": "sfts/hummingbird.webp",
+      "tokenId": 490
+    },
+    {
+      "name": "Hungry Caterpillar",
+      "type": "collectible",
+      "description": {
+        "en": "Munching through leaves, the Hungry Caterpillar is always ready for a tasty adventure.",
+        "ru": "Голодная гусеница, жующая листья, всегда готова к вкусным приключениям."
+      },
+      "boosts": [
+        {
+          "key": "description.hungry.caterpillar.boost",
+          "en": "Free Flower Seeds",
+          "ru": "Бесплатные семена цветов",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        }
+      ],
+      "sprite": "sfts/hungry_caterpillar.webp",
+      "tokenId": 493
+    },
+    {
+      "name": "Hungry Hare",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.hungryHare.boost",
+          "en": "Fermented Carrots 2x Bumpkin XP",
+          "ru": "2x опыта бампкина с квашеной моркови",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/hungryHare.png",
+      "tokenId": 938
+    },
+    {
+      "name": "Immortal Pear",
+      "type": "collectible",
+      "description": {
+        "en": "Increase the survival of your fruit patches.",
+        "ru": "Увеличивает время жизни фруктовых грядок."
+      },
+      "boosts": [
+        {
+          "key": "description.immortal.pear.boosted.boost",
+          "en": "+2 Fruit Patch Harvest per seed",
+          "ru": "+2 сбора с фруктовой грядки за семя",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        },
+        {
+          "key": "description.immortal.pear.boost",
+          "en": "+1 Fruit Patch Harvest per seed",
+          "ru": "+1 сбор с фруктовой грядки за семя",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/immortal_pear.webp",
+      "tokenId": 441
+    },
+    {
+      "name": "Iron Beetle",
+      "type": "collectible",
+      "description": {
+        "en": "Beetle made of iron.",
+        "ru": "Жук, сделанный из железа."
+      },
+      "boosts": [
+        {
+          "key": "description.iron.beetle.boost",
+          "en": "+0.1 Iron",
+          "ru": "+0.1 железо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "iron"
+          ]
+        }
+      ],
+      "sprite": "sfts/iron_beetle.webp",
+      "tokenId": 2130
+    },
+    {
+      "name": "Iron Idol",
+      "type": "collectible",
+      "description": {
+        "en": "The Idol adds 1 iron every time you mine iron.",
+        "ru": "Идол, добавляющий +1 к добыче железа"
+      },
+      "boosts": [
+        {
+          "key": "description.iron.idol.boost",
+          "en": "+1 Iron",
+          "ru": "+1 железо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "iron"
+          ]
+        }
+      ],
+      "sprite": "sfts/iron_idol.webp",
+      "tokenId": 454
+    },
+    {
+      "name": "Janitor Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.janitorChicken.boost",
+          "en": "-5% chicken sleep time",
+          "ru": "-5% времени сна куриц",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/janitor_chicken.webp",
+      "tokenId": 2528
+    },
+    {
+      "name": "King of Bears",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.kingOfBears.boost",
+          "en": "+0.25 Honey per Full Beehive",
+          "ru": "+0.25 мёда с каждого полного улья",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "honey"
+          ]
+        }
+      ],
+      "sprite": "sfts/bears/king_of_bears.png",
+      "tokenId": 2154
+    },
+    {
+      "name": "Knight Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "A strong and noble chicken boosting your oil yield.",
+        "ru": "Сильная и благородная курица поможет тебе с добычей нефти."
+      },
+      "boosts": [
+        {
+          "key": "description.knight.chicken.boost",
+          "en": "+0.1 Oil",
+          "ru": "+0.1 нефть",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "oil"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/knight_chicken.webp",
+      "tokenId": 500
+    },
+    {
+      "name": "Knowledge Crab",
+      "type": "collectible",
+      "description": {
+        "en": "The Knowledge Crab doubles your Sprout Mix effect, making your soil treasures as rich as sea plunder!",
+        "ru": "Knowledge Crab удваивает эффект ростковой смеси, делая твои почвенные сокровища такими же богатыми, как морская добыча!"
+      },
+      "boosts": [
+        {
+          "key": "description.knowledge.crab.boost",
+          "en": "Double Sprout Mix Boost Effect",
+          "ru": "Двойной эффект от ростковой смеси",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/knowledge_crab.webp",
+      "tokenId": 480
+    },
+    {
+      "name": "Lab Grown Carrot",
+      "type": "collectible",
+      "description": {
+        "en": "+0.2 Carrot Yield",
+        "ru": "+0.2 к урожаю моркови"
+      },
+      "boosts": [
+        {
+          "key": "description.lg.carrot.boost",
+          "en": "+0.2 Carrot",
+          "ru": "+0.2 морковь",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/lab_grown_carrot.gif",
+      "tokenId": 475
+    },
+    {
+      "name": "Lab Grown Pumpkin",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.lg.pumpkin.boost",
+          "en": "+0.3 Pumpkin",
+          "ru": "+0.3 тыква",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/lab_grown_pumpkin.gif",
+      "tokenId": 476
+    },
+    {
+      "name": "Lab Grown Radish",
+      "type": "collectible",
+      "description": {
+        "en": "+0.4 Radish Yield",
+        "ru": "+0.4 к урожаю редиса"
+      },
+      "boosts": [
+        {
+          "key": "description.lg.radish.boost",
+          "en": "+0.4 Radish",
+          "ru": "+0.4 редис",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/lab_grown_radish.gif",
+      "tokenId": 477
+    },
+    {
+      "name": "Lady Bug",
+      "type": "collectible",
+      "description": {
+        "en": "An incredible bug that feeds on aphids. Improves Apple quality.",
+        "ru": "Потрясающая букашка, которая питается тлей. Улучшает качество яблок."
+      },
+      "boosts": [
+        {
+          "key": "description.lady.bug.boost",
+          "en": "+0.25 Apple",
+          "ru": "+0.25 яблоко",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/ladybug.gif",
+      "tokenId": 442
+    },
+    {
+      "name": "Laurie the Chuckle Crow",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.laurie.chuckle.crow.boost.skill",
+          "en": "+0.3 Advanced Crops",
+          "ru": "+0.3 к урожаю продвинутых культур",
+          "type": "success",
+          "withSkill": true,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.laurie.chuckle.crow.boost",
+          "en": "+0.2 Advanced Crops",
+          "ru": "+0.2 к урожаю продвинутых культур",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.laurie.chuckle.crow.boost.aoe.skill",
+          "en": "Area of Effect (7x7) below",
+          "ru": "Область действия (7x7)",
+          "type": "success",
+          "withSkill": true,
+          "resource": []
+        },
+        {
+          "key": "description.laurie.chuckle.crow.boost.aoe",
+          "en": "Area of Effect (3x3) below",
+          "ru": "Область действия (3x3)",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/aoe/laurie.png",
+      "tokenId": 468
+    },
+    {
+      "name": "Legendary Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.legendaryShrine.buff",
+          "en": "+1 Crop Yield",
+          "ru": "+1 к урожаю на грядках",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.legendaryShrine.buff.2",
+          "en": "+1 Fruit Patch Yield",
+          "ru": "+1 фрукт на фруктовых грядках",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        },
+        {
+          "key": "description.legendaryShrine.buff.3",
+          "en": "+1 Wood",
+          "ru": "+1 древесина",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        },
+        {
+          "key": "description.legendaryShrine.buff.4",
+          "en": "+1 Stone",
+          "ru": "+1 камень",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "stone"
+          ]
+        },
+        {
+          "key": "description.legendaryShrine.buff.5",
+          "en": "+1 Flower",
+          "ru": "+1 цветок",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        },
+        {
+          "key": "description.legendaryShrine.buff.6",
+          "en": "-50% Cooking Time",
+          "ru": "-50% времени приготовления",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/legendary_shrine.webp",
+      "tokenId": 2654
+    },
+    {
+      "name": "Lemon Frog",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.lemon.frog.boost",
+          "en": "-25% Lemon Growth Time",
+          "ru": "-25% времени роста лимона",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/lemon_frog.webp",
+      "tokenId": 2114
+    },
+    {
+      "name": "Lemon Shark",
+      "type": "collectible",
+      "description": {
+        "en": "A zesty, zippy swimmer of the Summer seas. Only available during Pharaoh's Treasure season.",
+        "ru": "Пикантный и динамичный пловец в летних морях. Доступно только в сезон «Сокровищ фараона»."
+      },
+      "boosts": [
+        {
+          "key": "description.lemon.shark.boost",
+          "en": "+0.2 Lemons",
+          "ru": "+0.2 лимон",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "fish/lemon_shark.webp",
+      "tokenId": 1539
+    },
+    {
+      "name": "Lemon Tea Bath",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.lemon.tea.bath.boost",
+          "en": "-50% Lemon Growth Time",
+          "ru": "-50% времени роста лимона",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/lemon_tea_bath.webp",
+      "tokenId": 2121
+    },
+    {
+      "name": "Longhorn Cowfish",
+      "type": "collectible",
+      "description": {
+        "en": "A peculiar boxfish with horn-like spines, swimming through the seas with bovine grace.",
+        "ru": "Своеобразный самшит с рогоподобными шипами, плавающий по морям с бычьим изяществом."
+      },
+      "boosts": [
+        {
+          "key": "description.longhorn.cowfish.boost",
+          "en": "+0.2 Milk",
+          "ru": "+0.2 молоко",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "fish/cow_fish.webp",
+      "tokenId": 1540
+    },
+    {
+      "name": "Lunar Calendar",
+      "type": "collectible",
+      "description": {
+        "en": "Crops now follow the lunar cycle! 10% increase to crop growth speed.",
+        "ru": "Растения теперь следуют лунному циклу! Скорость роста культур увеличивается на 10%."
+      },
+      "boosts": [
+        {
+          "key": "description.lunar.calendar.boost",
+          "en": "-10% Crop Growth Time",
+          "ru": "-10% времени роста урожая",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/lunar_calendar.webp",
+      "tokenId": 448
+    },
+    {
+      "name": "Lunar Temple",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.lunarTemple.buff",
+          "en": "+1 help progress to player's monuments",
+          "ru": "+1 помощь к прогрессу твоих монументов",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/lunar_temple.webp",
+      "tokenId": 2714
+    },
+    {
+      "name": "Magma Stone",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.magmaStone.buff.one",
+          "en": "-15% Lava Pit Time",
+          "ru": "-15% времени производства в лавовой яме",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        },
+        {
+          "key": "description.magmaStone.buff.two",
+          "en": "+0.15 Obsidian",
+          "ru": "+0.15 обсидиан",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/magma_stone.webp",
+      "tokenId": 2715
+    },
+    {
+      "name": "Maneki Neko",
+      "type": "collectible",
+      "description": {
+        "en": "The beckoning cat. Pull its arm and good luck will come",
+        "ru": "Манящая кошка. Потяни ее за ручку, и удача придет"
+      },
+      "boosts": [
+        {
+          "key": "description.maneki.neko.boost",
+          "en": "1 Free Food per Day",
+          "ru": "1 бесплатное блюдо в день",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "sfts/maneki_neko.gif",
+      "tokenId": 446
+    },
+    {
+      "name": "Mermaid Sheep",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.mermaidSheep.boost",
+          "en": "-5% Sheep Feed",
+          "ru": "-5% корма для овец",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/mermaid_sheep.webp",
+      "tokenId": 2537
+    },
+    {
+      "name": "Miner's Monument",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.monument.buff",
+          "en": "+1 Help Limit",
+          "ru": "+1 лимит помощи",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "monuments/pickaxe_monument.webp",
+      "tokenId": 2285
+    },
+    {
+      "name": "Mole Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.moleShrine.buff",
+          "en": "-25% Iron Recovery Time",
+          "ru": "-25% времени восстановления железа",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "iron"
+          ]
+        },
+        {
+          "key": "description.moleShrine.buff.2",
+          "en": "-25% Gold Recovery Time",
+          "ru": "-25% времени восстановления золота",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "gold"
+          ]
+        },
+        {
+          "key": "description.moleShrine.buff.3",
+          "en": "-25% Crimstone Recovery Time",
+          "ru": "-25% времени восстановления кримстоуна",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crimstone"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/mole_shrine.webp",
+      "tokenId": 2655
+    },
+    {
+      "name": "Moo-ver",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.mooVer.boost",
+          "en": "+0.25 Leather",
+          "ru": "+0.25 кожа",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/moo_ver.webp",
+      "tokenId": 2155
+    },
+    {
+      "name": "Moth Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.mothShrine.buff",
+          "en": "-25% Flower Growth Time",
+          "ru": "-25% времени роста цветов",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "flower"
+          ]
+        },
+        {
+          "key": "description.mothShrine.buff.2",
+          "en": "20% chance to get +1 Flower",
+          "ru": "20% шанс получить +1 цветок",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/moth_shrine.webp",
+      "tokenId": 2658
+    },
+    {
+      "name": "Mushroom House",
+      "type": "collectible",
+      "description": {
+        "en": "A whimsical, fungi-abode where the walls sprout with charm and even the furniture has a 'spore-tacular' flair!",
+        "ru": "Причудливый грибной дом, в котором очарованием пропитаны не только стены, но и мебель!"
+      },
+      "boosts": [
+        {
+          "key": "description.mushroom.house.boost",
+          "en": "+0.2 Wild Mushroom",
+          "ru": "+0.2 дикий гриб",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "seasons/dawn-breaker/mushroom_house.png",
+      "tokenId": 456
+    },
+    {
+      "name": "Mysterious Parsnip",
+      "type": "collectible",
+      "description": {
+        "en": "Parsnips grow 50% faster",
+        "ru": "Пастернак растет на 50% быстрее"
+      },
+      "boosts": [
+        {
+          "key": "description.mysterious.parsnip.boost",
+          "en": "-50% Parsnip Growth Time",
+          "ru": "-50% времени роста пастернака",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/mysterious_parsnip.webp",
+      "tokenId": 418
+    },
+    {
+      "name": "Navigation Table",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.navigationTable.boost",
+          "en": "+100% Map Piece Odds",
+          "ru": "+100% к шансу получить часть карты",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/navigation_table.webp",
+      "tokenId": 2992
+    },
+    {
+      "name": "Nurse Sheep",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.nurseSheep.boost",
+          "en": "Sheep cannot get sick during summer",
+          "ru": "Летом овцы не болеют",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/nurse_sheep.webp",
+      "tokenId": 2257
+    },
+    {
+      "name": "Obsidian Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.obsidianShrine.buff",
+          "en": "Bulk harvest, plant and fertilise your crops, fruit and greenhouse",
+          "ru": "Сажает и собирает весь урожай с грядок, удобряет разные типы грядок, включая теплицу.",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/obsidian_shrine.webp",
+      "tokenId": 2659
+    },
+    {
+      "name": "Obsidian Turtle",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.obsidianTurtle.boost",
+          "en": "+0.5 Obsidian",
+          "ru": "+0.5 обсидиан",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/obsidian_turtle.webp",
+      "tokenId": 2260
+    },
+    {
+      "name": "Orchard Hourglass",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.orchard.hourglass.boost",
+          "en": "-25% Fruit Growth Time",
+          "ru": "-25% времени роста фруктов",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "factions/boosts/fruit_boost_full.webp",
+      "tokenId": 2075
+    },
+    {
+      "name": "Ore Hourglass",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.ore.hourglass.boost",
+          "en": "-50% Mineral Recovery Time",
+          "ru": "-50% времени восстановления минералов",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        },
+        {
+          "key": "description.ore.hourglass.boost.effectTime",
+          "en": "Lasts for 3 hours",
+          "ru": "Длится 3 часа",
+          "type": "danger",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "factions/boosts/mineral_boost_full.webp",
+      "tokenId": 2074
+    },
+    {
+      "name": "Pablo The Bunny",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.pablo.bunny.boost",
+          "en": "+0.1 Carrot",
+          "ru": "+0.1 морковь",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/pablo_bunny.gif",
+      "tokenId": 926
+    },
+    {
+      "name": "Peeled Potato",
+      "type": "collectible",
+      "description": {
+        "en": "A precious potato, encourages bonus potatoes on harvest.",
+        "ru": "Прекрасный картофель, поощряет бонусным картофелем при сборе."
+      },
+      "boosts": [
+        {
+          "key": "description.peeled.potato.boost",
+          "en": "20% Chance for +1 Potato",
+          "ru": "20% шанс получить +1 картофель",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/peeled_potato.gif",
+      "tokenId": 433
+    },
+    {
+      "name": "Pet Bowls",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.petBowls.boost",
+          "en": "+10 Pet XP per food request.",
+          "ru": "+10 XP для домашних животных за каждый запрос на еду.",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "sfts/pet_bowls.webp",
+      "tokenId": 2335
+    },
+    {
+      "name": "Pharaoh Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "A ruling chicken, +1 Dig.",
+        "ru": "Главенствующая курица"
+      },
+      "boosts": [
+        {
+          "key": "description.pharaoh.chicken.boost",
+          "en": "+1 daily Desert Dig attempt",
+          "ru": "+1 ежедневная раскопка на пляже",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "animals/chickens/pharaoh_chicken.webp",
+      "tokenId": 2116
+    },
+    {
+      "name": "Pharaoh Gnome",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.pharaoh.gnome.boost",
+          "en": "+2 Greenhouse Produce",
+          "ru": "+2 урожая в теплице",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/pharaoh_gnome.webp",
+      "tokenId": 2120
+    },
+    {
+      "name": "Pink Dolphin",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.pinkDolphin.boost",
+          "en": "+1 Fish during Spring",
+          "ru": "+1 рыба весной",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "fish/pink_dolphin.webp",
+      "tokenId": 2254
+    },
+    {
+      "name": "Poseidon's Throne",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.poseidonsThrone.boost",
+          "en": "+1 Weed & Dung per farm help",
+          "ru": "+1 Weed & Dung за каждую помощь на ферме",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/poseidons_throne.webp",
+      "tokenId": 2829
+    },
+    {
+      "name": "Potent Potato",
+      "type": "collectible",
+      "description": {
+        "en": "Potent! Grants a 3% chance to get +10 potatoes on harvest.",
+        "ru": "Мощный!"
+      },
+      "boosts": [
+        {
+          "key": "description.potent.potato.boost",
+          "en": "3% Chance of +10 Potato",
+          "ru": "3% шанс получить +10 картофеля",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/potato_mutant.webp",
+      "tokenId": 438
+    },
+    {
+      "name": "Prime Gold Rock",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.primeGoldRock.buff",
+          "en": "+2.5 Gold",
+          "ru": "+2.5 золото",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "gold"
+          ]
+        }
+      ],
+      "sprite": null,
+      "tokenId": 2707
+    },
+    {
+      "name": "Pure Gold Rock",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.pureGoldRock.buff",
+          "en": "+0.5 Gold",
+          "ru": "+0.5 золото",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "gold"
+          ]
+        }
+      ],
+      "sprite": null,
+      "tokenId": 2706
+    },
+    {
+      "name": "Purple Trail",
+      "type": "collectible",
+      "description": {
+        "en": "Leave your opponents in a trail of envy with the mesmerizing and unique Purple Trail",
+        "ru": "Завораживающий и уникальный Purple Trail оставит за твоими противниками след зависти"
+      },
+      "boosts": [
+        {
+          "key": "description.purple.trail.boost",
+          "en": "+0.2 Eggplant",
+          "ru": "+0.2 баклажан",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/purple_trail.png",
+      "tokenId": 457
+    },
+    {
+      "name": "Queen Bee",
+      "type": "collectible",
+      "description": {
+        "en": "Majestic ruler of the hive, the Queen Bee buzzes with regal authority.",
+        "ru": "Величественная владыка улья, пчелиная королева, обладает царственной властью."
+      },
+      "boosts": [
+        {
+          "key": "description.queen.bee.boost",
+          "en": "+1 Honey Production Speed",
+          "ru": "+1 к скорости производства мёда",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "honey"
+          ]
+        }
+      ],
+      "sprite": "sfts/queen_bee.webp",
+      "tokenId": 491
+    },
+    {
+      "name": "Queen Cornelia",
+      "type": "collectible",
+      "description": {
+        "en": "Command the regal power of Queen Cornelia and experience a magnificent Area of Effect boost to your corn production. +1 Corn.",
+        "ru": "Воспользуйся силой Queen Cornelia и ощути её величественный эффект по области, увеличивающий урожай кукурузы."
+      },
+      "boosts": [
+        {
+          "key": "description.queen.cornelia.boost",
+          "en": "+1 Corn",
+          "ru": "+1 кукуруза",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.queen.cornelia.boost.aoe",
+          "en": "Affects plots around (3x4)",
+          "ru": "Влияет на грядки вокруг (3x4)",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/aoe/queen_cornelia.png",
+      "tokenId": 474
+    },
+    {
+      "name": "Radiant Ray",
+      "type": "collectible",
+      "description": {
+        "en": "A ray that prefers to glow in the dark, with a shimmering secret to share.",
+        "ru": "Скат, предпочитающий светиться в темноте с сияющим секретом, которым хочет поделиться."
+      },
+      "boosts": [
+        {
+          "key": "description.radiant.ray.boost",
+          "en": "+0.1 Iron",
+          "ru": "+0.1 железо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "iron"
+          ]
+        }
+      ],
+      "sprite": "fish/radiant_ray.png",
+      "tokenId": 1530
+    },
+    {
+      "name": "Radical Radish",
+      "type": "collectible",
+      "description": {
+        "en": "Radical! Grants a 3% chance to get +10 radishes on harvest.",
+        "ru": "Коренной!"
+      },
+      "boosts": [
+        {
+          "key": "description.radical.radish.boost",
+          "en": "3% Chance of +10 Radish",
+          "ru": "3% шанс получить +10 редиса",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/radish_mutant.webp",
+      "tokenId": 439
+    },
+    {
+      "name": "Rapid Root",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.rapid.root.boost",
+          "en": "-50% Crop Plot Growth Time",
+          "ru": "-50% времени роста на грядках",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "composters/rapid_root.png",
+      "tokenId": 631
+    },
+    {
+      "name": "Reelmaster's Chair",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.reelmastersChair.boost",
+          "en": "+5 daily fishing reels",
+          "ru": "+5 ежедневных попыток рыбалки",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "sfts/reelmasters_chair.webp",
+      "tokenId": 2299
+    },
+    {
+      "name": "Refined Iron Rock",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.refinedIronRock.buff",
+          "en": "+0.5 Iron",
+          "ru": "+0.5 железо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "iron"
+          ]
+        }
+      ],
+      "sprite": null,
+      "tokenId": 2704
+    },
+    {
+      "name": "Reinforced Stone Rock",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.reinforcedStoneRock.buff",
+          "en": "+2.5 Stone",
+          "ru": "+2.5 камень",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "stone"
+          ]
+        }
+      ],
+      "sprite": null,
+      "tokenId": 2701
+    },
+    {
+      "name": "Reveling Lemon",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.reveling.lemon.boost",
+          "en": "+0.25 Lemon",
+          "ru": "+0.25 лимон",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/reveling_lemon.gif",
+      "tokenId": 2109
+    },
+    {
+      "name": "Rice Panda",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.rice.panda.boost",
+          "en": "+0.25 Rice",
+          "ru": "+0.25 рис",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/rice_panda.webp",
+      "tokenId": 2034
+    },
+    {
+      "name": "Rich Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "Your chickens will now yield 0.1 more eggs.",
+        "ru": "Твои курицы дают на 0.1 яйцо больше."
+      },
+      "boosts": [
+        {
+          "key": "description.rich.chicken.boost",
+          "en": "+0.1 Egg",
+          "ru": "+0.1 яйцо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/rich_chicken.webp",
+      "tokenId": 612
+    },
+    {
+      "name": "Rock Golem",
+      "type": "collectible",
+      "description": {
+        "en": "Gives a 10% chance to get +2 Stone",
+        "ru": "10% шанс получить +2 камня"
+      },
+      "boosts": [
+        {
+          "key": "description.rock.golem.boost",
+          "en": "10% Chance of +2 Stone",
+          "ru": "10% шанс получить +2 камня",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "stone"
+          ]
+        }
+      ],
+      "sprite": "sfts/rock_golem.webp",
+      "tokenId": 427
+    },
+    {
+      "name": "Rocky the Mole",
+      "type": "collectible",
+      "description": {
+        "en": "Gives a 0.25 increase to iron mines' yield",
+        "ru": "Увеличивает добычу железа на 0.25%"
+      },
+      "boosts": [
+        {
+          "key": "description.rocky.mole.boost",
+          "en": "+0.25 Iron",
+          "ru": "+0.25 железо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "iron"
+          ]
+        }
+      ],
+      "sprite": "sfts/rocky_mole.gif",
+      "tokenId": 429
+    },
+    {
+      "name": "Royal Crab Pot",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.royalCrabPot.boost",
+          "en": "Trap without Trap Pots",
+          "ru": "Ловля ракообразных не требует ловушек",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/royal_crab_pot.webp",
+      "tokenId": 2993
+    },
+    {
+      "name": "Sacred Tree",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.sacredTree.buff",
+          "en": "+2.5 Wood",
+          "ru": "+2.5 древесина",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": null,
+      "tokenId": 2703
+    },
+    {
+      "name": "Salt Crystal Flower",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.saltCrystalFlower.boost",
+          "en": "5% chance for +1 Flower",
+          "ru": "5% шанс получить +1 цветок",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        }
+      ],
+      "sprite": "sfts/salt_crystal_flower.webp",
+      "tokenId": 2997
+    },
+    {
+      "name": "Salt Lick",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.salt.lick.boost",
+          "en": "+5% Animal Produce Yield",
+          "ru": "+5% к продукции животных",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "food/salt_lick.webp",
+      "tokenId": 667
+    },
+    {
+      "name": "Salt Sculpture",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.saltSculpture.boost",
+          "en": "Cumulative Salt & Aging buffs per level",
+          "ru": "Накопительные бонусы к соли и выдержке за каждый уровень",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": null,
+      "tokenId": 2989
+    },
+    {
+      "name": "Scary Mike",
+      "type": "collectible",
+      "description": {
+        "en": "Boost nearby Medium Crops.",
+        "ru": "Выращивайте близлежащие средние урожаи."
+      },
+      "boosts": [
+        {
+          "key": "description.scary.mike.boost.skill",
+          "en": "+0.3 Medium Crops",
+          "ru": "+0.3 к урожаю средних культур",
+          "type": "success",
+          "withSkill": true,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.scary.mike.boost",
+          "en": "+0.2 Medium Crops",
+          "ru": "+0.2 к урожаю средних культур",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.scary.mike.boost.aoe.skill",
+          "en": "Area of Effect (7x7) below",
+          "ru": "Область действия (7x7) ниже",
+          "type": "success",
+          "withSkill": true,
+          "resource": []
+        },
+        {
+          "key": "description.scary.mike.boost.aoe",
+          "en": "Area of Effect (3x3) below",
+          "ru": "Область действия (3x3) ниже",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/aoe/scary_mike.png",
+      "tokenId": 467
+    },
+    {
+      "name": "Sheaf of Plenty",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.sheafOfPlenty.boost",
+          "en": "+2 Barley",
+          "ru": "+2 ячмень",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/sheaf_of_plenty.webp",
+      "tokenId": 2152
+    },
+    {
+      "name": "Sir Goldensnout",
+      "type": "collectible",
+      "description": {
+        "en": "A royal member, Sir Goldensnout infuses your farm with sovereign prosperity through its golden manure.",
+        "ru": "Член королевской семьи, Sir Goldensnout наполняет твою ферму процветанием благодаря своему золотому навозу."
+      },
+      "boosts": [
+        {
+          "key": "description.sir.goldensnout.boost",
+          "en": "+0.5 crop yield",
+          "ru": "+0.5 урожая с грядок",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.sir.goldensnout.boost.aoe",
+          "en": "Affects plots around (4x4)",
+          "ru": "Влияет на грядки вокруг (4x4)",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/aoe/sir_goldensnout.webp",
+      "tokenId": 466
+    },
+    {
+      "name": "Skill Shrimpy",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.skill.shrimpy.boost",
+          "en": "+20% Bumpkin XP from Fish",
+          "ru": "+20% к опыту бампкина с рыбы",
+          "type": "success",
+          "withSkill": true,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "sfts/skill_shrimpy.webp",
+      "tokenId": 485
+    },
+    {
+      "name": "Sleepy Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.sleepyChicken.boost",
+          "en": "Chickens cannot get sick during autumn",
+          "ru": "Осенью курицы не болеют",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/sleepy_chicken.webp",
+      "tokenId": 2530
+    },
+    {
+      "name": "Soil Krabby",
+      "type": "collectible",
+      "description": {
+        "en": "Speedy sifting with a smile! Enjoy a 10% composter speed boost with this crustaceous champ.",
+        "ru": "Быстрое просеивание с улыбкой! Крабообразный чемпион, увеличивающий скорость компостирования на 10%."
+      },
+      "boosts": [
+        {
+          "key": "description.soil.krabby.boost",
+          "en": "-10% Composter Compost Time",
+          "ru": "-10% времени компостирования",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/soil_krabby.webp",
+      "tokenId": 486
+    },
+    {
+      "name": "Spa Cow",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.spaCow.boost",
+          "en": "+0.1 Milk",
+          "ru": "+0.1 молоко",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/spa_cow.webp",
+      "tokenId": 2998
+    },
+    {
+      "name": "Spa Sheep",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.spaSheep.boost",
+          "en": "+5 Sheep XP from Animal Affection tools",
+          "ru": "+5 опыта овцам от инструментов для ухода",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/spa_sheep.webp",
+      "tokenId": 2999
+    },
+    {
+      "name": "Sparrow Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.sparrowShrine.buff",
+          "en": "-25% Plot Crop Growth Time",
+          "ru": "-25% времени роста растений на грядках",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/sparrow_shrine.webp",
+      "tokenId": 2660
+    },
+    {
+      "name": "Speed Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "Your chickens will now produce eggs 10% faster.",
+        "ru": "Твои курицы теперь будут производить яйца на 10% быстрее."
+      },
+      "boosts": [
+        {
+          "key": "description.speed.chicken.boost",
+          "en": "-10% Chicken Sleep Time",
+          "ru": "-10% времени сна куриц",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/speed_chicken.webp",
+      "tokenId": 610
+    },
+    {
+      "name": "Speed Trap",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.speedTrap.boost",
+          "en": "-20% Trap Pot time",
+          "ru": "-20% времени ловли ракообразных",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/speed_trap.webp",
+      "tokenId": 2995
+    },
+    {
+      "name": "Spring Guardian",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.springGuardian.boost",
+          "en": "Spring Disaster Protection",
+          "ru": "Защита от весенних бедствий",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        },
+        {
+          "key": "description.springGuardian.boost2",
+          "en": "Blessed Spring Events",
+          "ru": "Благословенные весенние события",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/spring_guardian.webp",
+      "tokenId": 2263
+    },
+    {
+      "name": "Squid Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.squidChicken.boost",
+          "en": "+0.1 Egg",
+          "ru": "+0.1 яйцо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/squid_chicken.webp",
+      "tokenId": 2538
+    },
+    {
+      "name": "Squirrel Monkey",
+      "type": "collectible",
+      "description": {
+        "en": "A natural orange predator. Orange Trees are scared when a Squirrel Monkey is around.",
+        "ru": "Естественный оранжевый хищник. Апельсиновым деревьям страшно, когда Squirrel Monkey рядом с ними."
+      },
+      "boosts": [
+        {
+          "key": "description.squirrel.monkey.boost",
+          "en": "-50% Orange Growth Time",
+          "ru": "-50% времени роста апельсина",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/squirrel_monkey.gif",
+      "tokenId": 443
+    },
+    {
+      "name": "Stag Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.stagShrine.buff",
+          "en": "-25% Oil Recovery Time",
+          "ru": "-25% времени восстановления нефти",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "oil"
+          ]
+        },
+        {
+          "key": "description.stagShrine.buff.2",
+          "en": "+15 Oil every 3rd drill",
+          "ru": "+15 нефти при каждой 3й добыче",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "oil"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/stag_shrine.webp",
+      "tokenId": 2653
+    },
+    {
+      "name": "Stellar Sunflower",
+      "type": "collectible",
+      "description": {
+        "en": "Stellar! Grants a 3% chance to get +10 sunflowers on harvest.",
+        "ru": "Звездный!"
+      },
+      "boosts": [
+        {
+          "key": "description.stellar.sunflower.boost",
+          "en": "3% Chance of +10 Sunflower",
+          "ru": "3% шанс получить +10 подсолнуха",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/sunflower_mutant.webp",
+      "tokenId": 437
+    },
+    {
+      "name": "Stone Beetle",
+      "type": "collectible",
+      "description": {
+        "en": "Beetle made of stone.",
+        "ru": "Жук, сделанный из камня."
+      },
+      "boosts": [
+        {
+          "key": "description.stone.beetle.boost",
+          "en": "+0.1 Stone",
+          "ru": "+0.1 камень",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "stone"
+          ]
+        }
+      ],
+      "sprite": "sfts/stone_beetle.webp",
+      "tokenId": 2129
+    },
+    {
+      "name": "Summer Chicken",
+      "type": "collectible",
+      "description": {
+        "en": "A sun-loving chicken that thrives in the summer heat, basking in the warm rays and clucking with joy!",
+        "ru": "Любящая солнце курица, которая прекрасно себя чувствует в летнюю жару, греется в теплых лучах и полыхается от радости!"
+      },
+      "boosts": [
+        {
+          "key": "description.summer.chicken.boost",
+          "en": "Chickens cannot get sick during summer",
+          "ru": "Летом курицы не болеют",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/summer_chicken.webp",
+      "tokenId": 2201
+    },
+    {
+      "name": "Summer Guardian",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.summerGuardian.boost",
+          "en": "Summer Disaster Protection",
+          "ru": "Защита от летних бедствий",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        },
+        {
+          "key": "description.summerGuardian.boost2",
+          "en": "Blessed Summer Events",
+          "ru": "Благословенные летние события",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/summer_guardian.webp",
+      "tokenId": 2262
+    },
+    {
+      "name": "Super Star",
+      "type": "collectible",
+      "description": {
+        "en": "A super star that grants +1 fish during winter months!",
+        "ru": "Суперзвезда, +1 рыба зимой!"
+      },
+      "boosts": [
+        {
+          "key": "description.super.star.boost",
+          "en": "+1 Fish during Winter",
+          "ru": "+1 рыба зимой",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "sfts/starfish_marvel.webp",
+      "tokenId": 1549
+    },
+    {
+      "name": "Super Totem",
+      "type": "collectible",
+      "description": {
+        "en": "Your Super Totem has expired. Head to the Pumpkin Plaza to discover and craft more magical items to boost your farming abilities!",
+        "ru": "Срок действия твоего Super Totem истек. Отправляйся на Плазу, чтобы найти и создать еще больше волшебных предметов, которые помогут тебе развить свои фермерские способности!"
+      },
+      "boosts": [
+        {
+          "key": "description.superTotem.boost",
+          "en": "50% Reduction to Crop, Mineral, Fruit, Cooking, Crafting, and Tree Time",
+          "ru": "На 50% сокращается время: роста растений и фруктов, восстановления минералов и деревьев, готовки и крафта",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "wood",
+            "crop",
+            "cooking",
+            "fruit"
+          ]
+        },
+        {
+          "key": "description.superTotem.boost.effectTime",
+          "en": "Lasts for 7 days",
+          "ru": "Длится 7 дней",
+          "type": "danger",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/super_totem.webp",
+      "tokenId": 2168
+    },
+    {
+      "name": "Swiss Whiskers",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.swissWhiskers.boost",
+          "en": "+500 Bumpkin XP from Cheese Recipes",
+          "ru": "+500 к опыту бампкина за блюда из сыра",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/swiss_whiskers.webp",
+      "tokenId": 2156
+    },
+    {
+      "name": "Teamwork Monument",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.monument.buff",
+          "en": "+1 Help Limit",
+          "ru": "+1 лимит помощи",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "monuments/chapters_monument_teamwork.webp",
+      "tokenId": 2287
+    },
+    {
+      "name": "Tempered Iron Rock",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.temperedIronRock.buff",
+          "en": "+2.5 Iron",
+          "ru": "+2.5 железо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "iron"
+          ]
+        }
+      ],
+      "sprite": null,
+      "tokenId": 2705
+    },
+    {
+      "name": "Tiki Totem",
+      "type": "collectible",
+      "description": {
+        "en": "The Tiki Totem adds 0.1 wood to every tree you chop.",
+        "ru": "Tiki Totem добавляет 0.1 древесины за каждое срубленное дерево."
+      },
+      "boosts": [
+        {
+          "key": "description.tiki.totem.boost",
+          "en": "+0.1 Wood",
+          "ru": "+0.1 древесина",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": "sfts/tiki_totem.webp",
+      "tokenId": 447
+    },
+    {
+      "name": "Timber Hourglass",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.timber.hourglass.boost",
+          "en": "-25% Tree Recovery Time (4hrs)",
+          "ru": "-25% времени на восстановление деревьев (4 часа)",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": "factions/boosts/wood_boost_full.webp",
+      "tokenId": 2073
+    },
+    {
+      "name": "Time Warp Totem",
+      "type": "collectible",
+      "description": {
+        "en": "2x speed for crops, trees, fruits, cooking & minerals. Only lasts for 2 hours",
+        "ru": "Время роста растений и фруктов, готовки, восстановления минералов и деревьев уменьшается на 50%. Длится только 2 часа"
+      },
+      "boosts": [
+        {
+          "key": "description.time.warp.totem.boost",
+          "en": "50% Reduction to Crop, Mineral, Fruit, Cooking, Crafting, and Tree Time",
+          "ru": "На 50% сокращается время: роста растений и фруктов, восстановления минералов и деревьев, готовки и крафта",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "wood",
+            "crop",
+            "cooking",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/time_warp_totem.webp",
+      "tokenId": 1297
+    },
+    {
+      "name": "Tin Turtle",
+      "type": "collectible",
+      "description": {
+        "en": "The Tin Turtle gives +0.1 to Stones you mine within its Area of Effect.",
+        "ru": "Tin Turtle добавляет +0.1 к камню при добыче в области её действия."
+      },
+      "boosts": [
+        {
+          "key": "description.tin.turtle.boost",
+          "en": "+0.1 Stone",
+          "ru": "+0.1 камень",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "stone"
+          ]
+        },
+        {
+          "key": "description.turtle.boost.aoe",
+          "en": "Affects plots around (3x3)",
+          "ru": "Влияет на грядки вокруг (3x3)",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/aoe/tin_turtle.webp",
+      "tokenId": 464
+    },
+    {
+      "name": "Tomato Bombard",
+      "type": "collectible",
+      "description": {
+        "en": "Home to Cannonball, and is ready to strike anyone who gets in its way",
+        "ru": "Берегись пушечного ядра, оно готово нанести удар любому, кто встанет на его пути"
+      },
+      "boosts": [
+        {
+          "key": "description.tomato.bombard.boost",
+          "en": "+1 Tomato",
+          "ru": "+1 помидор",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/tomato_bombard.gif",
+      "tokenId": 2128
+    },
+    {
+      "name": "Tomato Clown",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.tomato.clown.boost",
+          "en": "-50% Tomato Growth Time",
+          "ru": "-50% времени роста помидора",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/tomato_clown.gif",
+      "tokenId": 2122
+    },
+    {
+      "name": "Tortoise Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.tortoiseShrine.buff",
+          "en": "-33% Greenhouse Growth Time",
+          "ru": "-33% времени роста в теплице",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        },
+        {
+          "key": "description.tortoiseShrine.buff.2",
+          "en": "-10% Crop Machine Growth Time",
+          "ru": "-10% времени роста растений в агромашине",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/tortoise_shrine.webp",
+      "tokenId": 2657
+    },
+    {
+      "name": "Toucan Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.toucanShrine.buff",
+          "en": "-25% Fruit Patch Growth Time",
+          "ru": "-25% времени роста на фруктовых грядках",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "sfts/shrines/toucan_shrine.webp",
+      "tokenId": 2661
+    },
+    {
+      "name": "Toxic Tuft",
+      "type": "collectible",
+      "description": {
+        "en": "A mutated sheep whose toxic fleece produces the finest merino wool in the land!",
+        "ru": "Мутировавшая овца, из ядовитой шерсти которой получается самая лучшая мериносовая шерсть в мире!"
+      },
+      "boosts": [
+        {
+          "key": "description.toxic.tuft.boost",
+          "en": "+0.1 Merino Wool",
+          "ru": "+0.1 шерсть мериноса",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "sfts/toxic_tuft.webp",
+      "tokenId": 2164
+    },
+    {
+      "name": "Trading Shrine",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.tradingShrine.buff",
+          "en": "-2.5% resource tax",
+          "ru": "-2.5% комиссии за продажу ресурсов",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/shrines/trading_shrine.webp",
+      "tokenId": 2665
+    },
+    {
+      "name": "Treasure Map",
+      "type": "collectible",
+      "description": {
+        "en": "An enchanted map that leads the holder to valuable treasure. +20% profit from beach bounty items.",
+        "ru": "Зачарованная карта, которая приведет владельца к ценным сокровищам. +20% прибыли с пляжных сокровищ."
+      },
+      "boosts": [
+        {
+          "key": "description.treasure.map.boost",
+          "en": "+20% Coins Treasure Sale Price",
+          "ru": "+20% монет за продажу сокровищ",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/treasure/treasure_map.webp",
+      "tokenId": 449
+    },
+    {
+      "name": "Tunnel Mole",
+      "type": "collectible",
+      "description": {
+        "en": "Gives a 0.25 increase to stone mines' yield",
+        "ru": "Увеличивает добычу камня на 0.25%"
+      },
+      "boosts": [
+        {
+          "key": "description.tunnel.mole.boost",
+          "en": "+0.25 Stone",
+          "ru": "+0.25 камень",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "stone"
+          ]
+        }
+      ],
+      "sprite": "sfts/tunnel_mole.gif",
+      "tokenId": 428
+    },
+    {
+      "name": "Turbo Sprout",
+      "type": "collectible",
+      "description": {
+        "en": "An engine that reduces the Greenhouse's growth time by 50%.",
+        "ru": "Двигатель, сокращающий время роста теплицы на 50%."
+      },
+      "boosts": [
+        {
+          "key": "description.turbo.sprout.boost",
+          "en": "-50% Growth Time in Greenhouse",
+          "ru": "-50% времени роста тепличных культур",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/turbo_sprout.webp",
+      "tokenId": 495
+    },
+    {
+      "name": "Undead Rooster",
+      "type": "collectible",
+      "description": {
+        "en": "An unfortunate casualty of the war. +0.1 egg yield.",
+        "ru": "Несчастная жертва войны"
+      },
+      "boosts": [
+        {
+          "key": "description.undead.rooster.boost",
+          "en": "+0.1 Egg",
+          "ru": "+0.1 яйцо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "animals/chickens/undead_chicken.webp",
+      "tokenId": 1114
+    },
+    {
+      "name": "Victoria Sisters",
+      "type": "collectible",
+      "description": {
+        "en": "The pumpkin loving sisters",
+        "ru": "Сестры, любящие тыкву"
+      },
+      "boosts": [
+        {
+          "key": "description.victoria.sisters.boost",
+          "en": "+20% Pumpkin",
+          "ru": "+20% к тыкве",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "sfts/victoria_sisters.gif",
+      "tokenId": 432
+    },
+    {
+      "name": "Volcano Gnome",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.volcanoGnome.boost",
+          "en": "+0.1 Minerals",
+          "ru": "+0.1 к добыче минералов",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/volcano_gnome.webp",
+      "tokenId": 2183
+    },
+    {
+      "name": "Winter Guardian",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.winterGuardian.boost",
+          "en": "Winter Disaster Protection",
+          "ru": "Защита от зимних бедствий",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        },
+        {
+          "key": "description.winterGuardian.boost2",
+          "en": "Blessed Winter Events",
+          "ru": "Благословенные зимние события",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/winter_guardian.webp",
+      "tokenId": 2261
+    },
+    {
+      "name": "Wood Nymph Wendy",
+      "type": "collectible",
+      "description": {
+        "en": "Cast an enchantment to entice the wood fairies.",
+        "ru": "Накладывает чары для того, чтобы завлечь лесный фей."
+      },
+      "boosts": [
+        {
+          "key": "description.wood.nymph.wendy.boost",
+          "en": "+0.2 Wood",
+          "ru": "+0.2 древесина",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": "sfts/wood_nymph_wendy.gif",
+      "tokenId": 436
+    },
+    {
+      "name": "Woodcutter's Monument",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.monument.buff",
+          "en": "+1 Help Limit",
+          "ru": "+1 лимит помощи",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "monuments/axe_monument.webp",
+      "tokenId": 2286
+    },
+    {
+      "name": "Woody the Beaver",
+      "type": "collectible",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.woody.beaver.boost",
+          "en": "+20% Wood",
+          "ru": "+20% к древесине",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        },
+        {
+          "key": "description.woody.beaver.warning",
+          "en": "Disabled if Apprentice Beaver or Foreman Beaver Active",
+          "ru": "Не работает, если Apprentice Beaver или Foreman Beaver активны",
+          "type": "danger",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "sfts/beaver.gif",
+      "tokenId": 415
+    },
+    {
+      "name": "Ancient Rod",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.ancient.rod.boost",
+          "en": "Cast without rod",
+          "ru": "Ловля без удочки",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/224.webp",
+      "tokenId": 224
+    },
+    {
+      "name": "Ancient Shovel",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.ancient.shovel.boost",
+          "en": "Dig treasure without Sand Shovel",
+          "ru": "Поиск сокровищ без использования песчаной лопаты",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/369.webp",
+      "tokenId": 369
+    },
+    {
+      "name": "Angel Wings",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.angel.wings.boost",
+          "en": "30% Chance of Instant Crops",
+          "ru": "30% шанс мгновенного урожая",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/73.webp",
+      "tokenId": 73
+    },
+    {
+      "name": "Angler Waders",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.angler.waders.boost",
+          "en": "+10 daily fishing reels",
+          "ru": "+10 ежедневных попыток рыбалки",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "wearables/234.webp",
+      "tokenId": 234
+    },
+    {
+      "name": "Architect Ruler",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.architectRuler.boost",
+          "en": "-25% Crafting Box Time",
+          "ru": "-25% времени крафта в мастерской",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/477.webp",
+      "tokenId": 477
+    },
+    {
+      "name": "Autumn's Embrace",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.autumnsEmbrace.boost",
+          "en": "-50% Plot Crop Time in Autumn",
+          "ru": "-50% времени роста растений на грядках осенью",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/433.webp",
+      "tokenId": 433
+    },
+    {
+      "name": "Banana Amulet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.banana.amulet.boost",
+          "en": "+0.5 Bananas",
+          "ru": "+0.5 банан",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "wearables/250.webp",
+      "tokenId": 250
+    },
+    {
+      "name": "Banana Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.banana.boost",
+          "en": "-20% Banana Growth Time",
+          "ru": "-20% времени роста банана",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "wearables/251.webp",
+      "tokenId": 251
+    },
+    {
+      "name": "Beast Shoes",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.beastShoes.boost",
+          "en": "Pet XP +100/+250 (Med/Hard)",
+          "ru": "+100/+250 XP для питомца за среднюю/сложную еду",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/522.webp",
+      "tokenId": 522
+    },
+    {
+      "name": "Bee Suit",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bee.suit",
+          "en": "+0.1 Honey per Full Beehive",
+          "ru": "+0.1 мёд за полный улей",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "honey"
+          ]
+        }
+      ],
+      "sprite": "wearables/276.webp",
+      "tokenId": 276
+    },
+    {
+      "name": "Beekeeper Hat",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.beekeeper.hat.boost",
+          "en": "+0.2 Honey Production Speed",
+          "ru": "+0.2 к скорости производства мёда",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "honey"
+          ]
+        }
+      ],
+      "sprite": "wearables/278.webp",
+      "tokenId": 278
+    },
+    {
+      "name": "Beetroot Amulet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.beetroot.amulet.boost",
+          "en": "+20% Beetroot",
+          "ru": "+20% к свёкле",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/29.webp",
+      "tokenId": 1105
+    },
+    {
+      "name": "Bionic Drill",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bionic.drill",
+          "en": "+5 daily Desert Dig attempts",
+          "ru": "+5 ежедневных раскопок на пляже",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/374.webp",
+      "tokenId": 374
+    },
+    {
+      "name": "Black Sheep Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.blackSheepOnesie.boost",
+          "en": "+2 Wool",
+          "ru": "+2 шерсть",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/402.webp",
+      "tokenId": 402
+    },
+    {
+      "name": "Blossom Ward",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.blossomWard.boost",
+          "en": "+1 Yield to Spring Plot Crop in Spring",
+          "ru": "+1 к урожаю весенних растений на грядках весной",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/432.webp",
+      "tokenId": 432
+    },
+    {
+      "name": "Broccoli Hat",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.broccoliHat.boost",
+          "en": "-50% Broccoli Plot Growth Time",
+          "ru": "-50% времени роста брокколи на грядках",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/454.webp",
+      "tokenId": 454
+    },
+    {
+      "name": "Bubble Aura",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.bubbleAura.boost",
+          "en": "-20% Fish Market processing time",
+          "ru": "-20% времени обработки в рыбной лавке",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        },
+        {
+          "key": "description.bubbleAura.boost.two",
+          "en": "20% chance for +1 yield from Fish Processing",
+          "ru": "20% шанс получить +1 переработанный рыбный ресурс",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "wearables/559.webp",
+      "tokenId": 559
+    },
+    {
+      "name": "Bucket O' Worms",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bucket.o.worms.boost",
+          "en": "+1 Worm",
+          "ru": "+1 червь",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/228.webp",
+      "tokenId": 228
+    },
+    {
+      "name": "Bumpkin Armor",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bumpkin.armor",
+          "en": "+20% Marks",
+          "ru": "+20% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/330.webp",
+      "tokenId": 330
+    },
+    {
+      "name": "Bumpkin Crown",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bumpkin.crown.boost",
+          "en": "+25% FLOWER & Coin Deliveries",
+          "ru": "+25% FLOWER и монет от доставок",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        },
+        {
+          "key": "bumpkinItemBuff.bumpkin.crown.boost.two",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/376.webp",
+      "tokenId": 376
+    },
+    {
+      "name": "Bumpkin Helmet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bumpkin.helmet",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/331.webp",
+      "tokenId": 331
+    },
+    {
+      "name": "Bumpkin Medallion",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bumpkin.medallion.boost",
+          "en": "-25% Cooking Time",
+          "ru": "-25% времени готовки",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "wearables/388.webp",
+      "tokenId": 388
+    },
+    {
+      "name": "Bumpkin Pants",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bumpkin.pants",
+          "en": "+5% Marks",
+          "ru": "+5% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/333.webp",
+      "tokenId": 333
+    },
+    {
+      "name": "Bumpkin Quiver",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bumpkin.quiver.boost",
+          "en": "+0.25 Crops & Fruits",
+          "ru": "+0.25 к урожаю растений и фруктов",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "wearables/384.webp",
+      "tokenId": 384
+    },
+    {
+      "name": "Bumpkin Sabatons",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bumpkin.sabatons",
+          "en": "+5% Marks",
+          "ru": "+5% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/334.webp",
+      "tokenId": 334
+    },
+    {
+      "name": "Bumpkin Shield",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bumpkin.shield.boost",
+          "en": "+0.25 Wood & Minerals",
+          "ru": "+0.25 к древесине и минералам",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": "wearables/380.webp",
+      "tokenId": 380
+    },
+    {
+      "name": "Bumpkin Sword",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.bumpkin.sword",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/332.webp",
+      "tokenId": 332
+    },
+    {
+      "name": "Camel Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.camel.onesie.boost",
+          "en": "+0.1 Fruit Patch Yield",
+          "ru": "+0.1 к фруктам на фруктовых грядках",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "wearables/350.webp",
+      "tokenId": 350
+    },
+    {
+      "name": "Carrot Amulet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.carrot.amulet.boost",
+          "en": "-20% Carrot Plot Growth time",
+          "ru": "-20% времени роста моркови на грядках",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/28.webp",
+      "tokenId": 1104
+    },
+    {
+      "name": "Chef Apron",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.chef.apron.boost",
+          "en": "+20% Cake Delivery Profit",
+          "ru": "+20% к прибыли от доставки тортов",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/16.webp",
+      "tokenId": 1101
+    },
+    {
+      "name": "Chicken Suit",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.chickenSuit.boost",
+          "en": "+1 Feather",
+          "ru": "+1 перо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/403.webp",
+      "tokenId": 403
+    },
+    {
+      "name": "Corn Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.corn.onesie.boost",
+          "en": "+0.1 Corn",
+          "ru": "+0.1 кукуруза",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/174.webp",
+      "tokenId": 174
+    },
+    {
+      "name": "Corn Silk Hair",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.cornSilkHair.boost",
+          "en": "+2 Corn",
+          "ru": "+2 кукуруза",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/526.webp",
+      "tokenId": 526
+    },
+    {
+      "name": "Cowbell Necklace",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.cowbellNecklace.boost",
+          "en": "+2 Milk",
+          "ru": "+2 молоко",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/407.webp",
+      "tokenId": 407
+    },
+    {
+      "name": "Crab Hat",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.crabHat.boost",
+          "en": "+1 treasure when fishing",
+          "ru": "+1 сокровище во время рыбалки",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "wearables/424.webp",
+      "tokenId": 424
+    },
+    {
+      "name": "Crab Trap",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.crab.trap",
+          "en": "+1 Crab when digging or drilling",
+          "ru": "+1 краб при поиске сокровищ",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/230.webp",
+      "tokenId": 230
+    },
+    {
+      "name": "Crimstone Amulet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.crimstone.amulet",
+          "en": "-20% Crimstone Cooldown Time",
+          "ru": "-20% времени восстановления кримстоуна",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crimstone"
+          ]
+        }
+      ],
+      "sprite": "wearables/285.webp",
+      "tokenId": 285
+    },
+    {
+      "name": "Crimstone Armor",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.crimstone.armor",
+          "en": "+0.1 Crimstones",
+          "ru": "+0.1 кримстоун",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crimstone"
+          ]
+        }
+      ],
+      "sprite": "wearables/282.webp",
+      "tokenId": 282
+    },
+    {
+      "name": "Crimstone Hammer",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.crimstone.hammer",
+          "en": "+2 Crimstones on 5th mine",
+          "ru": "+2 к кримстоуну на 5-ой добыче",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crimstone"
+          ]
+        }
+      ],
+      "sprite": "wearables/284.webp",
+      "tokenId": 284
+    },
+    {
+      "name": "Crimstone Spikes Hair",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.crimstoneSpikesHair.boost",
+          "en": "Mine crimstone without Gold Pickaxes",
+          "ru": "Кримстоун добывается без золотой кирки",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "gold",
+            "crimstone"
+          ]
+        }
+      ],
+      "sprite": "wearables/519.webp",
+      "tokenId": 519
+    },
+    {
+      "name": "Deep Sea Helm",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.deep.sea.helm",
+          "en": "+100% chance to find Marvel Map Pieces",
+          "ru": "+100% к шансу найти фрагмент карты морских чудес",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/255.webp",
+      "tokenId": 255
+    },
+    {
+      "name": "Deep Sea Salt Cave Background",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [],
+      "sprite": "wearables/560.webp",
+      "tokenId": 560
+    },
+    {
+      "name": "Dev Wrench",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.dev.wrench.boost",
+          "en": "-50% Oil Regeneration Time",
+          "ru": "-50% времени восстановления нефти",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "oil"
+          ]
+        }
+      ],
+      "sprite": "wearables/354.webp",
+      "tokenId": 354
+    },
+    {
+      "name": "Devil Wings",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.devil.wings.boost",
+          "en": "30% Chance of Instant Crops",
+          "ru": "30% шанс мгновенного урожая",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/72.webp",
+      "tokenId": 72
+    },
+    {
+      "name": "Dream Scarf",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.dreamScarf.boost",
+          "en": "-20% Sheep Sleep Time",
+          "ru": "-20% времени сна овец",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/406.webp",
+      "tokenId": 406
+    },
+    {
+      "name": "Eggplant Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.eggplant.onesie.boost",
+          "en": "+0.1 Eggplant",
+          "ru": "+0.1 баклажан",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/124.webp",
+      "tokenId": 124
+    },
+    {
+      "name": "Flower Crown",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.flower.crown",
+          "en": "-50% Flower Growth Time",
+          "ru": "-50% времени роста цветов",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "flower"
+          ]
+        }
+      ],
+      "sprite": "wearables/293.webp",
+      "tokenId": 293
+    },
+    {
+      "name": "Frozen Heart",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.frozenHeart.boost",
+          "en": "+1 Yield to Winter Plot Crop in Winter",
+          "ru": "+1 к урожаю зимних растений на грядках зимой",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/434.webp",
+      "tokenId": 434
+    },
+    {
+      "name": "Fruit Picker Apron",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.fruit.picker.apron.boost",
+          "en": "+0.1 Apple, Blueberry, Orange + Banana",
+          "ru": "+0.1 яблоко, черника, апельсин и банан",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "wearables/86.webp",
+      "tokenId": 86
+    },
+    {
+      "name": "Gift Giver",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.gift.giver.boost",
+          "en": "Gift players a gift",
+          "ru": "Дарит игрокам подарки",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/316.webp",
+      "tokenId": 316
+    },
+    {
+      "name": "Goblin Armor",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.goblin.armor",
+          "en": "+20% Marks",
+          "ru": "+20% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/320.webp",
+      "tokenId": 320
+    },
+    {
+      "name": "Goblin Axe",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.goblin.axe",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/324.webp",
+      "tokenId": 324
+    },
+    {
+      "name": "Goblin Crown",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.goblin.crown.boost",
+          "en": "+25% FLOWER & Coin Deliveries",
+          "ru": "+25% FLOWER и монет от доставок",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        },
+        {
+          "key": "bumpkinItemBuff.goblin.crown.boost.two",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/377.webp",
+      "tokenId": 413
+    },
+    {
+      "name": "Goblin Helmet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.goblin.helmet",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/321.webp",
+      "tokenId": 321
+    },
+    {
+      "name": "Goblin Medallion",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.goblin.medallion.boost",
+          "en": "-25% Cooking Time",
+          "ru": "-25% времени готовки",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "wearables/389.webp",
+      "tokenId": 389
+    },
+    {
+      "name": "Goblin Pants",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.goblin.pants",
+          "en": "+5% Marks",
+          "ru": "+5% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/322.webp",
+      "tokenId": 322
+    },
+    {
+      "name": "Goblin Quiver",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.goblin.quiver.boost",
+          "en": "+0.25 Crops & Fruits",
+          "ru": "+0.25 к урожаю растений и фруктов",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "wearables/385.webp",
+      "tokenId": 385
+    },
+    {
+      "name": "Goblin Sabatons",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.goblin.sabatons",
+          "en": "+5% Marks",
+          "ru": "+5% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/323.webp",
+      "tokenId": 323
+    },
+    {
+      "name": "Goblin Shield",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.goblin.shield.boost",
+          "en": "+0.25 Wood & Minerals",
+          "ru": "+0.25 к древесине и минералам",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": "wearables/381.webp",
+      "tokenId": 381
+    },
+    {
+      "name": "Golden Spatula",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.golden.spatula.boost",
+          "en": "+10% Bumpkin XP",
+          "ru": "+10% к опыту бампкина",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/58.webp",
+      "tokenId": 58
+    },
+    {
+      "name": "Grape Pants",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.grape.pants",
+          "en": "+0.2 Grapes",
+          "ru": "+0.2 виноград",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/373.webp",
+      "tokenId": 373
+    },
+    {
+      "name": "Green Amulet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.green.amulet.boost",
+          "en": "Chance 10x Crops",
+          "ru": "Шанс получить 10х урожая",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/30.webp",
+      "tokenId": 1106
+    },
+    {
+      "name": "Honeycomb Shield",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.honeycomb.shield",
+          "en": "+1 Honey per Full Beehive",
+          "ru": "+1 мёд за полный улей",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "honey"
+          ]
+        }
+      ],
+      "sprite": "wearables/291.webp",
+      "tokenId": 291
+    },
+    {
+      "name": "Hornet Mask",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.hornet.mask",
+          "en": "2x base Bee Swarm chance",
+          "ru": "2x базовый шанс пчелиного роя",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/292.webp",
+      "tokenId": 292
+    },
+    {
+      "name": "Infernal Bullwhip",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.infernalBullwhip.boost",
+          "en": "-50% Feed to Barn Animal",
+          "ru": "-50% корма для животных в амбаре",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/400.webp",
+      "tokenId": 400
+    },
+    {
+      "name": "Infernal Drill",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.infernal.drill.boost",
+          "en": "Drill Oil without Oil Drill",
+          "ru": "Нефть добывается без использования нефтяного бура",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "oil"
+          ]
+        }
+      ],
+      "sprite": "wearables/370.webp",
+      "tokenId": 370
+    },
+    {
+      "name": "Infernal Pitchfork",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.infernal.pitchfork.boost",
+          "en": "+3 Crops",
+          "ru": "+3 урожая",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/162.webp",
+      "tokenId": 162
+    },
+    {
+      "name": "Ladybug Suit",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.ladybugSuit.boost",
+          "en": "-25% Onion Seed coin cost",
+          "ru": "-25% к стоимости семян лука",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/422.webp",
+      "tokenId": 422
+    },
+    {
+      "name": "Lava Swimwear",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.lava.swimwear.boost",
+          "en": "-50% Lava Pit resources",
+          "ru": "-50% ресурсов в лавовой яме",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/481.webp",
+      "tokenId": 481
+    },
+    {
+      "name": "Lemon Shield",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.lemon.shield.boost",
+          "en": "+1 Lemon",
+          "ru": "+1 лимон",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "wearables/371.webp",
+      "tokenId": 371
+    },
+    {
+      "name": "Luminous Anglerfish Topper",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [],
+      "sprite": "wearables/221.webp",
+      "tokenId": 221
+    },
+    {
+      "name": "Luna's Crescent",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.lunarWeapon.boost",
+          "en": "-50% Power Skill Cooldown",
+          "ru": "-50% времени восстановления активных навыков",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/499.webp",
+      "tokenId": 499
+    },
+    {
+      "name": "Luna's Hat",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.Luna.s.hat.boost",
+          "en": "-50% Cooking Time",
+          "ru": "-50% времени готовки",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "wearables/161.webp",
+      "tokenId": 161
+    },
+    {
+      "name": "Master Chef's Cleaver",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.cleaverKnife.boost.1",
+          "en": "-15% Cooking Time",
+          "ru": "-15% времени готовки",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        },
+        {
+          "key": "description.cleaverKnife.boost.2",
+          "en": "10% chance of +1 Food from cooking",
+          "ru": "10% шанс получить +1 блюдо",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "wearables/500.webp",
+      "tokenId": 500
+    },
+    {
+      "name": "Medic Apron",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.medicApron.boost",
+          "en": "-50% Medicine to heal animals",
+          "ru": "-50% лекарств на лечение животных",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/456.webp",
+      "tokenId": 456
+    },
+    {
+      "name": "Merino Jumper",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.merinoJumper.boost",
+          "en": "+1 Merino Wool",
+          "ru": "+1 шерсть мериноса",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/405.webp",
+      "tokenId": 405
+    },
+    {
+      "name": "Milk Apron",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.milkApron.boost",
+          "en": "+0.5 Milk",
+          "ru": "+0.5 молоко",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/408.webp",
+      "tokenId": 408
+    },
+    {
+      "name": "Mushroom Hat",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.mushroom.hat.boost",
+          "en": "+0.1 Wild Mushroom",
+          "ru": "+0.1 дикий гриб",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/128.webp",
+      "tokenId": 128
+    },
+    {
+      "name": "Nightshade Armor",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.nightshade.armor",
+          "en": "+20% Marks",
+          "ru": "+20% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/325.webp",
+      "tokenId": 325
+    },
+    {
+      "name": "Nightshade Crown",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.nightshade.crown.boost",
+          "en": "+25% FLOWER & Coin Deliveries",
+          "ru": "+25% FLOWER и монет от доставок",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        },
+        {
+          "key": "bumpkinItemBuff.nightshade.crown.boost.two",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/378.webp",
+      "tokenId": 378
+    },
+    {
+      "name": "Nightshade Helmet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.nightshade.helmet",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/326.webp",
+      "tokenId": 326
+    },
+    {
+      "name": "Nightshade Medallion",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.nightshade.medallion.boost",
+          "en": "-25% Cooking Time",
+          "ru": "-25% времени готовки",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "wearables/390.webp",
+      "tokenId": 390
+    },
+    {
+      "name": "Nightshade Pants",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.nightshade.pants",
+          "en": "+5% Marks",
+          "ru": "+5% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/327.webp",
+      "tokenId": 327
+    },
+    {
+      "name": "Nightshade Quiver",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.nightshade.quiver.boost",
+          "en": "+0.25 Crops & Fruits",
+          "ru": "+0.25 к урожаю растений и фруктов",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "wearables/386.webp",
+      "tokenId": 386
+    },
+    {
+      "name": "Nightshade Sabatons",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.nightshade.sabatons",
+          "en": "+5% Marks",
+          "ru": "+5% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/328.webp",
+      "tokenId": 328
+    },
+    {
+      "name": "Nightshade Shield",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.nightshade.shield.boost",
+          "en": "+0.25 Wood & Minerals",
+          "ru": "+0.25 к древесине и минералам",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": "wearables/382.webp",
+      "tokenId": 382
+    },
+    {
+      "name": "Nightshade Sword",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.nightshade.sword",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/329.webp",
+      "tokenId": 329
+    },
+    {
+      "name": "Non La Hat",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.non.la.hat.boost",
+          "en": "+1 Rice",
+          "ru": "+1 рис",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/309.webp",
+      "tokenId": 309
+    },
+    {
+      "name": "Obsidian Necklace",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.obsidianNecklace.boost",
+          "en": "-50% Lava Pit Time",
+          "ru": "-50% времени производства в лавовой яме",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/457.webp",
+      "tokenId": 457
+    },
+    {
+      "name": "Oil Can",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.oil.can.boost",
+          "en": "+2 Oil",
+          "ru": "+2 нефть",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "oil"
+          ]
+        }
+      ],
+      "sprite": "wearables/308.webp",
+      "tokenId": 308
+    },
+    {
+      "name": "Oil Gallon",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.oil.gallon.boost",
+          "en": "+5 Oil",
+          "ru": "+5 нефть",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "oil"
+          ]
+        }
+      ],
+      "sprite": "wearables/479.webp",
+      "tokenId": 479
+    },
+    {
+      "name": "Oil Overalls",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.oil.overalls.boost",
+          "en": "+10 Oil",
+          "ru": "+10 нефть",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "oil"
+          ]
+        }
+      ],
+      "sprite": "wearables/360.webp",
+      "tokenId": 360
+    },
+    {
+      "name": "Olive Royalty Shirt",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.olive.shirt.boost",
+          "en": "+0.25 Olive",
+          "ru": "+0.25 оливка",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/317.webp",
+      "tokenId": 317
+    },
+    {
+      "name": "Olive Shield",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.olive.shield.boost",
+          "en": "+1 Olive",
+          "ru": "+1 оливка",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/310.webp",
+      "tokenId": 310
+    },
+    {
+      "name": "Oracle Syringe",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.oracleSyringe.boost",
+          "en": "Heal animals for free",
+          "ru": "Бесплатное лечение животных",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/461.webp",
+      "tokenId": 461
+    },
+    {
+      "name": "Paw Aura",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.pawAura.boost",
+          "en": "Feed pets for free",
+          "ru": "Бесплатное кормление питомцев",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/520.webp",
+      "tokenId": 520
+    },
+    {
+      "name": "Paw Shield",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.paw.shield.boost",
+          "en": "+25% Faction Pet Satiation and Marks Awarded",
+          "ru": "+25% к насыщению питомца фракции и к получаемым маркам",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/311.webp",
+      "tokenId": 311
+    },
+    {
+      "name": "Pickaxe Shark",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.pickaxeShark.boost.1",
+          "en": "-15% Gold recovery time",
+          "ru": "-15% времени восстановления золота",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "gold"
+          ]
+        },
+        {
+          "key": "description.pickaxeShark.boost.2",
+          "en": "10% chance for gold to recover instantly",
+          "ru": "10% шанс на мгновенное восстановление золота",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "gold"
+          ]
+        }
+      ],
+      "sprite": "wearables/257.webp",
+      "tokenId": 257
+    },
+    {
+      "name": "Pirate Potion",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.pirate.potion",
+          "en": "Unlock Pirate Chest",
+          "ru": "Открывает пиратский сундук",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/90.webp",
+      "tokenId": 90
+    },
+    {
+      "name": "Pistol Shrimp",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.pistolShrimp.boost",
+          "en": "20% chance to get +1 crustacean yield",
+          "ru": "20% шанс получить +1 к улову ракообразных",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/555.webp",
+      "tokenId": 555
+    },
+    {
+      "name": "Red Pepper Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.redPepperOnesie.boost",
+          "en": "-25% Red Pepper Growth Time",
+          "ru": "-25% времени роста перца",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/458.webp",
+      "tokenId": 458
+    },
+    {
+      "name": "Saw Fish",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.sawFish.boost.one",
+          "en": "+5 daily fishing reels",
+          "ru": "+5 ежедневных попыток рыбалки",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        },
+        {
+          "key": "description.sawFish.boost.two",
+          "en": "+1 Worm from Composting",
+          "ru": "+1 червь с компоста",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/238.webp",
+      "tokenId": 238
+    },
+    {
+      "name": "Shrimp Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.shrimpOnesie.boost",
+          "en": "+1 random fish every 15th reel",
+          "ru": "+1 случайная рыба на каждом 15-м забросе",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "wearables/562.webp",
+      "tokenId": 562
+    },
+    {
+      "name": "Sol & Luna",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.solAndLuna.boost",
+          "en": "-50% Crafting Box Time",
+          "ru": "-50% времени крафта в мастерской",
+          "type": "info",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/410.webp",
+      "tokenId": 410
+    },
+    {
+      "name": "Solflare Aegis",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.solflareAegis.boost",
+          "en": "-50% Plot Crop Time in Summer",
+          "ru": "-50% времени роста растений на грядках летом",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/431.webp",
+      "tokenId": 431
+    },
+    {
+      "name": "Squirrel Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.squirrelOnesie.boost",
+          "en": "+1 Acorn",
+          "ru": "+1 жёлудь",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/427.webp",
+      "tokenId": 427
+    },
+    {
+      "name": "Streamer Hat",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.streamer.hat.boost",
+          "en": "Award players with 5 Love Charms every 5 minutes",
+          "ru": "Награждает игроков 5 жетонами любви каждые 5 минут",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/438.webp",
+      "tokenId": 438
+    },
+    {
+      "name": "Sunflorian Armor",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflorian.armor",
+          "en": "+20% Marks",
+          "ru": "+20% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/335.webp",
+      "tokenId": 335
+    },
+    {
+      "name": "Sunflorian Crown",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflorian.crown.boost",
+          "en": "+25% FLOWER & Coin Deliveries",
+          "ru": "+25% FLOWER и монет от доставок",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "flower"
+          ]
+        },
+        {
+          "key": "bumpkinItemBuff.sunflorian.crown.boost.two",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/379.webp",
+      "tokenId": 379
+    },
+    {
+      "name": "Sunflorian Helmet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflorian.helmet",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/337.webp",
+      "tokenId": 337
+    },
+    {
+      "name": "Sunflorian Medallion",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflorian.medallion.boost",
+          "en": "-25% Cooking Time",
+          "ru": "-25% времени готовки",
+          "type": "info",
+          "withSkill": false,
+          "resource": [
+            "cooking"
+          ]
+        }
+      ],
+      "sprite": "wearables/391.webp",
+      "tokenId": 391
+    },
+    {
+      "name": "Sunflorian Pants",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflorian.pants",
+          "en": "+5% Marks",
+          "ru": "+5% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/338.webp",
+      "tokenId": 338
+    },
+    {
+      "name": "Sunflorian Quiver",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflorian.quiver.boost",
+          "en": "+0.25 Crops & Fruits",
+          "ru": "+0.25 к урожаю растений и фруктов",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop",
+            "fruit"
+          ]
+        }
+      ],
+      "sprite": "wearables/387.webp",
+      "tokenId": 387
+    },
+    {
+      "name": "Sunflorian Sabatons",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflorian.sabatons",
+          "en": "+5% Marks",
+          "ru": "+5% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/339.webp",
+      "tokenId": 339
+    },
+    {
+      "name": "Sunflorian Shield",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflorian.shield.boost",
+          "en": "+0.25 Wood & Minerals",
+          "ru": "+0.25 к древесине и минералам",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "wood"
+          ]
+        }
+      ],
+      "sprite": "wearables/383.webp",
+      "tokenId": 383
+    },
+    {
+      "name": "Sunflorian Sword",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflorian.sword",
+          "en": "+10% Marks",
+          "ru": "+10% марок",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/336.webp",
+      "tokenId": 336
+    },
+    {
+      "name": "Sunflower Amulet",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflower.amulet.boost",
+          "en": "+10% Sunflower",
+          "ru": "+10% к подсолнуху",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/27.webp",
+      "tokenId": 1103
+    },
+    {
+      "name": "Sunflower Rod",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflower.rod.boost",
+          "en": "10% Chance +1 Fish",
+          "ru": "10% шанс получить +1 рыбу",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "fishing"
+          ]
+        }
+      ],
+      "sprite": "wearables/240.webp",
+      "tokenId": 240
+    },
+    {
+      "name": "Sunflower Shield",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "bumpkinItemBuff.sunflower.shield.boost",
+          "en": "Free Sunflower Seeds",
+          "ru": "Бесплатные семена подсолнуха",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/31.webp",
+      "tokenId": 1110
+    },
+    {
+      "name": "Tofu Mask",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.tofu.mask.boost",
+          "en": "+0.1 Soybean",
+          "ru": "+0.1 соя",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "crop"
+          ]
+        }
+      ],
+      "sprite": "wearables/319.webp",
+      "tokenId": 319
+    },
+    {
+      "name": "Training Whistle",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.trainingWhistle.boost",
+          "en": "+1 Leather",
+          "ru": "+1 кожа",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/501.webp",
+      "tokenId": 501
+    },
+    {
+      "name": "Turd Topper",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.turdTopper.boost",
+          "en": "+1 Fertiliser from Composters",
+          "ru": "+1 удобрение из компостеров",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/476.webp",
+      "tokenId": 476
+    },
+    {
+      "name": "Victoria's Apron",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.victoriasApron.boost",
+          "en": "33% chance next reset is free after feeding pet fully.",
+          "ru": "33% шанс, что следующий сброс будет бесплатным после полного кормления питомца.",
+          "type": "vibrant",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/521.webp",
+      "tokenId": 521
+    },
+    {
+      "name": "Walrus Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.walrusOnesie.boost",
+          "en": "+5 Pet Energy",
+          "ru": "+5 энергии питомца",
+          "type": "success",
+          "withSkill": false,
+          "resource": []
+        }
+      ],
+      "sprite": "wearables/518.webp",
+      "tokenId": 518
+    },
+    {
+      "name": "White Sheep Onesie",
+      "type": "wearable",
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "boosts": [
+        {
+          "key": "description.whiteSheepOnesie.boost",
+          "en": "+0.25 Wool",
+          "ru": "+0.25 шерсть",
+          "type": "success",
+          "withSkill": false,
+          "resource": [
+            "animal"
+          ]
+        }
+      ],
+      "sprite": "wearables/401.webp",
+      "tokenId": 401
+    }
+  ]
+}
