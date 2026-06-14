@@ -37,7 +37,7 @@ const tagColors: Record<string, string> = {
 ---
 
 <BaseLayout
-  currentPage="guides"
+  currentPage="codex"
   title="Гайды по Sunflower Land — GoblinCodex"
   description="Актуальные гайды для новичков и продвинутых игроков: механики, ресурсы, животные, рыбалка."
 >
@@ -88,7 +88,7 @@ const tagColors: Record<string, string> = {
     <div class="gc-guides-grid" id="guidesGrid">
       {allGuides.map(guide => (
         <a
-          href={`/guides/${guide.id}`}
+          href={`/codex/${guide.id}`}
           class="gc-card gc-card-hover gc-guide-card"
           data-section={guide.data.section ?? 'guides'}
           data-category={guide.data.category}

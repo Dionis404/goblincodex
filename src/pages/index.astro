@@ -68,7 +68,7 @@ latestGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new D
 const guides = latestGuides.slice(0, 3).map(g => ({
   title: g.data.title,
   time:  `${g.data.readTime} мин`,
-  link:  `/guides/${g.id}`,
+  link:  `/codex/${g.id}`,
   icon:  g.data.icon,
 }));
 ---
@@ -83,13 +83,13 @@ const guides = latestGuides.slice(0, 3).map(g => ({
   <section class="gc-hero gc-page-enter">
     <div class="gc-hero-text">
       <h1 class="gc-h1">
-        Всё о <em>Sunflower<br/>Land</em> — здесь
+        Всё о <em>Sunflower<br/>Land</em> здесь
       </h1>
       <p class="gc-hero-desc">
         Лаконичные гайды, актуальные новости, инструменты и база данных для фермеров SFL.
       </p>
       <div class="gc-hero-actions">
-        <a href="/guides" class="gc-btn-primary">📖 Быстрый старт</a>
+        <a href="/codex" class="gc-btn-primary">📖 Быстрый старт</a>
         <a href="/news" class="gc-btn-secondary">Что нового?</a>
       </div>
     </div>
@@ -117,7 +117,7 @@ const guides = latestGuides.slice(0, 3).map(g => ({
 
     <!-- ── 4 карточки разделов ── -->
     <div class="gc-grid-4" style="margin-bottom: 40px;">
-      <a href="/guides" class="gc-card gc-card-hover gc-section-card">
+      <a href="/codex" class="gc-card gc-card-hover gc-section-card">
         <div class="gc-section-icon">📚</div>
         <div>
           <div class="gc-section-title">База знаний</div>
@@ -176,7 +176,7 @@ const guides = latestGuides.slice(0, 3).map(g => ({
       <div class="gc-card" style="padding: 24px;">
         <div class="gc-block-header">
           <span class="gc-block-title">📗 Последние гайды</span>
-          <a href="/guides" class="gc-block-link">Все гайды →</a>
+          <a href="/codex" class="gc-block-link">Все гайды →</a>
         </div>
         <div>
           {guides.map(guide => (

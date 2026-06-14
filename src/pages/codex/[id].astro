@@ -29,7 +29,7 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
 ---
 
 <BaseLayout
-  currentPage="guides"
+  currentPage="codex"
   title={`${guide.data.title} — GoblinCodex`}
   description={guide.data.description ?? guide.data.title}
   type="article"
@@ -37,7 +37,7 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
   <div class="gc-content gc-page-enter">
 
     <!-- Кнопка назад (сверху) -->
-    <a href="/guides" class="gc-btn-secondary gc-guide-back-top">← Назад к гайдам</a>
+    <a href="/codex" class="gc-btn-secondary gc-guide-back-top">← Назад к гайдам</a>
 
     <!-- Основной двухколоночный layout -->
     <div class="gc-guide-layout">
@@ -47,9 +47,9 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
 
         <!-- Хлебные крошки -->
         <nav class="gc-breadcrumb">
-          <a href="/guides">База знаний</a>
+          <a href="/codex">База знаний</a>
           <span>›</span>
-          <a href="/guides">Гайды</a>
+          <a href="/codex">Гайды</a>
           <span>›</span>
           <span>{guide.data.title}</span>
         </nav>
