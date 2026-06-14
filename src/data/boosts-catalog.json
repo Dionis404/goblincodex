@@ -1,6 +1,6 @@
 {
   "version": "auto",
-  "updatedAt": "2026-06-13T08:25:38Z",
+  "updatedAt": "2026-06-14T10:00:35Z",
   "stats": {
     "collectibles": 187,
     "wearables": 125,
@@ -21,10 +21,10 @@
           "en": "+0.1 Feathers",
           "ru": "+0.1 перо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/alien_chicken.webp",
@@ -43,10 +43,10 @@
           "en": "+0.5 Wood",
           "ru": "+0.5 древесина",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": null,
@@ -65,10 +65,10 @@
           "en": "+1 Fishing minigame attempt",
           "ru": "+1 бесплатная попытка в мини-игре на рыбалке",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/anemone_flower.webp",
@@ -87,28 +87,28 @@
           "en": "+20% Wood",
           "ru": "+20% к древесине",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.apprentice.beaver.boost",
           "en": "-50% Tree Recovery Time",
           "ru": "-50% времени восстановления деревьев",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.apprentice.beaver.warning",
           "en": "Disabled if Foreman Beaver Active",
           "ru": "Не работает, если Foreman Beaver активен",
           "type": "danger",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/apprentice_beaver.gif",
@@ -127,10 +127,10 @@
           "en": "+0.1 Wool",
           "ru": "+0.1 шерсть",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/sheep_astronaut.webp",
@@ -149,16 +149,16 @@
           "en": "Autumn Disaster Protection",
           "ru": "Защита от осенних бедствий",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         },
         {
           "key": "description.autumnGuardian.boost2",
           "en": "Blessed Autumn Events",
           "ru": "Благословенные осенние события",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/autumn_guardian.webp",
@@ -177,10 +177,10 @@
           "en": "+0.2 Egg",
           "ru": "+0.2 яйцо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/ayam_cemani.webp",
@@ -199,10 +199,10 @@
           "en": "+10 cow xp from animal affection tools",
           "ru": "+10 опыта коровам от инструментов для ухода",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/baby_cow.webp",
@@ -221,20 +221,20 @@
           "en": "-25% Tree Recovery Time",
           "ru": "-25% времени восстановления дерева",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.badgerShrine.buff.2",
           "en": "-25% Stone Recovery Time",
           "ru": "-25% времени восстановления камня",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "stone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/badger_shrine.webp",
@@ -253,10 +253,10 @@
           "en": "+0.1 Banana",
           "ru": "+0.1 банан",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/banana_chicken.webp",
@@ -275,20 +275,20 @@
           "en": "-25% Chicken Sleep Time",
           "ru": "-25% времени сна куриц",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.bantamShrine.buff.2",
           "en": "-5% Feed to feed chickens",
           "ru": "-5% корма для кур",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/bantam_shrine.webp",
@@ -307,20 +307,20 @@
           "en": "+5 Base Barn Animals",
           "ru": "+5 животных в базовом амбаре",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.barnBlueprint.boost2",
           "en": "+5 Max Barn Animals per Upgrade",
           "ru": "Максимальное количество животных в амбаре: +5 за каждое улучшение",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/barn_blueprint.webp",
@@ -339,36 +339,36 @@
           "en": "-30% Basic Crops Growth Time",
           "ru": "-30% времени роста базовых культур",
           "type": "info",
-          "withSkill": true,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": true
         },
         {
           "key": "description.basic.scarecrow.boost",
           "en": "-20% Basic Crops Growth Time",
           "ru": "-20% времени роста базовых культур",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.basic.scarecrow.boost.aoe.skill",
           "en": "Area of Effect (7x7) below",
           "ru": "Область действия (7x7) ниже",
           "type": "success",
-          "withSkill": true,
-          "resource": []
+          "resource": [],
+          "withSkill": true
         },
         {
           "key": "description.basic.scarecrow.boost.aoe",
           "en": "Area of Effect (3x3) below",
           "ru": "Область действия (3x3) ниже",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/aoe/basic_scarecrow.png",
@@ -387,10 +387,10 @@
           "en": "+0.05 Oil",
           "ru": "+0.05 нефть",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "oil"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "fish/battle_fish.webp",
@@ -409,18 +409,18 @@
           "en": "+0.5 Honey Production Speed",
           "ru": "+0.5 к скорости производства мёда",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "honey"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.bearShrine.buff.2",
           "en": "+20% chance of bee swarm",
           "ru": "+20% к шансу появления пчелиного роя",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/bear_shrine.webp",
@@ -439,10 +439,10 @@
           "en": "+1 Blueberry",
           "ru": "+1 черника",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/black_bear.gif",
@@ -461,11 +461,11 @@
           "en": "-25% Flower Growth Time",
           "ru": "-25% времени роста цветов",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "flower"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "factions/boosts/flower_boost_full.webp",
@@ -484,10 +484,10 @@
           "en": "-20% Cooking Time",
           "ru": "-20% времени готовки",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/boar_shrine.webp",
@@ -506,20 +506,20 @@
           "en": "+0.5 Cabbage (Cabbage Girl boost)",
           "ru": "+0.5 капуста с Cabbage Girl",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.cabbage.boy.boost",
           "en": "+0.25 Cabbage",
           "ru": "+0.25 капуста",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/cabbage_boy.gif",
@@ -538,10 +538,10 @@
           "en": "-50% Cabbage Plot Growth Time",
           "ru": "-50% времени роста капусты на грядках",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/cabbage_girl.gif",
@@ -560,10 +560,10 @@
           "en": "4x Chance of Mutant Crop",
           "ru": "4x шанс выпадения мутанта с волшебного боба",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/carrot_sword.png",
@@ -582,30 +582,30 @@
           "en": "+1 Egg",
           "ru": "+1 яйцо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.chicken.coop.boost.two",
           "en": "+5 Base Chickens",
           "ru": "+5 куриц в курятнике",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.chicken.coop.boost.three",
           "en": "+5 Max Chickens per Hen House Upgrade",
           "ru": "+5 куриц в курятнике за каждое улучшение",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/chicken_coop.png",
@@ -624,8 +624,8 @@
           "en": "Free Gift at Christmas",
           "ru": "Бесплатный подарок на рождество",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/christmas_tree.png",
@@ -644,30 +644,30 @@
           "en": "-25% Cow Sleep Time",
           "ru": "-25% времени сна коров",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.collieShrine.buff.2",
           "en": "-25% Sheep Sleep Time",
           "ru": "-25% времени сна овец",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.collieShrine.buff.3",
           "en": "-5% Feed to feed barn animals",
           "ru": "-5% корма для животных в амбаре",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/collie_shrine.webp",
@@ -686,8 +686,8 @@
           "en": "+2 Crustacean yield",
           "ru": "+2 к улову ракообразных",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/crab_house.webp",
@@ -706,10 +706,10 @@
           "en": "+0.1 Crimstone",
           "ru": "+0.1 кримстоун",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crimstone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/crim_peckster.png",
@@ -728,10 +728,10 @@
           "en": "+0.05 Crimstone",
           "ru": "+0.05 кримстоун",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crimstone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "fish/crimson_carp.png",
@@ -750,20 +750,20 @@
           "en": "-10% Crimstone recovery time",
           "ru": "-10% времени восстановления кримстоуна",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crimstone"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.crimstoneClam.boost.two",
           "en": "10% chance for Crimstone to recover instantly",
           "ru": "10% шанс мгновенного восстановления кримстоуна",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crimstone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/crimstone_clam.webp",
@@ -782,8 +782,8 @@
           "en": "-5% Crab Pot & Mariner Pot time",
           "ru": "-5% времени ловли ракообразных",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "monuments/crystal_altar_3.webp",
@@ -802,18 +802,18 @@
           "en": "+5 daily fishing reels",
           "ru": "+5 ежедневных попыток рыбалки",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.deepSeaSlug.boost.2",
           "en": "+1 Worm from Composting",
           "ru": "+1 червь с компоста",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "fish/deep_sea_slug.webp",
@@ -832,10 +832,10 @@
           "en": "-10% Cooking Time",
           "ru": "-10% времени готовки",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/desert_gnome.webp",
@@ -854,10 +854,10 @@
           "en": "10% Chance for +1 Flower",
           "ru": "10% шанс получить +1 цветок",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/desert_rose.webp",
@@ -876,8 +876,8 @@
           "en": "Speed up with Coins instead of Gems (50 Coins/Gem, up to 20,000 Coins/day).",
           "ru": "Ускоряй за монеты вместо гемов (50 монет/гем, до 20 000 монет в день).",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/dino_egg_trophy.webp",
@@ -896,10 +896,10 @@
           "en": "5% less feeding cost for cows",
           "ru": "-5% корма для коров",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/dr_cow.webp",
@@ -918,10 +918,10 @@
           "en": "+20% Carrot",
           "ru": "+20% к моркови",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/easter/easter_bunny.gif",
@@ -940,10 +940,10 @@
           "en": "-2h Chicken Sleep Time",
           "ru": "-2 часа времени сна куриц",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/el_pollo_veloz.webp",
@@ -962,20 +962,20 @@
           "en": "+0.5 Stone, Iron, Gold (AOE 3x3)",
           "ru": "+0.5 камень, железо, золото (область 3x3)",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "stone",
             "gold",
             "iron"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.turtle.boost.aoe",
           "en": "Affects plots around (3x3)",
           "ru": "Влияет на грядки вокруг (3x3)",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/aoe/emerald_turtle.webp",
@@ -994,8 +994,8 @@
           "en": "+0.2 Wild Mushroom",
           "ru": "+0.2 дикий гриб",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/fairy_circle.webp",
@@ -1014,10 +1014,10 @@
           "en": "-25% Sheep Sleep Time",
           "ru": "-25% времени сна овец",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/farm_dog.webp",
@@ -1036,8 +1036,8 @@
           "en": "+1 Help Limit",
           "ru": "+1 лимит помощи",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "monuments/shovel_monument.webp",
@@ -1056,10 +1056,10 @@
           "en": "-10% Feed to Chicken",
           "ru": "-10% корма для куриц",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/fat_chicken.webp",
@@ -1078,8 +1078,8 @@
           "en": "Free Gift at Christmas",
           "ru": "Бесплатный подарок на рождество",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/festive_tree.png",
@@ -1098,10 +1098,10 @@
           "en": "50% Chance of +1 Fish",
           "ru": "Вероятность получения +1 рыбы: 50%",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "factions/boosts/fish_boost_full.webp",
@@ -1120,10 +1120,10 @@
           "en": "-2.5% Chicken Sleep Time",
           "ru": "-2.5% времени сна кур",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/flamingo_chicken.webp",
@@ -1142,11 +1142,11 @@
           "en": "-10% Flower Growth Time",
           "ru": "-10% времени роста цветов",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "flower"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/flower_fox.webp",
@@ -1165,30 +1165,30 @@
           "en": "+20% Wood",
           "ru": "+20% к древесине",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.apprentice.beaver.boost",
           "en": "-50% Tree Recovery Time",
           "ru": "-50% времени восстановления деревьев",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.foreman.beaver.boost",
           "en": "Chop Trees without Axes",
           "ru": "Деревья рубятся без использования топоров",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/construction_beaver.gif",
@@ -1207,16 +1207,16 @@
           "en": "-25% Crafting Box Time",
           "ru": "-25% времени крафта в мастерской",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         },
         {
           "key": "description.foxShrine.buff.2",
           "en": "10% chance to instantly craft a recipe",
           "ru": "10% шанс мгновенно скрафтить рецепт",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/fox_shrine.webp",
@@ -1235,10 +1235,10 @@
           "en": "+0.5 Pumpkin",
           "ru": "+0.5 тыква",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/freya_fox.png",
@@ -1257,10 +1257,10 @@
           "en": "Cows cannot get sick during winter",
           "ru": "Зимой коровы не болеют",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/frozen_mutant_cow.webp",
@@ -1279,10 +1279,10 @@
           "en": "Sheep cannot get sick during winter",
           "ru": "Зимой овцы не болеют",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/frozen_mutant_sheep.webp",
@@ -1301,11 +1301,11 @@
           "en": "-20% Fruit Patch Growth Time",
           "ru": "-20% времени роста на фруктовых грядках",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/fruit_tune_box.webp",
@@ -1324,10 +1324,10 @@
           "en": "+0.5 Stone",
           "ru": "+0.5 камень",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "stone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": null,
@@ -1346,8 +1346,8 @@
           "en": "Grants 3 Wishes from the Wish list",
           "ru": "Исполняет 3 желания из списка желаний",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/genie_lamp.png",
@@ -1366,8 +1366,8 @@
           "en": "+2 Artichokes",
           "ru": "+2 артишок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/giant_artichoke.webp",
@@ -1386,8 +1386,8 @@
           "en": "+2 Daily Cheers",
           "ru": "+2 ежедневных жетона поддержки",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/giant_gold_bone.webp",
@@ -1406,10 +1406,10 @@
           "en": "+2 Kale",
           "ru": "+2 кейл",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/giant_kale.webp",
@@ -1428,8 +1428,8 @@
           "en": "+3 Onions",
           "ru": "+3 лук",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/giant_onion.webp",
@@ -1448,10 +1448,10 @@
           "en": "-50% Turnip Growth Time",
           "ru": "-50% времени роста репы",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/giant_turnip.webp",
@@ -1470,8 +1470,8 @@
           "en": "+0.5 Yams",
           "ru": "+0.5 ямс",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/giant_yam.webp",
@@ -1490,10 +1490,10 @@
           "en": "-50% Zucchini Plot Growth Time",
           "ru": "-50% времени роста цукини на грядках",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/giant_zucchini.webp",
@@ -1512,10 +1512,10 @@
           "en": "+0.1 Gold",
           "ru": "+0.1 золото",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "gold"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "fish/gilded_swordfish.png",
@@ -1534,10 +1534,10 @@
           "en": "+0.1 Gold",
           "ru": "+0.1 золото",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "gold"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/gold_beetle.webp",
@@ -1556,10 +1556,10 @@
           "en": "Feed Chickens for free",
           "ru": "Бесплатное кормление куриц",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/gold_egg.png",
@@ -1578,10 +1578,10 @@
           "en": "+100% Cauliflower",
           "ru": "+100% к цветной капусте",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/golden_cauliflower.webp",
@@ -1600,10 +1600,10 @@
           "en": "Feed cows for free!",
           "ru": "Корми коров бесплатно!",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/golden_cow.webp",
@@ -1622,10 +1622,10 @@
           "en": "Feed Sheeps for free!",
           "ru": "Корми овец бесплатно!",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/golden_sheep.webp",
@@ -1644,10 +1644,10 @@
           "en": "-50% Cooking Time",
           "ru": "-50% времени готовки",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "factions/boosts/cooking_boost_full.webp",
@@ -1666,8 +1666,8 @@
           "en": "+20% Bumpkin XP from Cakes",
           "ru": "+20% к опыту бампкина с тортов",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/grain_grinder.png",
@@ -1686,8 +1686,8 @@
           "en": "+1 Grape",
           "ru": "+1 виноград",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/grape_granny.webp",
@@ -1706,10 +1706,10 @@
           "en": "-20% Greenhouse Pot Growth Time",
           "ru": "-20% времени роста в теплице",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "icons/greenhouse_glow.webp",
@@ -1728,8 +1728,8 @@
           "en": "+0.2 Greenhouse Produce Yield",
           "ru": "+0.2 к урожаю в теплице",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "icons/greenhouse_goodie.webp",
@@ -1748,8 +1748,8 @@
           "en": "Halves expansion costs",
           "ru": "Снижает стоимость расширений вдвое",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/grinx_hammer.png",
@@ -1768,10 +1768,10 @@
           "en": "-50% Growth Time in Crop Machine",
           "ru": "-50% времени роста в агромашине",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/groovy_gramophone.webp",
@@ -1790,10 +1790,10 @@
           "en": "-25% Crop Growth Time",
           "ru": "-25% времени роста растений",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "factions/boosts/crop_boost_full.webp",
@@ -1812,8 +1812,8 @@
           "en": "+20 daily Desert Dig attempts",
           "ru": "+20 ежедневных раскопок на пляже",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/heart_of_davy_jones.gif",
@@ -1832,10 +1832,10 @@
           "en": "-25% Animal Feed",
           "ru": "-25% корма для животных",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "food/honey_treat.webp",
@@ -1854,10 +1854,10 @@
           "en": "+100 Pet XP per food request",
           "ru": "+100 XP для питомца за каждый запрос на еду",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/hound_shrine.webp",
@@ -1876,10 +1876,10 @@
           "en": "20% Chance for +1 Flower",
           "ru": "20% шанс получить +1 цветок",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/hummingbird.webp",
@@ -1898,10 +1898,10 @@
           "en": "Free Flower Seeds",
           "ru": "Бесплатные семена цветов",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/hungry_caterpillar.webp",
@@ -1920,10 +1920,10 @@
           "en": "Fermented Carrots 2x Bumpkin XP",
           "ru": "2x опыта бампкина с квашеной моркови",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/hungryHare.png",
@@ -1942,20 +1942,20 @@
           "en": "+2 Fruit Patch Harvest per seed",
           "ru": "+2 сбора с фруктовой грядки за семя",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.immortal.pear.boost",
           "en": "+1 Fruit Patch Harvest per seed",
           "ru": "+1 сбор с фруктовой грядки за семя",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/immortal_pear.webp",
@@ -1974,10 +1974,10 @@
           "en": "+0.1 Iron",
           "ru": "+0.1 железо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "iron"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/iron_beetle.webp",
@@ -1996,10 +1996,10 @@
           "en": "+1 Iron",
           "ru": "+1 железо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "iron"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/iron_idol.webp",
@@ -2018,10 +2018,10 @@
           "en": "-5% chicken sleep time",
           "ru": "-5% времени сна куриц",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/janitor_chicken.webp",
@@ -2040,10 +2040,10 @@
           "en": "+0.25 Honey per Full Beehive",
           "ru": "+0.25 мёда с каждого полного улья",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "honey"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/bears/king_of_bears.png",
@@ -2062,10 +2062,10 @@
           "en": "+0.1 Oil",
           "ru": "+0.1 нефть",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "oil"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/knight_chicken.webp",
@@ -2084,8 +2084,8 @@
           "en": "Double Sprout Mix Boost Effect",
           "ru": "Двойной эффект от ростковой смеси",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/knowledge_crab.webp",
@@ -2104,10 +2104,10 @@
           "en": "+0.2 Carrot",
           "ru": "+0.2 морковь",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/lab_grown_carrot.gif",
@@ -2126,10 +2126,10 @@
           "en": "+0.3 Pumpkin",
           "ru": "+0.3 тыква",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/lab_grown_pumpkin.gif",
@@ -2148,10 +2148,10 @@
           "en": "+0.4 Radish",
           "ru": "+0.4 редис",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/lab_grown_radish.gif",
@@ -2170,10 +2170,10 @@
           "en": "+0.25 Apple",
           "ru": "+0.25 яблоко",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/ladybug.gif",
@@ -2192,36 +2192,36 @@
           "en": "+0.3 Advanced Crops",
           "ru": "+0.3 к урожаю продвинутых культур",
           "type": "success",
-          "withSkill": true,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": true
         },
         {
           "key": "description.laurie.chuckle.crow.boost",
           "en": "+0.2 Advanced Crops",
           "ru": "+0.2 к урожаю продвинутых культур",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.laurie.chuckle.crow.boost.aoe.skill",
           "en": "Area of Effect (7x7) below",
           "ru": "Область действия (7x7)",
           "type": "success",
-          "withSkill": true,
-          "resource": []
+          "resource": [],
+          "withSkill": true
         },
         {
           "key": "description.laurie.chuckle.crow.boost.aoe",
           "en": "Area of Effect (3x3) below",
           "ru": "Область действия (3x3)",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/aoe/laurie.png",
@@ -2240,60 +2240,60 @@
           "en": "+1 Crop Yield",
           "ru": "+1 к урожаю на грядках",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.legendaryShrine.buff.2",
           "en": "+1 Fruit Patch Yield",
           "ru": "+1 фрукт на фруктовых грядках",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.legendaryShrine.buff.3",
           "en": "+1 Wood",
           "ru": "+1 древесина",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.legendaryShrine.buff.4",
           "en": "+1 Stone",
           "ru": "+1 камень",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "stone"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.legendaryShrine.buff.5",
           "en": "+1 Flower",
           "ru": "+1 цветок",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.legendaryShrine.buff.6",
           "en": "-50% Cooking Time",
           "ru": "-50% времени приготовления",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/legendary_shrine.webp",
@@ -2312,11 +2312,11 @@
           "en": "-25% Lemon Growth Time",
           "ru": "-25% времени роста лимона",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/lemon_frog.webp",
@@ -2335,10 +2335,10 @@
           "en": "+0.2 Lemons",
           "ru": "+0.2 лимон",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "fish/lemon_shark.webp",
@@ -2357,11 +2357,11 @@
           "en": "-50% Lemon Growth Time",
           "ru": "-50% времени роста лимона",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/lemon_tea_bath.webp",
@@ -2380,10 +2380,10 @@
           "en": "+0.2 Milk",
           "ru": "+0.2 молоко",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "fish/cow_fish.webp",
@@ -2402,10 +2402,10 @@
           "en": "-10% Crop Growth Time",
           "ru": "-10% времени роста урожая",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/lunar_calendar.webp",
@@ -2424,8 +2424,8 @@
           "en": "+1 help progress to player's monuments",
           "ru": "+1 помощь к прогрессу твоих монументов",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/lunar_temple.webp",
@@ -2444,16 +2444,16 @@
           "en": "-15% Lava Pit Time",
           "ru": "-15% времени производства в лавовой яме",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         },
         {
           "key": "description.magmaStone.buff.two",
           "en": "+0.15 Obsidian",
           "ru": "+0.15 обсидиан",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/magma_stone.webp",
@@ -2472,10 +2472,10 @@
           "en": "1 Free Food per Day",
           "ru": "1 бесплатное блюдо в день",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/maneki_neko.gif",
@@ -2494,10 +2494,10 @@
           "en": "-5% Sheep Feed",
           "ru": "-5% корма для овец",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/mermaid_sheep.webp",
@@ -2516,8 +2516,8 @@
           "en": "+1 Help Limit",
           "ru": "+1 лимит помощи",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "monuments/pickaxe_monument.webp",
@@ -2536,30 +2536,30 @@
           "en": "-25% Iron Recovery Time",
           "ru": "-25% времени восстановления железа",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "iron"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.moleShrine.buff.2",
           "en": "-25% Gold Recovery Time",
           "ru": "-25% времени восстановления золота",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "gold"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.moleShrine.buff.3",
           "en": "-25% Crimstone Recovery Time",
           "ru": "-25% времени восстановления кримстоуна",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crimstone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/mole_shrine.webp",
@@ -2578,8 +2578,8 @@
           "en": "+0.25 Leather",
           "ru": "+0.25 кожа",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/moo_ver.webp",
@@ -2598,21 +2598,21 @@
           "en": "-25% Flower Growth Time",
           "ru": "-25% времени роста цветов",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "flower"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.mothShrine.buff.2",
           "en": "20% chance to get +1 Flower",
           "ru": "20% шанс получить +1 цветок",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/moth_shrine.webp",
@@ -2631,8 +2631,8 @@
           "en": "+0.2 Wild Mushroom",
           "ru": "+0.2 дикий гриб",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "seasons/dawn-breaker/mushroom_house.png",
@@ -2651,10 +2651,10 @@
           "en": "-50% Parsnip Growth Time",
           "ru": "-50% времени роста пастернака",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/mysterious_parsnip.webp",
@@ -2673,8 +2673,8 @@
           "en": "+100% Map Piece Odds",
           "ru": "+100% к шансу получить часть карты",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/navigation_table.webp",
@@ -2693,10 +2693,10 @@
           "en": "Sheep cannot get sick during summer",
           "ru": "Летом овцы не болеют",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/nurse_sheep.webp",
@@ -2715,11 +2715,11 @@
           "en": "Bulk harvest, plant and fertilise your crops, fruit and greenhouse",
           "ru": "Сажает и собирает весь урожай с грядок, удобряет разные типы грядок, включая теплицу.",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/obsidian_shrine.webp",
@@ -2738,8 +2738,8 @@
           "en": "+0.5 Obsidian",
           "ru": "+0.5 обсидиан",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/obsidian_turtle.webp",
@@ -2758,11 +2758,11 @@
           "en": "-25% Fruit Growth Time",
           "ru": "-25% времени роста фруктов",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "factions/boosts/fruit_boost_full.webp",
@@ -2781,16 +2781,16 @@
           "en": "-50% Mineral Recovery Time",
           "ru": "-50% времени восстановления минералов",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         },
         {
           "key": "description.ore.hourglass.boost.effectTime",
           "en": "Lasts for 3 hours",
           "ru": "Длится 3 часа",
           "type": "danger",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "factions/boosts/mineral_boost_full.webp",
@@ -2809,10 +2809,10 @@
           "en": "+0.1 Carrot",
           "ru": "+0.1 морковь",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/pablo_bunny.gif",
@@ -2831,10 +2831,10 @@
           "en": "20% Chance for +1 Potato",
           "ru": "20% шанс получить +1 картофель",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/peeled_potato.gif",
@@ -2853,10 +2853,10 @@
           "en": "+10 Pet XP per food request.",
           "ru": "+10 XP для домашних животных за каждый запрос на еду.",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/pet_bowls.webp",
@@ -2875,8 +2875,8 @@
           "en": "+1 daily Desert Dig attempt",
           "ru": "+1 ежедневная раскопка на пляже",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/pharaoh_chicken.webp",
@@ -2895,8 +2895,8 @@
           "en": "+2 Greenhouse Produce",
           "ru": "+2 урожая в теплице",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/pharaoh_gnome.webp",
@@ -2915,10 +2915,10 @@
           "en": "+1 Fish during Spring",
           "ru": "+1 рыба весной",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "fish/pink_dolphin.webp",
@@ -2937,8 +2937,8 @@
           "en": "+1 Weed & Dung per farm help",
           "ru": "+1 Weed & Dung за каждую помощь на ферме",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/poseidons_throne.webp",
@@ -2957,10 +2957,10 @@
           "en": "3% Chance of +10 Potato",
           "ru": "3% шанс получить +10 картофеля",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/potato_mutant.webp",
@@ -2979,10 +2979,10 @@
           "en": "+2.5 Gold",
           "ru": "+2.5 золото",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "gold"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": null,
@@ -3001,10 +3001,10 @@
           "en": "+0.5 Gold",
           "ru": "+0.5 золото",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "gold"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": null,
@@ -3023,10 +3023,10 @@
           "en": "+0.2 Eggplant",
           "ru": "+0.2 баклажан",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/purple_trail.png",
@@ -3045,10 +3045,10 @@
           "en": "+1 Honey Production Speed",
           "ru": "+1 к скорости производства мёда",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "honey"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/queen_bee.webp",
@@ -3067,18 +3067,18 @@
           "en": "+1 Corn",
           "ru": "+1 кукуруза",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.queen.cornelia.boost.aoe",
           "en": "Affects plots around (3x4)",
           "ru": "Влияет на грядки вокруг (3x4)",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/aoe/queen_cornelia.png",
@@ -3097,10 +3097,10 @@
           "en": "+0.1 Iron",
           "ru": "+0.1 железо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "iron"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "fish/radiant_ray.png",
@@ -3119,10 +3119,10 @@
           "en": "3% Chance of +10 Radish",
           "ru": "3% шанс получить +10 редиса",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/radish_mutant.webp",
@@ -3141,10 +3141,10 @@
           "en": "-50% Crop Plot Growth Time",
           "ru": "-50% времени роста на грядках",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "composters/rapid_root.png",
@@ -3163,10 +3163,10 @@
           "en": "+5 daily fishing reels",
           "ru": "+5 ежедневных попыток рыбалки",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/reelmasters_chair.webp",
@@ -3185,10 +3185,10 @@
           "en": "+0.5 Iron",
           "ru": "+0.5 железо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "iron"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": null,
@@ -3207,10 +3207,10 @@
           "en": "+2.5 Stone",
           "ru": "+2.5 камень",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "stone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": null,
@@ -3229,10 +3229,10 @@
           "en": "+0.25 Lemon",
           "ru": "+0.25 лимон",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/reveling_lemon.gif",
@@ -3251,8 +3251,8 @@
           "en": "+0.25 Rice",
           "ru": "+0.25 рис",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/rice_panda.webp",
@@ -3271,10 +3271,10 @@
           "en": "+0.1 Egg",
           "ru": "+0.1 яйцо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/rich_chicken.webp",
@@ -3293,10 +3293,10 @@
           "en": "10% Chance of +2 Stone",
           "ru": "10% шанс получить +2 камня",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "stone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/rock_golem.webp",
@@ -3315,10 +3315,10 @@
           "en": "+0.25 Iron",
           "ru": "+0.25 железо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "iron"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/rocky_mole.gif",
@@ -3337,8 +3337,8 @@
           "en": "Trap without Trap Pots",
           "ru": "Ловля ракообразных не требует ловушек",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/royal_crab_pot.webp",
@@ -3357,10 +3357,10 @@
           "en": "+2.5 Wood",
           "ru": "+2.5 древесина",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": null,
@@ -3379,10 +3379,10 @@
           "en": "5% chance for +1 Flower",
           "ru": "5% шанс получить +1 цветок",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/salt_crystal_flower.webp",
@@ -3401,10 +3401,10 @@
           "en": "+5% Animal Produce Yield",
           "ru": "+5% к продукции животных",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "food/salt_lick.webp",
@@ -3423,8 +3423,8 @@
           "en": "Cumulative Salt & Aging buffs per level",
           "ru": "Накопительные бонусы к соли и выдержке за каждый уровень",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": null,
@@ -3443,36 +3443,36 @@
           "en": "+0.3 Medium Crops",
           "ru": "+0.3 к урожаю средних культур",
           "type": "success",
-          "withSkill": true,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": true
         },
         {
           "key": "description.scary.mike.boost",
           "en": "+0.2 Medium Crops",
           "ru": "+0.2 к урожаю средних культур",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.scary.mike.boost.aoe.skill",
           "en": "Area of Effect (7x7) below",
           "ru": "Область действия (7x7) ниже",
           "type": "success",
-          "withSkill": true,
-          "resource": []
+          "resource": [],
+          "withSkill": true
         },
         {
           "key": "description.scary.mike.boost.aoe",
           "en": "Area of Effect (3x3) below",
           "ru": "Область действия (3x3) ниже",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/aoe/scary_mike.png",
@@ -3491,10 +3491,10 @@
           "en": "+2 Barley",
           "ru": "+2 ячмень",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/sheaf_of_plenty.webp",
@@ -3513,18 +3513,18 @@
           "en": "+0.5 crop yield",
           "ru": "+0.5 урожая с грядок",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.sir.goldensnout.boost.aoe",
           "en": "Affects plots around (4x4)",
           "ru": "Влияет на грядки вокруг (4x4)",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/aoe/sir_goldensnout.webp",
@@ -3543,10 +3543,10 @@
           "en": "+20% Bumpkin XP from Fish",
           "ru": "+20% к опыту бампкина с рыбы",
           "type": "success",
-          "withSkill": true,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": true
         }
       ],
       "sprite": "sfts/skill_shrimpy.webp",
@@ -3565,10 +3565,10 @@
           "en": "Chickens cannot get sick during autumn",
           "ru": "Осенью курицы не болеют",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/sleepy_chicken.webp",
@@ -3587,8 +3587,8 @@
           "en": "-10% Composter Compost Time",
           "ru": "-10% времени компостирования",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/soil_krabby.webp",
@@ -3607,10 +3607,10 @@
           "en": "+0.1 Milk",
           "ru": "+0.1 молоко",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/spa_cow.webp",
@@ -3629,10 +3629,10 @@
           "en": "+5 Sheep XP from Animal Affection tools",
           "ru": "+5 опыта овцам от инструментов для ухода",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/spa_sheep.webp",
@@ -3651,10 +3651,10 @@
           "en": "-25% Plot Crop Growth Time",
           "ru": "-25% времени роста растений на грядках",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/sparrow_shrine.webp",
@@ -3673,10 +3673,10 @@
           "en": "-10% Chicken Sleep Time",
           "ru": "-10% времени сна куриц",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/speed_chicken.webp",
@@ -3695,8 +3695,8 @@
           "en": "-20% Trap Pot time",
           "ru": "-20% времени ловли ракообразных",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/speed_trap.webp",
@@ -3715,16 +3715,16 @@
           "en": "Spring Disaster Protection",
           "ru": "Защита от весенних бедствий",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         },
         {
           "key": "description.springGuardian.boost2",
           "en": "Blessed Spring Events",
           "ru": "Благословенные весенние события",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/spring_guardian.webp",
@@ -3743,10 +3743,10 @@
           "en": "+0.1 Egg",
           "ru": "+0.1 яйцо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/squid_chicken.webp",
@@ -3765,11 +3765,11 @@
           "en": "-50% Orange Growth Time",
           "ru": "-50% времени роста апельсина",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/squirrel_monkey.gif",
@@ -3788,20 +3788,20 @@
           "en": "-25% Oil Recovery Time",
           "ru": "-25% времени восстановления нефти",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "oil"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.stagShrine.buff.2",
           "en": "+15 Oil every 3rd drill",
           "ru": "+15 нефти при каждой 3й добыче",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "oil"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/stag_shrine.webp",
@@ -3820,10 +3820,10 @@
           "en": "3% Chance of +10 Sunflower",
           "ru": "3% шанс получить +10 подсолнуха",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/sunflower_mutant.webp",
@@ -3842,10 +3842,10 @@
           "en": "+0.1 Stone",
           "ru": "+0.1 камень",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "stone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/stone_beetle.webp",
@@ -3864,10 +3864,10 @@
           "en": "Chickens cannot get sick during summer",
           "ru": "Летом курицы не болеют",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/summer_chicken.webp",
@@ -3886,16 +3886,16 @@
           "en": "Summer Disaster Protection",
           "ru": "Защита от летних бедствий",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         },
         {
           "key": "description.summerGuardian.boost2",
           "en": "Blessed Summer Events",
           "ru": "Благословенные летние события",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/summer_guardian.webp",
@@ -3914,10 +3914,10 @@
           "en": "+1 Fish during Winter",
           "ru": "+1 рыба зимой",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/starfish_marvel.webp",
@@ -3936,21 +3936,21 @@
           "en": "50% Reduction to Crop, Mineral, Fruit, Cooking, Crafting, and Tree Time",
           "ru": "На 50% сокращается время: роста растений и фруктов, восстановления минералов и деревьев, готовки и крафта",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "wood",
             "crop",
             "cooking",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.superTotem.boost.effectTime",
           "en": "Lasts for 7 days",
           "ru": "Длится 7 дней",
           "type": "danger",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/super_totem.webp",
@@ -3969,8 +3969,8 @@
           "en": "+500 Bumpkin XP from Cheese Recipes",
           "ru": "+500 к опыту бампкина за блюда из сыра",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/swiss_whiskers.webp",
@@ -3989,8 +3989,8 @@
           "en": "+1 Help Limit",
           "ru": "+1 лимит помощи",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "monuments/chapters_monument_teamwork.webp",
@@ -4009,10 +4009,10 @@
           "en": "+2.5 Iron",
           "ru": "+2.5 железо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "iron"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": null,
@@ -4031,10 +4031,10 @@
           "en": "+0.1 Wood",
           "ru": "+0.1 древесина",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/tiki_totem.webp",
@@ -4053,10 +4053,10 @@
           "en": "-25% Tree Recovery Time (4hrs)",
           "ru": "-25% времени на восстановление деревьев (4 часа)",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "factions/boosts/wood_boost_full.webp",
@@ -4075,13 +4075,13 @@
           "en": "50% Reduction to Crop, Mineral, Fruit, Cooking, Crafting, and Tree Time",
           "ru": "На 50% сокращается время: роста растений и фруктов, восстановления минералов и деревьев, готовки и крафта",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "wood",
             "crop",
             "cooking",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/time_warp_totem.webp",
@@ -4100,18 +4100,18 @@
           "en": "+0.1 Stone",
           "ru": "+0.1 камень",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "stone"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.turtle.boost.aoe",
           "en": "Affects plots around (3x3)",
           "ru": "Влияет на грядки вокруг (3x3)",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/aoe/tin_turtle.webp",
@@ -4130,10 +4130,10 @@
           "en": "+1 Tomato",
           "ru": "+1 помидор",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/tomato_bombard.gif",
@@ -4152,11 +4152,11 @@
           "en": "-50% Tomato Growth Time",
           "ru": "-50% времени роста помидора",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/tomato_clown.gif",
@@ -4175,20 +4175,20 @@
           "en": "-33% Greenhouse Growth Time",
           "ru": "-33% времени роста в теплице",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.tortoiseShrine.buff.2",
           "en": "-10% Crop Machine Growth Time",
           "ru": "-10% времени роста растений в агромашине",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/tortoise_shrine.webp",
@@ -4207,11 +4207,11 @@
           "en": "-25% Fruit Patch Growth Time",
           "ru": "-25% времени роста на фруктовых грядках",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/toucan_shrine.webp",
@@ -4230,10 +4230,10 @@
           "en": "+0.1 Merino Wool",
           "ru": "+0.1 шерсть мериноса",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/toxic_tuft.webp",
@@ -4252,8 +4252,8 @@
           "en": "-2.5% resource tax",
           "ru": "-2.5% комиссии за продажу ресурсов",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/shrines/trading_shrine.webp",
@@ -4272,8 +4272,8 @@
           "en": "+20% Coins Treasure Sale Price",
           "ru": "+20% монет за продажу сокровищ",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/treasure/treasure_map.webp",
@@ -4292,10 +4292,10 @@
           "en": "+0.25 Stone",
           "ru": "+0.25 камень",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "stone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/tunnel_mole.gif",
@@ -4314,10 +4314,10 @@
           "en": "-50% Growth Time in Greenhouse",
           "ru": "-50% времени роста тепличных культур",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/turbo_sprout.webp",
@@ -4336,10 +4336,10 @@
           "en": "+0.1 Egg",
           "ru": "+0.1 яйцо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "animals/chickens/undead_chicken.webp",
@@ -4358,10 +4358,10 @@
           "en": "+20% Pumpkin",
           "ru": "+20% к тыкве",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/victoria_sisters.gif",
@@ -4380,8 +4380,8 @@
           "en": "+0.1 Minerals",
           "ru": "+0.1 к добыче минералов",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/volcano_gnome.webp",
@@ -4400,16 +4400,16 @@
           "en": "Winter Disaster Protection",
           "ru": "Защита от зимних бедствий",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         },
         {
           "key": "description.winterGuardian.boost2",
           "en": "Blessed Winter Events",
           "ru": "Благословенные зимние события",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/winter_guardian.webp",
@@ -4428,10 +4428,10 @@
           "en": "+0.2 Wood",
           "ru": "+0.2 древесина",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/wood_nymph_wendy.gif",
@@ -4450,8 +4450,8 @@
           "en": "+1 Help Limit",
           "ru": "+1 лимит помощи",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "monuments/axe_monument.webp",
@@ -4470,18 +4470,18 @@
           "en": "+20% Wood",
           "ru": "+20% к древесине",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.woody.beaver.warning",
           "en": "Disabled if Apprentice Beaver or Foreman Beaver Active",
           "ru": "Не работает, если Apprentice Beaver или Foreman Beaver активны",
           "type": "danger",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "sfts/beaver.gif",
@@ -4500,8 +4500,8 @@
           "en": "Cast without rod",
           "ru": "Ловля без удочки",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/224.webp",
@@ -4520,8 +4520,8 @@
           "en": "Dig treasure without Sand Shovel",
           "ru": "Поиск сокровищ без использования песчаной лопаты",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/369.webp",
@@ -4540,10 +4540,10 @@
           "en": "30% Chance of Instant Crops",
           "ru": "30% шанс мгновенного урожая",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/73.webp",
@@ -4562,10 +4562,10 @@
           "en": "+10 daily fishing reels",
           "ru": "+10 ежедневных попыток рыбалки",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/234.webp",
@@ -4584,8 +4584,8 @@
           "en": "-25% Crafting Box Time",
           "ru": "-25% времени крафта в мастерской",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/477.webp",
@@ -4604,10 +4604,10 @@
           "en": "-50% Plot Crop Time in Autumn",
           "ru": "-50% времени роста растений на грядках осенью",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/433.webp",
@@ -4626,10 +4626,10 @@
           "en": "+0.5 Bananas",
           "ru": "+0.5 банан",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/250.webp",
@@ -4648,11 +4648,11 @@
           "en": "-20% Banana Growth Time",
           "ru": "-20% времени роста банана",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/251.webp",
@@ -4671,8 +4671,8 @@
           "en": "Pet XP +100/+250 (Med/Hard)",
           "ru": "+100/+250 XP для питомца за среднюю/сложную еду",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/522.webp",
@@ -4691,10 +4691,10 @@
           "en": "+0.1 Honey per Full Beehive",
           "ru": "+0.1 мёд за полный улей",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "honey"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/276.webp",
@@ -4713,10 +4713,10 @@
           "en": "+0.2 Honey Production Speed",
           "ru": "+0.2 к скорости производства мёда",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "honey"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/278.webp",
@@ -4735,10 +4735,10 @@
           "en": "+20% Beetroot",
           "ru": "+20% к свёкле",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/29.webp",
@@ -4757,8 +4757,8 @@
           "en": "+5 daily Desert Dig attempts",
           "ru": "+5 ежедневных раскопок на пляже",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/374.webp",
@@ -4777,10 +4777,10 @@
           "en": "+2 Wool",
           "ru": "+2 шерсть",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/402.webp",
@@ -4799,10 +4799,10 @@
           "en": "+1 Yield to Spring Plot Crop in Spring",
           "ru": "+1 к урожаю весенних растений на грядках весной",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/432.webp",
@@ -4821,10 +4821,10 @@
           "en": "-50% Broccoli Plot Growth Time",
           "ru": "-50% времени роста брокколи на грядках",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/454.webp",
@@ -4843,20 +4843,20 @@
           "en": "-20% Fish Market processing time",
           "ru": "-20% времени обработки в рыбной лавке",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.bubbleAura.boost.two",
           "en": "20% chance for +1 yield from Fish Processing",
           "ru": "20% шанс получить +1 переработанный рыбный ресурс",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/559.webp",
@@ -4875,8 +4875,8 @@
           "en": "+1 Worm",
           "ru": "+1 червь",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/228.webp",
@@ -4895,8 +4895,8 @@
           "en": "+20% Marks",
           "ru": "+20% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/330.webp",
@@ -4915,18 +4915,18 @@
           "en": "+25% FLOWER & Coin Deliveries",
           "ru": "+25% FLOWER и монет от доставок",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "bumpkinItemBuff.bumpkin.crown.boost.two",
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/376.webp",
@@ -4945,8 +4945,8 @@
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/331.webp",
@@ -4965,10 +4965,10 @@
           "en": "-25% Cooking Time",
           "ru": "-25% времени готовки",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/388.webp",
@@ -4987,8 +4987,8 @@
           "en": "+5% Marks",
           "ru": "+5% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/333.webp",
@@ -5007,11 +5007,11 @@
           "en": "+0.25 Crops & Fruits",
           "ru": "+0.25 к урожаю растений и фруктов",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/384.webp",
@@ -5030,8 +5030,8 @@
           "en": "+5% Marks",
           "ru": "+5% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/334.webp",
@@ -5050,10 +5050,10 @@
           "en": "+0.25 Wood & Minerals",
           "ru": "+0.25 к древесине и минералам",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/380.webp",
@@ -5072,8 +5072,8 @@
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/332.webp",
@@ -5092,10 +5092,10 @@
           "en": "+0.1 Fruit Patch Yield",
           "ru": "+0.1 к фруктам на фруктовых грядках",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/350.webp",
@@ -5114,10 +5114,10 @@
           "en": "-20% Carrot Plot Growth time",
           "ru": "-20% времени роста моркови на грядках",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/28.webp",
@@ -5136,8 +5136,8 @@
           "en": "+20% Cake Delivery Profit",
           "ru": "+20% к прибыли от доставки тортов",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/16.webp",
@@ -5156,10 +5156,10 @@
           "en": "+1 Feather",
           "ru": "+1 перо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/403.webp",
@@ -5178,10 +5178,10 @@
           "en": "+0.1 Corn",
           "ru": "+0.1 кукуруза",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/174.webp",
@@ -5200,10 +5200,10 @@
           "en": "+2 Corn",
           "ru": "+2 кукуруза",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/526.webp",
@@ -5222,10 +5222,10 @@
           "en": "+2 Milk",
           "ru": "+2 молоко",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/407.webp",
@@ -5244,10 +5244,10 @@
           "en": "+1 treasure when fishing",
           "ru": "+1 сокровище во время рыбалки",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/424.webp",
@@ -5266,8 +5266,8 @@
           "en": "+1 Crab when digging or drilling",
           "ru": "+1 краб при поиске сокровищ",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/230.webp",
@@ -5286,10 +5286,10 @@
           "en": "-20% Crimstone Cooldown Time",
           "ru": "-20% времени восстановления кримстоуна",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crimstone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/285.webp",
@@ -5308,10 +5308,10 @@
           "en": "+0.1 Crimstones",
           "ru": "+0.1 кримстоун",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crimstone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/282.webp",
@@ -5330,10 +5330,10 @@
           "en": "+2 Crimstones on 5th mine",
           "ru": "+2 к кримстоуну на 5-ой добыче",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crimstone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/284.webp",
@@ -5352,11 +5352,11 @@
           "en": "Mine crimstone without Gold Pickaxes",
           "ru": "Кримстоун добывается без золотой кирки",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "gold",
             "crimstone"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/519.webp",
@@ -5375,8 +5375,8 @@
           "en": "+100% chance to find Marvel Map Pieces",
           "ru": "+100% к шансу найти фрагмент карты морских чудес",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/255.webp",
@@ -5406,10 +5406,10 @@
           "en": "-50% Oil Regeneration Time",
           "ru": "-50% времени восстановления нефти",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "oil"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/354.webp",
@@ -5428,10 +5428,10 @@
           "en": "30% Chance of Instant Crops",
           "ru": "30% шанс мгновенного урожая",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/72.webp",
@@ -5450,10 +5450,10 @@
           "en": "-20% Sheep Sleep Time",
           "ru": "-20% времени сна овец",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/406.webp",
@@ -5472,10 +5472,10 @@
           "en": "+0.1 Eggplant",
           "ru": "+0.1 баклажан",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/124.webp",
@@ -5494,11 +5494,11 @@
           "en": "-50% Flower Growth Time",
           "ru": "-50% времени роста цветов",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop",
             "flower"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/293.webp",
@@ -5517,10 +5517,10 @@
           "en": "+1 Yield to Winter Plot Crop in Winter",
           "ru": "+1 к урожаю зимних растений на грядках зимой",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/434.webp",
@@ -5539,10 +5539,10 @@
           "en": "+0.1 Apple, Blueberry, Orange + Banana",
           "ru": "+0.1 яблоко, черника, апельсин и банан",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/86.webp",
@@ -5561,8 +5561,8 @@
           "en": "Gift players a gift",
           "ru": "Дарит игрокам подарки",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/316.webp",
@@ -5581,8 +5581,8 @@
           "en": "+20% Marks",
           "ru": "+20% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/320.webp",
@@ -5601,8 +5601,8 @@
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/324.webp",
@@ -5621,18 +5621,18 @@
           "en": "+25% FLOWER & Coin Deliveries",
           "ru": "+25% FLOWER и монет от доставок",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "bumpkinItemBuff.goblin.crown.boost.two",
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/377.webp",
@@ -5651,8 +5651,8 @@
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/321.webp",
@@ -5671,10 +5671,10 @@
           "en": "-25% Cooking Time",
           "ru": "-25% времени готовки",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/389.webp",
@@ -5693,8 +5693,8 @@
           "en": "+5% Marks",
           "ru": "+5% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/322.webp",
@@ -5713,11 +5713,11 @@
           "en": "+0.25 Crops & Fruits",
           "ru": "+0.25 к урожаю растений и фруктов",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/385.webp",
@@ -5736,8 +5736,8 @@
           "en": "+5% Marks",
           "ru": "+5% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/323.webp",
@@ -5756,10 +5756,10 @@
           "en": "+0.25 Wood & Minerals",
           "ru": "+0.25 к древесине и минералам",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/381.webp",
@@ -5778,8 +5778,8 @@
           "en": "+10% Bumpkin XP",
           "ru": "+10% к опыту бампкина",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/58.webp",
@@ -5798,8 +5798,8 @@
           "en": "+0.2 Grapes",
           "ru": "+0.2 виноград",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/373.webp",
@@ -5818,10 +5818,10 @@
           "en": "Chance 10x Crops",
           "ru": "Шанс получить 10х урожая",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/30.webp",
@@ -5840,10 +5840,10 @@
           "en": "+1 Honey per Full Beehive",
           "ru": "+1 мёд за полный улей",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "honey"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/291.webp",
@@ -5862,8 +5862,8 @@
           "en": "2x base Bee Swarm chance",
           "ru": "2x базовый шанс пчелиного роя",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/292.webp",
@@ -5882,10 +5882,10 @@
           "en": "-50% Feed to Barn Animal",
           "ru": "-50% корма для животных в амбаре",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/400.webp",
@@ -5904,10 +5904,10 @@
           "en": "Drill Oil without Oil Drill",
           "ru": "Нефть добывается без использования нефтяного бура",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "oil"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/370.webp",
@@ -5926,10 +5926,10 @@
           "en": "+3 Crops",
           "ru": "+3 урожая",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/162.webp",
@@ -5948,8 +5948,8 @@
           "en": "-25% Onion Seed coin cost",
           "ru": "-25% к стоимости семян лука",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/422.webp",
@@ -5968,8 +5968,8 @@
           "en": "-50% Lava Pit resources",
           "ru": "-50% ресурсов в лавовой яме",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/481.webp",
@@ -5988,10 +5988,10 @@
           "en": "+1 Lemon",
           "ru": "+1 лимон",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/371.webp",
@@ -6021,8 +6021,8 @@
           "en": "-50% Power Skill Cooldown",
           "ru": "-50% времени восстановления активных навыков",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/499.webp",
@@ -6041,10 +6041,10 @@
           "en": "-50% Cooking Time",
           "ru": "-50% времени готовки",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/161.webp",
@@ -6063,20 +6063,20 @@
           "en": "-15% Cooking Time",
           "ru": "-15% времени готовки",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.cleaverKnife.boost.2",
           "en": "10% chance of +1 Food from cooking",
           "ru": "10% шанс получить +1 блюдо",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/500.webp",
@@ -6095,10 +6095,10 @@
           "en": "-50% Medicine to heal animals",
           "ru": "-50% лекарств на лечение животных",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/456.webp",
@@ -6117,10 +6117,10 @@
           "en": "+1 Merino Wool",
           "ru": "+1 шерсть мериноса",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/405.webp",
@@ -6139,10 +6139,10 @@
           "en": "+0.5 Milk",
           "ru": "+0.5 молоко",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/408.webp",
@@ -6161,8 +6161,8 @@
           "en": "+0.1 Wild Mushroom",
           "ru": "+0.1 дикий гриб",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/128.webp",
@@ -6181,8 +6181,8 @@
           "en": "+20% Marks",
           "ru": "+20% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/325.webp",
@@ -6201,18 +6201,18 @@
           "en": "+25% FLOWER & Coin Deliveries",
           "ru": "+25% FLOWER и монет от доставок",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "bumpkinItemBuff.nightshade.crown.boost.two",
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/378.webp",
@@ -6231,8 +6231,8 @@
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/326.webp",
@@ -6251,10 +6251,10 @@
           "en": "-25% Cooking Time",
           "ru": "-25% времени готовки",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/390.webp",
@@ -6273,8 +6273,8 @@
           "en": "+5% Marks",
           "ru": "+5% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/327.webp",
@@ -6293,11 +6293,11 @@
           "en": "+0.25 Crops & Fruits",
           "ru": "+0.25 к урожаю растений и фруктов",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/386.webp",
@@ -6316,8 +6316,8 @@
           "en": "+5% Marks",
           "ru": "+5% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/328.webp",
@@ -6336,10 +6336,10 @@
           "en": "+0.25 Wood & Minerals",
           "ru": "+0.25 к древесине и минералам",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/382.webp",
@@ -6358,8 +6358,8 @@
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/329.webp",
@@ -6378,8 +6378,8 @@
           "en": "+1 Rice",
           "ru": "+1 рис",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/309.webp",
@@ -6398,8 +6398,8 @@
           "en": "-50% Lava Pit Time",
           "ru": "-50% времени производства в лавовой яме",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/457.webp",
@@ -6418,10 +6418,10 @@
           "en": "+2 Oil",
           "ru": "+2 нефть",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "oil"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/308.webp",
@@ -6440,10 +6440,10 @@
           "en": "+5 Oil",
           "ru": "+5 нефть",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "oil"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/479.webp",
@@ -6462,10 +6462,10 @@
           "en": "+10 Oil",
           "ru": "+10 нефть",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "oil"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/360.webp",
@@ -6484,8 +6484,8 @@
           "en": "+0.25 Olive",
           "ru": "+0.25 оливка",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/317.webp",
@@ -6504,8 +6504,8 @@
           "en": "+1 Olive",
           "ru": "+1 оливка",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/310.webp",
@@ -6524,10 +6524,10 @@
           "en": "Heal animals for free",
           "ru": "Бесплатное лечение животных",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/461.webp",
@@ -6546,10 +6546,10 @@
           "en": "Feed pets for free",
           "ru": "Бесплатное кормление питомцев",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/520.webp",
@@ -6568,8 +6568,8 @@
           "en": "+25% Faction Pet Satiation and Marks Awarded",
           "ru": "+25% к насыщению питомца фракции и к получаемым маркам",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/311.webp",
@@ -6588,20 +6588,20 @@
           "en": "-15% Gold recovery time",
           "ru": "-15% времени восстановления золота",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "gold"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.pickaxeShark.boost.2",
           "en": "10% chance for gold to recover instantly",
           "ru": "10% шанс на мгновенное восстановление золота",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "gold"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/257.webp",
@@ -6620,8 +6620,8 @@
           "en": "Unlock Pirate Chest",
           "ru": "Открывает пиратский сундук",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/90.webp",
@@ -6640,8 +6640,8 @@
           "en": "20% chance to get +1 crustacean yield",
           "ru": "20% шанс получить +1 к улову ракообразных",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/555.webp",
@@ -6660,10 +6660,10 @@
           "en": "-25% Red Pepper Growth Time",
           "ru": "-25% времени роста перца",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/458.webp",
@@ -6682,18 +6682,18 @@
           "en": "+5 daily fishing reels",
           "ru": "+5 ежедневных попыток рыбалки",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "description.sawFish.boost.two",
           "en": "+1 Worm from Composting",
           "ru": "+1 червь с компоста",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/238.webp",
@@ -6712,10 +6712,10 @@
           "en": "+1 random fish every 15th reel",
           "ru": "+1 случайная рыба на каждом 15-м забросе",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/562.webp",
@@ -6734,8 +6734,8 @@
           "en": "-50% Crafting Box Time",
           "ru": "-50% времени крафта в мастерской",
           "type": "info",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/410.webp",
@@ -6754,10 +6754,10 @@
           "en": "-50% Plot Crop Time in Summer",
           "ru": "-50% времени роста растений на грядках летом",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/431.webp",
@@ -6776,10 +6776,10 @@
           "en": "+1 Acorn",
           "ru": "+1 жёлудь",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/427.webp",
@@ -6798,8 +6798,8 @@
           "en": "Award players with 5 Love Charms every 5 minutes",
           "ru": "Награждает игроков 5 жетонами любви каждые 5 минут",
           "type": "vibrant",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/438.webp",
@@ -6818,8 +6818,8 @@
           "en": "+20% Marks",
           "ru": "+20% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/335.webp",
@@ -6838,18 +6838,18 @@
           "en": "+25% FLOWER & Coin Deliveries",
           "ru": "+25% FLOWER и монет от доставок",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "flower"
-          ]
+          ],
+          "withSkill": false
         },
         {
           "key": "bumpkinItemBuff.sunflorian.crown.boost.two",
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/379.webp",
@@ -6868,8 +6868,8 @@
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/337.webp",
@@ -6888,10 +6888,10 @@
           "en": "-25% Cooking Time",
           "ru": "-25% времени готовки",
           "type": "info",
-          "withSkill": false,
           "resource": [
             "cooking"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/391.webp",
@@ -6910,8 +6910,8 @@
           "en": "+5% Marks",
           "ru": "+5% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/338.webp",
@@ -6930,11 +6930,11 @@
           "en": "+0.25 Crops & Fruits",
           "ru": "+0.25 к урожаю растений и фруктов",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop",
             "fruit"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/387.webp",
@@ -6953,8 +6953,8 @@
           "en": "+5% Marks",
           "ru": "+5% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/339.webp",
@@ -6973,10 +6973,10 @@
           "en": "+0.25 Wood & Minerals",
           "ru": "+0.25 к древесине и минералам",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "wood"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/383.webp",
@@ -6995,8 +6995,8 @@
           "en": "+10% Marks",
           "ru": "+10% марок",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/336.webp",
@@ -7015,10 +7015,10 @@
           "en": "+10% Sunflower",
           "ru": "+10% к подсолнуху",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/27.webp",
@@ -7037,10 +7037,10 @@
           "en": "10% Chance +1 Fish",
           "ru": "10% шанс получить +1 рыбу",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "fishing"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/240.webp",
@@ -7059,10 +7059,10 @@
           "en": "Free Sunflower Seeds",
           "ru": "Бесплатные семена подсолнуха",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/31.webp",
@@ -7081,10 +7081,10 @@
           "en": "+0.1 Soybean",
           "ru": "+0.1 соя",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "crop"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/319.webp",
@@ -7103,8 +7103,8 @@
           "en": "+1 Leather",
           "ru": "+1 кожа",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/501.webp",
@@ -7123,8 +7123,8 @@
           "en": "+1 Fertiliser from Composters",
           "ru": "+1 удобрение из компостеров",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/476.webp",
@@ -7143,10 +7143,10 @@
           "en": "33% chance next reset is free after feeding pet fully.",
           "ru": "33% шанс, что следующий сброс будет бесплатным после полного кормления питомца.",
           "type": "vibrant",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/521.webp",
@@ -7165,8 +7165,8 @@
           "en": "+5 Pet Energy",
           "ru": "+5 энергии питомца",
           "type": "success",
-          "withSkill": false,
-          "resource": []
+          "resource": [],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/518.webp",
@@ -7185,10 +7185,10 @@
           "en": "+0.25 Wool",
           "ru": "+0.25 шерсть",
           "type": "success",
-          "withSkill": false,
           "resource": [
             "animal"
-          ]
+          ],
+          "withSkill": false
         }
       ],
       "sprite": "wearables/401.webp",
