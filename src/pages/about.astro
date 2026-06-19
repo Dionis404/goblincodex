@@ -1,0 +1,459 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import boostsCatalog from '../data/boosts-catalog.json';
+
+// Гайды + механики из контент-коллекции
+const allGuides    = await getCollection('guides');
+const allMechanics = await getCollection('mechanics').catch(() => []);
+const guidesCount  = allGuides.length + allMechanics.length;
+
+// Предметы из каталога бустов (auto-sync)
+const itemsCount = boostsCatalog.stats.total as number;
+
+// Инструменты — считаем страницы в /tools/
+const toolPages  = import.meta.glob('./tools/*.astro');
+const toolsCount = Object.keys(toolPages).length;
+
+// Версия SFL из .sfl-version
+const sflFull = readFileSync(resolve('src/data/.sfl-version'), 'utf8').trim();
+const sflVer  = sflFull.match(/^v[\d.]+/)?.[0] ?? sflFull; // "v2.24.38"
+---
+
+<BaseLayout
+  currentPage="about"
+  title="О проекте — GoblinCodex"
+  description="GoblinCodex — открытая база знаний по Sunflower Land, собранная фанатами для фанатов. Гайды, разборы механик, новости и каталог фермеров."
+>
+  <div class="gc-about-wrap gc-page-enter">
+
+    <!-- ── Заголовок ── -->
+    <div class="gc-about-header">
+      <h1 class="gc-about-h1">🗺️ О проекте и роадмап</h1>
+      <p class="gc-about-sub">Куда мы движемся и зачем всё это</p>
+    </div>
+
+    <!-- ── О нас ── -->
+    <div class="gc-about-intro gc-card">
+      <h2 class="gc-intro-title">Привет, мы GoblinCodex! 👋</h2>
+      <p class="gc-intro-text">
+        GoblinCodex — это открытая база знаний по Sunflower Land, собранная фанатами для фанатов.
+        Гайды, разборы механик, новости и каталог фермеров нашего сообщества в одном месте.
+      </p>
+      <p class="gc-intro-text">
+        Это некоммерческий фан-проект, не аффилированный с командой разработчиков игры. Всё здесь
+        сделано руками участников сообщества 💚
+      </p>
+    </div>
+
+    <!-- ── Статистика ── -->
+    <div class="gc-about-stats">
+      <div class="gc-stat-item">
+        <div class="gc-stat-big">{guidesCount}</div>
+        <div class="gc-stat-lbl">Статей в Кодексе</div>
+      </div>
+      <div class="gc-stat-item">
+        <div class="gc-stat-big">{itemsCount}</div>
+        <div class="gc-stat-lbl">Предметов в каталоге</div>
+      </div>
+      <div class="gc-stat-item">
+        <div class="gc-stat-big">{toolsCount}</div>
+        <div class="gc-stat-lbl">Инструментов</div>
+      </div>
+      <div class="gc-stat-item">
+        <div class="gc-stat-big gc-stat-big--small">{sflVer}</div>
+        <div class="gc-stat-lbl">Версия SFL</div>
+      </div>
+    </div>
+
+    <!-- ── 4 карточки ── -->
+    <div class="gc-about-grid gc-grid-4">
+      <div class="gc-card gc-about-feature">
+        <div class="gc-about-feat-icon">🎯</div>
+        <div>
+          <div class="gc-about-feat-title">Наша цель</div>
+          <div class="gc-about-feat-desc">Помочь каждому фермеру разобраться в игре и зарабатывать больше</div>
+        </div>
+      </div>
+      <div class="gc-card gc-about-feature">
+        <div class="gc-about-feat-icon">🤝</div>
+        <div>
+          <div class="gc-about-feat-title">Сообщество</div>
+          <div class="gc-about-feat-desc">Открытый проект — любой может предложить гайд или статью</div>
+        </div>
+      </div>
+      <div class="gc-card gc-about-feature">
+        <div class="gc-about-feat-icon">🔄</div>
+        <div>
+          <div class="gc-about-feat-title">Актуальность</div>
+          <div class="gc-about-feat-desc">Следим за обновлениями и обновляем материалы в реальном времени</div>
+        </div>
+      </div>
+      <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-card gc-about-feature gc-card-hover">
+        <div class="gc-about-feat-icon">💬</div>
+        <div>
+          <div class="gc-about-feat-title">Написать нам</div>
+          <div class="gc-about-feat-desc">Связаться можно через наш Telegram-чат — всегда рады!</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- ── Роадмап ── -->
+    <div class="gc-roadmap-section">
+      <h2 class="gc-roadmap-h2">🗺️ Дорожная карта</h2>
+      <p class="gc-roadmap-sub">Что уже сделано и над чем работаем дальше</p>
+
+      <div class="gc-roadmap">
+
+        <!-- Q1 2026 — Готово -->
+        <div class="gc-rm-item">
+          <div class="gc-rm-dot gc-rm-dot--done">✓</div>
+          <div class="gc-rm-card gc-card">
+            <div class="gc-rm-head">
+              <div class="gc-rm-title">Q1 2026 <span class="gc-rm-phase">Запуск</span></div>
+              <span class="gc-rm-badge gc-rm-badge--done">✅ ГОТОВО</span>
+            </div>
+            <ul class="gc-rm-list">
+              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>Инфраструктура (Docker, домен, Cloudflare, автодеплой)</li>
+              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>Дизайн-система (светлая/тёмная тема, компоненты)</li>
+              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>Главная страница с таймером сезона</li>
+              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>База знаний с гайдами</li>
+              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>Страница новостей из RSS</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q2 2026 — В работе -->
+        <div class="gc-rm-item">
+          <div class="gc-rm-dot gc-rm-dot--active"></div>
+          <div class="gc-rm-card gc-card">
+            <div class="gc-rm-head">
+              <div class="gc-rm-title">Q2 2026 <span class="gc-rm-phase">Основные страницы</span></div>
+              <span class="gc-rm-badge gc-rm-badge--active">🔴 В РАБОТЕ</span>
+            </div>
+            <ul class="gc-rm-list">
+              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>Страница О проекте + Road Map</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Страница Инструменты</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Страница Сообщество</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>База данных NFT предметов</li>
+              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>Калькулятор добычи ресурсов</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Шлифовка дизайна: замена картинок и иконок по всему сайту</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q3 2026 — Запланировано -->
+        <div class="gc-rm-item">
+          <div class="gc-rm-dot gc-rm-dot--future"></div>
+          <div class="gc-rm-card gc-card">
+            <div class="gc-rm-head">
+              <div class="gc-rm-title">Q3 2026 <span class="gc-rm-phase">Данные и интеграции</span></div>
+              <span class="gc-rm-badge gc-rm-badge--future">📋 В ПЛАНАХ</span>
+            </div>
+            <ul class="gc-rm-list">
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Авторизация через Telegram + бот</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Каталог фермеров сообщества</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Пагинация новостей</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Telegram посты на главной</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Счётчики подписчиков</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q4 2026 — Запланировано -->
+        <div class="gc-rm-item">
+          <div class="gc-rm-dot gc-rm-dot--future"></div>
+          <div class="gc-rm-card gc-card">
+            <div class="gc-rm-head">
+              <div class="gc-rm-title">Q4 2026 <span class="gc-rm-phase">Профиль и сообщество</span></div>
+              <span class="gc-rm-badge gc-rm-badge--future">📋 В ПЛАНАХ</span>
+            </div>
+            <ul class="gc-rm-list">
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>ЛК фермера (прогресс, достижения)</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Калькулятор прибыли культур</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Система комментариев под гайдами</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── CTA ── -->
+    <div class="gc-cta-banner">
+      <div>
+        <div class="gc-cta-title">🌻 Хочешь помочь проекту?</div>
+        <div class="gc-cta-desc">Пиши гайды, предлагай идеи или поддержи донатом — любая помощь ценна</div>
+      </div>
+      <div class="gc-about-cta-btns">
+        <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-cta">Написать в чат →</a>
+        <a href="/donate" class="gc-btn-cta gc-btn-cta--amber">Поддержать ❤️</a>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+.gc-about-wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 48px 40px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Заголовок страницы */
+.gc-about-header { text-align: center; }
+.gc-about-h1 {
+  font-family: var(--font-head);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.gc-about-sub {
+  font-size: 15px;
+  color: var(--text-sec);
+}
+
+/* Блок «О нас» */
+.gc-about-intro {
+  padding: 32px 36px;
+  border-left: 4px solid var(--green-dark);
+}
+.gc-intro-title {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin-bottom: 16px;
+}
+.gc-intro-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.gc-intro-text:last-child { margin-bottom: 0; }
+
+/* Статистика */
+.gc-about-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.gc-stat-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 16px;
+  text-align: center;
+}
+.gc-stat-big {
+  font-family: var(--font-head);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin-bottom: 6px;
+}
+.gc-stat-big--small {
+  font-size: 18px;
+  word-break: break-all;
+}
+.gc-stat-lbl {
+  font-size: 13px;
+  color: var(--text-sec);
+}
+
+/* Карточки особенностей */
+.gc-about-grid { gap: 16px; }
+.gc-about-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px;
+  color: var(--text);
+  text-decoration: none;
+}
+.gc-about-feat-icon {
+  font-size: 22px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--green-pale);
+  border-radius: 10px;
+}
+.gc-about-feat-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.gc-about-feat-desc {
+  font-size: 13px;
+  color: var(--text-sec);
+  line-height: 1.5;
+}
+
+/* Роадмап */
+.gc-roadmap-section { display: flex; flex-direction: column; gap: 8px; }
+.gc-roadmap-h2 {
+  font-family: var(--font-head);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.gc-roadmap-sub {
+  font-size: 14px;
+  color: var(--text-sec);
+  margin-bottom: 16px;
+}
+.gc-roadmap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+.gc-roadmap::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+.gc-rm-item {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  position: relative;
+  padding-bottom: 16px;
+}
+.gc-rm-item:last-child { padding-bottom: 0; }
+
+.gc-rm-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  background: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+}
+.gc-rm-dot--done {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: white;
+}
+.gc-rm-dot--active {
+  background: var(--red);
+  border-color: var(--red);
+}
+.gc-rm-dot--future {
+  background: var(--card-bg);
+  border-color: var(--border);
+}
+
+.gc-rm-card {
+  flex: 1;
+  padding: 20px 24px;
+}
+.gc-rm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.gc-rm-title {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.gc-rm-phase {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-sec);
+}
+.gc-rm-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1.5px solid;
+}
+.gc-rm-badge--done   { color: var(--green-dark); border-color: var(--green-dark); background: var(--green-pale); }
+.gc-rm-badge--active { color: var(--red);        border-color: var(--red);        background: #FEF2F2; }
+.gc-rm-badge--future { color: var(--text-sec);   border-color: var(--border);     background: var(--bg); }
+
+.gc-rm-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.gc-rm-li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-sec);
+  line-height: 1.5;
+}
+.gc-rm-li--done { color: var(--text); }
+.gc-rm-check { font-size: 16px; flex-shrink: 0; margin-top: 1px; color: var(--border); }
+.gc-rm-check--done { color: var(--green-dark); }
+
+/* CTA */
+.gc-about-cta-btns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.gc-btn-cta--amber {
+  background: rgba(217, 161, 91, 0.15);
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.gc-btn-cta--amber:hover {
+  background: rgba(217, 161, 91, 0.25);
+  border-color: var(--amber);
+}
+
+/* Адаптив */
+@media (max-width: 900px) {
+  .gc-about-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .gc-about-wrap { padding: 32px 20px 48px; gap: 24px; }
+  .gc-about-h1 { font-size: 24px; }
+  .gc-about-intro { padding: 20px 20px; }
+  .gc-about-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .gc-stat-big { font-size: 26px; }
+  .gc-about-grid { grid-template-columns: 1fr 1fr !important; }
+  .gc-rm-title { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .gc-about-cta-btns { flex-direction: column; }
+}
+@media (max-width: 460px) {
+  .gc-about-stats { grid-template-columns: repeat(2, 1fr); }
+  .gc-about-grid { grid-template-columns: 1fr !important; }
+}
+</style>

@@ -1,0 +1,198 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Страница строится',
+  description = 'Наши гоблины усиленно работают над этим разделом. Скоро здесь появится что-то полезное!',
+} = Astro.props;
+---
+
+<div class="gc-wip-wrap gc-page-enter">
+  <div class="gc-wip-card gc-card">
+    <img src="/images/goblin.png" alt="Goblin" class="gc-wip-goblin" />
+
+    <span class="gc-wip-badge">
+      <span class="gc-wip-dot"></span>
+      В разработке
+    </span>
+
+    <h1 class="gc-wip-title">{title}</h1>
+    <p class="gc-wip-desc">{description}</p>
+
+    <div class="gc-wip-progress-wrap">
+      <div class="gc-wip-progress-label">Прогресс</div>
+      <div class="gc-wip-progress-track">
+        <div class="gc-wip-progress-bar"></div>
+      </div>
+    </div>
+
+    <div class="gc-wip-dots">
+      <span class="gc-wip-dot-ind gc-wip-dot-ind--active"></span>
+      <span class="gc-wip-dot-ind"></span>
+      <span class="gc-wip-dot-ind"></span>
+    </div>
+
+    <div class="gc-wip-actions">
+      <a href="/" class="gc-btn gc-btn--primary">На главную</a>
+      <a href="/#codex" class="gc-btn gc-btn--outline">Открыть гайды</a>
+    </div>
+  </div>
+</div>
+
+<style>
+.gc-wip-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  padding: 40px 20px;
+}
+
+.gc-wip-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 380px;
+  width: 100%;
+  padding: 40px 36px 36px;
+  text-align: center;
+}
+
+.gc-wip-goblin {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.gc-wip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green-dark);
+  background: var(--green-pale);
+  border: 1px solid var(--green-dark);
+  border-radius: 20px;
+  padding: 4px 12px;
+  letter-spacing: 0.03em;
+}
+
+.gc-wip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-dark);
+  animation: gc-wip-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes gc-wip-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.gc-wip-title {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.gc-wip-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-sec);
+  margin: 0;
+}
+
+.gc-wip-progress-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gc-wip-progress-label {
+  font-size: 11px;
+  color: var(--text-sec);
+  text-align: left;
+}
+
+.gc-wip-progress-track {
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gc-wip-progress-bar {
+  height: 100%;
+  width: 62%;
+  background: var(--green-dark);
+  border-radius: 8px;
+}
+
+.gc-wip-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.gc-wip-dot-ind {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.gc-wip-dot-ind--active {
+  background: var(--green-dark);
+}
+
+.gc-wip-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.gc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.gc-btn--primary {
+  background: var(--green-dark);
+  color: #fff;
+  border: 1.5px solid var(--green-dark);
+}
+.gc-btn--primary:hover {
+  background: var(--green-mid, #2d6a2d);
+}
+
+.gc-btn--outline {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+.gc-btn--outline:hover {
+  background: var(--card-bg);
+  border-color: var(--text-sec);
+}
+</style>

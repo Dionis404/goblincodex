@@ -24,15 +24,9 @@ type NewsItem = {
   desc:     string;
 };
 
-let news: NewsItem[] = [];
-let tags: string[]   = [];
-
-try {
-  const res  = await fetch(BLOG_RSS);
-  const xml  = await res.text();
+function parseItems(xml: string): NewsItem[] {
   const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
-
-  news = items.map(item => {
+  return items.map(item => {
     const title    = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/)?.[1]?.trim() ?? '';
     const link     = item.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() ?? '#';
     const pubDate  = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() ?? '';
@@ -45,6 +39,28 @@ try {
       : '';
     return { title, date, tag: category, tagColor: tagColors[category] ?? 'green', link, image, desc };
   });
+}
+
+function parseNextUrl(xml: string): string | null {
+  // <atom:link rel="next" href="..." /> или <atom:link href="..." rel="next" />
+  const match = xml.match(/<atom:link[^>]*rel=["']next["'][^>]*href=["']([^"']+)["']/i)
+             ?? xml.match(/<atom:link[^>]*href=["']([^"']+)["'][^>]*rel=["']next["']/i);
+  return match?.[1] ?? null;
+}
+
+let news: NewsItem[] = [];
+let tags: string[]   = [];
+
+try {
+  let nextUrl: string | null = BLOG_RSS;
+  const MAX_PAGES = 50; // защита от бесконечного цикла
+
+  for (let page = 0; page < MAX_PAGES && nextUrl; page++) {
+    const res = await fetch(nextUrl);
+    const xml = await res.text();
+    news.push(...parseItems(xml));
+    nextUrl = parseNextUrl(xml);
+  }
 
   // Уникальные теги из статей
   tags = [...new Set(news.map(n => n.tag).filter(Boolean))];
