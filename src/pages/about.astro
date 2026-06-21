@@ -1,8 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import boostsCatalog from '../data/boosts-catalog.json';
 
 // Гайды + механики из контент-коллекции
@@ -17,9 +15,6 @@ const itemsCount = boostsCatalog.stats.total as number;
 const toolPages  = import.meta.glob('./tools/*.astro');
 const toolsCount = Object.keys(toolPages).length;
 
-// Версия SFL из .sfl-version
-const sflFull = readFileSync(resolve('src/data/.sfl-version'), 'utf8').trim();
-const sflVer  = sflFull.match(/^v[\d.]+/)?.[0] ?? sflFull; // "v2.24.38"
 ---
 
 <BaseLayout
@@ -61,10 +56,6 @@ const sflVer  = sflFull.match(/^v[\d.]+/)?.[0] ?? sflFull; // "v2.24.38"
       <div class="gc-stat-item">
         <div class="gc-stat-big">{toolsCount}</div>
         <div class="gc-stat-lbl">Инструментов</div>
-      </div>
-      <div class="gc-stat-item">
-        <div class="gc-stat-big gc-stat-big--small">{sflVer}</div>
-        <div class="gc-stat-lbl">Версия SFL</div>
       </div>
     </div>
 
