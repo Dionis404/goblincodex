@@ -37,4 +37,4 @@ jobs:
       - name: Trigger Portainer webhook
         run: |
           curl -f -X POST "${{ secrets.PORTAINER_WEBHOOK_URL }}"
-          echo "✅ Deployed successfully"
+          echo "Deployed successfully"
