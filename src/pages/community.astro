@@ -9,8 +9,9 @@ try {
   const res = await fetch('http://goblin-api:8000/community/farmers');
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   farmers = await res.json();
-} catch {
+} catch (e) {
   apiError = true;
+  console.error('Community API error:', e);
 }
 ---
 
