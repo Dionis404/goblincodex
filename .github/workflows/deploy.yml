@@ -34,7 +34,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Trigger Portainer webhook
-        run: |
-          curl -f -X POST "${{ secrets.PORTAINER_WEBHOOK_URL }}"
-          echo "Deployed successfully"
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker pull ghcr.io/dionis404/goblincodex:latest
+            docker restart goblincodex-astro-1
+            echo "✅ Deployed successfully"
