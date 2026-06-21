@@ -42,5 +42,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             docker pull ghcr.io/dionis404/goblincodex:latest
-            docker restart goblincodex-astro-1
+            docker stop goblincodex-astro-1 || true
+            docker rm goblincodex-astro-1 || true
+            docker run -d \
+              --name goblincodex-astro-1 \
+              --network shared-net \
+              --restart unless-stopped \
+              -p 4321:4321 \
+              -e NODE_ENV=production \
+              ghcr.io/dionis404/goblincodex:latest
             echo "✅ Deployed successfully"
