@@ -1,15 +1,38 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import UnderConstruction from '../components/UnderConstruction.astro';
+import CommunityPage from '../components/CommunityPage.jsx';
+
+let farmers: any[] = [];
+let apiError = false;
+
+try {
+  const res = await fetch('http://goblin-api:8000/community/farmers');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  farmers = await res.json();
+} catch {
+  apiError = true;
+}
 ---
 
 <BaseLayout
   title="Сообщество — GoblinCodex"
-  description="Сообщество игроков Sunflower Land — фермеры, гайды и общение."
+  description="Фермеры GoblinCodex, привязавшие свою ферму Sunflower Land через бота."
   currentPage="community"
 >
-  <UnderConstruction
-    title="Сообщество строится"
-    description="Наши гоблины усиленно работают над этим разделом. Скоро здесь появится каталог фермеров и многое другое!"
-  />
+  <div class="gc-content gc-page-enter">
+
+    <div class="gc-community-header">
+      <h1 class="gc-page-title">👥 Сообщество GoblinCodex</h1>
+      <p class="gc-community-sub">Фермеры, привязавшие ферму через бота</p>
+    </div>
+
+    {apiError ? (
+      <div class="gc-community-error gc-card">
+        ⚠️ Данные временно недоступны. Попробуйте позже.
+      </div>
+    ) : (
+      <CommunityPage farmers={farmers} />
+    )}
+
+  </div>
 </BaseLayout>
