@@ -1,16 +1,14 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection, render } from 'astro:content';
+import { getEntry, render } from 'astro:content';
 
-export async function getStaticPaths() {
-  const guides = await getCollection('guides', ({ data }) => !data.draft);
-  return guides.map(guide => ({
-    params: { id: guide.id },
-    props:  { guide },
-  }));
+const { id } = Astro.params;
+const guide = await getEntry('guides', id!);
+
+if (!guide || guide.data.draft) {
+  return Astro.redirect('/codex', 302);
 }
 
-const { guide } = Astro.props;
 const { Content, headings } = await render(guide);
 
 const tagColors: Record<string, string> = {
