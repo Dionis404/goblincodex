@@ -34,21 +34,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            docker pull ghcr.io/dionis404/goblincodex:latest
-            docker stop goblincodex-astro-1 || true
-            docker rm goblincodex-astro-1 || true
-            docker run -d \
-              --name goblincodex-astro-1 \
-              --network shared-net \
-              --restart unless-stopped \
-              -p 4321:4321 \
-              -e NODE_ENV=production \
-              ghcr.io/dionis404/goblincodex:latest
-            echo "✅ Deployed successfully"
+      - name: Deploy via Portainer Webhook
+        run: |
+          curl -s -X POST \
+            "${{ secrets.PORTAINER_WEBHOOK_URL }}" \
+            | jq .

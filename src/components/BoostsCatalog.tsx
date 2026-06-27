@@ -9,11 +9,12 @@ interface Boost {
   type: 'success' | 'info' | 'vibrant' | 'danger';
   resource: string[];
   withSkill: boolean;
+  value?: Record<string, unknown> | null;
 }
 
 interface CatalogItem {
   name: string;
-  type: 'collectible' | 'wearable';
+  type: string;
   description: { en: string; ru: string };
   boosts: Boost[];
   sprite: string | null;

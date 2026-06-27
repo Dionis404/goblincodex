@@ -1,8 +1,16 @@
 ---
+export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
 import BoostsCatalog from '../../components/BoostsCatalog.tsx';
-import catalog from '../../data/boosts-catalog.json';
+import { getCatalogItems } from '../../lib/db';
+
+let catalogItems: Awaited<ReturnType<typeof getCatalogItems>> = [];
+try {
+  catalogItems = await getCatalogItems();
+} catch (err) {
+  console.error('[codex] DB fetch error:', err);
+}
 
 const allGuides = await getCollection('guides', ({ data }) => !data.draft);
 allGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
@@ -173,7 +181,7 @@ const tagColors: Record<string, string> = {
         <span class="gc-boosts-hint-icon">💡</span>
         <span><strong>Как пользоваться:</strong> выбери тип ресурса → смотри какие NFT-предметы дают бонус к нему. Клик по карточке — подробности.</span>
       </div>
-      <BoostsCatalog client:load items={catalog.items} />
+      <BoostsCatalog client:load items={catalogItems} />
     </div>
 
   </div>
