@@ -1,0 +1,87 @@
+---
+---
+
+<div id="gc-cookie-banner" class="gc-cookie-banner" aria-live="polite" role="region" aria-label="Уведомление об использовании cookie">
+  <div class="gc-cookie-inner">
+    <p class="gc-cookie-text">
+      Мы используем cookie для улучшения работы сайта и аналитики (Яндекс.Метрика).
+      Продолжая пользоваться сайтом, вы соглашаетесь с
+      <a href="/cookies" class="gc-cookie-link">политикой cookie</a>
+      и
+      <a href="/terms" class="gc-cookie-link">пользовательским соглашением</a>.
+    </p>
+    <button id="gc-cookie-accept" class="gc-btn-primary gc-cookie-btn">Принять</button>
+  </div>
+</div>
+
+<style>
+  .gc-cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 20px rgba(43, 36, 29, 0.12);
+    z-index: 9000;
+    padding: 14px 24px;
+    animation: slideUp 0.3s ease;
+  }
+  .gc-cookie-banner.hidden {
+    display: none;
+  }
+  .gc-cookie-inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .gc-cookie-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-sec);
+    line-height: 1.5;
+    min-width: 200px;
+  }
+  .gc-cookie-link {
+    color: var(--green-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .gc-cookie-link:hover {
+    color: var(--green-mid);
+  }
+  .gc-cookie-btn {
+    flex-shrink: 0;
+    font-size: 13px;
+    padding: 8px 20px;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  @media (max-width: 640px) {
+    .gc-cookie-banner { padding: 12px 16px; }
+    .gc-cookie-inner { gap: 12px; }
+    .gc-cookie-btn { width: 100%; justify-content: center; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var banner = document.getElementById('gc-cookie-banner');
+    if (!banner) return;
+
+    if (localStorage.getItem('gc_cookie_consent') === '1') {
+      banner.classList.add('hidden');
+      return;
+    }
+
+    document.getElementById('gc-cookie-accept').addEventListener('click', function () {
+      localStorage.setItem('gc_cookie_consent', '1');
+      banner.classList.add('hidden');
+    });
+  })();
+</script>

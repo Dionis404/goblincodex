@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Политика использования cookie — GoblinCodex"
+  description="Как GoblinCodex использует файлы cookie и для чего они нужны."
+  noindex={true}
+>
+  <div class="gc-content gc-page-enter" style="padding-top: 40px;">
+    <h1 class="gc-page-title" style="margin-bottom: 8px;">Политика использования cookie</h1>
+    <p style="font-size: 13px; color: var(--text-sec); margin-bottom: 36px;">Последнее обновление: июнь 2026</p>
+
+    <div class="gc-legal-body">
+
+      <section>
+        <h2>1. Что такое cookie</h2>
+        <p>Cookie — небольшие текстовые файлы, которые сайт сохраняет в вашем браузере. Они помогают сайту запоминать ваши предпочтения и улучшать работу сервиса.</p>
+      </section>
+
+      <section>
+        <h2>2. Какие cookie мы используем</h2>
+        <div class="gc-cookie-table-wrap">
+          <table class="gc-cookie-table">
+            <thead>
+              <tr>
+                <th>Тип</th>
+                <th>Источник</th>
+                <th>Цель</th>
+                <th>Срок</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Функциональные</td>
+                <td>GoblinCodex</td>
+                <td>Сохранение темы (светлая / тёмная) и других настроек интерфейса</td>
+                <td>1 год</td>
+              </tr>
+              <tr>
+                <td>Функциональные</td>
+                <td>GoblinCodex</td>
+                <td>Запоминание согласия с политикой cookie (<code>gc_cookie_consent</code>)</td>
+                <td>1 год</td>
+              </tr>
+              <tr>
+                <td>Аналитика</td>
+                <td>Яндекс.Метрика</td>
+                <td>Анонимная статистика посещаемости: просмотры страниц, источники трафика, поведение пользователей</td>
+                <td>До 1 года</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. Аналитика: Яндекс.Метрика</h2>
+        <p>Мы используем <strong>Яндекс.Метрику</strong> для понимания того, как посетители взаимодействуют с сайтом. Яндекс.Метрика собирает обезличенные данные о посещаемости согласно собственной <a href="https://yandex.ru/legal/confidential/" target="_blank" rel="noopener noreferrer">политике конфиденциальности Яндекс</a>.</p>
+        <p>Функция <strong>Вебвизор</strong> (запись действий на странице) активирована. Записи обезличены и не содержат личных данных.</p>
+      </section>
+
+      <section>
+        <h2>4. Как управлять cookie</h2>
+        <p>Вы можете отключить cookie в настройках браузера. Обратите внимание: отключение функциональных cookie может нарушить работу некоторых функций сайта (например, тема сбросится при каждом визите).</p>
+        <p>Инструкции для популярных браузеров:</p>
+        <ul>
+          <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer">Google Chrome</a></li>
+          <li><a href="https://support.mozilla.org/ru/kb/vklyuchenie-i-vyklyuchenie-cookie-dlya-veb-sajtov" target="_blank" rel="noopener noreferrer">Mozilla Firefox</a></li>
+          <li><a href="https://support.apple.com/ru-ru/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer">Safari</a></li>
+          <li><a href="https://support.microsoft.com/ru-ru/windows/удаление-файлов-cookie-и-управление-ими-168dab11-0753-043d-7c16-ede5947fc64d" target="_blank" rel="noopener noreferrer">Microsoft Edge</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>5. Изменения в политике</h2>
+        <p>Мы можем обновлять эту политику. При существенных изменениях дата «Последнее обновление» в начале страницы будет изменена. Продолжение использования сайта после таких изменений означает ваше согласие с обновлённой политикой.</p>
+      </section>
+
+      <section>
+        <h2>6. Контакты</h2>
+        <p>По любым вопросам, связанным с использованием cookie, пишите: <a href="mailto:usual.routine.geek@gmail.com">usual.routine.geek@gmail.com</a></p>
+      </section>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .gc-legal-body {
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .gc-legal-body section h2 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .gc-legal-body p {
+    font-size: 14px;
+    color: var(--text-sec);
+    line-height: 1.7;
+    margin-bottom: 10px;
+  }
+  .gc-legal-body p:last-child { margin-bottom: 0; }
+  .gc-legal-body a {
+    color: var(--green-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .gc-legal-body a:hover { color: var(--green-mid); }
+  .gc-legal-body ul {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .gc-legal-body li {
+    font-size: 14px;
+    color: var(--text-sec);
+    line-height: 1.6;
+  }
+  .gc-legal-body code {
+    font-size: 12px;
+    background: var(--green-pale);
+    color: var(--green-dark);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+  .gc-cookie-table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .gc-cookie-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .gc-cookie-table th {
+    background: var(--green-pale);
+    color: var(--green-dark);
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 14px;
+    white-space: nowrap;
+  }
+  .gc-cookie-table td {
+    padding: 10px 14px;
+    color: var(--text-sec);
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .gc-cookie-table tr:first-child td { border-top: none; }
+</style>
