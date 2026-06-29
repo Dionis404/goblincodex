@@ -34,8 +34,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via Portainer Webhook
+      - name: Redeploy stack via Portainer API
         run: |
-          curl -s -X POST \
-            "${{ secrets.PORTAINER_WEBHOOK_URL }}" \
-            | jq .
+          curl -sS -X PUT \
+            "${{ secrets.PORTAINER_URL }}/api/stacks/24/git/redeploy?endpointId=3" \
+            -H "X-API-Key: ${{ secrets.PORTAINER_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "prune": false,
+              "pullImage": true,
+              "repositoryReferenceName": "refs/heads/main",
+              "repositoryAuthentication": false
+            }'
+          echo ""
+          echo "✅ Stack redeploy triggered"
