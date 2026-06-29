@@ -23,7 +23,7 @@ export interface GuidesByUser {
 interface ProfileCardProps {
   /** Canonical username (used for lookup + display when farmer is absent) */
   username: string;
-  /** Farmer API data — optional; card works without a linked farm */
+  /** Farmer API data. undefined = loading, null = not found, Farmer = loaded */
   farmer?: Farmer | null;
   guidesByUser: GuidesByUser;
 }
@@ -54,8 +54,8 @@ export default function ProfileCard({ username, farmer, guidesByUser }: ProfileC
         </div>
       </div>
 
-      {/* ── Farm stats (only when farm is linked) ── */}
-      {farmer ? (
+      {/* ── Farm stats ── */}
+      {farmer === undefined ? null : farmer ? (
         <div className="gc-farmer-stats">
           <div className="gc-farmer-stat">
             <div className="gc-farmer-stat-val">{fmtXP(farmer.xp)}</div>

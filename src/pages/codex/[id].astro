@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getEntry, render } from 'astro:content';
+import { getEntry, render, getCollection } from 'astro:content';
+import GuideAuthorBlock from '../../components/GuideAuthorBlock.tsx';
 
 const { id } = Astro.params;
 const guide = await getEntry('guides', id!);
@@ -24,6 +25,26 @@ const tagColors: Record<string, string> = {
 };
 
 const tagColor = tagColors[guide.data.category] ?? 'green';
+
+// Build guidesByUser for author + contributors of this guide (for the modal)
+const relevantUsers = [guide.data.author, ...(guide.data.contributors ?? [])]
+  .filter(Boolean)
+  .map((u) => u!.toLowerCase());
+
+const guidesByUser: Record<string, { authored: any[]; contributed: any[] }> = {};
+for (const u of relevantUsers) guidesByUser[u] = { authored: [], contributed: [] };
+
+if (relevantUsers.length > 0) {
+  for (const g of await getCollection('guides')) {
+    if (g.data.draft) continue;
+    const info = { id: g.id, title: g.data.title, icon: g.data.icon };
+    if (g.data.author && relevantUsers.includes(g.data.author.toLowerCase()))
+      guidesByUser[g.data.author.toLowerCase()].authored.push(info);
+    for (const n of g.data.contributors ?? [])
+      if (relevantUsers.includes(n.toLowerCase()))
+        guidesByUser[n.toLowerCase()].contributed.push(info);
+  }
+}
 ---
 
 <BaseLayout
@@ -73,31 +94,14 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
           {guide.data.icon} {guide.data.title}
         </h1>
 
-        <!-- Автор -->
-        {guide.data.author && (
-          <a href={`/profile/${guide.data.author.toLowerCase()}`} class="gc-guide-author gc-guide-author--link">
-            <div class="gc-profile-avatar gc-guide-author-avatar-sm" aria-hidden="true">
-              <span class="gc-profile-avatar-initial">
-                {guide.data.author[0].toUpperCase()}
-              </span>
-            </div>
-            <div>
-              <div class="gc-guide-author-name">@{guide.data.author}</div>
-              <div class="gc-guide-author-role">Автор гайда</div>
-            </div>
-          </a>
-        )}
-
-        <!-- Контрибьюторы -->
-        {guide.data.contributors && guide.data.contributors.length > 0 && (
-          <div class="gc-guide-contributors">
-            <span class="gc-guide-contributors-label">Корректировка:</span>
-            {guide.data.contributors.map((name: string) => (
-              <a href={`/profile/${name.toLowerCase()}`} class="gc-guide-contributor gc-guide-contributor--link">
-                @{name}
-              </a>
-            ))}
-          </div>
+        <!-- Автор и контрибьюторы — открывают модальную карточку профиля -->
+        {(guide.data.author || (guide.data.contributors?.length ?? 0) > 0) && (
+          <GuideAuthorBlock
+            client:load
+            author={guide.data.author}
+            contributors={guide.data.contributors}
+            guidesByUser={guidesByUser}
+          />
         )}
 
         <hr class="gc-guide-divider" />
@@ -180,16 +184,19 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
   align-items: center;
   gap: 10px;
   margin-bottom: 24px;
-  text-decoration: none;
   width: fit-content;
 }
-.gc-guide-author--link {
+.gc-guide-author--btn {
+  background: none;
+  border: none;
+  cursor: pointer;
   border-radius: 8px;
   padding: 6px 10px 6px 6px;
   margin-left: -6px;
   transition: background 0.15s;
+  text-align: left;
 }
-.gc-guide-author--link:hover {
+.gc-guide-author--btn:hover {
   background: var(--green-pale);
 }
 /* Smaller avatar variant for the guide page */
@@ -225,18 +232,20 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
 .gc-guide-contributors-label {
   color: var(--text-sec);
 }
-.gc-guide-contributor {
+.gc-guide-contributor--btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 12px;
   font-weight: 600;
   color: var(--green-dark);
-}
-.gc-guide-contributor--link {
-  text-decoration: none;
   padding: 2px 7px;
   border-radius: 99px;
   background: var(--green-pale);
   transition: background 0.15s, color 0.15s;
 }
-.gc-guide-contributor--link:hover {
+.gc-guide-contributor--btn:hover {
   background: var(--green-mid);
   color: #fff;
 }
