@@ -1,6 +1,6 @@
 {
   "version": "auto",
-  "updatedAt": "2026-06-26T09:55:19Z",
+  "updatedAt": "2026-06-29T11:28:17Z",
   "stats": {
     "collectibles": 187,
     "wearables": 125,
@@ -94,8 +94,8 @@
         },
         {
           "key": "description.apprentice.beaver.boost",
-          "en": "-50% Tree Recovery Time",
-          "ru": "-50% времени восстановления деревьев",
+          "en": "x0.5 Tree Recovery Time",
+          "ru": "x0.5 Tree Recovery Time",
           "type": "info",
           "resource": [
             "wood"
@@ -218,8 +218,8 @@
       "boosts": [
         {
           "key": "description.badgerShrine.buff",
-          "en": "-25% Tree Recovery Time",
-          "ru": "-25% времени восстановления дерева",
+          "en": "x0.75 Tree Recovery Time",
+          "ru": "x0.75 Tree Recovery Time",
           "type": "info",
           "resource": [
             "wood"
@@ -228,8 +228,8 @@
         },
         {
           "key": "description.badgerShrine.buff.2",
-          "en": "-25% Stone Recovery Time",
-          "ru": "-25% времени восстановления камня",
+          "en": "x0.75 Stone Recovery Time",
+          "ru": "x0.75 Stone Recovery Time",
           "type": "info",
           "resource": [
             "stone"
@@ -272,8 +272,8 @@
       "boosts": [
         {
           "key": "description.bantamShrine.buff",
-          "en": "-25% Chicken Sleep Time",
-          "ru": "-25% времени сна куриц",
+          "en": "x0.75 Chicken Sleep Time",
+          "ru": "x0.75 Chicken Sleep Time",
           "type": "info",
           "resource": [
             "animal"
@@ -282,8 +282,8 @@
         },
         {
           "key": "description.bantamShrine.buff.2",
-          "en": "-5% Feed to feed chickens",
-          "ru": "-5% корма для кур",
+          "en": "x0.95 Feed to feed chickens",
+          "ru": "x0.95 Feed to feed chickens",
           "type": "info",
           "resource": [
             "animal"
@@ -336,8 +336,8 @@
       "boosts": [
         {
           "key": "description.basic.scarecrow.boost.skill",
-          "en": "-30% Basic Crops Growth Time",
-          "ru": "-30% времени роста базовых культур",
+          "en": "x0.7 Basic Crops Growth Time",
+          "ru": "x0.7 Basic Crops Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -346,8 +346,8 @@
         },
         {
           "key": "description.basic.scarecrow.boost",
-          "en": "-20% Basic Crops Growth Time",
-          "ru": "-20% времени роста базовых культур",
+          "en": "x0.8 Basic Crops Growth Time",
+          "ru": "x0.8 Basic Crops Growth Time",
           "type": "vibrant",
           "resource": [
             "crop"
@@ -458,8 +458,8 @@
       "boosts": [
         {
           "key": "description.blossom.hourglass.boost",
-          "en": "-25% Flower Growth Time",
-          "ru": "-25% времени роста цветов",
+          "en": "x0.75 Flower Growth Time",
+          "ru": "x0.75 Flower Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -481,8 +481,8 @@
       "boosts": [
         {
           "key": "description.boarShrine.buff",
-          "en": "-20% Cooking Time",
-          "ru": "-20% времени готовки",
+          "en": "x0.8 Cooking Time",
+          "ru": "x0.8 Cooking Time",
           "type": "info",
           "resource": [
             "cooking"
@@ -535,8 +535,8 @@
       "boosts": [
         {
           "key": "description.cabbage.girl.boost",
-          "en": "-50% Cabbage Plot Growth Time",
-          "ru": "-50% времени роста капусты на грядках",
+          "en": "x0.5 Cabbage Plot Growth Time",
+          "ru": "x0.5 Cabbage Plot Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -641,8 +641,8 @@
       "boosts": [
         {
           "key": "description.collieShrine.buff",
-          "en": "-25% Cow Sleep Time",
-          "ru": "-25% времени сна коров",
+          "en": "x0.75 Cow Sleep Time",
+          "ru": "x0.75 Cow Sleep Time",
           "type": "info",
           "resource": [
             "animal"
@@ -651,8 +651,8 @@
         },
         {
           "key": "description.collieShrine.buff.2",
-          "en": "-25% Sheep Sleep Time",
-          "ru": "-25% времени сна овец",
+          "en": "x0.75 Sheep Sleep Time",
+          "ru": "x0.75 Sheep Sleep Time",
           "type": "info",
           "resource": [
             "animal"
@@ -661,8 +661,8 @@
         },
         {
           "key": "description.collieShrine.buff.3",
-          "en": "-5% Feed to feed barn animals",
-          "ru": "-5% корма для животных в амбаре",
+          "en": "x0.95 Feed to feed barn animals",
+          "ru": "x0.95 Feed to feed barn animals",
           "type": "info",
           "resource": [
             "animal"
@@ -747,8 +747,8 @@
       "boosts": [
         {
           "key": "description.crimstoneClam.boost",
-          "en": "-10% Crimstone recovery time",
-          "ru": "-10% времени восстановления кримстоуна",
+          "en": "x0.9 Crimstone recovery time",
+          "ru": "x0.9 Crimstone recovery time",
           "type": "info",
           "resource": [
             "crimstone"
@@ -779,8 +779,8 @@
       "boosts": [
         {
           "key": "description.crystalAltar.boost",
-          "en": "-5% Crab Pot & Mariner Pot time",
-          "ru": "-5% времени ловли ракообразных",
+          "en": "x0.95 Crab Pot & Mariner Pot time",
+          "ru": "x0.95 Crab Pot & Mariner Pot time",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -829,8 +829,8 @@
       "boosts": [
         {
           "key": "description.desertgnome.boost",
-          "en": "-10% Cooking Time",
-          "ru": "-10% времени готовки",
+          "en": "x0.9 Cooking Time",
+          "ru": "x0.9 Cooking Time",
           "type": "vibrant",
           "resource": [
             "cooking"
@@ -1011,8 +1011,8 @@
       "boosts": [
         {
           "key": "description.farm.dog.boost",
-          "en": "-25% Sheep Sleep Time",
-          "ru": "-25% времени сна овец",
+          "en": "x0.75 Sheep Sleep Time",
+          "ru": "x0.75 Sheep Sleep Time",
           "type": "info",
           "resource": [
             "animal"
@@ -1053,8 +1053,8 @@
       "boosts": [
         {
           "key": "description.fat.chicken.boost",
-          "en": "-10% Feed to Chicken",
-          "ru": "-10% корма для куриц",
+          "en": "x0.9 Feed to Chicken",
+          "ru": "x0.9 Feed to Chicken",
           "type": "success",
           "resource": [
             "animal"
@@ -1139,8 +1139,8 @@
       "boosts": [
         {
           "key": "description.flower.fox.boost",
-          "en": "-10% Flower Growth Time",
-          "ru": "-10% времени роста цветов",
+          "en": "x0.9 Flower Growth Time",
+          "ru": "x0.9 Flower Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -1172,8 +1172,8 @@
         },
         {
           "key": "description.apprentice.beaver.boost",
-          "en": "-50% Tree Recovery Time",
-          "ru": "-50% времени восстановления деревьев",
+          "en": "x0.5 Tree Recovery Time",
+          "ru": "x0.5 Tree Recovery Time",
           "type": "info",
           "resource": [
             "wood"
@@ -1204,8 +1204,8 @@
       "boosts": [
         {
           "key": "description.foxShrine.buff",
-          "en": "-25% Crafting Box Time",
-          "ru": "-25% времени крафта в мастерской",
+          "en": "x0.75 Crafting Box Time",
+          "ru": "x0.75 Crafting Box Time",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -1298,8 +1298,8 @@
       "boosts": [
         {
           "key": "description.fruitTuneBox.boost",
-          "en": "-20% Fruit Patch Growth Time",
-          "ru": "-20% времени роста на фруктовых грядках",
+          "en": "x0.8 Fruit Patch Growth Time",
+          "ru": "x0.8 Fruit Patch Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -1445,8 +1445,8 @@
       "boosts": [
         {
           "key": "description.giantTurnip.boost",
-          "en": "-50% Turnip Growth Time",
-          "ru": "-50% времени роста репы",
+          "en": "x0.5 Turnip Growth Time",
+          "ru": "x0.5 Turnip Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -1487,8 +1487,8 @@
       "boosts": [
         {
           "key": "description.giantZucchini.boost",
-          "en": "-50% Zucchini Plot Growth Time",
-          "ru": "-50% времени роста цукини на грядках",
+          "en": "x0.5 Zucchini Plot Growth Time",
+          "ru": "x0.5 Zucchini Plot Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -1641,8 +1641,8 @@
       "boosts": [
         {
           "key": "description.gourmet.hourglass.boost",
-          "en": "-50% Cooking Time",
-          "ru": "-50% времени готовки",
+          "en": "x0.5 Cooking Time",
+          "ru": "x0.5 Cooking Time",
           "type": "info",
           "resource": [
             "cooking"
@@ -1703,8 +1703,8 @@
       "boosts": [
         {
           "key": "description.greenhouse.glow.boost",
-          "en": "-20% Greenhouse Pot Growth Time",
-          "ru": "-20% времени роста в теплице",
+          "en": "x0.8 Greenhouse Pot Growth Time",
+          "ru": "x0.8 Greenhouse Pot Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -1765,8 +1765,8 @@
       "boosts": [
         {
           "key": "description.groovy.gramophone.boost",
-          "en": "-50% Growth Time in Crop Machine",
-          "ru": "-50% времени роста в агромашине",
+          "en": "x0.5 Growth Time in Crop Machine",
+          "ru": "x0.5 Growth Time in Crop Machine",
           "type": "info",
           "resource": [
             "crop"
@@ -1787,8 +1787,8 @@
       "boosts": [
         {
           "key": "description.harvest.hourglass.boost",
-          "en": "-25% Crop Growth Time",
-          "ru": "-25% времени роста растений",
+          "en": "x0.75 Crop Growth Time",
+          "ru": "x0.75 Crop Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -1829,8 +1829,8 @@
       "boosts": [
         {
           "key": "description.honey.treat.boost",
-          "en": "-25% Animal Feed",
-          "ru": "-25% корма для животных",
+          "en": "x0.75 Animal Feed",
+          "ru": "x0.75 Animal Feed",
           "type": "success",
           "resource": [
             "animal"
@@ -2015,8 +2015,8 @@
       "boosts": [
         {
           "key": "description.janitorChicken.boost",
-          "en": "-5% chicken sleep time",
-          "ru": "-5% времени сна куриц",
+          "en": "x0.95 chicken sleep time",
+          "ru": "x0.95 chicken sleep time",
           "type": "success",
           "resource": [
             "animal"
@@ -2287,8 +2287,8 @@
         },
         {
           "key": "description.legendaryShrine.buff.6",
-          "en": "-50% Cooking Time",
-          "ru": "-50% времени приготовления",
+          "en": "x0.5 Cooking Time",
+          "ru": "x0.5 Cooking Time",
           "type": "info",
           "resource": [
             "cooking"
@@ -2309,8 +2309,8 @@
       "boosts": [
         {
           "key": "description.lemon.frog.boost",
-          "en": "-25% Lemon Growth Time",
-          "ru": "-25% времени роста лимона",
+          "en": "x0.75 Lemon Growth Time",
+          "ru": "x0.75 Lemon Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -2354,8 +2354,8 @@
       "boosts": [
         {
           "key": "description.lemon.tea.bath.boost",
-          "en": "-50% Lemon Growth Time",
-          "ru": "-50% времени роста лимона",
+          "en": "x0.5 Lemon Growth Time",
+          "ru": "x0.5 Lemon Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -2399,8 +2399,8 @@
       "boosts": [
         {
           "key": "description.lunar.calendar.boost",
-          "en": "-10% Crop Growth Time",
-          "ru": "-10% времени роста урожая",
+          "en": "x0.9 Crop Growth Time",
+          "ru": "x0.9 Crop Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -2441,8 +2441,8 @@
       "boosts": [
         {
           "key": "description.magmaStone.buff.one",
-          "en": "-15% Lava Pit Time",
-          "ru": "-15% времени производства в лавовой яме",
+          "en": "x0.85 Lava Pit Time",
+          "ru": "x0.85 Lava Pit Time",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -2491,8 +2491,8 @@
       "boosts": [
         {
           "key": "description.mermaidSheep.boost",
-          "en": "-5% Sheep Feed",
-          "ru": "-5% корма для овец",
+          "en": "x0.95 Sheep Feed",
+          "ru": "x0.95 Sheep Feed",
           "type": "success",
           "resource": [
             "animal"
@@ -2533,8 +2533,8 @@
       "boosts": [
         {
           "key": "description.moleShrine.buff",
-          "en": "-25% Iron Recovery Time",
-          "ru": "-25% времени восстановления железа",
+          "en": "x0.75 Iron Recovery Time",
+          "ru": "x0.75 Iron Recovery Time",
           "type": "info",
           "resource": [
             "iron"
@@ -2543,8 +2543,8 @@
         },
         {
           "key": "description.moleShrine.buff.2",
-          "en": "-25% Gold Recovery Time",
-          "ru": "-25% времени восстановления золота",
+          "en": "x0.75 Gold Recovery Time",
+          "ru": "x0.75 Gold Recovery Time",
           "type": "info",
           "resource": [
             "gold"
@@ -2553,8 +2553,8 @@
         },
         {
           "key": "description.moleShrine.buff.3",
-          "en": "-25% Crimstone Recovery Time",
-          "ru": "-25% времени восстановления кримстоуна",
+          "en": "x0.75 Crimstone Recovery Time",
+          "ru": "x0.75 Crimstone Recovery Time",
           "type": "info",
           "resource": [
             "crimstone"
@@ -2595,8 +2595,8 @@
       "boosts": [
         {
           "key": "description.mothShrine.buff",
-          "en": "-25% Flower Growth Time",
-          "ru": "-25% времени роста цветов",
+          "en": "x0.75 Flower Growth Time",
+          "ru": "x0.75 Flower Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -2648,8 +2648,8 @@
       "boosts": [
         {
           "key": "description.mysterious.parsnip.boost",
-          "en": "-50% Parsnip Growth Time",
-          "ru": "-50% времени роста пастернака",
+          "en": "x0.5 Parsnip Growth Time",
+          "ru": "x0.5 Parsnip Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -2755,8 +2755,8 @@
       "boosts": [
         {
           "key": "description.orchard.hourglass.boost",
-          "en": "-25% Fruit Growth Time",
-          "ru": "-25% времени роста фруктов",
+          "en": "x0.75 Fruit Growth Time",
+          "ru": "x0.75 Fruit Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -2778,8 +2778,8 @@
       "boosts": [
         {
           "key": "description.ore.hourglass.boost",
-          "en": "-50% Mineral Recovery Time",
-          "ru": "-50% времени восстановления минералов",
+          "en": "x0.5 Mineral Recovery Time",
+          "ru": "x0.5 Mineral Recovery Time",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -3138,8 +3138,8 @@
       "boosts": [
         {
           "key": "description.rapid.root.boost",
-          "en": "-50% Crop Plot Growth Time",
-          "ru": "-50% времени роста на грядках",
+          "en": "x0.5 Crop Plot Growth Time",
+          "ru": "x0.5 Crop Plot Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -3584,8 +3584,8 @@
       "boosts": [
         {
           "key": "description.soil.krabby.boost",
-          "en": "-10% Composter Compost Time",
-          "ru": "-10% времени компостирования",
+          "en": "x0.9 Composter Compost Time",
+          "ru": "x0.9 Composter Compost Time",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -3648,8 +3648,8 @@
       "boosts": [
         {
           "key": "description.sparrowShrine.buff",
-          "en": "-25% Plot Crop Growth Time",
-          "ru": "-25% времени роста растений на грядках",
+          "en": "x0.75 Plot Crop Growth Time",
+          "ru": "x0.75 Plot Crop Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -3670,8 +3670,8 @@
       "boosts": [
         {
           "key": "description.speed.chicken.boost",
-          "en": "-10% Chicken Sleep Time",
-          "ru": "-10% времени сна куриц",
+          "en": "x0.9 Chicken Sleep Time",
+          "ru": "x0.9 Chicken Sleep Time",
           "type": "info",
           "resource": [
             "animal"
@@ -3692,8 +3692,8 @@
       "boosts": [
         {
           "key": "description.speedTrap.boost",
-          "en": "-20% Trap Pot time",
-          "ru": "-20% времени ловли ракообразных",
+          "en": "x0.8 Trap Pot time",
+          "ru": "x0.8 Trap Pot time",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -3762,8 +3762,8 @@
       "boosts": [
         {
           "key": "description.squirrel.monkey.boost",
-          "en": "-50% Orange Growth Time",
-          "ru": "-50% времени роста апельсина",
+          "en": "x0.5 Orange Growth Time",
+          "ru": "x0.5 Orange Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -3785,8 +3785,8 @@
       "boosts": [
         {
           "key": "description.stagShrine.buff",
-          "en": "-25% Oil Recovery Time",
-          "ru": "-25% времени восстановления нефти",
+          "en": "x0.75 Oil Recovery Time",
+          "ru": "x0.75 Oil Recovery Time",
           "type": "info",
           "resource": [
             "oil"
@@ -4050,8 +4050,8 @@
       "boosts": [
         {
           "key": "description.timber.hourglass.boost",
-          "en": "-25% Tree Recovery Time (4hrs)",
-          "ru": "-25% времени на восстановление деревьев (4 часа)",
+          "en": "x0.75 Tree Recovery Time (4hrs)",
+          "ru": "x0.75 Tree Recovery Time (4hrs)",
           "type": "info",
           "resource": [
             "wood"
@@ -4149,8 +4149,8 @@
       "boosts": [
         {
           "key": "description.tomato.clown.boost",
-          "en": "-50% Tomato Growth Time",
-          "ru": "-50% времени роста помидора",
+          "en": "x0.5 Tomato Growth Time",
+          "ru": "x0.5 Tomato Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -4172,8 +4172,8 @@
       "boosts": [
         {
           "key": "description.tortoiseShrine.buff",
-          "en": "-33% Greenhouse Growth Time",
-          "ru": "-33% времени роста в теплице",
+          "en": "x0.67 Greenhouse Growth Time",
+          "ru": "x0.67 Greenhouse Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -4182,8 +4182,8 @@
         },
         {
           "key": "description.tortoiseShrine.buff.2",
-          "en": "-10% Crop Machine Growth Time",
-          "ru": "-10% времени роста растений в агромашине",
+          "en": "x0.9 Crop Machine Growth Time",
+          "ru": "x0.9 Crop Machine Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -4204,8 +4204,8 @@
       "boosts": [
         {
           "key": "description.toucanShrine.buff",
-          "en": "-25% Fruit Patch Growth Time",
-          "ru": "-25% времени роста на фруктовых грядках",
+          "en": "x0.75 Fruit Patch Growth Time",
+          "ru": "x0.75 Fruit Patch Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -4311,8 +4311,8 @@
       "boosts": [
         {
           "key": "description.turbo.sprout.boost",
-          "en": "-50% Growth Time in Greenhouse",
-          "ru": "-50% времени роста тепличных культур",
+          "en": "x0.5 Growth Time in Greenhouse",
+          "ru": "x0.5 Growth Time in Greenhouse",
           "type": "info",
           "resource": [
             "crop"
@@ -4581,8 +4581,8 @@
       "boosts": [
         {
           "key": "description.architectRuler.boost",
-          "en": "-25% Crafting Box Time",
-          "ru": "-25% времени крафта в мастерской",
+          "en": "x0.75 Crafting Box Time",
+          "ru": "x0.75 Crafting Box Time",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -4601,8 +4601,8 @@
       "boosts": [
         {
           "key": "description.autumnsEmbrace.boost",
-          "en": "-50% Plot Crop Time in Autumn",
-          "ru": "-50% времени роста растений на грядках осенью",
+          "en": "x0.5 Plot Crop Time in Autumn",
+          "ru": "x0.5 Plot Crop Time in Autumn",
           "type": "info",
           "resource": [
             "crop"
@@ -4645,8 +4645,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.banana.boost",
-          "en": "-20% Banana Growth Time",
-          "ru": "-20% времени роста банана",
+          "en": "x0.8 Banana Growth Time",
+          "ru": "x0.8 Banana Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -4818,8 +4818,8 @@
       "boosts": [
         {
           "key": "description.broccoliHat.boost",
-          "en": "-50% Broccoli Plot Growth Time",
-          "ru": "-50% времени роста брокколи на грядках",
+          "en": "x0.5 Broccoli Plot Growth Time",
+          "ru": "x0.5 Broccoli Plot Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -4840,8 +4840,8 @@
       "boosts": [
         {
           "key": "description.bubbleAura.boost",
-          "en": "-20% Fish Market processing time",
-          "ru": "-20% времени обработки в рыбной лавке",
+          "en": "x0.8 Fish Market processing time",
+          "ru": "x0.8 Fish Market processing time",
           "type": "info",
           "resource": [
             "fishing"
@@ -4962,8 +4962,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.bumpkin.medallion.boost",
-          "en": "-25% Cooking Time",
-          "ru": "-25% времени готовки",
+          "en": "x0.75 Cooking Time",
+          "ru": "x0.75 Cooking Time",
           "type": "info",
           "resource": [
             "cooking"
@@ -5111,8 +5111,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.carrot.amulet.boost",
-          "en": "-20% Carrot Plot Growth time",
-          "ru": "-20% времени роста моркови на грядках",
+          "en": "x0.8 Carrot Plot Growth time",
+          "ru": "x0.8 Carrot Plot Growth time",
           "type": "info",
           "resource": [
             "crop"
@@ -5283,8 +5283,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.crimstone.amulet",
-          "en": "-20% Crimstone Cooldown Time",
-          "ru": "-20% времени восстановления кримстоуна",
+          "en": "x0.8 Crimstone Cooldown Time",
+          "ru": "x0.8 Crimstone Cooldown Time",
           "type": "info",
           "resource": [
             "crimstone"
@@ -5403,8 +5403,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.dev.wrench.boost",
-          "en": "-50% Oil Regeneration Time",
-          "ru": "-50% времени восстановления нефти",
+          "en": "x0.5 Oil Regeneration Time",
+          "ru": "x0.5 Oil Regeneration Time",
           "type": "info",
           "resource": [
             "oil"
@@ -5447,8 +5447,8 @@
       "boosts": [
         {
           "key": "description.dreamScarf.boost",
-          "en": "-20% Sheep Sleep Time",
-          "ru": "-20% времени сна овец",
+          "en": "x0.8 Sheep Sleep Time",
+          "ru": "x0.8 Sheep Sleep Time",
           "type": "info",
           "resource": [
             "animal"
@@ -5491,8 +5491,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.flower.crown",
-          "en": "-50% Flower Growth Time",
-          "ru": "-50% времени роста цветов",
+          "en": "x0.5 Flower Growth Time",
+          "ru": "x0.5 Flower Growth Time",
           "type": "info",
           "resource": [
             "crop",
@@ -5668,8 +5668,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.goblin.medallion.boost",
-          "en": "-25% Cooking Time",
-          "ru": "-25% времени готовки",
+          "en": "x0.75 Cooking Time",
+          "ru": "x0.75 Cooking Time",
           "type": "info",
           "resource": [
             "cooking"
@@ -5879,8 +5879,8 @@
       "boosts": [
         {
           "key": "description.infernalBullwhip.boost",
-          "en": "-50% Feed to Barn Animal",
-          "ru": "-50% корма для животных в амбаре",
+          "en": "x0.5 Feed to Barn Animal",
+          "ru": "x0.5 Feed to Barn Animal",
           "type": "vibrant",
           "resource": [
             "animal"
@@ -5945,8 +5945,8 @@
       "boosts": [
         {
           "key": "description.ladybugSuit.boost",
-          "en": "-25% Onion Seed coin cost",
-          "ru": "-25% к стоимости семян лука",
+          "en": "x0.75 Onion Seed coin cost",
+          "ru": "x0.75 Onion Seed coin cost",
           "type": "success",
           "resource": [],
           "withSkill": false
@@ -5965,8 +5965,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.lava.swimwear.boost",
-          "en": "-50% Lava Pit resources",
-          "ru": "-50% ресурсов в лавовой яме",
+          "en": "x0.5 Lava Pit resources",
+          "ru": "x0.5 Lava Pit resources",
           "type": "vibrant",
           "resource": [],
           "withSkill": false
@@ -6018,8 +6018,8 @@
       "boosts": [
         {
           "key": "description.lunarWeapon.boost",
-          "en": "-50% Power Skill Cooldown",
-          "ru": "-50% времени восстановления активных навыков",
+          "en": "x0.5 Power Skill Cooldown",
+          "ru": "x0.5 Power Skill Cooldown",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -6038,8 +6038,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.Luna.s.hat.boost",
-          "en": "-50% Cooking Time",
-          "ru": "-50% времени готовки",
+          "en": "x0.5 Cooking Time",
+          "ru": "x0.5 Cooking Time",
           "type": "info",
           "resource": [
             "cooking"
@@ -6060,8 +6060,8 @@
       "boosts": [
         {
           "key": "description.cleaverKnife.boost.1",
-          "en": "-15% Cooking Time",
-          "ru": "-15% времени готовки",
+          "en": "x0.85 Cooking Time",
+          "ru": "x0.85 Cooking Time",
           "type": "info",
           "resource": [
             "cooking"
@@ -6092,8 +6092,8 @@
       "boosts": [
         {
           "key": "description.medicApron.boost",
-          "en": "-50% Medicine to heal animals",
-          "ru": "-50% лекарств на лечение животных",
+          "en": "x0.5 Medicine to heal animals",
+          "ru": "x0.5 Medicine to heal animals",
           "type": "vibrant",
           "resource": [
             "animal"
@@ -6248,8 +6248,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.nightshade.medallion.boost",
-          "en": "-25% Cooking Time",
-          "ru": "-25% времени готовки",
+          "en": "x0.75 Cooking Time",
+          "ru": "x0.75 Cooking Time",
           "type": "info",
           "resource": [
             "cooking"
@@ -6395,8 +6395,8 @@
       "boosts": [
         {
           "key": "description.obsidianNecklace.boost",
-          "en": "-50% Lava Pit Time",
-          "ru": "-50% времени производства в лавовой яме",
+          "en": "x0.5 Lava Pit Time",
+          "ru": "x0.5 Lava Pit Time",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -6585,8 +6585,8 @@
       "boosts": [
         {
           "key": "description.pickaxeShark.boost.1",
-          "en": "-15% Gold recovery time",
-          "ru": "-15% времени восстановления золота",
+          "en": "x0.85 Gold recovery time",
+          "ru": "x0.85 Gold recovery time",
           "type": "info",
           "resource": [
             "gold"
@@ -6657,8 +6657,8 @@
       "boosts": [
         {
           "key": "description.redPepperOnesie.boost",
-          "en": "-25% Red Pepper Growth Time",
-          "ru": "-25% времени роста перца",
+          "en": "x0.75 Red Pepper Growth Time",
+          "ru": "x0.75 Red Pepper Growth Time",
           "type": "info",
           "resource": [
             "crop"
@@ -6731,8 +6731,8 @@
       "boosts": [
         {
           "key": "description.solAndLuna.boost",
-          "en": "-50% Crafting Box Time",
-          "ru": "-50% времени крафта в мастерской",
+          "en": "x0.5 Crafting Box Time",
+          "ru": "x0.5 Crafting Box Time",
           "type": "info",
           "resource": [],
           "withSkill": false
@@ -6751,8 +6751,8 @@
       "boosts": [
         {
           "key": "description.solflareAegis.boost",
-          "en": "-50% Plot Crop Time in Summer",
-          "ru": "-50% времени роста растений на грядках летом",
+          "en": "x0.5 Plot Crop Time in Summer",
+          "ru": "x0.5 Plot Crop Time in Summer",
           "type": "info",
           "resource": [
             "crop"
@@ -6885,8 +6885,8 @@
       "boosts": [
         {
           "key": "bumpkinItemBuff.sunflorian.medallion.boost",
-          "en": "-25% Cooking Time",
-          "ru": "-25% времени готовки",
+          "en": "x0.75 Cooking Time",
+          "ru": "x0.75 Cooking Time",
           "type": "info",
           "resource": [
             "cooking"
