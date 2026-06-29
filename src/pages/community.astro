@@ -2,6 +2,7 @@
 export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CommunityPage from '../components/CommunityPage.jsx';
+import { getCollection } from 'astro:content';
 
 let farmers: any[] = [];
 let apiError = false;
@@ -13,6 +14,27 @@ try {
 } catch (e) {
   apiError = true;
   console.error('Community API error:', e);
+}
+
+// Build username → { authored, contributed } map from content collection
+const allGuides = await getCollection('guides');
+const guidesByUser: Record<string, { authored: any[]; contributed: any[] }> = {};
+
+for (const guide of allGuides) {
+  if (guide.data.draft) continue;
+  const { author, contributors, title, icon } = guide.data;
+  const info = { id: guide.id, title, icon };
+
+  if (author) {
+    const k = author.toLowerCase();
+    guidesByUser[k] ??= { authored: [], contributed: [] };
+    guidesByUser[k].authored.push(info);
+  }
+  for (const name of contributors ?? []) {
+    const k = name.toLowerCase();
+    guidesByUser[k] ??= { authored: [], contributed: [] };
+    guidesByUser[k].contributed.push(info);
+  }
 }
 ---
 
@@ -33,7 +55,7 @@ try {
         ⚠️ Данные временно недоступны. Попробуйте позже.
       </div>
     ) : (
-      <CommunityPage farmers={farmers} />
+      <CommunityPage farmers={farmers} guidesByUser={guidesByUser} />
     )}
 
   </div>

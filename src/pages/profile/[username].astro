@@ -1,0 +1,103 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProfileCard from '../../components/ProfileCard.tsx';
+import { getCollection } from 'astro:content';
+
+const { username } = Astro.params;
+const lowerUsername = username!.toLowerCase();
+
+// Fetch farmer list, find matching entry
+let farmer = null;
+try {
+  const res = await fetch('http://goblin-api:8000/community/farmers');
+  if (res.ok) {
+    const all: any[] = await res.json();
+    farmer = all.find((f) => f.game_username?.toLowerCase() === lowerUsername) ?? null;
+  }
+} catch (e) {
+  console.error('Community API error:', e);
+}
+
+// Build guides index for this user
+const allGuides = await getCollection('guides');
+const authored: any[]     = [];
+const contributed: any[]  = [];
+
+for (const guide of allGuides) {
+  if (guide.data.draft) continue;
+  const { author, contributors, title, icon } = guide.data;
+  const info = { id: guide.id, title, icon };
+
+  if (author?.toLowerCase() === lowerUsername)                              authored.push(info);
+  if (contributors?.some((n: string) => n.toLowerCase() === lowerUsername)) contributed.push(info);
+}
+
+const guidesByUser = { [lowerUsername]: { authored, contributed } };
+
+const notFound = !farmer && authored.length === 0 && contributed.length === 0;
+const displayName = farmer?.game_username ?? (username![0].toUpperCase() + username!.slice(1));
+---
+
+<BaseLayout
+  title={`${displayName} — GoblinCodex`}
+  description={`Профиль игрока ${displayName} в сообществе GoblinCodex`}
+  currentPage="community"
+>
+  <div class="gc-content gc-page-enter">
+
+    <a href="/community" class="gc-btn-secondary gc-profile-back">← Сообщество</a>
+
+    {notFound ? (
+      <div class="gc-card gc-profile-not-found">
+        <div class="gc-profile-not-found-icon">🔍</div>
+        <h2>Профиль не найден</h2>
+        <p>Игрок <strong>@{username}</strong> не привязал ферму и не упоминается в гайдах.</p>
+        <a href="/community" class="gc-btn-primary" style="margin-top:16px;display:inline-flex;">
+          Вернуться в сообщество
+        </a>
+      </div>
+    ) : (
+      <div class="gc-profile-page-wrap">
+        <ProfileCard
+          client:load
+          username={lowerUsername}
+          farmer={farmer}
+          guidesByUser={guidesByUser}
+        />
+      </div>
+    )}
+
+  </div>
+</BaseLayout>
+
+<style>
+.gc-profile-back {
+  display: inline-flex;
+  margin: 20px 0 24px;
+}
+.gc-profile-page-wrap {
+  max-width: 420px;
+}
+.gc-profile-not-found {
+  max-width: 420px;
+  padding: 48px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.gc-profile-not-found-icon {
+  font-size: 40px;
+}
+.gc-profile-not-found h2 {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+}
+.gc-profile-not-found p {
+  font-size: 14px;
+  color: var(--text-sec);
+}
+</style>

@@ -869,3 +869,154 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 640px) {
   .gc-community-grid { grid-template-columns: 1fr !important; }
 }
+
+/* ─── PROFILE CARD ─── */
+.gc-profile-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gc-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Avatar — initials placeholder; bumpkin sprite will replace this */
+.gc-profile-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green-mid), var(--green-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(62,107,47,0.25);
+}
+[data-theme="dark"] .gc-profile-avatar {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.gc-profile-avatar-initial {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ── No linked farm notice ── */
+.gc-profile-no-farm {
+  font-size: 12px;
+  color: var(--text-sec);
+  background: var(--green-pale);
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: center;
+}
+.gc-profile-no-farm a {
+  color: var(--green-dark);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ── Guides section ── */
+.gc-profile-guides {
+  background: var(--green-pale);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gc-profile-guides--empty {
+  font-size: 12px;
+  color: var(--text-sec);
+  text-align: center;
+  padding: 8px 12px;
+}
+
+.gc-profile-guides-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gc-profile-guides-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-sec);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gc-profile-guides-count {
+  background: var(--green-mid);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 99px;
+  padding: 1px 6px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.gc-profile-guides-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gc-profile-guide-link {
+  font-size: 12px;
+  color: var(--green-dark);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background 0.15s;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.gc-profile-guide-link:hover {
+  background: rgba(110,143,61,0.12);
+}
+.gc-profile-guide-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+/* ── Rating placeholder ── */
+.gc-profile-rating {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-sec);
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  margin-top: -4px;
+}
+.gc-profile-rating-label {
+  font-weight: 600;
+}
+.gc-profile-rating-soon {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amber);
+  background: var(--amber-pale);
+  border: 1px solid var(--amber);
+  border-radius: 99px;
+  padding: 2px 8px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}

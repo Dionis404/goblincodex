@@ -75,13 +75,17 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
 
         <!-- Автор -->
         {guide.data.author && (
-          <div class="gc-guide-author">
-            <div class="gc-guide-author-avatar">🧙</div>
+          <a href={`/profile/${guide.data.author.toLowerCase()}`} class="gc-guide-author gc-guide-author--link">
+            <div class="gc-profile-avatar gc-guide-author-avatar-sm" aria-hidden="true">
+              <span class="gc-profile-avatar-initial">
+                {guide.data.author[0].toUpperCase()}
+              </span>
+            </div>
             <div>
               <div class="gc-guide-author-name">@{guide.data.author}</div>
               <div class="gc-guide-author-role">Автор гайда</div>
             </div>
-          </div>
+          </a>
         )}
 
         <!-- Контрибьюторы -->
@@ -89,7 +93,9 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
           <div class="gc-guide-contributors">
             <span class="gc-guide-contributors-label">Корректировка:</span>
             {guide.data.contributors.map((name: string) => (
-              <span class="gc-guide-contributor">@{name}</span>
+              <a href={`/profile/${name.toLowerCase()}`} class="gc-guide-contributor gc-guide-contributor--link">
+                @{name}
+              </a>
             ))}
           </div>
         )}
@@ -174,17 +180,26 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
   align-items: center;
   gap: 10px;
   margin-bottom: 24px;
+  text-decoration: none;
+  width: fit-content;
 }
-.gc-guide-author-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+.gc-guide-author--link {
+  border-radius: 8px;
+  padding: 6px 10px 6px 6px;
+  margin-left: -6px;
+  transition: background 0.15s;
+}
+.gc-guide-author--link:hover {
   background: var(--green-pale);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
+}
+/* Smaller avatar variant for the guide page */
+.gc-guide-author-avatar-sm {
+  width: 36px !important;
+  height: 36px !important;
   flex-shrink: 0;
+}
+.gc-guide-author-avatar-sm .gc-profile-avatar-initial {
+  font-size: 15px !important;
 }
 .gc-guide-author-name {
   font-size: 13px;
@@ -201,6 +216,7 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
   margin-top: -16px;
   margin-bottom: 24px;
   font-size: 12px;
@@ -212,6 +228,17 @@ const tagColor = tagColors[guide.data.category] ?? 'green';
 .gc-guide-contributor {
   font-weight: 600;
   color: var(--green-dark);
+}
+.gc-guide-contributor--link {
+  text-decoration: none;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--green-pale);
+  transition: background 0.15s, color 0.15s;
+}
+.gc-guide-contributor--link:hover {
+  background: var(--green-mid);
+  color: #fff;
 }
 
 /* ── Кнопка назад (сверху) ── */
