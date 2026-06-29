@@ -50,6 +50,16 @@ export function extractNamedBlock(source: string, name: string): string {
 
   while (i < source.length && depth > 0) {
     const c = source[i];
+    if (c === "/" && i + 1 < source.length && source[i + 1] === "/") {
+      while (i < source.length && source[i] !== "\n") i++;
+      i++;
+      continue;
+    }
+    if (c === "/" && i + 1 < source.length && source[i + 1] === "*") {
+      while (i < source.length - 1 && !(source[i] === "*" && source[i + 1] === "/")) i++;
+      i += 2;
+      continue;
+    }
     if (c === '"' || c === "'" || c === "`") {
       const q = c;
       if (q === "`") {
@@ -232,10 +242,11 @@ export function parseSpriteMap(sflDir: string): Map<string, string> {
   const bumpkinSource = readSfl("src/features/game/types/bumpkin.ts");
   if (bumpkinSource) {
     const block = extractNamedBlock(bumpkinSource, "ITEM_IDS");
-    const idRe = /["']([^"']+)["']\s*:\s*(\d+)/g;
+    const idRe = /(?:["']([^"']+)["']|([A-Za-z_$][\w$]*))\s*:\s*(\d+)/g;
     let m2: RegExpExecArray | null;
     while ((m2 = idRe.exec(block)) !== null) {
-      spriteMap.set(m2[1], `wearables/${m2[2]}.webp`);
+      const itemName = m2[1] ?? m2[2];
+      spriteMap.set(itemName, `wearables/${m2[3]}.webp`);
     }
   }
 
