@@ -1,15 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import boostsCatalog from '../data/boosts-catalog.json';
 
 // Гайды + механики из контент-коллекции
 const allGuides    = await getCollection('guides');
 const allMechanics = await getCollection('mechanics').catch(() => []);
 const guidesCount  = allGuides.length + allMechanics.length;
-
-// Предметы из каталога бустов (auto-sync)
-const itemsCount = boostsCatalog.stats.total as number;
 
 // Инструменты — считаем страницы в /tools/
 const toolPages  = import.meta.glob('./tools/*.astro');
@@ -48,10 +44,6 @@ const toolsCount = Object.keys(toolPages).length;
       <div class="gc-stat-item">
         <div class="gc-stat-big">{guidesCount}</div>
         <div class="gc-stat-lbl">Статей в Кодексе</div>
-      </div>
-      <div class="gc-stat-item">
-        <div class="gc-stat-big">{itemsCount}</div>
-        <div class="gc-stat-lbl">Предметов в каталоге</div>
       </div>
       <div class="gc-stat-item">
         <div class="gc-stat-big">{toolsCount}</div>
@@ -234,7 +226,7 @@ const toolsCount = Object.keys(toolPages).length;
 /* Статистика */
 .gc-about-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 .gc-stat-item {
