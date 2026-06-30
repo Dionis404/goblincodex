@@ -5,7 +5,8 @@
  * тестировать и переиспользовать. UI (React-остров) просто вызывает calculate().
  *
  * Экономика взята из открытого репозитория игры и сверена с оригинальным
- * калькулятором. Все цены — в FLOWER (P2P-рынок sfl.world отдаёт цены в FLOWER).
+ * калькулятором. Все цены — в FLOWER (стандарт P2P-рынка Sunflower Land).
+ * Цены вводятся вручную — калькулятор не обращается ни к каким внешним API.
  * COIN-часть стоимости инструмента переводится в FLOWER через курс coinRate.
  */
 
@@ -54,7 +55,7 @@ export const DEFAULT_YIELDS: Record<Resource, number> = {
   Gold: 1.8,
 };
 
-/** Запасные цены (FLOWER) на случай, если API недоступен. */
+/** Цены по умолчанию (FLOWER) — пользователь может ввести свои вручную. */
 export const FALLBACK_PRICES: Record<Resource, number> = {
   Wood: 0.011986,
   Stone: 0.020139,
@@ -150,37 +151,4 @@ export function calculate(input: CalcInput): ResourceResult[] {
       profitable: profitPerUnit > 0,
     };
   });
-}
-
-/**
- * Нормализация ответа sfl.world. API отдаёт цены в разных вложенностях
- * (data.p2p, p2p, плоский объект), а ключи — в разном регистре. Сводим к
- * Record<Resource, number>. Если ресурса нет — берём fallback.
- */
-export function normalizePrices(raw: unknown): Record<Resource, number> {
-  const flat: Record<string, number> = {};
-
-  const walk = (node: unknown): void => {
-    if (!node || typeof node !== 'object') return;
-    for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
-      if (typeof v === 'number') {
-        flat[k.toLowerCase().replace(/[^a-z0-9]/g, '')] = v;
-      } else if (v && typeof v === 'object') {
-        const obj = v as Record<string, unknown>;
-        const candidate = Number(obj.price ?? obj.floorPrice ?? obj.amount ?? obj.value);
-        if (Number.isFinite(candidate)) {
-          flat[k.toLowerCase().replace(/[^a-z0-9]/g, '')] = candidate;
-        }
-        walk(v);
-      }
-    }
-  };
-  walk(raw);
-
-  const out = {} as Record<Resource, number>;
-  for (const r of RESOURCES) {
-    const key = r.toLowerCase();
-    out[r] = Number.isFinite(flat[key]) ? flat[key] : FALLBACK_PRICES[r];
-  }
-  return out;
 }

@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   calculate,
-  normalizePrices,
   RESOURCES,
   RESOURCE_LABELS,
   DEFAULT_YIELDS,
@@ -12,7 +11,6 @@ import {
 
 type Prices = Record<Resource, number>;
 type Yields = Record<Resource, number>;
-type ApiStatus = 'loading' | 'live' | 'fallback';
 
 /** Форматирование чисел: целые без дробей, дробные — с фиксированной точностью. */
 function fmt(value: number, digits = 4): string {
@@ -25,9 +23,7 @@ function fmt(value: number, digits = 4): string {
 }
 
 export default function MiningCalculator() {
-  const [prices, setPrices] = useState<Prices>(FALLBACK_PRICES);
-  const [status, setStatus] = useState<ApiStatus>('loading');
-  const [updatedAt, setUpdatedAt] = useState<string>('—');
+  const [prices, setPrices] = useState<Prices>({ ...FALLBACK_PRICES });
 
   const [yields, setYields] = useState<Yields>({ ...DEFAULT_YIELDS });
   const [skills, setSkills] = useState<Skills>({
@@ -36,27 +32,6 @@ export default function MiningCalculator() {
   });
   const [coinRate, setCoinRate] = useState(1000);
   const [p2pFee, setP2pFee] = useState(0.1); // 10% по умолчанию
-
-  // Загрузка цен с нашего же SSR-прокси (CORS не мешает — это свой домен).
-  async function loadPrices() {
-    setStatus('loading');
-    try {
-      const res = await fetch('/api/sfl-prices.json', { headers: { Accept: 'application/json' } });
-      const raw = await res.json();
-      const normalized = normalizePrices(raw);
-      setPrices(normalized);
-      setStatus('live');
-      setUpdatedAt(new Date().toLocaleTimeString('ru-RU'));
-    } catch {
-      setPrices(FALLBACK_PRICES);
-      setStatus('fallback');
-      setUpdatedAt('запасные цены');
-    }
-  }
-
-  useEffect(() => {
-    loadPrices();
-  }, []);
 
   const results = useMemo(
     () => calculate({ prices, yields, skills, coinRate, p2pFee }),
@@ -76,14 +51,30 @@ export default function MiningCalculator() {
         <div className="gc-calc-card">
           <h2 className="gc-calc-h2">Параметры</h2>
 
-          <div className="gc-calc-status" data-status={status}>
-            {status === 'loading' && 'Загрузка цен…'}
-            {status === 'live' && `Цены с рынка · обновлено ${updatedAt}`}
-            {status === 'fallback' && 'API недоступен — запасные цены'}
-          </div>
-          <button className="gc-btn gc-btn-secondary" onClick={loadPrices}>
-            Обновить цены
-          </button>
+          <fieldset className="gc-calc-fieldset">
+            <legend>Цены ресурсов (FLOWER)</legend>
+            {RESOURCES.map((r) => (
+              <label key={r} className="gc-calc-field gc-calc-field-row">
+                <span>{RESOURCE_LABELS[r]}</span>
+                <input
+                  type="number"
+                  min={0}
+                  step={0.0001}
+                  value={prices[r]}
+                  onChange={(e) =>
+                    setPrices((p) => ({ ...p, [r]: Number(e.target.value) }))
+                  }
+                />
+              </label>
+            ))}
+            <button
+              className="gc-btn gc-btn-secondary"
+              onClick={() => setPrices({ ...FALLBACK_PRICES })}
+            >
+              Сбросить цены
+            </button>
+            <small>Введите актуальные цены вручную, например с P2P-рынка.</small>
+          </fieldset>
 
           <fieldset className="gc-calc-fieldset">
             <legend>Скиллы скидок</legend>
