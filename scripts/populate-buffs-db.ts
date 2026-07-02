@@ -13,6 +13,8 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { Pool } from "pg";
 import { extractNamedBlock, extractTopLevelEntries, parseSpriteMap } from "./lib/sprite-map";
+import { classifyResource } from "./lib/resource-classifier";
+import { getItemTags } from "./lib/item-tags";
 
 // ─── CLI args ─────────────────────────────────────────────────────────────────
 
@@ -32,6 +34,52 @@ const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) {
   console.error("Error: DATABASE_URL environment variable is required.");
   process.exit(1);
+}
+
+// Known-good share of numeric-looking buffs that legitimately resolve to NULL:
+// skills using inline arithmetic and wearable sets (faction armor etc.) that
+// have no boostsUsed.push() in any event file. Established 2026-07-01 after
+// expanding BOOST_SOURCE_FILES to cover all discoverable push() call sites.
+// Update this constant whenever intentional parser coverage improves (i.e.
+// the null share drops durably — not just a one-off manual fix).
+const SELF_CHECK_NULL_BASELINE = 0.25;
+
+// Alert if null share grows more than this many percentage points above the
+// baseline.  10 pp leaves room for a few new inline-arith items appearing in
+// SFL while still catching real regressions (e.g. an incomplete sparse-checkout
+// that causes the share to spike to 50–80 %).
+const SELF_CHECK_NULL_REGRESSION_MARGIN = 0.1;
+
+/** Heuristic: does this buff text look like it should carry a numeric_value? */
+function looksNumeric(text: string): boolean {
+  // Fast exit: no digit, %, ASCII x-multiplier, or Unicode × present at all.
+  if (!/\d|%|x\d|\dx|×/i.test(text)) return false;
+  const t = text.trim();
+  // "N% chance" / "N/M chance" are probability descriptions, not parseable boost values.
+  if (/^\d+[%/]\d*\s*chance\b/i.test(t)) return false;
+  // Bare leading digit without a sign/multiplier prefix is a mechanic label, not a value.
+  // ("1 Tap Trees", "1 tap small mineral nodes") — "2x feathers" / "2× output" are kept.
+  if (/^\d+\s+\w/i.test(t) && !/^\d+[%x×]/i.test(t)) return false;
+  // "+/-N [one or more words] from [source]" is a yield-source description, not a pure boost value.
+  // Covers "+1 wood from branches", "+10 cow xp from affection tools", "+1 Bait yield from rack".
+  // Note: "+50% Coins from Bounties" is NOT caught because % sits between digit and space.
+  if (/^[+\-]\d+(?:\.\d+)?(?:\s+\w+)+\s+from\b/i.test(t)) return false;
+  // "requires N resource" is a recipe description, not a boost value.
+  if (/\brequires?\b/i.test(t) && !/^[+\-x×]/i.test(t)) return false;
+  // Narrative / prose lead-ins with embedded incidental numbers.
+  if (/^(During|While|Grants?|Speed\s+up)\b/i.test(t)) return false;
+  return true;
+}
+
+interface RunSummary {
+  itemsUpserted: number;
+  buffsUpserted: number;
+  itemsSwept: number;
+  buffsSwept: number;
+  numericLookingTotal: number;
+  numericLookingNullCount: number;
+  nullNumericShare: number;
+  nullNumericBaseline: number;
 }
 
 const BOOST_SOURCE_FILES = [
@@ -58,9 +106,24 @@ const BOOST_SOURCE_FILES = [
   "src/features/game/events/landExpansion/startCrafting.ts",
   "src/features/game/types/fishing.ts",
   "src/features/game/types/salt.ts",
-  "src/features/game/events/landExpansion/harvestFlower.ts",
   "src/features/game/events/landExpansion/feedAnimal.ts",
   "src/features/game/events/landExpansion/collectRecipe.ts",
+  // Additional event files discovered to contain boostsUsed.push({ name, value }) calls
+  "src/features/game/events/landExpansion/plantFlower.ts",
+  "src/features/game/events/landExpansion/treasureSold.ts",
+  "src/features/game/events/landExpansion/buyAnimal.ts",
+  "src/features/game/lib/updateBeehives.ts",
+  "src/features/game/events/landExpansion/composterBait.ts",
+  "src/features/game/events/landExpansion/collectLavaPit.ts",
+  "src/features/game/events/landExpansion/startLavaPit.ts",
+  "src/features/game/events/landExpansion/fruitTreeRemoved.ts",
+  "src/features/game/events/landExpansion/fertiliseFruitPatch.ts",
+  "src/features/game/events/landExpansion/placeWaterTrap.ts",
+  "src/features/game/events/landExpansion/collectProcessedResource.ts",
+  "src/features/game/events/landExpansion/processResource.ts",
+  "src/features/game/events/landExpansion/expandLand.ts",
+  "src/features/game/events/landExpansion/supplyCropMachine.ts",
+  "src/features/game/events/landExpansion/feedFactionPet.ts",
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -69,6 +132,7 @@ type BoostType = "speed" | "xp" | "yield" | "misc";
 
 interface BuffEntry {
   text: string;
+  textRu: string;
   labelType: string;
   boostType: BoostType;
   isDebuff: boolean;
@@ -131,6 +195,18 @@ function buildTranslationMap(): Map<string, string> {
   return new Map(Object.entries(raw));
 }
 
+/** ru.json sits alongside dictionary.json; entries missing from it fall back to the English map. */
+function buildRuTranslationMap(enDict: Map<string, string>): Map<string, string> {
+  const ruPath = path.join(SFL_DIR, "src/lib/i18n/dictionaries/ru.json");
+  const raw = JSON.parse(fs.readFileSync(ruPath, "utf8")) as Record<
+    string,
+    string
+  >;
+  const map = new Map(enDict);
+  for (const [key, value] of Object.entries(raw)) map.set(key, value);
+  return map;
+}
+
 function resolveKey(key: string, dict: Map<string, string>): string {
   const v = dict.get(key);
   if (!v) {
@@ -159,6 +235,7 @@ function inferBoostType(iconExpr: string | null | undefined): BoostType {
 function extractBuffLabels(
   block: string,
   dict: Map<string, string>,
+  ruDict: Map<string, string>,
   forceDebuff = false,
 ): BuffEntry[] {
   const buffs: BuffEntry[] = [];
@@ -178,7 +255,7 @@ function extractBuffLabels(
   // Scan for BuffLabel objects: find { shortDescription: ..., labelType: ..., boostTypeIcon?: ... }
   // We interleave translate() calls, labelType values, and icon expressions in document order.
   type Event =
-    | { kind: "text"; val: string; pos: number }
+    | { kind: "text"; val: string; valRu: string; pos: number }
     | { kind: "label"; val: string; pos: number }
     | { kind: "icon"; val: string; pos: number };
 
@@ -188,7 +265,12 @@ function extractBuffLabels(
   const translateRe = /translate\(["']([^"']+)["']\)/g;
   let m: RegExpExecArray | null;
   while ((m = translateRe.exec(cleanBlock)) !== null) {
-    events.push({ kind: "text", val: resolveKey(m[1], dict), pos: m.index });
+    events.push({
+      kind: "text",
+      val: resolveKey(m[1], dict),
+      valRu: resolveKey(m[1], ruDict),
+      pos: m.index,
+    });
   }
 
   // labelType: "value"
@@ -206,6 +288,7 @@ function extractBuffLabels(
   events.sort((a, b) => a.pos - b.pos);
 
   let currentText: string | null = null;
+  let currentTextRu: string | null = null;
   let currentLabel = "success";
   let currentIcon: string | null = null;
 
@@ -213,6 +296,7 @@ function extractBuffLabels(
     if (currentText !== null) {
       buffs.push({
         text: currentText,
+        textRu: currentTextRu ?? currentText,
         labelType: currentLabel,
         boostType: inferBoostType(currentIcon),
         isDebuff: forceDebuff || currentLabel === "danger",
@@ -226,6 +310,7 @@ function extractBuffLabels(
     if (ev.kind === "text") {
       flush();
       currentText = ev.val;
+      currentTextRu = ev.valRu;
     } else if (ev.kind === "label") {
       currentLabel = ev.val;
     } else {
@@ -239,7 +324,7 @@ function extractBuffLabels(
 
 // ─── Parser: BUMPKIN_REVAMP_SKILL_TREE ───────────────────────────────────────
 
-function parseSkills(dict: Map<string, string>): SkillItem[] {
+function parseSkills(dict: Map<string, string>, ruDict: Map<string, string>): SkillItem[] {
   const source = readFile(
     "src/features/game/types/bumpkinSkills.ts",
   );
@@ -261,7 +346,7 @@ function parseSkills(dict: Map<string, string>): SkillItem[] {
         "X=" + entryBlock.slice(buffBlockStart + 5),
         "X",
       );
-      buffs = extractBuffLabels(buffInner, dict, false);
+      buffs = extractBuffLabels(buffInner, dict, ruDict, false);
     }
 
     // Find debuff block
@@ -271,7 +356,7 @@ function parseSkills(dict: Map<string, string>): SkillItem[] {
         "X=" + entryBlock.slice(debuffBlockStart + 7),
         "X",
       );
-      debuffs = extractBuffLabels(debuffInner, dict, true);
+      debuffs = extractBuffLabels(debuffInner, dict, ruDict, true);
     }
 
     return {
@@ -287,7 +372,7 @@ function parseSkills(dict: Map<string, string>): SkillItem[] {
 
 // ─── Parser: BUMPKIN_ITEM_BUFF_LABELS + SPECIAL_ITEM_LABELS ──────────────────
 
-function parseWearables(dict: Map<string, string>): WearableItem[] {
+function parseWearables(dict: Map<string, string>, ruDict: Map<string, string>): WearableItem[] {
   const source = readFile(
     "src/features/game/types/bumpkinItemBuffs.ts",
   );
@@ -299,7 +384,7 @@ function parseWearables(dict: Map<string, string>): WearableItem[] {
     const entries = extractTopLevelEntries(block);
 
     for (const { key, block: entryBlock } of entries) {
-      const buffs = extractBuffLabels(entryBlock, dict, false);
+      const buffs = extractBuffLabels(entryBlock, dict, ruDict, false);
       items.push({ name: key, type: "wearable", buffs });
     }
   }
@@ -309,7 +394,7 @@ function parseWearables(dict: Map<string, string>): WearableItem[] {
 
 // ─── Parser: COLLECTIBLE_BUFF_LABELS ─────────────────────────────────────────
 
-function parseCollectibles(dict: Map<string, string>): CollectibleItem[] {
+function parseCollectibles(dict: Map<string, string>, ruDict: Map<string, string>): CollectibleItem[] {
   const source = readFile(
     "src/features/game/types/collectibleItemBuffs.ts",
   );
@@ -317,7 +402,7 @@ function parseCollectibles(dict: Map<string, string>): CollectibleItem[] {
   const entries = extractTopLevelEntries(block);
 
   return entries.map(({ key, block: entryBlock, isFn }) => {
-    const buffs = extractBuffLabels(entryBlock, dict, false);
+    const buffs = extractBuffLabels(entryBlock, dict, ruDict, false);
     return {
       name: key,
       type: "collectible" as const,
@@ -332,20 +417,38 @@ function parseCollectibles(dict: Map<string, string>): CollectibleItem[] {
 function parseNumericValues(): Map<string, NumericValue[]> {
   const result = new Map<string, NumericValue[]>();
 
+  // name/value pair, quote-aware via backreference so an apostrophe inside a
+  // double-quoted name (e.g. "Lumberjack's Extra") doesn't truncate the match.
+  // Groups: name-first branch -> [1]=quote [2]=name [3]=quote [4]=value
+  //         value-first branch -> [5]=quote [6]=value [7]=quote [8]=name
+  const NAME_VALUE_PAIR =
+    String.raw`(?:name:\s*(["'])((?:(?!\1)[\s\S])+?)\1[^}]*?value:\s*(["'])((?:(?!\3)[\s\S])+?)\3` +
+    String.raw`|value:\s*(["'])((?:(?!\5)[\s\S])+?)\5[^}]*?name:\s*(["'])((?:(?!\7)[\s\S])+?)\7)`;
+
   // Pattern: boostsUsed.push({ name: "...", value: "..." })
-  const PUSH_RE =
-    /boostsUsed\.push\(\s*\{\s*(?:name:\s*["']([^"']+)["'][^}]*?value:\s*["']([^"']+)["']|value:\s*["']([^"']+)["'][^}]*?name:\s*["']([^"']+)["'])\s*\}\s*\)/gs;
+  // (also accepts the "boostUsed" typo used in expansion/lib/boosts.ts)
+  const PUSH_RE = new RegExp(
+    String.raw`boosts?Used\.push\(\s*\{\s*${NAME_VALUE_PAIR}\s*\}\s*\)`,
+    "gs",
+  );
+  // Pattern: boostsUsed: [{ name: "...", value: "..." }] (array-literal form, e.g. Money Tree)
+  const PUSH_ARRAY_RE = new RegExp(
+    String.raw`boosts?Used:\s*\[\s*\{\s*${NAME_VALUE_PAIR}\s*\}\s*\]`,
+    "gs",
+  );
 
   for (const relPath of BOOST_SOURCE_FILES) {
     const source = readFile(relPath);
     if (!source) continue;
     const fname = path.basename(relPath, ".ts");
 
-    let m: RegExpExecArray | null;
-    PUSH_RE.lastIndex = 0;
-    while ((m = PUSH_RE.exec(source)) !== null) {
-      const name = (m[1] ?? m[4])?.trim();
-      const raw = (m[2] ?? m[3])?.trim();
+    const matches = [
+      ...source.matchAll(PUSH_RE),
+      ...source.matchAll(PUSH_ARRAY_RE),
+    ];
+    for (const m of matches) {
+      const name = (m[2] ?? m[8])?.trim();
+      const raw = (m[4] ?? m[6])?.trim();
       if (!name || !raw) continue;
 
       // Skip template literal values like `+${...}`
@@ -413,49 +516,76 @@ function parseNumericValues(): Map<string, NumericValue[]> {
 // ─── Database ─────────────────────────────────────────────────────────────────
 
 const SCHEMA_SQL = `
-DROP TABLE IF EXISTS sfl_buffs;
-DROP TABLE IF EXISTS sfl_items;
-
-CREATE TABLE sfl_items (
-  id           TEXT PRIMARY KEY,
-  type         TEXT NOT NULL,
-  category     TEXT,
-  requires_game_state BOOLEAN DEFAULT FALSE,
-  sprite       TEXT
+CREATE TABLE IF NOT EXISTS sfl_items (
+  id                     TEXT PRIMARY KEY,
+  type                   TEXT NOT NULL,
+  category               TEXT,
+  requires_game_state    BOOLEAN DEFAULT FALSE,
+  sprite                 TEXT,
+  tags                   TEXT[] DEFAULT '{}',
+  manually_edited_fields TEXT[] DEFAULT '{}',
+  last_synced_at         TIMESTAMPTZ,
+  is_active              BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE sfl_buffs (
-  id                 SERIAL PRIMARY KEY,
-  item_id            TEXT REFERENCES sfl_items(id) ON DELETE CASCADE,
-  label_type         TEXT,
-  short_description  TEXT,
-  boost_type         TEXT,
-  is_debuff          BOOLEAN DEFAULT FALSE,
-  numeric_value      REAL,
-  value_type         TEXT,
-  affected_stat      TEXT,
-  numeric_confidence TEXT,
-  raw_value          TEXT,
-  source_file        TEXT
+CREATE TABLE IF NOT EXISTS sfl_buffs (
+  id                     SERIAL PRIMARY KEY,
+  item_id                TEXT REFERENCES sfl_items(id) ON DELETE CASCADE,
+  label_type             TEXT,
+  short_description      TEXT,
+  short_description_ru   TEXT,
+  boost_type             TEXT,
+  is_debuff              BOOLEAN DEFAULT FALSE,
+  numeric_value          REAL,
+  value_type             TEXT,
+  affected_stat          TEXT,
+  numeric_confidence     TEXT,
+  raw_value              TEXT,
+  source_file            TEXT,
+  manually_edited_fields TEXT[] DEFAULT '{}',
+  last_synced_at         TIMESTAMPTZ,
+  is_active              BOOLEAN DEFAULT TRUE,
+  CONSTRAINT sfl_buffs_item_id_short_description_key UNIQUE (item_id, short_description)
 );
+
+CREATE INDEX IF NOT EXISTS idx_sfl_buffs_affected_stat ON sfl_buffs(affected_stat);
+CREATE INDEX IF NOT EXISTS idx_sfl_items_tags ON sfl_items USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_sfl_items_is_active ON sfl_items(is_active);
+CREATE INDEX IF NOT EXISTS idx_sfl_buffs_is_active ON sfl_buffs(is_active);
 `;
+
+// Columns a hand-edit (scripts/update-item-by-id.ts) is allowed to freeze
+// against future automated overwrites. Keep in sync with that script's
+// allowlists. `short_description` is deliberately excluded: it's part of
+// sfl_buffs's natural key (item_id, short_description), so editing it would
+// desync the row from what the parser re-derives next run, producing a
+// duplicate insert instead of an update.
+const ITEM_PROTECTABLE_FIELDS = ["category", "requires_game_state", "sprite", "tags"];
+const BUFF_PROTECTABLE_FIELDS = [
+  "label_type", "short_description_ru", "boost_type", "is_debuff",
+  "numeric_value", "value_type", "affected_stat", "numeric_confidence",
+  "raw_value", "source_file",
+];
 
 async function populateDB(
   pool: Pool,
   items: AnyItem[],
   numericValues: Map<string, NumericValue[]>,
   spriteMap: Map<string, string>,
-): Promise<void> {
+): Promise<RunSummary> {
   const client = await pool.connect();
+  const runStartTimestamp = new Date();
   try {
     await client.query("BEGIN");
 
-    // Create schema
+    // Create schema (idempotent; never destroys existing rows)
     await client.query(SCHEMA_SQL);
 
-    let itemsInserted = 0;
-    let buffsInserted = 0;
+    let itemsUpserted = 0;
+    let buffsUpserted = 0;
     const lowConfidenceItems: string[] = [];
+    let numericLookingNullCount = 0;
+    let numericLookingTotal = 0;
 
     for (const item of items) {
       const category =
@@ -469,14 +599,22 @@ async function populateDB(
           : false;
 
       const sprite = spriteMap.get(item.name) ?? null;
+      const tags = getItemTags(item.name, item.type);
 
       await client.query(
-        `INSERT INTO sfl_items (id, type, category, requires_game_state, sprite)
-         VALUES ($1, $2, $3, $4, $5)
-         ON CONFLICT (id) DO NOTHING`,
-        [item.name, item.type, category, requiresGameState, sprite],
+        `INSERT INTO sfl_items (id, type, category, requires_game_state, sprite, tags, last_synced_at, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, now(), TRUE)
+         ON CONFLICT (id) DO UPDATE SET
+           type = EXCLUDED.type,
+           category = CASE WHEN 'category' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.category ELSE EXCLUDED.category END,
+           requires_game_state = CASE WHEN 'requires_game_state' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.requires_game_state ELSE EXCLUDED.requires_game_state END,
+           sprite = CASE WHEN 'sprite' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.sprite ELSE EXCLUDED.sprite END,
+           tags = CASE WHEN 'tags' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.tags ELSE EXCLUDED.tags END,
+           last_synced_at = now(),
+           is_active = TRUE`,
+        [item.name, item.type, category, requiresGameState, sprite, tags],
       );
-      itemsInserted++;
+      itemsUpserted++;
 
       const numericList = numericValues.get(item.name) ?? [];
 
@@ -491,39 +629,74 @@ async function populateDB(
           }
         }
 
+        const affectedStat = classifyResource(buff.text);
+        if (looksNumeric(buff.text)) {
+          numericLookingTotal++;
+          if (nv?.numericValue == null) numericLookingNullCount++;
+        }
+
         await client.query(
           `INSERT INTO sfl_buffs
-             (item_id, label_type, short_description, boost_type, is_debuff,
-              numeric_value, value_type, affected_stat, numeric_confidence, raw_value, source_file)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+             (item_id, label_type, short_description, short_description_ru, boost_type, is_debuff,
+              numeric_value, value_type, affected_stat, numeric_confidence, raw_value, source_file,
+              last_synced_at, is_active)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12, now(), TRUE)
+           ON CONFLICT (item_id, short_description) DO UPDATE SET
+             label_type = CASE WHEN 'label_type' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.label_type ELSE EXCLUDED.label_type END,
+             short_description_ru = CASE WHEN 'short_description_ru' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.short_description_ru ELSE EXCLUDED.short_description_ru END,
+             boost_type = CASE WHEN 'boost_type' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.boost_type ELSE EXCLUDED.boost_type END,
+             is_debuff = CASE WHEN 'is_debuff' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.is_debuff ELSE EXCLUDED.is_debuff END,
+             numeric_value = CASE WHEN 'numeric_value' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.numeric_value ELSE EXCLUDED.numeric_value END,
+             value_type = CASE WHEN 'value_type' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.value_type ELSE EXCLUDED.value_type END,
+             affected_stat = CASE WHEN 'affected_stat' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.affected_stat ELSE EXCLUDED.affected_stat END,
+             numeric_confidence = CASE WHEN 'numeric_confidence' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.numeric_confidence ELSE EXCLUDED.numeric_confidence END,
+             raw_value = CASE WHEN 'raw_value' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.raw_value ELSE EXCLUDED.raw_value END,
+             source_file = CASE WHEN 'source_file' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.source_file ELSE EXCLUDED.source_file END,
+             last_synced_at = now(),
+             is_active = TRUE`,
           [
             item.name,
             buff.labelType,
             buff.text,
+            buff.textRu,
             buff.boostType,
             buff.isDebuff,
             nv?.numericValue ?? null,
             nv?.valueType ?? null,
-            null, // affected_stat: TODO — needs deeper analysis
+            affectedStat,
             nv?.confidence ?? null,
             nv?.rawValue ?? null,
             nv?.sourceFile ?? null,
           ],
         );
-        buffsInserted++;
+        buffsUpserted++;
       }
     }
 
+    // Soft-delete sweep: anything not touched this run (no longer present in
+    // SFL source) gets marked inactive, never physically deleted.
+    const itemsSwept = await client.query(
+      `UPDATE sfl_items SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+    const buffsSwept = await client.query(
+      `UPDATE sfl_buffs SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+
     await client.query("COMMIT");
-    console.log("\n✅ Database populated:");
+    console.log("\n✅ Database upserted:");
     console.log(
-      `   Items: ${itemsInserted} (${items.filter((i) => i.type === "skill").length} skills, ` +
+      `   Items: ${itemsUpserted} (${items.filter((i) => i.type === "skill").length} skills, ` +
         `${items.filter((i) => i.type === "wearable").length} wearables, ` +
         `${items.filter((i) => i.type === "collectible").length} collectibles)`,
     );
-    console.log(`   Buffs: ${buffsInserted}`);
+    console.log(`   Buffs: ${buffsUpserted}`);
     console.log(
       `   Numeric values matched: ${items.filter((i) => numericValues.has(i.name)).length}/${items.length}`,
+    );
+    console.log(
+      `   Swept inactive: ${itemsSwept.rowCount} items, ${buffsSwept.rowCount} buffs`,
     );
 
     if (lowConfidenceItems.length > 0) {
@@ -534,6 +707,34 @@ async function populateDB(
       if (lowConfidenceItems.length > 20)
         console.log(`     ... and ${lowConfidenceItems.length - 20} more`);
     }
+
+    const nullNumericShare = numericLookingTotal > 0 ? numericLookingNullCount / numericLookingTotal : 0;
+    const nullAlarmThreshold = SELF_CHECK_NULL_BASELINE + SELF_CHECK_NULL_REGRESSION_MARGIN;
+    const nullExcess = nullNumericShare - SELF_CHECK_NULL_BASELINE;
+
+    if (nullNumericShare > nullAlarmThreshold) {
+      console.warn(
+        `\n⚠ SELF-CHECK REGRESSION: ${numericLookingNullCount} buffs with numeric-looking text but NULL numeric_value ` +
+          `(${(nullNumericShare * 100).toFixed(1)}% — +${(nullExcess * 100).toFixed(1)} pp above baseline ${(SELF_CHECK_NULL_BASELINE * 100).toFixed(0)}%, ` +
+          `alarm at baseline+${(SELF_CHECK_NULL_REGRESSION_MARGIN * 100).toFixed(0)} pp = ${(nullAlarmThreshold * 100).toFixed(0)}%)`,
+      );
+    } else {
+      console.log(
+        `\n✓ SELF-CHECK OK: ${numericLookingNullCount} null-numeric buffs ` +
+          `(${(nullNumericShare * 100).toFixed(1)}% — within ${(nullExcess * 100).toFixed(1)} pp of baseline ${(SELF_CHECK_NULL_BASELINE * 100).toFixed(0)}%)`,
+      );
+    }
+
+    return {
+      itemsUpserted,
+      buffsUpserted,
+      itemsSwept: itemsSwept.rowCount ?? 0,
+      buffsSwept: buffsSwept.rowCount ?? 0,
+      numericLookingTotal,
+      numericLookingNullCount,
+      nullNumericShare,
+      nullNumericBaseline: SELF_CHECK_NULL_BASELINE,
+    };
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
@@ -555,18 +756,19 @@ async function main() {
 
   console.log("📖 Loading translations...");
   const dict = buildTranslationMap();
-  console.log(`   ${dict.size} keys loaded`);
+  const ruDict = buildRuTranslationMap(dict);
+  console.log(`   ${dict.size} keys loaded (en), ${ruDict.size} keys loaded (ru, en-fallback)`);
 
   console.log("\n🔍 Parsing skills...");
-  const skills = parseSkills(dict);
+  const skills = parseSkills(dict, ruDict);
   console.log(`   ${skills.length} skills`);
 
   console.log("\n🔍 Parsing wearables...");
-  const wearables = parseWearables(dict);
+  const wearables = parseWearables(dict, ruDict);
   console.log(`   ${wearables.length} wearables`);
 
   console.log("\n🔍 Parsing collectibles...");
-  const collectibles = parseCollectibles(dict);
+  const collectibles = parseCollectibles(dict, ruDict);
   console.log(`   ${collectibles.length} collectibles`);
 
   console.log("\n🔍 Extracting numeric boost values...");
@@ -601,7 +803,22 @@ async function main() {
   try {
     await pool.query("SELECT 1");
     console.log("   Connected.");
-    await populateDB(pool, allItems, numericValues, spriteMap);
+    const summary = await populateDB(pool, allItems, numericValues, spriteMap);
+
+    const summaryPath = path.resolve("scripts/.last-run-summary.json");
+    fs.writeFileSync(
+      summaryPath,
+      JSON.stringify(
+        {
+          ranAt: new Date().toISOString(),
+          ...summary,
+          unresolvedI18nKeyCount: unresolvedKeys.length,
+        },
+        null,
+        2,
+      ),
+    );
+    console.log(`\n📄 Run summary written to ${summaryPath}`);
   } finally {
     await pool.end();
   }

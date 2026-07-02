@@ -6,6 +6,7 @@ interface Boost {
   id: number;
   labelType: 'info' | 'success' | 'vibrant' | 'danger';
   shortDescription: string;
+  shortDescriptionRu: string;
   boostType: string | null;
   isDebuff: boolean;
   numericValue: number | null;
@@ -18,6 +19,7 @@ interface CatalogItem {
   type: string;
   category: string | null;
   sprite: string | null;
+  tags: string[];
   boosts: Boost[];
 }
 
@@ -57,7 +59,7 @@ function SpriteImg({ sprite, name, size = 64 }: { sprite: string | null; name: s
 function BoostBadge({ boost }: { boost: Boost }) {
   return (
     <span className={`bc-boost-badge bc-boost--${boost.labelType}`}>
-      {boost.shortDescription}
+      {boost.shortDescriptionRu || boost.shortDescription}
     </span>
   );
 }
