@@ -1,18 +1,36 @@
 import { useState } from 'react';
 import ProfileModal from './ProfileModal.tsx';
+import HowToJoinModal from './HowToJoinModal.jsx';
 
 export default function CommunityPage({ farmers, guidesByUser = {} }) {
   const [modalUser, setModalUser] = useState(null);
+  const [showHowTo, setShowHowTo] = useState(false);
+
+  const howToBlock = (
+    <div className="gc-card gc-howto-banner">
+      <div className="gc-howto-banner-text">
+        <div className="gc-howto-banner-title">📖 Инструкция</div>
+        <p>Как добавить свою ферму в сообщество</p>
+      </div>
+      <button className="gc-btn-primary" onClick={() => setShowHowTo(true)}>
+        Показать инструкцию
+      </button>
+    </div>
+  );
 
   if (!farmers || farmers.length === 0) {
     return (
-      <div className="gc-community-empty gc-card">
-        <div className="gc-community-empty-icon">🌾</div>
-        <p className="gc-community-empty-text">
-          Пока никто не привязал ферму. Напиши боту{' '}
-          <strong>@SFL_Goblin_Bot</strong>!
-        </p>
-      </div>
+      <>
+        {howToBlock}
+        <div className="gc-community-empty gc-card">
+          <div className="gc-community-empty-icon">🌾</div>
+          <p className="gc-community-empty-text">
+            Пока никто не привязал ферму. Напиши боту{' '}
+            <strong>@SFL_Goblin_Bot</strong>!
+          </p>
+        </div>
+        {showHowTo && <HowToJoinModal onClose={() => setShowHowTo(false)} />}
+      </>
     );
   }
 
@@ -22,6 +40,7 @@ export default function CommunityPage({ farmers, guidesByUser = {} }) {
 
   return (
     <>
+      {howToBlock}
       <div className="gc-community-grid">
         {farmers.map((farmer) => {
           const username = farmer.game_username ?? `Фермер #${farmer.farm_id}`;
@@ -58,6 +77,8 @@ export default function CommunityPage({ farmers, guidesByUser = {} }) {
           onClose={() => setModalUser(null)}
         />
       )}
+
+      {showHowTo && <HowToJoinModal onClose={() => setShowHowTo(false)} />}
     </>
   );
 }

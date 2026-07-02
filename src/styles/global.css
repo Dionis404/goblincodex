@@ -779,6 +779,50 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.6;
 }
 
+.gc-howto-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+}
+.gc-howto-banner-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.gc-howto-banner-text p {
+  font-size: 13px;
+  color: var(--text-sec);
+}
+@media (max-width: 560px) {
+  .gc-howto-banner { flex-direction: column; align-items: flex-start; }
+  .gc-howto-banner .gc-btn-primary { width: 100%; justify-content: center; }
+}
+
+.gc-howto-box { max-width: 460px; }
+.gc-howto-card { padding: 28px 26px; }
+.gc-howto-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.gc-howto-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding-left: 20px;
+  font-size: 14px;
+  color: var(--text-sec);
+  line-height: 1.5;
+}
+.gc-howto-steps li { padding-left: 4px; }
+.gc-howto-steps a { color: var(--green-dark); font-weight: 600; }
+
 /* ─── FARMER GRID ─── */
 .gc-community-grid {
   display: grid;
