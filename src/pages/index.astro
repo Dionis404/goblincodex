@@ -105,13 +105,13 @@ const guides = latestGuides.slice(0, 3).map(g => ({
 
     <!-- ── Блок главы + таймер ── -->
     <div class="gc-chapter-block">
-      <div class="gc-chapter-banner">
+      <a href="/chapter" class="gc-chapter-banner">
         <img src="/images/Chapter14.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--light" />
         <img src="/images/Chapter14Night.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--dark" />
-      </div>
+      </a>
       <div class="gc-chapter-timer">
         <ChapterTimer client:load />
-        <a href="/news" class="gc-btn-cta">Узнать больше</a>
+        <a href="/chapter" class="gc-btn-cta">Узнать больше</a>
       </div>
     </div>
 
@@ -285,6 +285,7 @@ const guides = latestGuides.slice(0, 3).map(g => ({
   margin-bottom: 32px;
 }
 .gc-chapter-banner {
+  display: block;
   width: 100%;
   line-height: 0;
   filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));

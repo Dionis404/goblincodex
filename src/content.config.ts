@@ -15,6 +15,7 @@ const guides = defineCollection({
     section: z.enum(['guides', 'nft']).default('guides'),
     author: z.string().optional(),
     contributors: z.array(z.string()).optional(),
+    chapter: z.number().optional(),
   }),
 });
 

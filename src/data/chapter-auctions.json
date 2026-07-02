@@ -1,0 +1,1436 @@
+{
+    "auctions": {
+        "auctions": [
+            {
+                "auctionId": "navigation-table-2026-05-10-drop-1",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778454000000,
+                "endAt": 1778454600000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-05-10-drop-2",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778472000000,
+                "endAt": 1778472600000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-05-10-drop-3",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778490000000,
+                "endAt": 1778490600000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-05-10-drop-4",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778508000000,
+                "endAt": 1778508600000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-05-10-drop-5",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778526000000,
+                "endAt": 1778526600000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-05-12-drop-1",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778626800000,
+                "endAt": 1778627400000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-05-12-drop-2",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778644800000,
+                "endAt": 1778645400000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-05-12-drop-3",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778662800000,
+                "endAt": 1778663400000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-05-12-drop-4",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778680800000,
+                "endAt": 1778681400000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-05-12-drop-5",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1778698800000,
+                "endAt": 1778699400000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-05-17-drop-1",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779058800000,
+                "endAt": 1779059400000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-05-17-drop-2",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779076800000,
+                "endAt": 1779077400000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-05-17-drop-3",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779094800000,
+                "endAt": 1779095400000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-05-17-drop-4",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779112800000,
+                "endAt": 1779113400000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-05-17-drop-5",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779130800000,
+                "endAt": 1779131400000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-05-19-drop-1",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779231600000,
+                "endAt": 1779232200000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-05-19-drop-2",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779249600000,
+                "endAt": 1779250200000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-05-19-drop-3",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779267600000,
+                "endAt": 1779268200000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-05-19-drop-4",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779285600000,
+                "endAt": 1779286200000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-05-19-drop-5",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779303600000,
+                "endAt": 1779304200000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-05-24-drop-1",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779663600000,
+                "endAt": 1779664200000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-05-24-drop-2",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779681600000,
+                "endAt": 1779682200000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-05-24-drop-3",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779699600000,
+                "endAt": 1779700200000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-05-24-drop-4",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779717600000,
+                "endAt": 1779718200000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-05-24-drop-5",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Gem": 1
+                },
+                "startAt": 1779735600000,
+                "endAt": 1779736200000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-05-26-drop-1",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1779836400000,
+                "endAt": 1779837000000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-05-26-drop-2",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1779854400000,
+                "endAt": 1779855000000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-05-26-drop-3",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1779872400000,
+                "endAt": 1779873000000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-05-26-drop-4",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1779890400000,
+                "endAt": 1779891000000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-05-26-drop-5",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1779908400000,
+                "endAt": 1779909000000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-05-31-drop-1",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1780268400000,
+                "endAt": 1780269000000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-05-31-drop-2",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1780286400000,
+                "endAt": 1780287000000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-05-31-drop-3",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1780304400000,
+                "endAt": 1780305000000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-05-31-drop-4",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1780322400000,
+                "endAt": 1780323000000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-05-31-drop-5",
+                "sfl": 1,
+                "supply": 18,
+                "ingredients": {},
+                "startAt": 1780340400000,
+                "endAt": 1780341000000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-06-02-drop-1",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1780441200000,
+                "endAt": 1780441800000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-06-02-drop-2",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1780459200000,
+                "endAt": 1780459800000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-06-02-drop-3",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1780477200000,
+                "endAt": 1780477800000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-06-02-drop-4",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1780495200000,
+                "endAt": 1780495800000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-06-02-drop-5",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1780513200000,
+                "endAt": 1780513800000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-06-07-drop-1",
+                "sfl": 1,
+                "supply": 8,
+                "ingredients": {},
+                "startAt": 1780873200000,
+                "endAt": 1780873800000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-06-07-drop-2",
+                "sfl": 1,
+                "supply": 8,
+                "ingredients": {},
+                "startAt": 1780891200000,
+                "endAt": 1780891800000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-06-07-drop-3",
+                "sfl": 1,
+                "supply": 8,
+                "ingredients": {},
+                "startAt": 1780909200000,
+                "endAt": 1780909800000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-06-07-drop-4",
+                "sfl": 1,
+                "supply": 8,
+                "ingredients": {},
+                "startAt": 1780927200000,
+                "endAt": 1780927800000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-06-07-drop-5",
+                "sfl": 1,
+                "supply": 8,
+                "ingredients": {},
+                "startAt": 1780945200000,
+                "endAt": 1780945800000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-06-09-drop-1",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1781046000000,
+                "endAt": 1781046600000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-06-09-drop-2",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1781064000000,
+                "endAt": 1781064600000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-06-09-drop-3",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1781082000000,
+                "endAt": 1781082600000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-06-09-drop-4",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1781100000000,
+                "endAt": 1781100600000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-06-09-drop-5",
+                "sfl": 1,
+                "supply": 10,
+                "ingredients": {},
+                "startAt": 1781118000000,
+                "endAt": 1781118600000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-06-14-drop-1",
+                "sfl": 1,
+                "supply": 4,
+                "ingredients": {},
+                "startAt": 1781478000000,
+                "endAt": 1781478600000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-06-14-drop-2",
+                "sfl": 1,
+                "supply": 4,
+                "ingredients": {},
+                "startAt": 1781496000000,
+                "endAt": 1781496600000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-06-14-drop-3",
+                "sfl": 1,
+                "supply": 4,
+                "ingredients": {},
+                "startAt": 1781514000000,
+                "endAt": 1781514600000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-06-14-drop-4",
+                "sfl": 1,
+                "supply": 4,
+                "ingredients": {},
+                "startAt": 1781532000000,
+                "endAt": 1781532600000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-06-14-drop-5",
+                "sfl": 1,
+                "supply": 4,
+                "ingredients": {},
+                "startAt": 1781550000000,
+                "endAt": 1781550600000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-06-16-drop-1",
+                "sfl": 1,
+                "supply": 5,
+                "ingredients": {},
+                "startAt": 1781650800000,
+                "endAt": 1781651400000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-06-16-drop-2",
+                "sfl": 1,
+                "supply": 5,
+                "ingredients": {},
+                "startAt": 1781668800000,
+                "endAt": 1781669400000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-06-16-drop-3",
+                "sfl": 1,
+                "supply": 5,
+                "ingredients": {},
+                "startAt": 1781686800000,
+                "endAt": 1781687400000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-06-16-drop-4",
+                "sfl": 1,
+                "supply": 5,
+                "ingredients": {},
+                "startAt": 1781704800000,
+                "endAt": 1781705400000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-06-16-drop-5",
+                "sfl": 1,
+                "supply": 5,
+                "ingredients": {},
+                "startAt": 1781722800000,
+                "endAt": 1781723400000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-07-05-drop-1",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783285200000,
+                "endAt": 1783285800000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-07-05-drop-1",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783288800000,
+                "endAt": 1783289400000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-07-05-drop-1",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783292400000,
+                "endAt": 1783293000000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-07-05-drop-2",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783303200000,
+                "endAt": 1783303800000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-07-05-drop-2",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783306800000,
+                "endAt": 1783307400000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-07-05-drop-2",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783310400000,
+                "endAt": 1783311000000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-07-05-drop-3",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783321200000,
+                "endAt": 1783321800000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-07-05-drop-3",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783324800000,
+                "endAt": 1783325400000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-07-05-drop-3",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783328400000,
+                "endAt": 1783329000000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-07-05-drop-4",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783339200000,
+                "endAt": 1783339800000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-07-05-drop-4",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783342800000,
+                "endAt": 1783343400000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-07-05-drop-4",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783346400000,
+                "endAt": 1783347000000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pufferfish-2026-07-05-drop-5",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783357200000,
+                "endAt": 1783357800000,
+                "type": "collectible",
+                "collectible": "Pufferfish",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "fat-crab-2026-07-05-drop-5",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783360800000,
+                "endAt": 1783361400000,
+                "type": "collectible",
+                "collectible": "Fat Crab",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "navigation-table-2026-07-05-drop-5",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783364400000,
+                "endAt": 1783365000000,
+                "type": "collectible",
+                "collectible": "Navigation Table",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "summer-guardian-2026-07-06-drop-1",
+                "sfl": 0,
+                "supply": 30,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783375200000,
+                "endAt": 1783375800000,
+                "type": "collectible",
+                "collectible": "Summer Guardian",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "giant-onion-2026-07-06-drop-1",
+                "sfl": 0,
+                "supply": 16,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783378800000,
+                "endAt": 1783379400000,
+                "type": "collectible",
+                "collectible": "Giant Onion",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "summer-guardian-2026-07-06-drop-2",
+                "sfl": 0,
+                "supply": 30,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783393200000,
+                "endAt": 1783393800000,
+                "type": "collectible",
+                "collectible": "Summer Guardian",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "giant-onion-2026-07-06-drop-2",
+                "sfl": 0,
+                "supply": 16,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783396800000,
+                "endAt": 1783397400000,
+                "type": "collectible",
+                "collectible": "Giant Onion",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "summer-guardian-2026-07-06-drop-3",
+                "sfl": 0,
+                "supply": 30,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783411200000,
+                "endAt": 1783411800000,
+                "type": "collectible",
+                "collectible": "Summer Guardian",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "giant-onion-2026-07-06-drop-3",
+                "sfl": 0,
+                "supply": 16,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783414800000,
+                "endAt": 1783415400000,
+                "type": "collectible",
+                "collectible": "Giant Onion",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "summer-guardian-2026-07-06-drop-4",
+                "sfl": 0,
+                "supply": 30,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783429200000,
+                "endAt": 1783429800000,
+                "type": "collectible",
+                "collectible": "Summer Guardian",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "giant-onion-2026-07-06-drop-4",
+                "sfl": 0,
+                "supply": 16,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783432800000,
+                "endAt": 1783433400000,
+                "type": "collectible",
+                "collectible": "Giant Onion",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "summer-guardian-2026-07-06-drop-5",
+                "sfl": 0,
+                "supply": 30,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783447200000,
+                "endAt": 1783447800000,
+                "type": "collectible",
+                "collectible": "Summer Guardian",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "giant-onion-2026-07-06-drop-5",
+                "sfl": 0,
+                "supply": 16,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783450800000,
+                "endAt": 1783451400000,
+                "type": "collectible",
+                "collectible": "Giant Onion",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-07-07-drop-1",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783461600000,
+                "endAt": 1783462200000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-07-07-drop-1",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783465200000,
+                "endAt": 1783465800000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-07-07-drop-2",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783479600000,
+                "endAt": 1783480200000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-07-07-drop-2",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783483200000,
+                "endAt": 1783483800000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-07-07-drop-3",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783497600000,
+                "endAt": 1783498200000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-07-07-drop-3",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783501200000,
+                "endAt": 1783501800000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-07-07-drop-4",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783515600000,
+                "endAt": 1783516200000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-07-07-drop-4",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783519200000,
+                "endAt": 1783519800000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pistol-shrimp-2026-07-07-drop-5",
+                "sfl": 0,
+                "supply": 10,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783533600000,
+                "endAt": 1783534200000,
+                "type": "wearable",
+                "wearable": "Pistol Shrimp",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "royal-crab-pot-2026-07-07-drop-5",
+                "sfl": 0,
+                "supply": 4,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783537200000,
+                "endAt": 1783537800000,
+                "type": "collectible",
+                "collectible": "Royal Crab Pot",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-07-08-drop-1",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783548000000,
+                "endAt": 1783548600000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "obsidian-turtle-2026-07-08-drop-1",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783551600000,
+                "endAt": 1783552200000,
+                "type": "collectible",
+                "collectible": "Obsidian Turtle",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-07-08-drop-2",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783566000000,
+                "endAt": 1783566600000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "obsidian-turtle-2026-07-08-drop-2",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783569600000,
+                "endAt": 1783570200000,
+                "type": "collectible",
+                "collectible": "Obsidian Turtle",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-07-08-drop-3",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783584000000,
+                "endAt": 1783584600000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "obsidian-turtle-2026-07-08-drop-3",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783587600000,
+                "endAt": 1783588200000,
+                "type": "collectible",
+                "collectible": "Obsidian Turtle",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-07-08-drop-4",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783602000000,
+                "endAt": 1783602600000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "obsidian-turtle-2026-07-08-drop-4",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783605600000,
+                "endAt": 1783606200000,
+                "type": "collectible",
+                "collectible": "Obsidian Turtle",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "crab-house-2026-07-08-drop-5",
+                "sfl": 0,
+                "supply": 5,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783620000000,
+                "endAt": 1783620600000,
+                "type": "collectible",
+                "collectible": "Crab House",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "obsidian-turtle-2026-07-08-drop-5",
+                "sfl": 0,
+                "supply": 18,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783623600000,
+                "endAt": 1783624200000,
+                "type": "collectible",
+                "collectible": "Obsidian Turtle",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-07-09-drop-1",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783634400000,
+                "endAt": 1783635000000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pet-2026-07-09-drop-1",
+                "sfl": 0,
+                "supply": 50,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783638000000,
+                "endAt": 1783638600000,
+                "type": "nft",
+                "nft": "Pet",
+                "startId": 1501,
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-07-09-drop-2",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783652400000,
+                "endAt": 1783653000000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pet-2026-07-09-drop-2",
+                "sfl": 0,
+                "supply": 50,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783656000000,
+                "endAt": 1783656600000,
+                "type": "nft",
+                "nft": "Pet",
+                "startId": 1551,
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-07-09-drop-3",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783670400000,
+                "endAt": 1783671000000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pet-2026-07-09-drop-3",
+                "sfl": 0,
+                "supply": 50,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783674000000,
+                "endAt": 1783674600000,
+                "type": "nft",
+                "nft": "Pet",
+                "startId": 1601,
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-07-09-drop-4",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783688400000,
+                "endAt": 1783689000000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pet-2026-07-09-drop-4",
+                "sfl": 0,
+                "supply": 50,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783692000000,
+                "endAt": 1783692600000,
+                "type": "nft",
+                "nft": "Pet",
+                "startId": 1651,
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "speed-trap-2026-07-09-drop-5",
+                "sfl": 0,
+                "supply": 8,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783706400000,
+                "endAt": 1783707000000,
+                "type": "collectible",
+                "collectible": "Speed Trap",
+                "chapterLimit": 1
+            },
+            {
+                "auctionId": "pet-2026-07-09-drop-5",
+                "sfl": 0,
+                "supply": 50,
+                "ingredients": {
+                    "Salt Rock": 1
+                },
+                "startAt": 1783710000000,
+                "endAt": 1783710600000,
+                "type": "nft",
+                "nft": "Pet",
+                "startId": 1701,
+                "chapterLimit": 1
+            }
+        ]
+    }
+}
