@@ -753,6 +753,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── COMMUNITY PAGE ─── */
 .gc-community-header {
+  margin-top: 24px;
   margin-bottom: 28px;
 }
 .gc-community-sub {
