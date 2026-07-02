@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import './ChapterAuctions.css';
 
 interface Auction {
@@ -19,11 +19,6 @@ interface Props {
   auctions: Auction[];
   chapterName?: string;
 }
-
-// В исходном JSON время аукционов указано как UTC+5 — приводим к настоящему UTC,
-// дальше JS сам покажет его в часовом поясе пользователя.
-const SOURCE_TZ_OFFSET_MS = 5 * 60 * 60 * 1000;
-const toRealTime = (ms: number) => ms - SOURCE_TZ_OFFSET_MS;
 
 const TYPE_ICON: Record<Auction['type'], string> = {
   collectible: '📦',
@@ -76,10 +71,8 @@ function itemKind(a: Auction): Kind {
 }
 
 function getStatus(a: Auction, now: number): Status {
-  const startAt = toRealTime(a.startAt);
-  const endAt = toRealTime(a.endAt);
-  if (now < startAt) return 'upcoming';
-  if (now < endAt) return 'live';
+  if (now < a.startAt) return 'upcoming';
+  if (now < a.endAt) return 'live';
   return 'ended';
 }
 
@@ -100,11 +93,11 @@ function costBadgeClass(name: string): string {
 }
 
 function formatTime(ms: number): string {
-  return new Date(toRealTime(ms)).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  return new Date(ms).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDay(ms: number): string {
-  return new Date(toRealTime(ms)).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' });
+  return new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' });
 }
 
 interface DropdownOption {
@@ -157,11 +150,28 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
   const [kindFilter, setKindFilter] = useState<Kind | 'all'>('all');
   const [nameFilter, setNameFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const segmentedRef = useRef<HTMLDivElement>(null);
+  const segRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(id);
   }, []);
+
+  useLayoutEffect(() => {
+    const container = segmentedRef.current;
+    const active = segRefs.current[statusFilter];
+    if (!container || !active) return;
+    const update = () => {
+      const containerRect = container.getBoundingClientRect();
+      const activeRect = active.getBoundingClientRect();
+      setIndicatorStyle({ left: activeRect.left - containerRect.left, width: activeRect.width });
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [statusFilter]);
 
   const costOptions = useMemo<DropdownOption[]>(() => {
     const keys = new Set<string>();
@@ -250,10 +260,15 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
         </div>
 
         <div className="ca-toolbar">
-          <div className="ca-segmented">
+          <div className="ca-segmented" ref={segmentedRef}>
+            <div
+              className="ca-segment-indicator"
+              style={{ transform: `translateX(${indicatorStyle.left}px)`, width: `${indicatorStyle.width}px` }}
+            />
             {STATUS_FILTERS.map(f => (
               <button
                 key={f.id}
+                ref={el => { segRefs.current[f.id] = el; }}
                 className={`ca-segment${statusFilter === f.id ? ' active' : ''}`}
                 onClick={() => setStatusFilter(f.id)}
                 type="button"
@@ -289,9 +304,8 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
             <div className="ca-list">
               {items.map(a => {
                 const status = getStatus(a, now);
-                const startAt = toRealTime(a.startAt);
-                const minutesToStart = Math.ceil((startAt - now) / 60_000);
-                const isHot = status === 'live' || (status === 'upcoming' && startAt - now <= SOON_THRESHOLD_MS);
+                const minutesToStart = Math.ceil((a.startAt - now) / 60_000);
+                const isHot = status === 'live' || (status === 'upcoming' && a.startAt - now <= SOON_THRESHOLD_MS);
                 const ingredients = Object.entries(a.ingredients);
                 return (
                   <div key={a.auctionId} className={`ca-row ca-row--${status}${isHot ? ' ca-row--hot' : ''}`}>

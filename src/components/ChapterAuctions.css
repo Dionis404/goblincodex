@@ -120,15 +120,29 @@
 
 /* ── Segmented status control ── */
 .ca-segmented {
-  display: inline-flex;
-  align-items: center;
+  position: relative;
+  display: flex;
+  align-items: stretch;
   gap: 4px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 4px;
 }
+.ca-segment-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  background: var(--green-dark);
+  border-radius: 7px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
 .ca-segment {
+  position: relative;
+  z-index: 1;
+  flex: 1;
   padding: 7px 16px;
   border-radius: 7px;
   border: none;
@@ -139,13 +153,10 @@
   font-family: var(--font-body);
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s, color 0.15s;
+  transition: color 0.2s;
 }
 .ca-segment:hover { color: var(--green-dark); }
-.ca-segment.active {
-  background: var(--green-dark);
-  color: #fff;
-}
+.ca-segment.active { color: #fff; }
 
 /* ── Divider + summary ── */
 .ca-panel-divider {
