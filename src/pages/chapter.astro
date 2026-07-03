@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 import ChapterAuctions from '../components/ChapterAuctions.tsx';
 import auctionsData from '../data/chapter-auctions.json';
 
@@ -14,6 +14,24 @@ const chapterGuides = await getCollection(
 chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
 
 const auctions: any[] = auctionsData.auctions.auctions;
+
+// ── Основные механики: карточки, открывающие гайд из кодекса в модалке ──
+const MECHANIC_CARDS = [
+  { id: 'delivery',     icon: '🚚', title: 'Доставки' },
+  { id: 'auction',      icon: '🔨', title: 'Аукционы' },
+  { id: 'raffle',       icon: '🎟️', title: 'Рафлы' },
+  { id: 'bounty-board', icon: '📋', title: 'Баунтиборд' },
+  { id: 'chore',        icon: '✅', title: 'Chore (задания)' },
+  { id: 'chapter-pass', icon: '🎫', title: 'Чаптерпасс' },
+];
+
+const mechanicCards = await Promise.all(
+  MECHANIC_CARDS.map(async (card) => {
+    const entry = await getEntry('mechanics', card.id);
+    const Content = entry ? (await render(entry)).Content : null;
+    return { ...card, Content };
+  })
+);
 ---
 
 <BaseLayout
@@ -34,6 +52,19 @@ const auctions: any[] = auctionsData.auctions.auctions;
       <span class="gc-wip-note-dot"></span>
       🚧 Страница в разработке — часть данных пока заполняется вручную, скоро добавим больше
     </div>
+
+    <!-- ── Основные механики ── -->
+    <section class="gc-chapter-section">
+      <h2 class="gc-block-title-lg">⚙️ Основные механики</h2>
+      <div class="gc-mechanics-grid">
+        {mechanicCards.map(card => (
+          <button type="button" class="gc-mechanic-card" data-mech-open={card.id}>
+            <div class="gc-mechanic-icon">{card.icon}</div>
+            <div class="gc-mechanic-title">{card.title}</div>
+          </button>
+        ))}
+      </div>
+    </section>
 
     <!-- ── Гайды по механике главы ── -->
     <section class="gc-chapter-section">
@@ -76,6 +107,24 @@ const auctions: any[] = auctionsData.auctions.auctions;
       <ChapterAuctions client:load auctions={auctions} chapterName="The Salt Awakening" />
     </section>
 
+  </div>
+
+  <!-- ── Модалка гайда по механике (вне gc-content, чтобы position:fixed считался от вьюпорта) ── -->
+  <div class="gc-modal-overlay gc-mech-modal-overlay" id="mechModalOverlay" style="display:none">
+    <div class="gc-modal-box gc-mech-modal-box" id="mechModalBox">
+      <button type="button" class="gc-modal-close" id="mechModalClose" aria-label="Закрыть">✕</button>
+      {mechanicCards.map(card => {
+        const CardContent = card.Content;
+        return (
+          <div class="gc-mech-modal-article" data-mech-article={card.id} style="display:none">
+            <h3 class="gc-mech-modal-title">{card.icon} {card.title}</h3>
+            <article class="gc-guide-article">
+              {CardContent ? <CardContent /> : <p>Гайд в разработке — скоро появится здесь.</p>}
+            </article>
+          </div>
+        );
+      })}
+    </div>
   </div>
 </BaseLayout>
 
@@ -135,6 +184,53 @@ const auctions: any[] = auctionsData.auctions.auctions;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 16px;
+}
+
+/* ── Основные механики ── */
+.gc-mechanics-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+.gc-mechanic-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.gc-mechanic-card:hover {
+  border-color: var(--green-mid);
+  transform: translateY(-2px);
+}
+.gc-mechanic-icon {
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--green-pale);
+  border-radius: 10px;
+}
+.gc-mechanic-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+@media (max-width: 900px) {
+  .gc-mechanics-grid { grid-template-columns: repeat(3, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .gc-mechanics-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
 /* ── Сетка гайдов (как в /codex) ── */
@@ -199,4 +295,64 @@ const auctions: any[] = auctionsData.auctions.auctions;
 @media (max-width: 640px) {
   .gc-guides-grid { grid-template-columns: 1fr !important; }
 }
+
+/* ── Модалка гайда по механике ── */
+.gc-mech-modal-box {
+  max-width: 720px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 36px;
+}
+.gc-mech-modal-title {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.gc-mech-modal-article .gc-guide-article {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+@media (max-width: 640px) {
+  .gc-mech-modal-box { padding: 24px 20px; }
+}
 </style>
+
+<script>
+  const mechButtons  = document.querySelectorAll<HTMLButtonElement>('[data-mech-open]');
+  const mechOverlay  = document.getElementById('mechModalOverlay');
+  const mechClose    = document.getElementById('mechModalClose');
+  const mechArticles = document.querySelectorAll<HTMLElement>('[data-mech-article]');
+
+  function openMechModal(id: string) {
+    mechArticles.forEach(a => {
+      a.style.display = a.dataset.mechArticle === id ? 'block' : 'none';
+    });
+    if (mechOverlay) mechOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMechModal() {
+    if (mechOverlay) mechOverlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  mechButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.mechOpen;
+      if (id) openMechModal(id);
+    });
+  });
+
+  mechClose?.addEventListener('click', closeMechModal);
+  mechOverlay?.addEventListener('click', (e) => {
+    if (e.target === mechOverlay) closeMechModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMechModal();
+  });
+</script>
