@@ -305,11 +305,14 @@ export function parseSpriteMap(sflDir: string): Map<string, string> {
   // ── Collectibles: images.ts → ITEM_DETAILS ─────────────────────
   const imagesSource = readSfl("src/features/game/types/images.ts");
   if (imagesSource) {
-    const importRe = /^import\s+(\w+)\s+from\s+["']assets\/sfts\/([^"']+)["']/gm;
+    // Images live under many asset subfolders, not just sfts/ (fish/, food/,
+    // decorations/, animals/, monuments/, etc.) — capture the whole
+    // post-"assets/" path so every subfolder resolves, not only sfts/.
+    const importRe = /^import\s+(\w+)\s+from\s+["']assets\/([^"']+)["']/gm;
     const varToFile = new Map<string, string>();
     let m: RegExpExecArray | null;
     while ((m = importRe.exec(imagesSource)) !== null) {
-      varToFile.set(m[1], `sfts/${m[2]}`);
+      varToFile.set(m[1], m[2]);
     }
 
     const itemDetailsBlock = extractNamedBlock(imagesSource, "ITEM_DETAILS");
@@ -340,22 +343,30 @@ export function parseSpriteMap(sflDir: string): Map<string, string> {
  * their own, unrelated ID numbering — a wearable and an inventory item can
  * share a name (e.g. "Parsnip") while having completely different IDs.
  */
-export function parseWearableIds(sflDir: string): Map<string, number> {
-  const wearableIds = new Map<string, number>();
+/**
+ * Extract `key: 123` pairs from a block (quoted or bare keys). Quote-aware
+ * via backreference so an apostrophe inside a quoted name (e.g.
+ * "Luna's Crescent") doesn't truncate the match — a plain `[^"']+` class
+ * would stop at the apostrophe and silently mis-key the entry.
+ */
+function parseKeyIdPairs(block: string): Map<string, number> {
+  const result = new Map<string, number>();
+  const idRe = /(?:(["'])((?:(?!\1)[\s\S])+?)\1|([A-Za-z_$][\w$]*))\s*:\s*(\d+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = idRe.exec(block)) !== null) {
+    const itemName = m[2] ?? m[3];
+    result.set(itemName, parseInt(m[4], 10));
+  }
+  return result;
+}
 
+export function parseWearableIds(sflDir: string): Map<string, number> {
   const full = path.join(sflDir, "src/features/game/types/bumpkin.ts");
-  if (!fs.existsSync(full)) return wearableIds;
+  if (!fs.existsSync(full)) return new Map();
   const source = fs.readFileSync(full, "utf8");
 
   const block = extractNamedBlock(source, "ITEM_IDS");
-  const idRe = /(?:["']([^"']+)["']|([A-Za-z_$][\w$]*))\s*:\s*(\d+)/g;
-  let m: RegExpExecArray | null;
-  while ((m = idRe.exec(block)) !== null) {
-    const itemName = m[1] ?? m[2];
-    wearableIds.set(itemName, parseInt(m[3], 10));
-  }
-
-  return wearableIds;
+  return parseKeyIdPairs(block);
 }
 
 // ─── Game ID parser ───────────────────────────────────────────────────────────
@@ -368,19 +379,10 @@ export function parseWearableIds(sflDir: string): Map<string, number> {
  * the wearable-only ITEM_IDS in bumpkin.ts.
  */
 export function parseGameIds(sflDir: string): Map<string, number> {
-  const gameIds = new Map<string, number>();
-
   const full = path.join(sflDir, "src/features/game/types/index.ts");
-  if (!fs.existsSync(full)) return gameIds;
+  if (!fs.existsSync(full)) return new Map();
   const source = fs.readFileSync(full, "utf8");
 
   const block = extractNamedBlock(source, "KNOWN_IDS");
-  const idRe = /(?:["']([^"']+)["']|([A-Za-z_$][\w$]*))\s*:\s*(\d+)/g;
-  let m: RegExpExecArray | null;
-  while ((m = idRe.exec(block)) !== null) {
-    const itemName = m[1] ?? m[2];
-    gameIds.set(itemName, parseInt(m[3], 10));
-  }
-
-  return gameIds;
+  return parseKeyIdPairs(block);
 }
