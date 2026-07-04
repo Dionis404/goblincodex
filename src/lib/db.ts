@@ -68,7 +68,7 @@ export async function getCatalogItems(): Promise<SflItem[]> {
         '[]'
       ) AS boosts
     FROM sfl_items i
-    LEFT JOIN sfl_buffs b ON b.item_id = i.id
+    LEFT JOIN sfl_buffs b ON b.item_id = i.id AND b.item_type = i.type
     WHERE i.type IN ('collectible', 'wearable')
       AND i.is_active = TRUE
     GROUP BY i.id, i.type, i.category, i.sprite, i.tags

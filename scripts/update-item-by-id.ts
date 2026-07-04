@@ -4,12 +4,17 @@
  * touched columns as manually_edited_fields so the next npm run sfl:populate
  * doesn't silently overwrite the fix.
  *
+ * sfl_items' primary key is (id, type) — an item name alone isn't unique
+ * (e.g. "Parsnip" is both a wearable and a crop). If <item_id> matches more
+ * than one row, pass --type=<type> to disambiguate.
+ *
  * Usage:
- *   DATABASE_URL="postgresql://..." npx tsx scripts/update-item-by-id.ts item <item_id> --field=value [...]
+ *   DATABASE_URL="postgresql://..." npx tsx scripts/update-item-by-id.ts item <item_id> [--type=<type>] --field=value [...]
  *   DATABASE_URL="postgresql://..." npx tsx scripts/update-item-by-id.ts buff <buff_id> --field=value [...]
  *
  * Examples:
  *   npx tsx scripts/update-item-by-id.ts item "Sunflower Statue" --category=Decoration
+ *   npx tsx scripts/update-item-by-id.ts item "Parsnip" --type=wearable --category=Tool
  *   npx tsx scripts/update-item-by-id.ts buff 482 --numeric_value=0.2 --value_type=percent
  */
 
@@ -70,14 +75,18 @@ function coerce(rawValue: string, type: FieldType): unknown {
 interface ParsedArgs {
   subcommand: "item" | "buff";
   id: string;
+  type: string | null;
   fields: { field: string; rawValue: string }[];
 }
 
 function printUsage(): void {
   console.error(`
 Usage:
-  DATABASE_URL="..." npx tsx scripts/update-item-by-id.ts item <item_id> --field=value [...]
+  DATABASE_URL="..." npx tsx scripts/update-item-by-id.ts item <item_id> [--type=<type>] --field=value [...]
   DATABASE_URL="..." npx tsx scripts/update-item-by-id.ts buff <buff_id> --field=value [...]
+
+--type disambiguates <item_id> when the name matches more than one row
+(sfl_items' key is (id, type), e.g. "Parsnip" is both a wearable and a crop).
 
 Allowed item fields: ${ITEM_PROTECTABLE_FIELDS.join(", ")}
 Allowed buff fields: ${BUFF_PROTECTABLE_FIELDS.join(", ")}
@@ -100,6 +109,7 @@ function parseArgs(): ParsedArgs {
     process.exit(1);
   }
 
+  let type: string | null = null;
   const fields: { field: string; rawValue: string }[] = [];
   for (const arg of args.slice(2)) {
     const eqIdx = arg.startsWith("--") ? arg.indexOf("=") : -1;
@@ -108,7 +118,13 @@ function parseArgs(): ParsedArgs {
       printUsage();
       process.exit(1);
     }
-    fields.push({ field: arg.slice(2, eqIdx), rawValue: arg.slice(eqIdx + 1) });
+    const field = arg.slice(2, eqIdx);
+    const rawValue = arg.slice(eqIdx + 1);
+    if (subcommand === "item" && field === "type") {
+      type = rawValue;
+      continue;
+    }
+    fields.push({ field, rawValue });
   }
 
   if (fields.length === 0) {
@@ -117,7 +133,7 @@ function parseArgs(): ParsedArgs {
     process.exit(1);
   }
 
-  return { subcommand, id, fields };
+  return { subcommand, id, type, fields };
 }
 
 async function main() {
@@ -127,7 +143,7 @@ async function main() {
     process.exit(1);
   }
 
-  const { subcommand, id, fields } = parseArgs();
+  const { subcommand, id, type, fields } = parseArgs();
   const table = subcommand === "item" ? "sfl_items" : "sfl_buffs";
   const allowlist = subcommand === "item" ? ITEM_PROTECTABLE_FIELDS : BUFF_PROTECTABLE_FIELDS;
   const fieldTypes = subcommand === "item" ? ITEM_FIELD_TYPES : BUFF_FIELD_TYPES;
@@ -177,30 +193,58 @@ async function main() {
   try {
     await client.query("BEGIN");
 
+    // sfl_items' key is (id, type) — an item name alone can match more than
+    // one row (e.g. "Parsnip" the wearable vs. "Parsnip" the crop).
+    const lookupClauses = ["id = $1"];
+    const lookupValues: unknown[] = [idValue];
+    if (subcommand === "item" && type !== null) {
+      lookupClauses.push(`type = $${lookupValues.length + 1}`);
+      lookupValues.push(type);
+    }
+
     const existing = await client.query(
-      `SELECT manually_edited_fields FROM ${table} WHERE id = $1`,
-      [idValue],
+      `SELECT manually_edited_fields${subcommand === "item" ? ", type" : ""} FROM ${table} WHERE ${lookupClauses.join(" AND ")}`,
+      lookupValues,
     );
     if (existing.rowCount === 0) {
-      console.error(`Error: no ${subcommand} found with id "${id}".`);
+      console.error(`Error: no ${subcommand} found with id "${id}"${type !== null ? ` and type "${type}"` : ""}.`);
+      await client.query("ROLLBACK");
+      process.exit(1);
+    }
+    if (subcommand === "item" && existing.rowCount! > 1) {
+      const types = existing.rows.map((r) => r.type).join(", ");
+      console.error(
+        `Error: "${id}" matches ${existing.rowCount} rows (types: ${types}). Pass --type=<type> to disambiguate.`,
+      );
       await client.query("ROLLBACK");
       process.exit(1);
     }
 
     const currentFlags: string[] = existing.rows[0].manually_edited_fields ?? [];
     const newFlags = Array.from(new Set([...currentFlags, ...coercedFields.map((f) => f.field)]));
+    // The disambiguation check above guarantees exactly one row at this
+    // point, so its own type (whether user-supplied or inferred) precisely
+    // targets that row in the UPDATE below.
+    const resolvedType: string | null = subcommand === "item" ? existing.rows[0].type : null;
 
     // field names are interpolated directly here, but only after being
     // validated against the fixed allowlist above — safe.
     const setClauses = coercedFields.map((f, i) => `${f.field} = $${i + 1}`);
     const values = coercedFields.map((f) => f.value);
 
+    const whereClauses = [`id = $${values.length + 2}`];
+    const whereValues: unknown[] = [idValue];
+    if (subcommand === "item") {
+      whereClauses.push(`type = $${values.length + 3}`);
+      whereValues.push(resolvedType);
+    }
+
     const result = await client.query(
       `UPDATE ${table}
        SET ${setClauses.join(", ")}, manually_edited_fields = $${values.length + 1}
-       WHERE id = $${values.length + 2}
+       WHERE ${whereClauses.join(" AND ")}
        RETURNING *`,
-      [...values, newFlags, idValue],
+      [...values, newFlags, ...whereValues],
     );
 
     await client.query("COMMIT");

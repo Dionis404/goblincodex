@@ -12,7 +12,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Pool } from "pg";
-import { extractNamedBlock, extractTopLevelEntries, parseSpriteMap } from "./lib/sprite-map";
+import { extractNamedBlock, extractTopLevelEntries, extractTopLevelKeys, parseSpriteMap, parseGameIds, parseWearableIds } from "./lib/sprite-map";
 import { classifyResource } from "./lib/resource-classifier";
 import { getItemTags } from "./lib/item-tags";
 
@@ -160,7 +160,18 @@ interface CollectibleItem {
   buffs: BuffEntry[];
 }
 
-type AnyItem = SkillItem | WearableItem | CollectibleItem;
+/**
+ * Crops/seeds/resources/flowers/fruits/fish carry no boosts and therefore
+ * never appear in skills/wearables/collectibles — they exist purely so their
+ * game_id (marketplace numeric ID) is captured in sfl_items.
+ */
+interface ProduceItem {
+  name: string;
+  type: "crop" | "seed" | "resource" | "flower" | "fruit" | "fish";
+  buffs: [];
+}
+
+type AnyItem = SkillItem | WearableItem | CollectibleItem | ProduceItem;
 
 interface NumericValue {
   itemName: string;
@@ -412,6 +423,64 @@ function parseCollectibles(dict: Map<string, string>, ruDict: Map<string, string
   });
 }
 
+// ─── Parser: Crops/seeds/resources/flowers/fruits/fish (no buffs) ────────────
+
+// Each entry names the SFL source file, the top-level Record block to read
+// keys from, and the ProduceItem type those keys should be tagged with.
+const PRODUCE_SOURCES: { file: string; block: string; type: ProduceItem["type"] }[] = [
+  { file: "crops.ts", block: "CROPS", type: "crop" },
+  { file: "crops.ts", block: "GREENHOUSE_CROPS", type: "crop" },
+  { file: "crops.ts", block: "CROP_SEEDS", type: "seed" },
+  { file: "crops.ts", block: "GREENHOUSE_SEEDS", type: "seed" },
+  // seeds.ts SEEDS is a spread of the above seed blocks, not a literal object —
+  // omitted here since its keys are already covered individually.
+  { file: "resources.ts", block: "COMMODITIES", type: "resource" },
+  { file: "resources.ts", block: "RESOURCES", type: "resource" },
+  { file: "resources.ts", block: "ANIMAL_RESOURCES", type: "resource" },
+  // flowers.ts FLOWERS is also a spread; use its underlying per-variety blocks.
+  { file: "flowers.ts", block: "SUNPETAL_FLOWERS", type: "flower" },
+  { file: "flowers.ts", block: "BLOOM_FLOWERS", type: "flower" },
+  { file: "flowers.ts", block: "LILY_FLOWERS", type: "flower" },
+  { file: "flowers.ts", block: "EDELWEISS_FLOWERS", type: "flower" },
+  { file: "flowers.ts", block: "GLADIOLUS_FLOWERS", type: "flower" },
+  { file: "flowers.ts", block: "LAVENDER_FLOWERS", type: "flower" },
+  { file: "flowers.ts", block: "CLOVER_FLOWERS", type: "flower" },
+  { file: "flowers.ts", block: "FLOWER_SEEDS", type: "seed" },
+  { file: "fruits.ts", block: "PATCH_FRUIT", type: "fruit" },
+  { file: "fruits.ts", block: "PATCH_FRUIT_SEEDS", type: "seed" },
+  { file: "fruits.ts", block: "GREENHOUSE_FRUIT", type: "fruit" },
+  { file: "fruits.ts", block: "GREENHOUSE_FRUIT_SEEDS", type: "seed" },
+  { file: "fishing.ts", block: "FISH", type: "fish" },
+  { file: "fishing.ts", block: "CHAPTER_FISH", type: "fish" },
+  { file: "beans.ts", block: "EXOTIC_CROPS", type: "crop" },
+];
+
+/**
+ * Names already covered by skills/wearables/collectibles are skipped — this
+ * only fills in the produce that has a game_id but no buff row anywhere else.
+ */
+function parseProduceItems(gameIds: Map<string, number>, existingNames: Set<string>): ProduceItem[] {
+  const items: ProduceItem[] = [];
+  const seen = new Set<string>();
+
+  for (const { file, block: blockName, type } of PRODUCE_SOURCES) {
+    const source = readFile(`src/features/game/types/${file}`);
+    if (!source) continue;
+
+    const block = extractNamedBlock(source, blockName);
+    const keys = extractTopLevelKeys(block);
+
+    for (const key of keys) {
+      if (existingNames.has(key) || seen.has(key)) continue;
+      if (!gameIds.has(key)) continue;
+      seen.add(key);
+      items.push({ name: key, type, buffs: [] });
+    }
+  }
+
+  return items;
+}
+
 // ─── Parser: Numeric values from boostsUsed.push ─────────────────────────────
 
 function parseNumericValues(): Map<string, NumericValue[]> {
@@ -516,21 +585,28 @@ function parseNumericValues(): Map<string, NumericValue[]> {
 // ─── Database ─────────────────────────────────────────────────────────────────
 
 const SCHEMA_SQL = `
+-- id (item name) alone is NOT unique: a wearable and an unrelated
+-- crop/collectible/etc. can share the same display name while being
+-- different NFT items in different game namespaces (e.g. "Parsnip" the
+-- wearable vs. "Parsnip" the crop). The natural key is (id, type).
 CREATE TABLE IF NOT EXISTS sfl_items (
-  id                     TEXT PRIMARY KEY,
+  id                     TEXT NOT NULL,
   type                   TEXT NOT NULL,
   category               TEXT,
   requires_game_state    BOOLEAN DEFAULT FALSE,
   sprite                 TEXT,
   tags                   TEXT[] DEFAULT '{}',
+  game_id                INTEGER,
   manually_edited_fields TEXT[] DEFAULT '{}',
   last_synced_at         TIMESTAMPTZ,
-  is_active              BOOLEAN DEFAULT TRUE
+  is_active              BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (id, type)
 );
 
 CREATE TABLE IF NOT EXISTS sfl_buffs (
   id                     SERIAL PRIMARY KEY,
-  item_id                TEXT REFERENCES sfl_items(id) ON DELETE CASCADE,
+  item_id                TEXT,
+  item_type              TEXT,
   label_type             TEXT,
   short_description      TEXT,
   short_description_ru   TEXT,
@@ -545,11 +621,13 @@ CREATE TABLE IF NOT EXISTS sfl_buffs (
   manually_edited_fields TEXT[] DEFAULT '{}',
   last_synced_at         TIMESTAMPTZ,
   is_active              BOOLEAN DEFAULT TRUE,
-  CONSTRAINT sfl_buffs_item_id_short_description_key UNIQUE (item_id, short_description)
+  CONSTRAINT sfl_buffs_item_id_type_fkey FOREIGN KEY (item_id, item_type) REFERENCES sfl_items(id, type) ON DELETE CASCADE,
+  CONSTRAINT sfl_buffs_item_id_type_short_description_key UNIQUE (item_id, item_type, short_description)
 );
 
 CREATE INDEX IF NOT EXISTS idx_sfl_buffs_affected_stat ON sfl_buffs(affected_stat);
 CREATE INDEX IF NOT EXISTS idx_sfl_items_tags ON sfl_items USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_sfl_items_game_id ON sfl_items(game_id);
 CREATE INDEX IF NOT EXISTS idx_sfl_items_is_active ON sfl_items(is_active);
 CREATE INDEX IF NOT EXISTS idx_sfl_buffs_is_active ON sfl_buffs(is_active);
 `;
@@ -572,6 +650,8 @@ async function populateDB(
   items: AnyItem[],
   numericValues: Map<string, NumericValue[]>,
   spriteMap: Map<string, string>,
+  gameIds: Map<string, number>,
+  wearableIds: Map<string, number>,
 ): Promise<RunSummary> {
   const client = await pool.connect();
   const runStartTimestamp = new Date();
@@ -600,19 +680,31 @@ async function populateDB(
 
       const sprite = spriteMap.get(item.name) ?? null;
       const tags = getItemTags(item.name, item.type);
+      // Skills aren't marketplace items and have no game_id of their own —
+      // without this, a skill can accidentally pick up an unrelated item's ID
+      // by name collision (e.g. skill "Green Thumb" vs. a same-named Bud).
+      // Wearables are a separate NFT collection with their own ID numbering
+      // (bumpkin.ts ITEM_IDS) — a wearable and an unrelated inventory item
+      // can also share a name (e.g. "Parsnip") while pointing at different IDs.
+      const gameId =
+        item.type === "skill"
+          ? null
+          : item.type === "wearable"
+            ? wearableIds.get(item.name) ?? null
+            : gameIds.get(item.name) ?? null;
 
       await client.query(
-        `INSERT INTO sfl_items (id, type, category, requires_game_state, sprite, tags, last_synced_at, is_active)
-         VALUES ($1, $2, $3, $4, $5, $6, now(), TRUE)
-         ON CONFLICT (id) DO UPDATE SET
-           type = EXCLUDED.type,
+        `INSERT INTO sfl_items (id, type, category, requires_game_state, sprite, tags, game_id, last_synced_at, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, now(), TRUE)
+         ON CONFLICT (id, type) DO UPDATE SET
            category = CASE WHEN 'category' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.category ELSE EXCLUDED.category END,
            requires_game_state = CASE WHEN 'requires_game_state' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.requires_game_state ELSE EXCLUDED.requires_game_state END,
            sprite = CASE WHEN 'sprite' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.sprite ELSE EXCLUDED.sprite END,
            tags = CASE WHEN 'tags' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.tags ELSE EXCLUDED.tags END,
+           game_id = EXCLUDED.game_id,
            last_synced_at = now(),
            is_active = TRUE`,
-        [item.name, item.type, category, requiresGameState, sprite, tags],
+        [item.name, item.type, category, requiresGameState, sprite, tags, gameId],
       );
       itemsUpserted++;
 
@@ -637,11 +729,11 @@ async function populateDB(
 
         await client.query(
           `INSERT INTO sfl_buffs
-             (item_id, label_type, short_description, short_description_ru, boost_type, is_debuff,
+             (item_id, item_type, label_type, short_description, short_description_ru, boost_type, is_debuff,
               numeric_value, value_type, affected_stat, numeric_confidence, raw_value, source_file,
               last_synced_at, is_active)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12, now(), TRUE)
-           ON CONFLICT (item_id, short_description) DO UPDATE SET
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13, now(), TRUE)
+           ON CONFLICT (item_id, item_type, short_description) DO UPDATE SET
              label_type = CASE WHEN 'label_type' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.label_type ELSE EXCLUDED.label_type END,
              short_description_ru = CASE WHEN 'short_description_ru' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.short_description_ru ELSE EXCLUDED.short_description_ru END,
              boost_type = CASE WHEN 'boost_type' = ANY(sfl_buffs.manually_edited_fields) THEN sfl_buffs.boost_type ELSE EXCLUDED.boost_type END,
@@ -656,6 +748,7 @@ async function populateDB(
              is_active = TRUE`,
           [
             item.name,
+            item.type,
             buff.labelType,
             buff.text,
             buff.textRu,
@@ -779,7 +872,27 @@ async function main() {
   const spriteMap = parseSpriteMap(SFL_DIR);
   console.log(`   ${spriteMap.size} sprites mapped`);
 
-  const allItems: AnyItem[] = [...skills, ...wearables, ...collectibles];
+  console.log("\n🔍 Parsing game IDs...");
+  const gameIds = parseGameIds(SFL_DIR);
+  console.log(`   ${gameIds.size} game IDs mapped`);
+
+  const wearableIds = parseWearableIds(SFL_DIR);
+  console.log(`   ${wearableIds.size} wearable IDs mapped`);
+
+  // Only collectible names are excluded here: those overlaps (e.g. "Ancient
+  // Tree", "Beehive") are the same game entity described in two SFL source
+  // files, sharing one game_id — a redundant row, not a distinct item.
+  // Skills and wearables are different namespaces (skills aren't marketplace
+  // items at all; wearables have their own ID space via ITEM_IDS), so a
+  // same-named produce item (e.g. wearable "Parsnip" vs. crop "Parsnip") is a
+  // genuinely different entity and must get its own (id, type) row.
+  const collectibleNames = new Set(collectibles.map((c) => c.name));
+
+  console.log("\n🔍 Parsing crops/seeds/resources/flowers/fruits/fish...");
+  const produce = parseProduceItems(gameIds, collectibleNames);
+  console.log(`   ${produce.length} additional produce items`);
+
+  const allItems: AnyItem[] = [...skills, ...wearables, ...collectibles, ...produce];
 
   if (unresolvedKeys.length > 0) {
     console.log(`\n⚠  Unresolved i18n keys (${unresolvedKeys.length}):`);
@@ -803,7 +916,7 @@ async function main() {
   try {
     await pool.query("SELECT 1");
     console.log("   Connected.");
-    const summary = await populateDB(pool, allItems, numericValues, spriteMap);
+    const summary = await populateDB(pool, allItems, numericValues, spriteMap, gameIds, wearableIds);
 
     const summaryPath = path.resolve("scripts/.last-run-summary.json");
     fs.writeFileSync(
