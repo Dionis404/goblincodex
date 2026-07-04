@@ -18,6 +18,7 @@ export interface SflBuff {
   id: number;
   labelType: 'info' | 'success' | 'vibrant' | 'danger';
   shortDescription: string;
+  shortDescriptionRu: string;
   boostType: string | null;
   isDebuff: boolean;
   numericValue: number | null;
@@ -30,6 +31,7 @@ export interface SflItem {
   type: 'collectible' | 'wearable';
   category: string | null;
   sprite: string | null;
+  tags: string[];
   boosts: SflBuff[];
 }
 
@@ -40,6 +42,7 @@ export async function getCatalogItems(): Promise<SflItem[]> {
     type: string;
     category: string | null;
     sprite: string | null;
+    tags: string[] | null;
     boosts: SflBuff[];
   }>(`
     SELECT
@@ -47,25 +50,28 @@ export async function getCatalogItems(): Promise<SflItem[]> {
       i.type,
       i.category,
       i.sprite,
+      i.tags,
       COALESCE(
         json_agg(
           json_build_object(
-            'id',               b.id,
-            'labelType',        b.label_type,
-            'shortDescription', b.short_description,
-            'boostType',        b.boost_type,
-            'isDebuff',         b.is_debuff,
-            'numericValue',     b.numeric_value,
-            'valueType',        b.value_type,
-            'affectedStat',     b.affected_stat
+            'id',                 b.id,
+            'labelType',          b.label_type,
+            'shortDescription',   b.short_description,
+            'shortDescriptionRu', COALESCE(b.short_description_ru, b.short_description),
+            'boostType',          b.boost_type,
+            'isDebuff',           b.is_debuff,
+            'numericValue',       b.numeric_value,
+            'valueType',          b.value_type,
+            'affectedStat',       b.affected_stat
           ) ORDER BY b.id
-        ) FILTER (WHERE b.id IS NOT NULL),
+        ) FILTER (WHERE b.id IS NOT NULL AND b.is_active),
         '[]'
       ) AS boosts
     FROM sfl_items i
-    LEFT JOIN sfl_buffs b ON b.item_id = i.id
+    LEFT JOIN sfl_buffs b ON b.item_id = i.id AND b.item_type = i.type
     WHERE i.type IN ('collectible', 'wearable')
-    GROUP BY i.id, i.type, i.category, i.sprite
+      AND i.is_active = TRUE
+    GROUP BY i.id, i.type, i.category, i.sprite, i.tags
     ORDER BY i.type, i.id
   `);
 
@@ -74,6 +80,7 @@ export async function getCatalogItems(): Promise<SflItem[]> {
     type: r.type as 'collectible' | 'wearable',
     category: r.category,
     sprite: r.sprite,
+    tags: r.tags ?? [],
     boosts: r.boosts ?? [],
   }));
 }

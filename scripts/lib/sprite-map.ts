@@ -23,7 +23,12 @@ export interface RawEntry {
  * the assignment `= {` or `= [` pattern (not `=>` or type-level `[`).
  */
 export function extractNamedBlock(source: string, name: string): string {
-  const nameIdx = source.indexOf(name);
+  // Word-boundary match: a plain indexOf would also hit `name` as a substring
+  // of an earlier, unrelated identifier (e.g. "CROPS" inside "EXOTIC_CROPS"
+  // or "GREENHOUSE_CROPS"), silently extracting the wrong block.
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const boundaryMatch = new RegExp(`(?<![\\w$])${escaped}(?![\\w$])`).exec(source);
+  const nameIdx = boundaryMatch ? boundaryMatch.index : -1;
   if (nameIdx === -1) return "";
 
   let i = nameIdx + name.length;
@@ -200,6 +205,88 @@ export function extractTopLevelEntries(block: string): RawEntry[] {
   return entries;
 }
 
+/**
+ * Extract all top-level keys from an object block, regardless of the value's
+ * shape (string, number, object, array, or a `...spread`). Unlike
+ * extractTopLevelEntries, this doesn't skip primitive-valued entries (e.g.
+ * `Record<Name, string>` maps), which just need their keys.
+ */
+export function extractTopLevelKeys(block: string): string[] {
+  const keys: string[] = [];
+  let i = 0;
+
+  while (i < block.length) {
+    while (i < block.length && /\s/.test(block[i])) i++;
+    if (i >= block.length) break;
+
+    if (block[i] === "/" && block[i + 1] === "/") {
+      while (i < block.length && block[i] !== "\n") i++;
+      continue;
+    }
+    if (block[i] === "/" && block[i + 1] === "*") {
+      while (i < block.length - 1 && !(block[i] === "*" && block[i + 1] === "/")) i++;
+      i += 2;
+      continue;
+    }
+
+    // Skip spread entries: ...foo,
+    if (block[i] === "." && block[i + 1] === "." && block[i + 2] === ".") {
+      i += 3;
+      while (i < block.length && block[i] !== "," && block[i] !== "\n") i++;
+      if (block[i] === ",") i++;
+      continue;
+    }
+
+    let key = "";
+    if (block[i] === '"' || block[i] === "'") {
+      const q = block[i++];
+      while (i < block.length && block[i] !== q) {
+        if (block[i] === "\\") i++;
+        key += block[i++];
+      }
+      i++;
+    } else if (/[A-Za-z_$]/.test(block[i])) {
+      while (i < block.length && /[\w$]/.test(block[i])) key += block[i++];
+    } else {
+      i++;
+      continue;
+    }
+
+    if (!key) { i++; continue; }
+
+    while (i < block.length && /\s/.test(block[i])) i++;
+    if (block[i] !== ":") { i++; continue; }
+    keys.push(key);
+    i++;
+
+    // Skip the value up to the next top-level comma, respecting nested
+    // brackets/quotes so commas inside them don't end the entry early.
+    let depth = 0;
+    while (i < block.length) {
+      const c = block[i];
+      if (c === '"' || c === "'" || c === "`") {
+        const q = c;
+        i++;
+        while (i < block.length) {
+          if (block[i] === "\\" && i + 1 < block.length) { i += 2; continue; }
+          if (block[i] === q) { i++; break; }
+          i++;
+        }
+        continue;
+      }
+      if (c === "{" || c === "[" || c === "(") { depth++; i++; continue; }
+      if (c === "}" || c === "]" || c === ")") {
+        if (depth === 0) break;
+        depth--; i++; continue;
+      }
+      if (c === "," && depth === 0) { i++; break; }
+      i++;
+    }
+  }
+
+  return keys;
+}
+
 // ─── Sprite map parser ────────────────────────────────────────────────────────
 
 /**
@@ -239,16 +326,61 @@ export function parseSpriteMap(sflDir: string): Map<string, string> {
   }
 
   // ── Wearables: bumpkin.ts → ITEM_IDS ───────────────────────────
-  const bumpkinSource = readSfl("src/features/game/types/bumpkin.ts");
-  if (bumpkinSource) {
-    const block = extractNamedBlock(bumpkinSource, "ITEM_IDS");
-    const idRe = /(?:["']([^"']+)["']|([A-Za-z_$][\w$]*))\s*:\s*(\d+)/g;
-    let m2: RegExpExecArray | null;
-    while ((m2 = idRe.exec(block)) !== null) {
-      const itemName = m2[1] ?? m2[2];
-      spriteMap.set(itemName, `wearables/${m2[3]}.webp`);
-    }
+  for (const [itemName, id] of parseWearableIds(sflDir)) {
+    spriteMap.set(itemName, `wearables/${id}.webp`);
   }
 
   return spriteMap;
+}
+
+/**
+ * Build a map of wearable name → numeric game ID by parsing ITEM_IDS in
+ * src/features/game/types/bumpkin.ts. Wearables are a separate NFT
+ * collection from collectibles/crops/resources (KNOWN_IDS in index.ts) with
+ * their own, unrelated ID numbering — a wearable and an inventory item can
+ * share a name (e.g. "Parsnip") while having completely different IDs.
+ */
+export function parseWearableIds(sflDir: string): Map<string, number> {
+  const wearableIds = new Map<string, number>();
+
+  const full = path.join(sflDir, "src/features/game/types/bumpkin.ts");
+  if (!fs.existsSync(full)) return wearableIds;
+  const source = fs.readFileSync(full, "utf8");
+
+  const block = extractNamedBlock(source, "ITEM_IDS");
+  const idRe = /(?:["']([^"']+)["']|([A-Za-z_$][\w$]*))\s*:\s*(\d+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = idRe.exec(block)) !== null) {
+    const itemName = m[1] ?? m[2];
+    wearableIds.set(itemName, parseInt(m[3], 10));
+  }
+
+  return wearableIds;
+}
+
+// ─── Game ID parser ───────────────────────────────────────────────────────────
+
+/**
+ * Build a map of item name → numeric game ID (as used in marketplace URLs like
+ * .../marketplace/collectibles/{id}) by parsing KNOWN_IDS in
+ * src/features/game/types/index.ts. Covers all InventoryItemName entries
+ * (crops, resources, wearables-adjacent collectibles, etc.) — a superset of
+ * the wearable-only ITEM_IDS in bumpkin.ts.
+ */
+export function parseGameIds(sflDir: string): Map<string, number> {
+  const gameIds = new Map<string, number>();
+
+  const full = path.join(sflDir, "src/features/game/types/index.ts");
+  if (!fs.existsSync(full)) return gameIds;
+  const source = fs.readFileSync(full, "utf8");
+
+  const block = extractNamedBlock(source, "KNOWN_IDS");
+  const idRe = /(?:["']([^"']+)["']|([A-Za-z_$][\w$]*))\s*:\s*(\d+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = idRe.exec(block)) !== null) {
+    const itemName = m[1] ?? m[2];
+    gameIds.set(itemName, parseInt(m[3], 10));
+  }
+
+  return gameIds;
 }

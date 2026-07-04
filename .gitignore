@@ -25,3 +25,9 @@ pnpm-debug.log*
 
 # SFL source clone used by scripts
 _sfl_temp/
+
+# populate-buffs-db.ts run summary (regenerated each run)
+scripts/.last-run-summary.json
+
+# pg_dump backups
+backups/
