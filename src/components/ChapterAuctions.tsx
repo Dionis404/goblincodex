@@ -329,9 +329,9 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                           ingredients.map(([name]) => (
                             <span key={name} className={`ca-cost ${costBadgeClass(name)}`}>{name}</span>
                           ))
-                        ) : (
+                        ) : a.sfl <= 0 ? (
                           <span className="ca-cost">Без ингредиентов</span>
-                        )}
+                        ) : null}
                         {a.sfl > 0 && <span className={`ca-cost ${costBadgeClass('Flower')}`}>Flower</span>}
                       </div>
                     </div>
