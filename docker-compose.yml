@@ -3,10 +3,9 @@ services:
     image: ghcr.io/dionis404/goblincodex:latest
     ports:
       - "4321:4321"
-    env_file:
-      - stack.env
     environment:
       - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
     networks:
       - shared-net
     restart: unless-stopped
