@@ -272,8 +272,10 @@ function extractBuffLabels(
 
   const events: Event[] = [];
 
-  // translate("key") → text
-  const translateRe = /translate\(["']([^"']+)["']\)/g;
+  // translate("key") → text. Tolerates the multi-line form prettier produces
+  // for long keys: translate(\n  "key",\n) — a strict single-line pattern
+  // silently drops these calls (no text ever gets flushed for that buff).
+  const translateRe = /translate\(\s*["']([^"']+)["']\s*,?\s*\)/g;
   let m: RegExpExecArray | null;
   while ((m = translateRe.exec(cleanBlock)) !== null) {
     events.push({

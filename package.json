@@ -13,7 +13,7 @@
     "sfl:populate": "tsx scripts/populate-buffs-db.ts",
     "sfl:sync-sprites": "tsx scripts/sync-sprites.ts",
     "sfl:backup": "tsx scripts/backup-db.ts",
-    "sfl:clone": "git clone --depth 1 --filter=blob:none --sparse https://github.com/sunflower-land/sunflower-land.git _sfl_temp && cd _sfl_temp && git sparse-checkout set src/features/game/types src/lib/i18n/dictionaries src/assets/sfts src/assets/wearables src/features/game/events/landExpansion src/features/game/expansion/lib src/features/game/lib"
+    "sfl:clone": "git clone --depth 1 --filter=blob:none --sparse https://github.com/sunflower-land/sunflower-land.git _sfl_temp && cd _sfl_temp && git sparse-checkout set src/features/game/types src/lib/i18n/dictionaries src/assets src/features/game/events/landExpansion src/features/game/expansion/lib src/features/game/lib"
   },
   "dependencies": {
     "@astrojs/node": "^10.1.1",
