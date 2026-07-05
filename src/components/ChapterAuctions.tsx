@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './ChapterAuctions.css';
 
 interface Auction {
@@ -15,9 +16,25 @@ interface Auction {
   chapterLimit?: number;
 }
 
+interface CatalogBoost {
+  id: number;
+  labelType: 'info' | 'success' | 'vibrant' | 'danger';
+  shortDescription: string;
+  shortDescriptionRu: string;
+}
+
+interface CatalogEntry {
+  type: string;
+  category: string | null;
+  sprite: string | null;
+  tags: string[];
+  boosts: CatalogBoost[];
+}
+
 interface Props {
   auctions: Auction[];
   chapterName?: string;
+  itemCatalog?: Record<string, CatalogEntry>;
 }
 
 const TYPE_ICON: Record<Auction['type'], string> = {
@@ -143,13 +160,37 @@ function Dropdown({ value, options, onChange }: { value: string; options: Dropdo
   );
 }
 
-export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awakening' }: Props) {
+function SpriteImg({ sprite, name, size = 40 }: { sprite: string | null; name: string; size?: number }) {
+  const [error, setError] = useState(false);
+
+  if (!sprite || error) {
+    return (
+      <div className="ca-sprite-placeholder" style={{ width: size, height: size }}>
+        <span>?</span>
+      </div>
+    );
+  }
+  return (
+    <img
+      src={`/sprites/${sprite}`}
+      alt={name}
+      width={size}
+      height={size}
+      loading="lazy"
+      className="ca-sprite-img"
+      onError={() => setError(true)}
+    />
+  );
+}
+
+export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awakening', itemCatalog }: Props) {
   const [now, setNow] = useState(() => Date.now());
   const [statusFilter, setStatusFilter] = useState<Status | 'all'>('upcoming');
   const [costFilter, setCostFilter] = useState('all');
   const [kindFilter, setKindFilter] = useState<Kind | 'all'>('all');
   const [nameFilter, setNameFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState<Auction | null>(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const segmentedRef = useRef<HTMLDivElement>(null);
   const segRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -312,7 +353,18 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                     <div className="ca-row-time">
                       {formatTime(a.startAt)}–{formatTime(a.endAt)}
                     </div>
-                    <div className="ca-row-icon">{TYPE_ICON[a.type]}</div>
+                    <button
+                      type="button"
+                      className={`ca-row-sprite-btn${itemCatalog?.[itemName(a)]?.sprite ? '' : ' ca-row-sprite-btn--emoji'}`}
+                      onClick={() => setSelected(a)}
+                      aria-label={`Открыть ${itemName(a)}`}
+                    >
+                      {itemCatalog?.[itemName(a)]?.sprite ? (
+                        <SpriteImg sprite={itemCatalog[itemName(a)].sprite} name={itemName(a)} />
+                      ) : (
+                        <span className="ca-row-icon">{TYPE_ICON[a.type]}</span>
+                      )}
+                    </button>
                     <div className="ca-row-main">
                       <button
                         type="button"
@@ -349,6 +401,39 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
           </div>
         ))}
       </div>
+
+      {selected && createPortal(
+        <div className="ca-modal-overlay" onClick={() => setSelected(null)}>
+          <div className="ca-modal" onClick={e => e.stopPropagation()}>
+            <button className="ca-modal-close" onClick={() => setSelected(null)} type="button" aria-label="Закрыть">✕</button>
+
+            <div className="ca-modal-header">
+              <div className="ca-modal-sprite">
+                <SpriteImg sprite={itemCatalog?.[itemName(selected)]?.sprite ?? null} name={itemName(selected)} size={96} />
+              </div>
+              <div className="ca-modal-info">
+                <h2 className="ca-modal-name">{itemName(selected)}</h2>
+                <span className="ca-type-badge">{TYPE_LABEL[selected.type]}</span>
+              </div>
+            </div>
+
+            <div className="ca-modal-section">
+              <h3 className="ca-modal-section-title">Бонусы</h3>
+              <div className="ca-modal-boosts">
+                {(itemCatalog?.[itemName(selected)]?.boosts.length ?? 0) > 0
+                  ? itemCatalog![itemName(selected)].boosts.map(b => (
+                      <span key={b.id} className={`ca-boost-badge ca-boost--${b.labelType}`}>
+                        {b.shortDescriptionRu || b.shortDescription}
+                      </span>
+                    ))
+                  : <span className="ca-modal-no-boosts">Нет данных о бонусах</span>
+                }
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

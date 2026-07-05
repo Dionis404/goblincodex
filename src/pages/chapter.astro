@@ -4,8 +4,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection, getEntry, render } from 'astro:content';
 import ChapterAuctions from '../components/ChapterAuctions.tsx';
 import auctionsData from '../data/chapter-auctions.json';
+import { getCatalogItems } from '../lib/db';
 
 const CURRENT_CHAPTER = 14;
+
+let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
+try {
+  const items = await getCatalogItems();
+  itemCatalog = Object.fromEntries(items.map((i) => [i.name, i]));
+} catch (err) {
+  console.error('[chapter] DB fetch error:', err);
+}
 
 const chapterGuides = await getCollection(
   'guides',
@@ -104,7 +113,7 @@ const mechanicCards = await Promise.all(
 
     <!-- ── Расписание аукционов ── -->
     <section class="gc-chapter-section">
-      <ChapterAuctions client:load auctions={auctions} chapterName="The Salt Awakening" />
+      <ChapterAuctions client:load auctions={auctions} chapterName="The Salt Awakening" itemCatalog={itemCatalog} />
     </section>
 
   </div>

@@ -483,6 +483,31 @@ function parseProduceItems(gameIds: Map<string, number>, existingNames: Set<stri
   return items;
 }
 
+/**
+ * Purely decorative collectibles (e.g. "Pufferfish", "Fat Crab") carry no
+ * buffs at all, so they never appear in COLLECTIBLE_BUFF_LABELS and are
+ * invisible to parseCollectibles(). They do have an image (images.ts
+ * ITEM_DETAILS) and a game_id (KNOWN_IDS) — anything left over there after
+ * every other parser has run is one of these.
+ */
+function parseDecorCollectibles(gameIds: Map<string, number>, existingNames: Set<string>): CollectibleItem[] {
+  const items: CollectibleItem[] = [];
+  const seen = new Set<string>();
+
+  const source = readFile("src/features/game/types/images.ts");
+  const block = extractNamedBlock(source, "ITEM_DETAILS");
+  const keys = extractTopLevelKeys(block);
+
+  for (const key of keys) {
+    if (existingNames.has(key) || seen.has(key)) continue;
+    if (!gameIds.has(key)) continue;
+    seen.add(key);
+    items.push({ name: key, type: "collectible", requiresGameState: false, buffs: [] });
+  }
+
+  return items;
+}
+
 // ─── Parser: Numeric values from boostsUsed.push ─────────────────────────────
 
 function parseNumericValues(): Map<string, NumericValue[]> {
@@ -894,7 +919,16 @@ async function main() {
   const produce = parseProduceItems(gameIds, collectibleNames);
   console.log(`   ${produce.length} additional produce items`);
 
-  const allItems: AnyItem[] = [...skills, ...wearables, ...collectibles, ...produce];
+  // Buff-less decorative collectibles (e.g. Pufferfish, Fat Crab) are
+  // invisible to parseCollectibles() — anything already captured above
+  // (by name, across every type) is excluded so this only fills the gap.
+  const allExistingNames = new Set([...skills, ...wearables, ...collectibles, ...produce].map((i) => i.name));
+
+  console.log("\n🔍 Parsing buff-less decorative collectibles...");
+  const decorCollectibles = parseDecorCollectibles(gameIds, allExistingNames);
+  console.log(`   ${decorCollectibles.length} additional decorative collectibles`);
+
+  const allItems: AnyItem[] = [...skills, ...wearables, ...collectibles, ...produce, ...decorCollectibles];
 
   if (unresolvedKeys.length > 0) {
     console.log(`\n⚠  Unresolved i18n keys (${unresolvedKeys.length}):`);

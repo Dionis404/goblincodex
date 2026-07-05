@@ -241,6 +241,38 @@
   font-variant-numeric: tabular-nums;
 }
 .ca-row-icon { font-size: 22px; flex-shrink: 0; }
+
+.ca-row-sprite-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+.ca-row-sprite-btn:hover { transform: scale(1.08); }
+.ca-row-sprite-btn--emoji { background: var(--green-pale); }
+
+.ca-sprite-img {
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+.ca-sprite-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--green-pale);
+  color: var(--text-sec);
+  font-size: 16px;
+  font-weight: 700;
+}
 .ca-row-main { flex: 1; min-width: 0; }
 .ca-row-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
 .ca-row-name--clickable {
@@ -318,4 +350,131 @@
   .ca-row-time { width: auto; }
   .ca-toolbar { flex-direction: column; align-items: stretch; }
   .ca-segmented { justify-content: center; }
+}
+
+/* ── Item modal ── */
+.ca-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: ca-fade-in 0.15s ease;
+}
+.ca-modal {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 480px;
+  width: 100%;
+  padding: 28px;
+  position: relative;
+  animation: ca-slide-up 0.2s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.ca-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-sec);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.ca-modal-close:hover {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  border-color: var(--green-mid);
+}
+.ca-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.ca-modal-sprite {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: var(--green-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ca-modal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ca-modal-name {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.ca-modal-section { margin-bottom: 16px; }
+.ca-modal-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-ter);
+  margin: 0 0 8px;
+}
+.ca-modal-boosts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ca-modal-no-boosts {
+  font-size: 13px;
+  color: var(--text-sec);
+}
+
+.ca-boost-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.ca-boost--success { background: var(--green-pale); color: var(--green-dark); }
+.ca-boost--info     { background: #DBEAFE; color: #1D4ED8; }
+.ca-boost--vibrant  { background: #FFF7ED; color: #C2410C; }
+.ca-boost--danger   { background: #FEE2E2; color: #B91C1C; }
+[data-theme="dark"] .ca-boost--info    { background: #172554; color: #93C5FD; }
+[data-theme="dark"] .ca-boost--vibrant { background: #431407; color: #FDBA74; }
+[data-theme="dark"] .ca-boost--danger  { background: #450a0a; color: #FCA5A5; }
+
+@keyframes ca-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes ca-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .ca-modal { padding: 20px; }
+  .ca-modal-header { flex-direction: column; text-align: center; }
 }
