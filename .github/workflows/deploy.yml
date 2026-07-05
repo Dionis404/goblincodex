@@ -44,7 +44,11 @@ jobs:
               "prune": false,
               "pullImage": true,
               "repositoryReferenceName": "refs/heads/main",
-              "repositoryAuthentication": false
+              "repositoryAuthentication": false,
+              "env": [
+                {"name": "DATABASE_URL", "value": "'"${{ secrets.DATABASE_URL }}"'"},
+                {"name": "NODE_ENV", "value": "production"}
+              ]
             }'
           echo ""
           echo "✅ Stack redeploy triggered"
