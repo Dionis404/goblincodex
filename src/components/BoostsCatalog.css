@@ -45,6 +45,48 @@
   border-style: solid;
 }
 
+/* ── Segmented boost/decor/misc control ── */
+.bc-segmented {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+.bc-segment-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  background: var(--green-dark);
+  border-radius: 7px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+.bc-segment {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 7px 16px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--text-sec);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.bc-segment:hover { color: var(--green-dark); }
+.bc-segment.active { color: #fff; }
+
 /* ── Search ── */
 .bc-search-wrap { margin-bottom: 16px; }
 .bc-search {

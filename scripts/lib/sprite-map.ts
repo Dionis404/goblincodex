@@ -386,3 +386,81 @@ export function parseGameIds(sflDir: string): Map<string, number> {
   const block = extractNamedBlock(source, "KNOWN_IDS");
   return parseKeyIdPairs(block);
 }
+
+// ─── Misc/junk item names ─────────────────────────────────────────────────────
+
+/**
+ * Extract every quoted string literal from a `export type <name> = ...;`
+ * union declaration, up to the terminating top-level semicolon (bracket
+ * depth-aware, so nested generics like `Extract<X, "a" | "b">` don't end
+ * the scan early). Type references inside the union (e.g. `| ChapterTicket`)
+ * are not string literals and are silently skipped — resolve those
+ * separately by calling this again with their own type name.
+ */
+export function extractTypeUnionLiterals(source: string, typeName: string): string[] {
+  const nameRe = new RegExp(`(?<![\\w$])type\\s+${typeName}(?![\\w$])`);
+  const m = nameRe.exec(source);
+  if (!m) return [];
+
+  let i = m.index + m[0].length;
+  while (i < source.length && source[i] !== "=") i++;
+  i++;
+  const start = i;
+
+  let depth = 0;
+  while (i < source.length) {
+    const c = source[i];
+    if (c === "<" || c === "(" || c === "{") depth++;
+    else if (c === ">" || c === ")" || c === "}") depth--;
+    else if (c === ";" && depth <= 0) break;
+    i++;
+  }
+
+  const body = source.slice(start, i);
+  const literals: string[] = [];
+  const strRe = /["']([^"']+)["']/g;
+  let sm: RegExpExecArray | null;
+  while ((sm = strRe.exec(body)) !== null) literals.push(sm[1]);
+  return literals;
+}
+
+/**
+ * Names of tickets/tokens/war-points/seasonal-event currency and clutter —
+ * real inventory items (they have a sprite + game_id) but not decorative
+ * collectibles. Sourced dynamically (not hand-copied) because the game adds
+ * new seasonal tickets/tokens every chapter/event, which would make a static
+ * list go stale immediately.
+ */
+export function parseMiscItemNames(sflDir: string): Set<string> {
+  const names = new Set<string>();
+
+  const readSfl = (relPath: string): string => {
+    const full = path.join(sflDir, relPath);
+    if (!fs.existsSync(full)) return "";
+    return fs.readFileSync(full, "utf8");
+  };
+
+  const unionSources: { file: string; type: string }[] = [
+    { file: "src/features/game/types/game.ts", type: "Coupons" },
+    { file: "src/features/game/types/game.ts", type: "Points" },
+    { file: "src/features/game/types/game.ts", type: "WarItems" },
+    { file: "src/features/game/types/chapters.ts", type: "ChapterTicket" },
+    { file: "src/features/game/types/chapters.ts", type: "ChapterRaffleTicket" },
+    { file: "src/features/game/types/garbage.ts", type: "GarbageName" },
+  ];
+  for (const { file, type } of unionSources) {
+    const source = readSfl(file);
+    if (!source) continue;
+    for (const name of extractTypeUnionLiterals(source, type)) names.add(name);
+  }
+
+  const clutterSource = readSfl("src/features/game/types/clutter.ts");
+  if (clutterSource) {
+    for (const blockName of ["FARM_GARBAGE", "FARM_PEST"]) {
+      const block = extractNamedBlock(clutterSource, blockName);
+      for (const key of extractTopLevelKeys(block)) names.add(key);
+    }
+  }
+
+  return names;
+}

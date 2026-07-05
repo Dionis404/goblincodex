@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import './BoostsCatalog.css';
 
@@ -32,6 +32,22 @@ const TYPE_FILTERS = [
   { id: 'collectible', label: 'Коллекционки' },
   { id: 'wearable',    label: 'Одежда' },
 ] as const;
+
+type BoostFilter = 'all' | 'boost' | 'decor' | 'misc';
+
+const BOOST_FILTERS: { id: BoostFilter; label: string }[] = [
+  { id: 'all',   label: 'Все' },
+  { id: 'boost', label: 'Буст' },
+  { id: 'decor', label: 'Декор' },
+  { id: 'misc',  label: 'Прочие' },
+];
+
+/** Буст = есть бонус; декор = обычный предмет/одежда без бонуса; прочие = билеты/токены/мусор без бонуса. */
+function itemBoostBucket(item: CatalogItem): 'boost' | 'decor' | 'misc' {
+  if (item.boosts.length > 0) return 'boost';
+  if (item.tags.includes('misc')) return 'misc';
+  return 'decor';
+}
 
 function SpriteImg({ sprite, name, size = 64 }: { sprite: string | null; name: string; size?: number }) {
   const [error, setError] = useState(false);
@@ -121,8 +137,26 @@ function ItemModal({ item, onClose }: { item: CatalogItem; onClose: () => void }
 export default function BoostsCatalog({ items }: Props) {
   const [category, setCategory] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all-type');
+  const [boostFilter, setBoostFilter] = useState<BoostFilter>('all');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<CatalogItem | null>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const segmentedRef = useRef<HTMLDivElement>(null);
+  const segRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  useLayoutEffect(() => {
+    const container = segmentedRef.current;
+    const active = segRefs.current[boostFilter];
+    if (!container || !active) return;
+    const update = () => {
+      const containerRect = container.getBoundingClientRect();
+      const activeRect = active.getBoundingClientRect();
+      setIndicatorStyle({ left: activeRect.left - containerRect.left, width: activeRect.width });
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [boostFilter]);
 
   const categories = useMemo(() => {
     const cats = new Set<string>();
@@ -135,10 +169,11 @@ export default function BoostsCatalog({ items }: Props) {
     return items.filter(item => {
       if (category !== 'all' && item.category !== category) return false;
       if (typeFilter !== 'all-type' && item.type !== typeFilter) return false;
+      if (boostFilter !== 'all' && itemBoostBucket(item) !== boostFilter) return false;
       if (q && !item.name.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [items, category, typeFilter, search]);
+  }, [items, category, typeFilter, boostFilter, search]);
 
   return (
     <div className="bc-root">
@@ -171,6 +206,24 @@ export default function BoostsCatalog({ items }: Props) {
             type="button"
           >
             {tf.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="bc-segmented" ref={segmentedRef}>
+        <div
+          className="bc-segment-indicator"
+          style={{ transform: `translateX(${indicatorStyle.left}px)`, width: `${indicatorStyle.width}px` }}
+        />
+        {BOOST_FILTERS.map(f => (
+          <button
+            key={f.id}
+            ref={el => { segRefs.current[f.id] = el; }}
+            className={`bc-segment${boostFilter === f.id ? ' active' : ''}`}
+            onClick={() => setBoostFilter(f.id)}
+            type="button"
+          >
+            {f.label}
           </button>
         ))}
       </div>

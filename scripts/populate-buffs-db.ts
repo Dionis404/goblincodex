@@ -12,7 +12,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Pool } from "pg";
-import { extractNamedBlock, extractTopLevelEntries, extractTopLevelKeys, parseSpriteMap, parseGameIds, parseWearableIds } from "./lib/sprite-map";
+import { extractNamedBlock, extractTopLevelEntries, extractTopLevelKeys, parseSpriteMap, parseGameIds, parseWearableIds, parseMiscItemNames } from "./lib/sprite-map";
 import { classifyResource } from "./lib/resource-classifier";
 import { getItemTags } from "./lib/item-tags";
 
@@ -679,6 +679,7 @@ async function populateDB(
   spriteMap: Map<string, string>,
   gameIds: Map<string, number>,
   wearableIds: Map<string, number>,
+  miscNames: Set<string>,
 ): Promise<RunSummary> {
   const client = await pool.connect();
   const runStartTimestamp = new Date();
@@ -707,6 +708,7 @@ async function populateDB(
 
       const sprite = spriteMap.get(item.name) ?? null;
       const tags = getItemTags(item.name, item.type);
+      if (miscNames.has(item.name) && !tags.includes("misc")) tags.push("misc");
       // Skills aren't marketplace items and have no game_id of their own —
       // without this, a skill can accidentally pick up an unrelated item's ID
       // by name collision (e.g. skill "Green Thumb" vs. a same-named Bud).
@@ -928,6 +930,9 @@ async function main() {
   const decorCollectibles = parseDecorCollectibles(gameIds, allExistingNames);
   console.log(`   ${decorCollectibles.length} additional decorative collectibles`);
 
+  const miscNames = parseMiscItemNames(SFL_DIR);
+  console.log(`   ${miscNames.size} misc/junk item names (tickets, tokens, clutter)`);
+
   const allItems: AnyItem[] = [...skills, ...wearables, ...collectibles, ...produce, ...decorCollectibles];
 
   if (unresolvedKeys.length > 0) {
@@ -952,7 +957,7 @@ async function main() {
   try {
     await pool.query("SELECT 1");
     console.log("   Connected.");
-    const summary = await populateDB(pool, allItems, numericValues, spriteMap, gameIds, wearableIds);
+    const summary = await populateDB(pool, allItems, numericValues, spriteMap, gameIds, wearableIds, miscNames);
 
     const summaryPath = path.resolve("scripts/.last-run-summary.json");
     fs.writeFileSync(
