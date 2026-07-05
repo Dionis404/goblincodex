@@ -5,8 +5,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4321:4321"
-    env_file:
-      - .env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - NODE_ENV=production
     networks:
       - shared-net
     restart: unless-stopped
