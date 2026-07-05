@@ -5,7 +5,7 @@ const { Pool } = pg;
 
 let pool: InstanceType<typeof Pool> | null = null;
 
-export function getPool(): InstanceType<typeof Pool> {
+function getPool(): InstanceType<typeof Pool> {
   if (!pool) {
     const url = process.env.DATABASE_URL;
     if (!url) throw new Error('DATABASE_URL is not set');
@@ -14,7 +14,7 @@ export function getPool(): InstanceType<typeof Pool> {
   return pool;
 }
 
-export interface SflBuff {
+interface SflBuff {
   id: number;
   labelType: 'info' | 'success' | 'vibrant' | 'danger';
   shortDescription: string;
@@ -26,7 +26,7 @@ export interface SflBuff {
   affectedStat: string | null;
 }
 
-export interface SflItem {
+interface SflItem {
   name: string;
   type: 'collectible' | 'wearable';
   category: string | null;

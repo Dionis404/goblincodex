@@ -10,7 +10,7 @@ Parses skill, wearable, and collectible buff data from SFL TypeScript source fil
 
 Rows not encountered in a given run are soft-deleted (`is_active = false`), never physically removed. Fields that have been hand-corrected via `update-item-by-id.ts` (tracked in each row's `manually_edited_fields`) are protected from being overwritten by the next automated run.
 
-After each run, writes `scripts/.last-run-summary.json` (gitignored) with upsert/sweep counts and a self-check on the share of buffs with numeric-looking text but a `NULL numeric_value` (warns if over 10% — see `SELF_CHECK_NULL_THRESHOLD` in the script). No Telegram/N8N delivery is wired up yet; the planned N8N workflow (see "Future automation" below) is expected to read this file and route alerts itself.
+After each run, writes `scripts/.last-run-summary.json` (gitignored) with upsert/sweep counts and a self-check on the share of buffs with numeric-looking text but a `NULL numeric_value` (warns if it regresses more than 10 percentage points above the baseline — see `SELF_CHECK_NULL_BASELINE`/`SELF_CHECK_NULL_REGRESSION_MARGIN` in the script). No Telegram/N8N delivery is wired up yet; the planned N8N workflow (see "Future automation" below) is expected to read this file and route alerts itself.
 
 Requires:
 - `DATABASE_URL` environment variable (`postgresql://user:pass@host:5432/dbname`)
@@ -61,6 +61,8 @@ Apply these once in DBeaver as the `admin` user, in order, before the next `sfl:
 - `scripts/migrate-add-sprite.sql` — adds `sfl_items.sprite`.
 - `scripts/migrate-add-ru-tags.sql` — adds `short_description_ru`, `affected_stat`, `tags`.
 - `scripts/migrate-add-upsert-tracking.sql` — adds `manually_edited_fields`, `last_synced_at`, `is_active` to both tables, and the `UNIQUE (item_id, short_description)` constraint on `sfl_buffs` that makes upserting possible (dedupes any pre-existing duplicate rows first).
+- `scripts/migrate-add-composite-pk.sql` — widens `sfl_items`' primary key from `(id)` to `(id, type)` and the matching `sfl_buffs` FK/unique constraints to `(item_id, item_type)`, fixing silent overwrites when a wearable and an unrelated item share the same display name.
+- `scripts/migrate-add-game-id.sql` — adds `sfl_items.game_id` (and its index) for marketplace numbering.
 
 ### 3. (Optional) Back up before populating prod
 
