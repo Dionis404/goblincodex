@@ -39,7 +39,7 @@ const toolsCount = Object.keys(toolPages).length;
       </p>
     </div>
 
-    <!-- ── Статистика ── -->
+    {/* ── Статистика (скрыто, может вернём позже) ──
     <div class="gc-about-stats">
       <div class="gc-stat-item">
         <div class="gc-stat-big">{guidesCount}</div>
@@ -50,6 +50,7 @@ const toolsCount = Object.keys(toolPages).length;
         <div class="gc-stat-lbl">Инструментов</div>
       </div>
     </div>
+    */}
 
     <!-- ── 4 карточки ── -->
     <div class="gc-about-grid gc-grid-4">
@@ -108,34 +109,34 @@ const toolsCount = Object.keys(toolPages).length;
           </div>
         </div>
 
-        <!-- Q2 2026 — В работе -->
+        <!-- Q2 2026 — Готово -->
         <div class="gc-rm-item">
-          <div class="gc-rm-dot gc-rm-dot--active"></div>
+          <div class="gc-rm-dot gc-rm-dot--done">✓</div>
           <div class="gc-rm-card gc-card">
             <div class="gc-rm-head">
               <div class="gc-rm-title">Q2 2026 <span class="gc-rm-phase">Основные страницы</span></div>
-              <span class="gc-rm-badge gc-rm-badge--active">🔴 В РАБОТЕ</span>
+              <span class="gc-rm-badge gc-rm-badge--done">✅ ГОТОВО</span>
             </div>
             <ul class="gc-rm-list">
               <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>Страница О проекте + Road Map</li>
-              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Страница Инструменты</li>
-              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Страница Сообщество</li>
-              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>База данных NFT предметов</li>
-              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>Калькулятор добычи ресурсов</li>
-              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Шлифовка дизайна: замена картинок и иконок по всему сайту</li>
+              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>Страница Сообщество</li>
+              <li class="gc-rm-li gc-rm-li--done"><span class="gc-rm-check gc-rm-check--done">✅</span>База данных NFT предметов</li>
             </ul>
           </div>
         </div>
 
-        <!-- Q3 2026 — Запланировано -->
+        <!-- Q3 2026 — В работе -->
         <div class="gc-rm-item">
-          <div class="gc-rm-dot gc-rm-dot--future"></div>
+          <div class="gc-rm-dot gc-rm-dot--active"></div>
           <div class="gc-rm-card gc-card">
             <div class="gc-rm-head">
               <div class="gc-rm-title">Q3 2026 <span class="gc-rm-phase">Данные и интеграции</span></div>
-              <span class="gc-rm-badge gc-rm-badge--future">📋 В ПЛАНАХ</span>
+              <span class="gc-rm-badge gc-rm-badge--active">🔴 В РАБОТЕ</span>
             </div>
             <ul class="gc-rm-list">
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Страница Инструменты</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Калькулятор добычи ресурсов</li>
+              <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Шлифовка дизайна: замена картинок и иконок по всему сайту</li>
               <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Авторизация через Telegram + бот</li>
               <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Каталог фермеров сообщества</li>
               <li class="gc-rm-li"><span class="gc-rm-check">☐</span>Пагинация новостей</li>
@@ -171,7 +172,8 @@ const toolsCount = Object.keys(toolPages).length;
         <div class="gc-cta-desc">Пиши гайды, предлагай идеи или поддержи донатом — любая помощь ценна</div>
       </div>
       <div class="gc-about-cta-btns">
-        <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-cta">Написать в чат →</a>
+        <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-cta">Написать в чат</a>
+        <a href="https://github.com/Dionis404/goblincodex" target="_blank" rel="noopener" class="gc-btn-cta">GitHub ⭐</a>
         <a href="/donate" class="gc-btn-cta gc-btn-cta--amber">Поддержать ❤️</a>
       </div>
     </div>
