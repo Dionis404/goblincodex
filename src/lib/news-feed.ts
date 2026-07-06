@@ -69,11 +69,11 @@ function parseNextRssUrl(xml: string): string | null {
   return match?.[1] ?? null;
 }
 
-async function fetchRssNews(): Promise<NewsItem[]> {
+async function fetchRssNews(maxPages: number): Promise<NewsItem[]> {
   const news: NewsItem[] = [];
   try {
     let nextUrl: string | null = BLOG_RSS;
-    for (let page = 0; page < MAX_RSS_PAGES && nextUrl; page++) {
+    for (let page = 0; page < maxPages && nextUrl; page++) {
       const res = await fetch(nextUrl);
       const xml = await res.text();
       news.push(...parseRssItems(xml));
@@ -108,9 +108,9 @@ async function fetchTelegramNews(limit: number): Promise<NewsItem[]> {
   }
 }
 
-export async function fetchMergedNews(opts: { telegramLimit: number }): Promise<{ items: NewsItem[]; tags: string[] }> {
+export async function fetchMergedNews(opts: { telegramLimit: number; rssMaxPages?: number }): Promise<{ items: NewsItem[]; tags: string[] }> {
   const [rssNews, telegramNews] = await Promise.all([
-    fetchRssNews(),
+    fetchRssNews(opts.rssMaxPages ?? MAX_RSS_PAGES),
     fetchTelegramNews(opts.telegramLimit),
   ]);
 

@@ -2,11 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ChapterTimer from '../components/ChapterTimer.tsx';
 import { fetchMergedNews, type NewsItem } from '../lib/news-feed';
+import { getTelegramSubscriberCount } from '../lib/telegram-subscribers';
 
 let news: NewsItem[] = [];
 
 try {
-  const { items } = await fetchMergedNews({ telegramLimit: 4 });
+  const { items } = await fetchMergedNews({ telegramLimit: 4, rssMaxPages: 1 });
   news = items.slice(0, 4);
 } catch (e) {
   // Fallback если новости недоступны
@@ -30,26 +31,7 @@ const allMechanics = await getCollection('mechanics', ({ data }) => !data.draft)
 const articlesCount = latestGuides.length + allMechanics.length;
 
 // ── Telegram: кол-во подписчиков канала ──
-const TELEGRAM_CHANNEL = '@URGSFL';
-let subscriberCount: number | null = null;
-
-try {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  if (token) {
-    const res = await fetch(
-      `https://api.telegram.org/bot${token}/getChatMemberCount?chat_id=${encodeURIComponent(TELEGRAM_CHANNEL)}`,
-      { signal: AbortSignal.timeout(5000) }
-    );
-    const data = await res.json();
-    if (data.ok) {
-      subscriberCount = data.result;
-    } else {
-      console.error('[home] Telegram getChatMemberCount error:', data.description);
-    }
-  }
-} catch (e) {
-  console.error('[home] Telegram subscriber count fetch error:', e);
-}
+const subscriberCount = await getTelegramSubscriberCount();
 ---
 
 <BaseLayout
