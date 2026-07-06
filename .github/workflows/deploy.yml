@@ -47,6 +47,7 @@ jobs:
               "repositoryAuthentication": false,
               "env": [
                 {"name": "DATABASE_URL", "value": "'"${{ secrets.DATABASE_URL }}"'"},
+                {"name": "TELEGRAM_BOT_TOKEN", "value": "'"${{ secrets.TELEGRAM_BOT_TOKEN }}"'"},
                 {"name": "NODE_ENV", "value": "production"}
               ]
             }'

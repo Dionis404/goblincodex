@@ -71,6 +71,31 @@ const guides = latestGuides.slice(0, 3).map(g => ({
   link:  `/codex/${g.id}`,
   icon:  g.data.icon,
 }));
+
+const allMechanics = await getCollection('mechanics', ({ data }) => !data.draft).catch(() => []);
+const articlesCount = latestGuides.length + allMechanics.length;
+
+// ── Telegram: кол-во подписчиков канала ──
+const TELEGRAM_CHANNEL = '@URGSFL';
+let subscriberCount: number | null = null;
+
+try {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (token) {
+    const res = await fetch(
+      `https://api.telegram.org/bot${token}/getChatMemberCount?chat_id=${encodeURIComponent(TELEGRAM_CHANNEL)}`,
+      { signal: AbortSignal.timeout(5000) }
+    );
+    const data = await res.json();
+    if (data.ok) {
+      subscriberCount = data.result;
+    } else {
+      console.error('[home] Telegram getChatMemberCount error:', data.description);
+    }
+  }
+} catch (e) {
+  console.error('[home] Telegram subscriber count fetch error:', e);
+}
 ---
 
 <BaseLayout
@@ -220,12 +245,12 @@ const guides = latestGuides.slice(0, 3).map(g => ({
         <div class="gc-channels-stats">
           <div class="gc-stat-card">
             <div class="gc-stat-icon">👥</div>
-            <div class="gc-stat-num">1 284</div>
+            <div class="gc-stat-num">{subscriberCount !== null ? subscriberCount.toLocaleString('ru-RU') : '—'}</div>
             <div class="gc-stat-label">подписчиков</div>
           </div>
           <div class="gc-stat-card">
             <div class="gc-stat-icon">📝</div>
-            <div class="gc-stat-num">48</div>
+            <div class="gc-stat-num">{articlesCount}</div>
             <div class="gc-stat-label">статей</div>
           </div>
         </div>
