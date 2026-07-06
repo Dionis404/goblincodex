@@ -1,73 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { fetchMergedNews } from '../lib/news-feed';
 
-const BLOG_RSS = 'https://blog.goblincodex.fun/data/rss';
-
-const tagColors: Record<string, string> = {
-  'Стримы':     'purple',
-  'Обновление': 'blue',
-  'Гайд':       'green',
-  'Экономика':  'amber',
-  'Ивент':      'amber',
-  'Контент':    'green',
-  'Бродкаст':   'purple',
-  'Новость':    'green',
-};
-
-type NewsItem = {
-  title:    string;
-  date:     string;
-  tag:      string;
-  tagColor: string;
-  link:     string;
-  image:    string;
-  desc:     string;
-};
-
-function parseItems(xml: string): NewsItem[] {
-  const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
-  return items.map(item => {
-    const title    = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/)?.[1]?.trim() ?? '';
-    const link     = item.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() ?? '#';
-    const pubDate  = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() ?? '';
-    const category = item.match(/<category>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/category>/)?.[1]?.trim() ?? 'Новость';
-    const image    = item.match(/media:content[^>]*url="([^"]+)"/)?.[1] ?? '';
-    const descRaw  = item.match(/<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/description>/)?.[1]?.trim() ?? '';
-    const desc     = descRaw.replace(/<[^>]+>/g, '').trim().slice(0, 120) + (descRaw.length > 120 ? '...' : '');
-    const date     = pubDate
-      ? new Date(pubDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
-      : '';
-    return { title, date, tag: category, tagColor: tagColors[category] ?? 'green', link, image, desc };
-  });
-}
-
-function parseNextUrl(xml: string): string | null {
-  // <atom:link rel="next" href="..." /> или <atom:link href="..." rel="next" />
-  const match = xml.match(/<atom:link[^>]*rel=["']next["'][^>]*href=["']([^"']+)["']/i)
-             ?? xml.match(/<atom:link[^>]*href=["']([^"']+)["'][^>]*rel=["']next["']/i);
-  return match?.[1] ?? null;
-}
-
-let news: NewsItem[] = [];
-let tags: string[]   = [];
-
-try {
-  let nextUrl: string | null = BLOG_RSS;
-  const MAX_PAGES = 50; // защита от бесконечного цикла
-
-  for (let page = 0; page < MAX_PAGES && nextUrl; page++) {
-    const res = await fetch(nextUrl);
-    const xml = await res.text();
-    news.push(...parseItems(xml));
-    nextUrl = parseNextUrl(xml);
-  }
-
-  // Уникальные теги из статей
-  tags = [...new Set(news.map(n => n.tag).filter(Boolean))];
-
-} catch (e) {
-  news = [];
-}
+const { items: news, tags } = await fetchMergedNews({ telegramLimit: 100 });
 ---
 
 <BaseLayout
@@ -110,7 +45,7 @@ try {
             <div class="gc-news-card-body">
               <div class="gc-news-card-meta">
                 {item.tag && <span class={`gc-tag gc-tag--${item.tagColor}`}>{item.tag}</span>}
-                <span class="gc-news-card-date">{item.date}</span>
+                <span class="gc-news-card-date">{item.dateLabel}</span>
               </div>
               <div class="gc-news-card-title">{item.title}</div>
               {item.desc && <div class="gc-news-card-desc">{item.desc}</div>}

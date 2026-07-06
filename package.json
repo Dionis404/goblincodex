@@ -13,6 +13,7 @@
     "sfl:populate": "tsx scripts/populate-buffs-db.ts",
     "sfl:sync-sprites": "tsx scripts/sync-sprites.ts",
     "sfl:backup": "tsx scripts/backup-db.ts",
+    "telegram:backfill": "tsx scripts/backfill-telegram-posts.ts",
     "sfl:clone": "git clone --depth 1 --filter=blob:none --sparse https://github.com/sunflower-land/sunflower-land.git _sfl_temp && cd _sfl_temp && git sparse-checkout set src/features/game/types src/lib/i18n/dictionaries src/assets src/features/game/events/landExpansion src/features/game/expansion/lib src/features/game/lib"
   },
   "dependencies": {
@@ -25,7 +26,8 @@
     "dotenv": "^17.4.2",
     "pg": "^8.22.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "undici": "^7.28.0"
   },
   "devDependencies": {
     "@astrojs/sitemap": "^3.7.3",

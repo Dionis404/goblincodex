@@ -4,6 +4,7 @@ import pg from 'pg';
 const { Pool } = pg;
 
 let pool: InstanceType<typeof Pool> | null = null;
+let telegramPostsTableReady: Promise<void> | null = null;
 
 function getPool(): InstanceType<typeof Pool> {
   if (!pool) {
@@ -12,6 +13,21 @@ function getPool(): InstanceType<typeof Pool> {
     pool = new Pool({ connectionString: url });
   }
   return pool;
+}
+
+function ensureTelegramPostsTable(pool: InstanceType<typeof Pool>): Promise<void> {
+  if (!telegramPostsTableReady) {
+    telegramPostsTableReady = pool.query(`
+      CREATE TABLE IF NOT EXISTS telegram_posts (
+        id           BIGINT PRIMARY KEY,
+        message_date TIMESTAMPTZ NOT NULL,
+        text         TEXT NOT NULL,
+        image_url    TEXT,
+        created_at   TIMESTAMPTZ DEFAULT now()
+      );
+    `).then(() => undefined);
+  }
+  return telegramPostsTableReady;
 }
 
 interface SflBuff {
@@ -82,5 +98,50 @@ export async function getCatalogItems(): Promise<SflItem[]> {
     sprite: r.sprite,
     tags: r.tags ?? [],
     boosts: r.boosts ?? [],
+  }));
+}
+
+export interface TelegramPost {
+  id: number;
+  date: Date;
+  text: string;
+  imageUrl: string | null;
+}
+
+export async function saveTelegramPost(post: TelegramPost): Promise<void> {
+  const pool = getPool();
+  await ensureTelegramPostsTable(pool);
+  await pool.query(
+    `INSERT INTO telegram_posts (id, message_date, text, image_url)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (id) DO UPDATE SET
+       message_date = EXCLUDED.message_date,
+       text         = EXCLUDED.text,
+       image_url    = EXCLUDED.image_url`,
+    [post.id, post.date, post.text, post.imageUrl]
+  );
+}
+
+export async function getTelegramPosts(limit: number): Promise<TelegramPost[]> {
+  const pool = getPool();
+  await ensureTelegramPostsTable(pool);
+  const { rows } = await pool.query<{
+    id: string;
+    message_date: Date;
+    text: string;
+    image_url: string | null;
+  }>(
+    `SELECT id, message_date, text, image_url
+     FROM telegram_posts
+     ORDER BY message_date DESC
+     LIMIT $1`,
+    [limit]
+  );
+
+  return rows.map(r => ({
+    id: Number(r.id),
+    date: r.message_date,
+    text: r.text,
+    imageUrl: r.image_url,
   }));
 }

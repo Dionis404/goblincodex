@@ -1,63 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ChapterTimer from '../components/ChapterTimer.tsx';
-
-// ── RSS fetch ──
-const RSS_URL = 'https://blog.goblincodex.fun/data/rss';
-
-// Цвета тегов по категории
-const tagColors: Record<string, string> = {
-  'Стримы':      'purple',
-  'Обновление':  'blue',
-  'Гайд':        'green',
-  'Экономика':   'amber',
-  'Ивент':       'amber',
-  'Контент':     'green',
-};
-
-type NewsItem = {
-  title: string;
-  date: string;
-  tag: string;
-  tagColor: string;
-  link: string;
-  image: string;
-};
+import { fetchMergedNews, type NewsItem } from '../lib/news-feed';
 
 let news: NewsItem[] = [];
 
 try {
-  const res  = await fetch(RSS_URL);
-  const xml  = await res.text();
-
-  // Парсим items из XML
-  const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
-
-  news = items.slice(0, 4).map(item => {
-    const title    = item.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.trim() ?? '';
-    const link     = item.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() ?? '#';
-    const pubDate  = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() ?? '';
-    const category = item.match(/<category>([\s\S]*?)<\/category>/)?.[1]?.trim() ?? 'Новость';
-    const image    = item.match(/media:content[^>]*url="([^"]+)"/)?.[1] ?? '';
-
-    // Форматируем дату
-    const date = pubDate
-      ? new Date(pubDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
-      : '';
-
-    return {
-      title,
-      date,
-      tag: category,
-      tagColor: tagColors[category] ?? 'green',
-      link,
-      image,
-    };
-  });
+  const { items } = await fetchMergedNews({ telegramLimit: 4 });
+  news = items.slice(0, 4);
 } catch (e) {
-  // Fallback если RSS недоступен
+  // Fallback если новости недоступны
   news = [
-    { title: 'Загрузка новостей...', date: '', tag: '', tagColor: 'green', link: '/news', image: '' },
+    { title: 'Загрузка новостей...', date: new Date(0), dateLabel: '', tag: '', tagColor: 'green', link: '/news', image: '', desc: '', source: 'rss' },
   ];
 }
 
@@ -188,7 +142,7 @@ try {
               <div>
                 <div class="gc-news-title">{item.title}</div>
                 <div class="gc-news-meta">
-                  {item.date}
+                  {item.dateLabel}
                   {item.tag && <span class={`gc-tag gc-tag--${item.tagColor}`}>{item.tag}</span>}
                 </div>
               </div>
