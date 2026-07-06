@@ -110,12 +110,17 @@ function costBadgeClass(name: string): string {
   }
 }
 
+// Явная таймзона обязательна: без неё toLocale* берёт системную зону окружения
+// (на сервере — обычно UTC контейнера, в браузере — зону пользователя), и текст
+// времени расходится между SSR и клиентской гидратацией на каждом рендере.
+const DISPLAY_TZ = 'Europe/Moscow';
+
 function formatTime(ms: number): string {
-  return new Date(ms).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  return new Date(ms).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: DISPLAY_TZ });
 }
 
 function formatDay(ms: number): string {
-  return new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' });
+  return new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short', timeZone: DISPLAY_TZ });
 }
 
 interface DropdownOption {
