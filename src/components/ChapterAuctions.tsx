@@ -113,14 +113,24 @@ function costBadgeClass(name: string): string {
 // Явная таймзона обязательна: без неё toLocale* берёт системную зону окружения
 // (на сервере — обычно UTC контейнера, в браузере — зону пользователя), и текст
 // времени расходится между SSR и клиентской гидратацией на каждом рендере.
+// Поэтому и сервер, и первый клиентский рендер до гидратации всегда считают
+// в МСК — а дальше уже пересчитываем в локальную зону браузера (см. useEffect
+// с detectLocalTz ниже), это происходит уже после хидрации и мисматч не грозит.
 const DISPLAY_TZ = 'Europe/Moscow';
 
-function formatTime(ms: number): string {
-  return new Date(ms).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: DISPLAY_TZ });
+function formatTime(ms: number, tz: string): string {
+  return new Date(ms).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: tz });
 }
 
-function formatDay(ms: number): string {
-  return new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short', timeZone: DISPLAY_TZ });
+function formatDay(ms: number, tz: string): string {
+  return new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short', timeZone: tz });
+}
+
+function utcOffsetLabel(tz: string): string {
+  const part = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' })
+    .formatToParts(new Date())
+    .find(p => p.type === 'timeZoneName')?.value ?? '';
+  return part.replace('GMT', 'UTC');
 }
 
 interface DropdownOption {
@@ -194,6 +204,10 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
   // здесь заново вызвать Date.now(), время разъедется на пару секунд и React
   // словит hydration mismatch (текст вроде "Через N мин" не совпадёт).
   const [now, setNow] = useState(() => initialNow ?? Date.now());
+  // Первый рендер (и на сервере, и до хидратации на клиенте) — всегда МСК,
+  // чтобы текст совпал с SSR. После монтирования переключаемся на локальную
+  // зону браузера — это уже обычный клиентский ре-рендер, не хидратация.
+  const [tz, setTz] = useState(DISPLAY_TZ);
   const [statusFilter, setStatusFilter] = useState<Status | 'all'>('upcoming');
   const [costFilter, setCostFilter] = useState('all');
   const [kindFilter, setKindFilter] = useState<Kind | 'all'>('all');
@@ -207,6 +221,15 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (localTz) setTz(localTz);
+    } catch {
+      // Intl недоступен/зона не определилась — остаёмся на МСК
+    }
   }, []);
 
   useLayoutEffect(() => {
@@ -277,12 +300,12 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
   const groups = useMemo(() => {
     const map = new Map<string, Auction[]>();
     filtered.forEach(a => {
-      const key = formatDay(a.startAt);
+      const key = formatDay(a.startAt, tz);
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(a);
     });
     return [...map.entries()];
-  }, [filtered]);
+  }, [filtered, tz]);
 
   return (
     <div className="ca-root">
@@ -290,7 +313,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
         <span className="ca-widget-icon">⏰</span>
         <div>
           <div className="ca-widget-title">Расписание аукционов</div>
-          <div className="ca-widget-sub">Аукционы предметов главы «{chapterName}» · время указано по МСК (UTC+3)</div>
+          <div className="ca-widget-sub">Аукционы предметов главы «{chapterName}» · время указано по {utcOffsetLabel(tz)}</div>
         </div>
       </div>
 
@@ -360,7 +383,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                 return (
                   <div key={a.auctionId} className={`ca-row ca-row--${status}${isHot ? ' ca-row--hot' : ''}`}>
                     <div className="ca-row-time">
-                      {formatTime(a.startAt)}–{formatTime(a.endAt)}
+                      {formatTime(a.startAt, tz)}–{formatTime(a.endAt, tz)}
                     </div>
                     <button
                       type="button"
