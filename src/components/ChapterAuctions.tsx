@@ -290,7 +290,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
         <span className="ca-widget-icon">⏰</span>
         <div>
           <div className="ca-widget-title">Расписание аукционов</div>
-          <div className="ca-widget-sub">Аукционы предметов главы «{chapterName}»</div>
+          <div className="ca-widget-sub">Аукционы предметов главы «{chapterName}» · время указано по МСК (UTC+3)</div>
         </div>
       </div>
 
