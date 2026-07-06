@@ -76,8 +76,8 @@ function parseMessages(html: string): ParsedPost[] {
     const linkPreviewMatch = block.match(/<a class="tgme_widget_message_link_preview[^"]*"\s+href="([^"]+)"/);
     const linkPreviewHref = linkPreviewMatch?.[1] ?? '';
 
-    const photoMatch = block.match(/tgme_widget_message_photo_wrap"[^>]*style="[^"]*background-image:url\('([^']+)'\)/);
-    const previewImgMatch = block.match(/link_preview_(?:right_image|image)"[^>]*style="[^"]*background-image:url\('([^']+)'\)/);
+    const photoMatch = block.match(/class="tgme_widget_message_photo_wrap[^"]*"[^>]*style="[^"]*background-image:url\('([^']+)'\)/);
+    const previewImgMatch = block.match(/class="link_preview_(?:right_image|image)[^"]*"[^>]*style="[^"]*background-image:url\('([^']+)'\)/);
     const imageUrl = photoMatch?.[1] ?? previewImgMatch?.[1] ?? null;
 
     const isTeletypeLink = TELETYPE_RE.test(text) || TELETYPE_RE.test(linkPreviewHref);
