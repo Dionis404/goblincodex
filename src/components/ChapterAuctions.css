@@ -13,6 +13,20 @@
   color: var(--text);
 }
 .ca-widget-sub { font-size: 13px; color: var(--text-sec); margin-top: 2px; }
+.ca-tz-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #DBEAFE;
+  color: #1D4ED8;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+[data-theme="dark"] .ca-tz-badge { background: rgba(174, 109, 212, 0.18); color: var(--purple-dark); }
 
 /* ── Panel ── */
 .ca-panel {
