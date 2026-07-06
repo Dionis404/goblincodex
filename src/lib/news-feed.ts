@@ -37,6 +37,12 @@ function truncate(text: string, max: number): string {
   return clean.length > max ? clean.slice(0, max) + '...' : clean;
 }
 
+// Telegram-домены (t.me, telesco.pe) заблокированы у части посетителей без VPN —
+// отдаём картинку через публичный image-proxy, чтобы браузер шёл не на них.
+function proxyTelegramImage(url: string): string {
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}`;
+}
+
 function parseRssItems(xml: string): NewsItem[] {
   const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
   return items.map(item => {
@@ -91,7 +97,7 @@ async function fetchTelegramNews(limit: number): Promise<NewsItem[]> {
         tag: 'Телеграм',
         tagColor: tagColors['Телеграм'],
         link: `https://t.me/${TELEGRAM_CHANNEL}/${post.id}`,
-        image: post.imageUrl ?? '',
+        image: post.imageUrl ? proxyTelegramImage(post.imageUrl) : '',
         desc: truncate(post.text, 120),
         source: 'telegram' as const,
       };
