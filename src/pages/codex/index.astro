@@ -60,7 +60,8 @@ const tagColors: Record<string, string> = {
     <!-- Вкладки секций -->
     <div class="gc-section-tabs" id="sectionTabs">
       {sections.map((sec, i) => (
-        <button
+        <a
+          href={`/codex?tab=${sec.id}`}
           class={`gc-section-tab${i === 0 ? ' active' : ''}`}
           data-section={sec.id}
         >
@@ -69,7 +70,7 @@ const tagColors: Record<string, string> = {
             <div class="gc-section-tab-label">{sec.label}</div>
             <div class="gc-section-tab-sub">{sec.sub}</div>
           </div>
-        </button>
+        </a>
       ))}
     </div>
 
@@ -141,13 +142,14 @@ const tagColors: Record<string, string> = {
           <!-- Левое меню -->
           <aside class="gc-mech-sidebar">
             {mechanicsRendered.map((m, i) => (
-              <button
+              <a
+                href={`/codex?tab=mechanics&mech=${m.entry.id}`}
                 class={`gc-mech-nav-item${i === 0 ? ' active' : ''}`}
                 data-mech-id={m.entry.id}
               >
                 <span class="gc-mech-nav-icon">{m.entry.data.icon}</span>
                 <span class="gc-mech-nav-label">{m.entry.data.title}</span>
-              </button>
+              </a>
             ))}
           </aside>
 
@@ -188,7 +190,7 @@ const tagColors: Record<string, string> = {
 </BaseLayout>
 
 <script>
-  const sectionBtns    = document.querySelectorAll<HTMLButtonElement>('.gc-section-tab');
+  const sectionBtns    = document.querySelectorAll<HTMLAnchorElement>('.gc-section-tab');
   const filterBtns     = document.querySelectorAll<HTMLButtonElement>('.gc-tag-btn');
   const cards          = document.querySelectorAll<HTMLElement>('.gc-guide-card');
   const searchInput    = document.getElementById('guideSearch') as HTMLInputElement;
@@ -202,17 +204,29 @@ const tagColors: Record<string, string> = {
   const nftPanel       = document.getElementById('nftPanel');
 
   // Механики: навигация по левому меню
-  const mechNavItems  = document.querySelectorAll<HTMLButtonElement>('.gc-mech-nav-item');
+  const mechNavItems  = document.querySelectorAll<HTMLAnchorElement>('.gc-mech-nav-item');
   const mechArticles  = document.querySelectorAll<HTMLElement>('.gc-mech-article');
 
+  function isPlainLeftClick(e: MouseEvent): boolean {
+    return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+  }
+
   mechNavItems.forEach(item => {
-    item.addEventListener('click', () => {
+    item.addEventListener('click', (e) => {
+      if (!isPlainLeftClick(e)) return;
+      e.preventDefault();
+
       const id = item.dataset.mechId;
       mechNavItems.forEach(b => b.classList.remove('active'));
       item.classList.add('active');
       mechArticles.forEach(a => {
         a.style.display = a.id === `mech-article-${id}` ? '' : 'none';
       });
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', 'mechanics');
+      if (id) url.searchParams.set('mech', id);
+      history.replaceState(null, '', url);
     });
   });
 
@@ -282,12 +296,20 @@ const tagColors: Record<string, string> = {
   }
 
   sectionBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      if (!isPlainLeftClick(e)) return;
+      e.preventDefault();
+
       activeSection = btn.dataset.section ?? 'guides';
       sectionBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
       showSection(activeSection);
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', activeSection);
+      if (activeSection !== 'mechanics') url.searchParams.delete('mech');
+      history.replaceState(null, '', url);
 
       if (activeSection === 'guides') {
         if (searchInput) {
@@ -313,8 +335,11 @@ const tagColors: Record<string, string> = {
     filterCards();
   });
 
-  // Инициализация: проверяем ?tab= параметр
-  const urlTab = new URLSearchParams(window.location.search).get('tab');
+  // Инициализация: проверяем ?tab= и ?mech= параметры
+  const initialParams = new URLSearchParams(window.location.search);
+  const urlTab  = initialParams.get('tab');
+  const urlMech = initialParams.get('mech');
+
   if (urlTab) {
     const targetBtn = [...sectionBtns].find(b => b.dataset.section === urlTab);
     if (targetBtn) {
@@ -326,6 +351,11 @@ const tagColors: Record<string, string> = {
   } else {
     updateCategoryButtons('guides');
     filterCards();
+  }
+
+  if (urlTab === 'mechanics' && urlMech) {
+    const targetMech = [...mechNavItems].find(b => b.dataset.mechId === urlMech);
+    targetMech?.click();
   }
 </script>
 
@@ -354,6 +384,7 @@ const tagColors: Record<string, string> = {
   border-right: 1px solid var(--border);
   cursor: pointer;
   text-align: left;
+  text-decoration: none;
   color: var(--text);
   font-family: var(--font-body);
   transition: background 0.15s, border-color 0.15s;
@@ -517,6 +548,7 @@ const tagColors: Record<string, string> = {
   border-bottom: 1px solid var(--border);
   cursor: pointer;
   text-align: left;
+  text-decoration: none;
   color: var(--text);
   font-family: var(--font-body);
   font-size: 14px;
