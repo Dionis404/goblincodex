@@ -35,6 +35,7 @@ interface Props {
   auctions: Auction[];
   chapterName?: string;
   itemCatalog?: Record<string, CatalogEntry>;
+  initialNow?: number;
 }
 
 const TYPE_ICON: Record<Auction['type'], string> = {
@@ -183,8 +184,11 @@ function SpriteImg({ sprite, name, size = 40 }: { sprite: string | null; name: s
   );
 }
 
-export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awakening', itemCatalog }: Props) {
-  const [now, setNow] = useState(() => Date.now());
+export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awakening', itemCatalog, initialNow }: Props) {
+  // initialNow приходит с сервера и совпадает с тем, что отрендерил SSR — если
+  // здесь заново вызвать Date.now(), время разъедется на пару секунд и React
+  // словит hydration mismatch (текст вроде "Через N мин" не совпадёт).
+  const [now, setNow] = useState(() => initialNow ?? Date.now());
   const [statusFilter, setStatusFilter] = useState<Status | 'all'>('upcoming');
   const [costFilter, setCostFilter] = useState('all');
   const [kindFilter, setKindFilter] = useState<Kind | 'all'>('all');

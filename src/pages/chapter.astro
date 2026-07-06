@@ -23,6 +23,7 @@ const chapterGuides = await getCollection(
 chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
 
 const auctions: any[] = auctionsData.auctions.auctions;
+const now = Date.now();
 
 // ── Основные механики: карточки, открывающие гайд из кодекса в модалке ──
 const MECHANIC_CARDS = [
@@ -113,7 +114,7 @@ const mechanicCards = await Promise.all(
 
     <!-- ── Расписание аукционов ── -->
     <section class="gc-chapter-section">
-      <ChapterAuctions client:load auctions={auctions} chapterName="The Salt Awakening" itemCatalog={itemCatalog} />
+      <ChapterAuctions client:load auctions={auctions} chapterName="The Salt Awakening" itemCatalog={itemCatalog} initialNow={now} />
     </section>
 
   </div>
