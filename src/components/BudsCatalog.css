@@ -1,5 +1,164 @@
 .buds-root { display: flex; flex-direction: column; gap: 8px; }
 
+/* ── Сравнение двух Bud ── */
+.buds-compare-section { margin-bottom: 8px; }
+.buds-compare-toggle {
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--green-dark);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.buds-compare-toggle:hover { background: var(--green-pale); border-color: var(--green-mid); }
+
+.buds-compare-panel {
+  margin-top: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+}
+
+/* ── Слоты ввода номеров ── */
+.buds-compare-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+  margin: 14px 0 18px;
+}
+.buds-compare-slots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+}
+.buds-compare-slot { display: flex; flex-direction: column; gap: 6px; }
+.buds-compare-slot-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+.buds-compare-slot-row { display: flex; align-items: center; gap: 6px; }
+.buds-compare-slot-input {
+  width: 130px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.buds-compare-slot-input:focus {
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px var(--green-pale);
+}
+.buds-compare-slot-remove {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-sec);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.buds-compare-slot-remove:hover { background: #FEE2E2; color: #B91C1C; }
+.buds-compare-add {
+  padding: 10px 16px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px dashed var(--green-mid);
+  background: transparent;
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.buds-compare-add:hover { background: var(--green-pale); }
+.buds-compare-submit {
+  padding: 10px 28px;
+  height: 42px;
+  border-radius: 10px;
+  border: none;
+  background: var(--green-dark);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.buds-compare-submit:hover { opacity: 0.9; }
+
+/* ── Карточки сравниваемых Bud ── */
+.buds-compare-heads {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.buds-compare-heads--2 { grid-template-columns: 1fr 1fr; }
+.buds-compare-heads--3 { grid-template-columns: 1fr 1fr 1fr; }
+.buds-compare-heads .buds-lookup-result { margin-bottom: 0; }
+
+.buds-compare-verdict {
+  font-size: 13px;
+  color: var(--text);
+  background: var(--green-pale);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+
+/* ── Таблица результата (только активные категории) ── */
+.buds-compare-table-wrap { overflow-x: auto; margin-bottom: 12px; }
+.buds-compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.buds-compare-table th {
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--green-dark);
+  font-weight: 700;
+  border-bottom: 2px solid var(--border);
+}
+.buds-compare-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.buds-compare-label { font-weight: 600; }
+.buds-compare-value { white-space: nowrap; font-weight: 600; }
+.buds-compare-cell--works { color: var(--green-dark); }
+.buds-compare-cell--beaten { color: #B91C1C; font-weight: 500; text-decoration: line-through; }
+[data-theme="dark"] .buds-compare-cell--beaten { color: #FCA5A5; }
+.buds-compare-cell--tie { color: #C2410C; }
+[data-theme="dark"] .buds-compare-cell--tie { color: #FDBA74; }
+.buds-compare-cell--inactive { color: var(--text-ter); font-weight: 400; }
+
+.buds-compare-note { font-size: 11px; color: var(--text-ter); line-height: 1.5; margin: 0; }
+
+@media (max-width: 700px) {
+  .buds-compare-heads--2, .buds-compare-heads--3 { grid-template-columns: 1fr; }
+}
+
 .buds-lookup-status {
   font-size: 13px;
   color: var(--text-sec);

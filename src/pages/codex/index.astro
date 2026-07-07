@@ -221,10 +221,16 @@ const tagColors: Record<string, string> = {
          ═══════════════════════════════════════════════ -->
     <div id="nftPanel" style="display:none">
 
-      <div class="gc-nft-subtabs" id="nftSubtabs">
-        <button type="button" class="gc-nft-subtab active" data-nft-sub="items">Предметы</button>
-        <button type="button" class="gc-nft-subtab" data-nft-sub="buds">Бады</button>
-        <button type="button" class="gc-nft-subtab" data-nft-sub="pets">Питомцы</button>
+      <div class="gc-nft-topbar">
+        <div class="gc-nft-subtabs" id="nftSubtabs">
+          <button type="button" class="gc-nft-subtab active" data-nft-sub="items">Предметы</button>
+          <button type="button" class="gc-nft-subtab" data-nft-sub="buds">Бады</button>
+          <button type="button" class="gc-nft-subtab" data-nft-sub="pets">Питомцы</button>
+        </div>
+        <div class="gc-lang-toggle" id="langToggle" role="group" aria-label="Язык названий бонусов">
+          <button type="button" class="gc-lang-btn active" data-lang="ru">RU</button>
+          <button type="button" class="gc-lang-btn" data-lang="en">EN</button>
+        </div>
       </div>
 
       <div id="nftSubItems">
@@ -294,6 +300,26 @@ const tagColors: Record<string, string> = {
       url.searchParams.set('nftSub', sub ?? 'items');
       history.replaceState(null, '', url);
     });
+  });
+
+  // Переключатель RU/EN для названий бонусов — общий для всех трёх вкладок
+  // NFT-раздела (Предметы/Бады/Питомцы). Они гидрируются как отдельные React-
+  // острова без общего состояния, поэтому синхронизация идёт через
+  // localStorage + CustomEvent, а не через пропсы.
+  const BOOST_LANG_KEY   = 'gc-boost-lang';
+  const BOOST_LANG_EVENT = 'gc:boost-lang-change';
+  const langToggle = document.getElementById('langToggle');
+  const langBtns    = document.querySelectorAll<HTMLButtonElement>('.gc-lang-btn');
+  const storedLang  = localStorage.getItem(BOOST_LANG_KEY) === 'en' ? 'en' : 'ru';
+  langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === storedLang));
+
+  langToggle?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.gc-lang-btn');
+    if (!btn) return;
+    const lang = btn.dataset.lang ?? 'ru';
+    langBtns.forEach(b => b.classList.toggle('active', b === btn));
+    localStorage.setItem(BOOST_LANG_KEY, lang);
+    window.dispatchEvent(new CustomEvent(BOOST_LANG_EVENT, { detail: lang }));
   });
 
   function isPlainLeftClick(e: MouseEvent): boolean {
@@ -762,10 +788,42 @@ const tagColors: Record<string, string> = {
 /* ═══════════════════════════════════════════════
    NFT КАТАЛОГ — ПОДВКЛАДКИ Предметы/Бады/Питомцы
    ═══════════════════════════════════════════════ */
+.gc-nft-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
 .gc-nft-subtabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
+}
+.gc-lang-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.gc-lang-btn {
+  padding: 8px 16px;
+  border: none;
+  background: var(--card-bg);
+  color: var(--text-sec);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.gc-lang-btn:first-child { border-right: 1px solid var(--border); }
+.gc-lang-btn:hover { background: var(--green-pale); }
+.gc-lang-btn.active {
+  background: var(--green-dark);
+  color: #fff;
 }
 .gc-nft-subtab {
   padding: 10px 20px;

@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './BudsCatalog.css';
+import {
+  BUD_BOOST_CATEGORIES,
+  computeBudCategoryValue,
+  formatBudCategoryValue,
+  isBudCategoryActive,
+  type BudBoostTraits,
+} from '../lib/budBoosts';
+import { useBoostLang, pickBoostText, type BoostLang } from '../lib/useBoostLang';
 
 interface BudTrait {
   name: string;
@@ -61,15 +69,17 @@ interface Filters {
 
 const EMPTY_FILTERS: Filters = { budId: '', type: '', colour: '', stem: '', aura: '', ears: '' };
 
-function TraitBadge({ trait }: { trait: BudTrait }) {
+function TraitBadge({ trait, lang }: { trait: BudTrait; lang: BoostLang }) {
   return (
     <span className={`buds-badge buds-badge--${trait.labelType ?? 'success'}`}>
-      {trait.descriptionRu || trait.descriptionEn}
+      {pickBoostText(lang, trait.descriptionRu, trait.descriptionEn)}
     </span>
   );
 }
 
-function TraitCard({ trait, selected, onClick }: { trait: BudTrait; selected: boolean; onClick: () => void }) {
+function TraitCard({ trait, lang, selected, onClick }: {
+  trait: BudTrait; lang: BoostLang; selected: boolean; onClick: () => void;
+}) {
   return (
     <button
       type="button"
@@ -78,7 +88,7 @@ function TraitCard({ trait, selected, onClick }: { trait: BudTrait; selected: bo
       aria-pressed={selected}
     >
       <div className="buds-trait-name">{trait.name}</div>
-      <TraitBadge trait={trait} />
+      <TraitBadge trait={trait} lang={lang} />
     </button>
   );
 }
@@ -117,6 +127,7 @@ function BudCard({ bud }: { bud: BudInstance }) {
 }
 
 function BudDetailCard({ bud, traits }: { bud: BudInstance; traits: BudTrait[] }) {
+  const lang = useBoostLang();
   const resolved = [
     findTrait(traits, 'type', bud.type),
     findTrait(traits, 'stem', bud.stem),
@@ -155,7 +166,7 @@ function BudDetailCard({ bud, traits }: { bud: BudInstance; traits: BudTrait[] }
         </div>
         <div className="buds-lookup-boosts">
           {resolved.length > 0
-            ? resolved.map(t => <TraitBadge key={`${t.traitGroup}-${t.name}`} trait={t} />)
+            ? resolved.map(t => <TraitBadge key={`${t.traitGroup}-${t.name}`} trait={t} lang={lang} />)
             : <span className="buds-lookup-no-boosts">Нет данных о бонусах</span>
           }
         </div>
@@ -164,7 +175,224 @@ function BudDetailCard({ bud, traits }: { bud: BudInstance; traits: BudTrait[] }
   );
 }
 
+const SLOT_LETTERS = ['A', 'B', 'C'];
+const MAX_COMPARE_SLOTS = 3;
+const MIN_COMPARE_SLOTS = 2;
+
+interface CompareRow {
+  cat: typeof BUD_BOOST_CATEGORIES[number];
+  values: number[];
+  actives: boolean[];
+  winners: number[];
+}
+
+function computeCompareRows(buds: BudBoostTraits[]): CompareRow[] {
+  return BUD_BOOST_CATEGORIES.map(cat => {
+    const values = buds.map(b => computeBudCategoryValue(b, cat));
+    const actives = values.map(v => isBudCategoryActive(cat.kind, v));
+    const activeValues = values.filter((_, i) => actives[i]);
+    let winners: number[] = [];
+    if (activeValues.length > 0) {
+      const best = cat.kind === 'speed' ? Math.min(...activeValues) : Math.max(...activeValues);
+      winners = values.map((v, i) => (actives[i] && v === best ? i : -1)).filter(i => i >= 0);
+    }
+    return { cat, values, actives, winners };
+  }).filter(row => row.actives.some(Boolean)); // скрываем категории, в которых бесполезны оба/все
+}
+
+function BudCompareTable({ buds }: { buds: BudInstance[] }) {
+  const rows = useMemo(() => computeCompareRows(buds), [buds]);
+
+  const uniqueCounts = buds.map((_, i) =>
+    rows.filter(r => r.actives[i] && r.actives.filter(Boolean).length === 1).length,
+  );
+  const contestedCount = rows.filter(r => r.actives.filter(Boolean).length > 1).length;
+
+  if (rows.length === 0) {
+    return (
+      <div className="buds-compare-result">
+        <p className="buds-compare-verdict">
+          Ни у одного из этих Bud нет ни одного применимого бонуса из отслеживаемых категорий.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="buds-compare-result">
+      <p className="buds-compare-verdict">
+        {buds.map((_, i) => (
+          <span key={i}>
+            Bud {SLOT_LETTERS[i]} — своя польза в {uniqueCounts[i]}{' '}
+            {uniqueCounts[i] === 1 ? 'категории' : 'категориях'}
+            {i < buds.length - 1 ? '; ' : '. '}
+          </span>
+        ))}
+        {contestedCount > 0
+          ? `Пересекаются в ${contestedCount} ${contestedCount === 1 ? 'категории' : 'категориях'} — там работает бонус только у одного.`
+          : 'Ни разу не пересекаются — бонусы работают у всех одновременно.'}
+      </p>
+      <div className="buds-compare-table-wrap">
+        <table className="buds-compare-table">
+          <thead>
+            <tr>
+              <th>Категория</th>
+              {buds.map((_, i) => <th key={i}>Bud {SLOT_LETTERS[i]}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(row => (
+              <tr key={row.cat.key} className="buds-compare-row">
+                <td className="buds-compare-label">{row.cat.label}</td>
+                {row.values.map((v, i) => {
+                  const active = row.actives[i];
+                  const wins = row.winners.includes(i);
+                  const tied = wins && row.winners.length > 1;
+                  const cellClass = !active
+                    ? 'buds-compare-cell--inactive'
+                    : tied
+                      ? 'buds-compare-cell--tie'
+                      : wins
+                        ? 'buds-compare-cell--works'
+                        : 'buds-compare-cell--beaten';
+                  const text = !active
+                    ? 'не действует'
+                    : tied
+                      ? `${formatBudCategoryValue(row.cat.kind, v)} — ничья, сработает только один`
+                      : wins
+                        ? `${formatBudCategoryValue(row.cat.kind, v)} — работает`
+                        : `${formatBudCategoryValue(row.cat.kind, v)} — не сработает`;
+                  return <td key={i} className={`buds-compare-value ${cellClass}`}>{text}</td>;
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="buds-compare-note">
+        При ничьей (одинаковое число у нескольких Bud) в игре всё равно сработает только один — какой именно, зависит от порядка Bud в данных игрока и заранее не определяется.
+        Основные категории — точный порт формул из getBudYieldBoosts/getBudSpeedBoosts/getBudExperienceBoosts.
+        «Доп. шанс поймать рыбу» (Sea/Fish Hat) — расчёт улова идёт на сервере игры, в открытом клиентском коде его нет, поэтому здесь только сам факт «есть/нет бонус» без точного процента; при пересечении между Bud считаем, что срабатывает только один, как и остальные бонусы.
+      </p>
+    </div>
+  );
+}
+
+function BudComparator({ traits }: { traits: BudTrait[] }) {
+  const [open, setOpen] = useState(false);
+  const [ids, setIds] = useState<string[]>(['', '']);
+  const [buds, setBuds] = useState<BudInstance[] | null>(null);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+
+  function setIdAt(i: number, value: string) {
+    setIds(prev => prev.map((v, idx) => (idx === i ? value : v)));
+  }
+
+  function addSlot() {
+    if (ids.length < MAX_COMPARE_SLOTS) setIds(prev => [...prev, '']);
+  }
+
+  function removeSlot(i: number) {
+    if (ids.length > MIN_COMPARE_SLOTS) setIds(prev => prev.filter((_, idx) => idx !== i));
+  }
+
+  async function handleCompare(e: React.FormEvent) {
+    e.preventDefault();
+    const filled = ids.map(v => v.trim()).filter(Boolean);
+    const parsed = filled.map(v => parseInt(v, 10));
+    const valid = parsed.length >= MIN_COMPARE_SLOTS
+      && parsed.every(n => Number.isInteger(n) && n >= MIN_BUD_ID && n <= MAX_BUD_ID);
+
+    if (!valid) {
+      setStatus('error');
+      return;
+    }
+
+    setStatus('loading');
+    try {
+      const responses = await Promise.all(parsed.map(id => fetch(`/api/buds/${id}.json`)));
+      if (responses.some(r => !r.ok)) throw new Error('not found');
+      const data: BudInstance[] = await Promise.all(responses.map(r => r.json()));
+      setBuds(data);
+      setStatus('idle');
+    } catch {
+      setBuds(null);
+      setStatus('error');
+    }
+  }
+
+  return (
+    <section className="buds-compare-section">
+      <button type="button" className="buds-compare-toggle" onClick={() => setOpen(o => !o)}>
+        ⚖️ Сравнить Bud — работают вместе или мешают друг другу?
+      </button>
+
+      {open && (
+        <div className="buds-compare-panel">
+          <p className="buds-filter-bar-hint">
+            В игре бонусы от нескольких Bud не складываются — учитывается только самый сильный по каждому ресурсу.
+            Сравни 2–3 Bud по номеру, чтобы увидеть, у кого какой бонус реально сработает.
+          </p>
+          <form className="buds-compare-form" onSubmit={handleCompare}>
+            <div className="buds-compare-slots">
+              {ids.map((val, i) => (
+                <div className="buds-compare-slot" key={i}>
+                  <label className="buds-compare-slot-label">Bud {SLOT_LETTERS[i]}</label>
+                  <div className="buds-compare-slot-row">
+                    <input
+                      type="number"
+                      min={MIN_BUD_ID}
+                      max={MAX_BUD_ID}
+                      className="buds-compare-slot-input"
+                      placeholder="Номер"
+                      value={val}
+                      onChange={e => setIdAt(i, e.target.value)}
+                    />
+                    {ids.length > MIN_COMPARE_SLOTS && (
+                      <button
+                        type="button"
+                        className="buds-compare-slot-remove"
+                        onClick={() => removeSlot(i)}
+                        aria-label={`Убрать Bud ${SLOT_LETTERS[i]}`}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {ids.length < MAX_COMPARE_SLOTS && (
+                <button type="button" className="buds-compare-add" onClick={addSlot}>
+                  + добавить Bud {SLOT_LETTERS[ids.length]}
+                </button>
+              )}
+            </div>
+            <button type="submit" className="buds-compare-submit">Сравнить</button>
+          </form>
+
+          {status === 'loading' && <div className="buds-lookup-status">Сравниваем…</div>}
+          {status === 'error' && (
+            <div className="buds-lookup-status buds-lookup-status--error">
+              Не удалось найти все указанные Bud. Проверь номера ({MIN_BUD_ID}–{MAX_BUD_ID}).
+            </div>
+          )}
+
+          {status === 'idle' && buds && (
+            <>
+              <div className={`buds-compare-heads buds-compare-heads--${buds.length}`}>
+                {buds.map((bud, i) => <BudDetailCard key={i} bud={bud} traits={traits} />)}
+              </div>
+              <BudCompareTable buds={buds} />
+            </>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
 export default function BudsCatalog({ traits, filterOptions }: Props) {
+  const lang = useBoostLang();
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [results, setResults] = useState<BudInstance[] | null>(null);
   const [resultsTotal, setResultsTotal] = useState(0);
@@ -276,6 +504,8 @@ export default function BudsCatalog({ traits, filterOptions }: Props) {
         )}
       </div>
 
+      <BudComparator traits={traits} />
+
       {hasActiveFilter && (
         <div className="buds-filter-selection">
           {filters.budId && <span className="buds-filter-chip">№ {filters.budId}</span>}
@@ -295,6 +525,7 @@ export default function BudsCatalog({ traits, filterOptions }: Props) {
               <TraitCard
                 key={t.name}
                 trait={t}
+                lang={lang}
                 selected={filters[group] === t.name}
                 onClick={() => toggleTrait(group, t.name)}
               />

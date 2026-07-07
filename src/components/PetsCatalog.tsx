@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './PetsCatalog.css';
+import { useBoostLang, pickBoostText, type BoostLang } from '../lib/useBoostLang';
 
 interface PetCommon {
   name: string;
@@ -131,10 +132,10 @@ function RemoteImg({ src, alt, size = 64 }: { src: string | null; alt: string; s
   );
 }
 
-function TraitBadge({ trait }: { trait: PetNftTrait }) {
+function TraitBadge({ trait, lang }: { trait: PetNftTrait; lang: BoostLang }) {
   return (
     <span className={`pc-badge pc-badge--${trait.labelType ?? 'success'}`}>
-      {trait.descriptionRu || trait.descriptionEn}
+      {pickBoostText(lang, trait.descriptionRu, trait.descriptionEn)}
     </span>
   );
 }
@@ -225,6 +226,7 @@ function NftInstanceCard({ pet }: { pet: PetNftInstance }) {
 }
 
 function NftDetailCard({ pet, traits }: { pet: PetNftInstance; traits: PetNftTrait[] }) {
+  const lang = useBoostLang();
   const resolved = [
     findTrait(traits, 'aura', pet.aura),
     findTrait(traits, 'bib', pet.bib),
@@ -251,7 +253,7 @@ function NftDetailCard({ pet, traits }: { pet: PetNftInstance; traits: PetNftTra
         </div>
         <div className="pc-lookup-boosts">
           {resolved.length > 0
-            ? resolved.map(t => <TraitBadge key={`${t.traitGroup}-${t.name}`} trait={t} />)
+            ? resolved.map(t => <TraitBadge key={`${t.traitGroup}-${t.name}`} trait={t} lang={lang} />)
             : <span className="pc-lookup-no-boosts">Нет данных о бонусах</span>
           }
         </div>
@@ -261,6 +263,7 @@ function NftDetailCard({ pet, traits }: { pet: PetNftInstance; traits: PetNftTra
 }
 
 export default function PetsCatalog({ commonPets, nftBreeds, nftTraits, nftFilterOptions, fetches, resources }: Props) {
+  const lang = useBoostLang();
   const [tab, setTab] = useState<'common' | 'nft'>('common');
 
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
@@ -431,7 +434,7 @@ export default function PetsCatalog({ commonPets, nftBreeds, nftTraits, nftFilte
                   aria-pressed={filters.aura === t.name}
                 >
                   <div className="pc-trait-name">{t.name}</div>
-                  <TraitBadge trait={t} />
+                  <TraitBadge trait={t} lang={lang} />
                 </button>
               ))}
             </div>
@@ -446,7 +449,7 @@ export default function PetsCatalog({ commonPets, nftBreeds, nftTraits, nftFilte
                   aria-pressed={filters.bib === t.name}
                 >
                   <div className="pc-trait-name">{t.name}</div>
-                  <TraitBadge trait={t} />
+                  <TraitBadge trait={t} lang={lang} />
                 </button>
               ))}
             </div>

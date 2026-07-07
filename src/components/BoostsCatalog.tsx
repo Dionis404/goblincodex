@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import './BoostsCatalog.css';
+import { useBoostLang, pickBoostText, type BoostLang } from '../lib/useBoostLang';
 
 interface Boost {
   id: number;
@@ -72,15 +73,15 @@ function SpriteImg({ sprite, name, size = 64 }: { sprite: string | null; name: s
   );
 }
 
-function BoostBadge({ boost }: { boost: Boost }) {
+function BoostBadge({ boost, lang }: { boost: Boost; lang: BoostLang }) {
   return (
     <span className={`bc-boost-badge bc-boost--${boost.labelType}`}>
-      {boost.shortDescriptionRu || boost.shortDescription}
+      {pickBoostText(lang, boost.shortDescriptionRu, boost.shortDescription)}
     </span>
   );
 }
 
-function ItemCard({ item, onClick }: { item: CatalogItem; onClick: () => void }) {
+function ItemCard({ item, lang, onClick }: { item: CatalogItem; lang: BoostLang; onClick: () => void }) {
   return (
     <button className="bc-card" onClick={onClick} type="button">
       <div className="bc-card-sprite">
@@ -93,13 +94,13 @@ function ItemCard({ item, onClick }: { item: CatalogItem; onClick: () => void })
         </span>
       </div>
       <div className="bc-card-boosts">
-        {item.boosts.map(b => <BoostBadge key={b.id} boost={b} />)}
+        {item.boosts.map(b => <BoostBadge key={b.id} boost={b} lang={lang} />)}
       </div>
     </button>
   );
 }
 
-function ItemModal({ item, onClose }: { item: CatalogItem; onClose: () => void }) {
+function ItemModal({ item, lang, onClose }: { item: CatalogItem; lang: BoostLang; onClose: () => void }) {
   return (
     <div className="bc-modal-overlay" onClick={onClose}>
       <div className="bc-modal" onClick={e => e.stopPropagation()}>
@@ -124,7 +125,7 @@ function ItemModal({ item, onClose }: { item: CatalogItem; onClose: () => void }
           <h3 className="bc-modal-section-title">Бонусы</h3>
           <div className="bc-modal-boosts">
             {item.boosts.length > 0
-              ? item.boosts.map(b => <BoostBadge key={b.id} boost={b} />)
+              ? item.boosts.map(b => <BoostBadge key={b.id} boost={b} lang={lang} />)
               : <span className="bc-modal-no-boosts">Нет данных о бонусах</span>
             }
           </div>
@@ -135,6 +136,7 @@ function ItemModal({ item, onClose }: { item: CatalogItem; onClose: () => void }
 }
 
 export default function BoostsCatalog({ items }: Props) {
+  const lang = useBoostLang();
   const [category, setCategory] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all-type');
   const [boostFilter, setBoostFilter] = useState<BoostFilter>('all');
@@ -248,6 +250,7 @@ export default function BoostsCatalog({ items }: Props) {
           <ItemCard
             key={item.name}
             item={item}
+            lang={lang}
             onClick={() => setSelected(item)}
           />
         ))}
@@ -260,7 +263,7 @@ export default function BoostsCatalog({ items }: Props) {
       )}
 
       {selected && createPortal(
-        <ItemModal item={selected} onClose={() => setSelected(null)} />,
+        <ItemModal item={selected} lang={lang} onClose={() => setSelected(null)} />,
         document.body
       )}
     </div>
