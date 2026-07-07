@@ -4,13 +4,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection, getEntry, render } from 'astro:content';
 import ChapterAuctions from '../components/ChapterAuctions.tsx';
 import auctionsData from '../data/chapter-auctions.json';
-import { getCatalogItems } from '../lib/db';
+import type { getCatalogItems } from '../lib/db';
+import { getCachedCatalogItems } from '../lib/catalog-cache';
 
 const CURRENT_CHAPTER = 14;
 
 let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
 try {
-  const items = await getCatalogItems();
+  const { data: items } = await getCachedCatalogItems();
   itemCatalog = Object.fromEntries(items.map((i) => [i.name, i]));
 } catch (err) {
   console.error('[chapter] DB fetch error:', err);

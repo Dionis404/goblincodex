@@ -3,13 +3,54 @@ export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
 import BoostsCatalog from '../../components/BoostsCatalog.tsx';
-import { getCatalogItems } from '../../lib/db';
+import BudsCatalog from '../../components/BudsCatalog.tsx';
+import PetsCatalog from '../../components/PetsCatalog.tsx';
+import type { getCatalogItems, getBudTraits, getBudFilterOptions, getPetNftBreeds, getPetNftTraits, getPetNftFilterOptions, getPetsCommon, getPetResources, getPetFetches } from '../../lib/db';
+import {
+  getCachedCatalogItems,
+  getCachedBuds,
+  getCachedPetsNft,
+  getCachedPetsCommon,
+  getCachedPetMechanics,
+} from '../../lib/catalog-cache';
 
 let catalogItems: Awaited<ReturnType<typeof getCatalogItems>> = [];
 try {
-  catalogItems = await getCatalogItems();
+  ({ data: catalogItems } = await getCachedCatalogItems());
 } catch (err) {
   console.error('[codex] DB fetch error:', err);
+}
+
+let budTraits: Awaited<ReturnType<typeof getBudTraits>> = [];
+let budFilterOptions: Awaited<ReturnType<typeof getBudFilterOptions>> = { types: [], colours: [], stems: [], auras: [], ears: [] };
+try {
+  ({ data: { traits: budTraits, filterOptions: budFilterOptions } } = await getCachedBuds());
+} catch (err) {
+  console.error('[codex] Bud fetch error:', err);
+}
+
+let petNftBreeds: Awaited<ReturnType<typeof getPetNftBreeds>> = [];
+let petNftTraits: Awaited<ReturnType<typeof getPetNftTraits>> = [];
+let petNftFilterOptions: Awaited<ReturnType<typeof getPetNftFilterOptions>> = { types: [], furs: [], accessories: [], bibs: [], auras: [] };
+try {
+  ({ data: { breeds: petNftBreeds, traits: petNftTraits, filterOptions: petNftFilterOptions } } = await getCachedPetsNft());
+} catch (err) {
+  console.error('[codex] Pet NFT fetch error:', err);
+}
+
+let petsCommon: Awaited<ReturnType<typeof getPetsCommon>> = [];
+try {
+  ({ data: petsCommon } = await getCachedPetsCommon());
+} catch (err) {
+  console.error('[codex] Common pets fetch error:', err);
+}
+
+let petResources: Awaited<ReturnType<typeof getPetResources>> = [];
+let petFetches: Awaited<ReturnType<typeof getPetFetches>> = [];
+try {
+  ({ data: { resources: petResources, fetches: petFetches } } = await getCachedPetMechanics());
+} catch (err) {
+  console.error('[codex] Pet mechanics fetch error:', err);
 }
 
 const allGuides = await getCollection('guides', ({ data }) => !data.draft);
@@ -179,11 +220,37 @@ const tagColors: Record<string, string> = {
          NFT КАТАЛОГ
          ═══════════════════════════════════════════════ -->
     <div id="nftPanel" style="display:none">
-      <div class="gc-boosts-hint">
-        <span class="gc-boosts-hint-icon">💡</span>
-        <span><strong>Как пользоваться:</strong> выбери тип ресурса → смотри какие NFT-предметы дают бонус к нему. Клик по карточке — подробности.</span>
+
+      <div class="gc-nft-subtabs" id="nftSubtabs">
+        <button type="button" class="gc-nft-subtab active" data-nft-sub="items">Предметы</button>
+        <button type="button" class="gc-nft-subtab" data-nft-sub="buds">Бады</button>
+        <button type="button" class="gc-nft-subtab" data-nft-sub="pets">Питомцы</button>
       </div>
-      <BoostsCatalog client:load items={catalogItems} />
+
+      <div id="nftSubItems">
+        <div class="gc-boosts-hint">
+          <span class="gc-boosts-hint-icon">💡</span>
+          <span><strong>Как пользоваться:</strong> выбери тип ресурса → смотри какие NFT-предметы дают бонус к нему. Клик по карточке — подробности.</span>
+        </div>
+        <BoostsCatalog client:load items={catalogItems} />
+      </div>
+
+      <div id="nftSubBuds" style="display:none">
+        <BudsCatalog client:visible traits={budTraits} filterOptions={budFilterOptions} />
+      </div>
+
+      <div id="nftSubPets" style="display:none">
+        <PetsCatalog
+          client:visible
+          commonPets={petsCommon}
+          nftBreeds={petNftBreeds}
+          nftTraits={petNftTraits}
+          nftFilterOptions={petNftFilterOptions}
+          fetches={petFetches}
+          resources={petResources}
+        />
+      </div>
+
     </div>
 
   </div>
@@ -206,6 +273,28 @@ const tagColors: Record<string, string> = {
   // Механики: навигация по левому меню
   const mechNavItems  = document.querySelectorAll<HTMLAnchorElement>('.gc-mech-nav-item');
   const mechArticles  = document.querySelectorAll<HTMLElement>('.gc-mech-article');
+
+  // NFT: подвкладки Предметы / Бады / Питомцы
+  const nftSubtabs  = document.querySelectorAll<HTMLButtonElement>('.gc-nft-subtab');
+  const nftSubItems = document.getElementById('nftSubItems');
+  const nftSubBuds  = document.getElementById('nftSubBuds');
+  const nftSubPets  = document.getElementById('nftSubPets');
+
+  nftSubtabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sub = btn.dataset.nftSub;
+      nftSubtabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      if (nftSubItems) nftSubItems.style.display = sub === 'items' ? '' : 'none';
+      if (nftSubBuds)  nftSubBuds.style.display  = sub === 'buds' ? '' : 'none';
+      if (nftSubPets)  nftSubPets.style.display  = sub === 'pets' ? '' : 'none';
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('nftSub', sub ?? 'items');
+      history.replaceState(null, '', url);
+    });
+  });
 
   function isPlainLeftClick(e: MouseEvent): boolean {
     return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
@@ -335,10 +424,11 @@ const tagColors: Record<string, string> = {
     filterCards();
   });
 
-  // Инициализация: проверяем ?tab= и ?mech= параметры
+  // Инициализация: проверяем ?tab=, ?mech= и ?nftSub= параметры
   const initialParams = new URLSearchParams(window.location.search);
-  const urlTab  = initialParams.get('tab');
-  const urlMech = initialParams.get('mech');
+  const urlTab    = initialParams.get('tab');
+  const urlMech   = initialParams.get('mech');
+  const urlNftSub = initialParams.get('nftSub');
 
   if (urlTab) {
     const targetBtn = [...sectionBtns].find(b => b.dataset.section === urlTab);
@@ -351,6 +441,11 @@ const tagColors: Record<string, string> = {
   } else {
     updateCategoryButtons('guides');
     filterCards();
+  }
+
+  if (urlTab === 'nft' && urlNftSub) {
+    const targetSub = [...nftSubtabs].find(b => b.dataset.nftSub === urlNftSub);
+    targetSub?.click();
   }
 
   if (urlTab === 'mechanics' && urlMech) {
@@ -662,6 +757,33 @@ const tagColors: Record<string, string> = {
   border: none;
   border-top: 1px solid var(--border);
   margin: 28px 0;
+}
+
+/* ═══════════════════════════════════════════════
+   NFT КАТАЛОГ — ПОДВКЛАДКИ Предметы/Бады/Питомцы
+   ═══════════════════════════════════════════════ */
+.gc-nft-subtabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.gc-nft-subtab {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.gc-nft-subtab:hover { background: var(--green-pale); }
+.gc-nft-subtab.active {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: #fff;
 }
 
 /* ═══════════════════════════════════════════════

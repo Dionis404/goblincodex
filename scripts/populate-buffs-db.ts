@@ -173,6 +173,80 @@ interface ProduceItem {
 
 type AnyItem = SkillItem | WearableItem | CollectibleItem | ProduceItem;
 
+// ─── Buds / Pets: dedicated tables (not sfl_items/sfl_buffs) ─────────────────
+//
+// Buds, NFT pets, and common pets are three separate domains, each with its
+// own table — unlike skills/wearables/collectibles they don't share an
+// identity space with marketplace items. Each Bud/Pet trait only ever grants
+// exactly one buff (see budBuffs.ts/getPetBuffs.ts — a single buffs.push()
+// per `if` branch), so the buff is flattened directly onto the trait row
+// instead of living in a separate buffs table.
+
+/** One row per Bud trait *value* (e.g. "Diamond Gem", "Rare") and its buff. */
+interface BudTraitRow {
+  name: string;
+  traitGroup: "type" | "stem" | "aura";
+  descriptionEn: string;
+  descriptionRu: string;
+  labelType: string;
+  boostType: BoostType;
+  isDebuff: boolean;
+}
+
+/** One row per minted Bud (lib/buds/buds.ts) — its actual rolled traits + CDN image. */
+interface BudInstanceRow {
+  budId: number;
+  type: string;
+  colour: string;
+  stem: string;
+  aura: string;
+  ears: string;
+}
+
+/** NFT pet breed catalog entry (Ram, Dragon, ...). No source flavor text exists yet — fill via update-item-by-id.ts. */
+interface PetNftBreedRow {
+  name: string;
+}
+
+/** One row per NFT pet trait *value* (aura/bib) and its buff. */
+interface PetNftTraitRow {
+  name: string;
+  traitGroup: "aura" | "bib";
+  descriptionEn: string;
+  descriptionRu: string;
+  labelType: string;
+  boostType: BoostType;
+  isDebuff: boolean;
+}
+
+/** One row per minted Pet NFT (features/pets/data/pets-nfts.ts) — its actual rolled traits + CDN image. */
+interface PetNftInstanceRow {
+  petId: number;
+  type: string;
+  fur: string;
+  accessory: string;
+  bib: string;
+  aura: string;
+}
+
+/** Common (non-NFT) pet catalog entry: name → breed ("Barkley" → "Dog"). No source flavor text exists yet. */
+interface PetCommonRow {
+  name: string;
+  breed: string;
+}
+
+interface PetResourceRow {
+  resourceName: string;
+  energyYield: number | null;
+}
+
+interface PetFetchRow {
+  petType: string;
+  isNft: boolean;
+  resourceName: string;
+  unlockLevel: number;
+}
+
 interface NumericValue {
   itemName: string;
   rawValue: string;
@@ -425,6 +499,241 @@ function parseCollectibles(dict: Map<string, string>, ruDict: Map<string, string
   });
 }
 
+// ─── Parser: Bud & Pet trait buffs ────────────────────────────────────────────
+
+/**
+ * extractNamedBlock() finds the first word-boundary occurrence of `name` and
+ * then scans forward for the next `=`. That's fine when the export is the
+ * only mention of `name` in the file, but pets.ts also *uses* PET_TYPES
+ * (`name in PET_TYPES`) before it's declared, which would make the plain
+ * search latch onto that usage and then walk forward to an unrelated `=`
+ * (e.g. the next `export const ... =`). Anchoring on `const ${name}` first
+ * guarantees we start scanning at the actual declaration.
+ */
+function extractConstBlock(source: string, name: string): string {
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const declMatch = new RegExp(`\\bconst\\s+${escaped}\\b`).exec(source);
+  if (!declMatch) return "";
+  return extractNamedBlock(source.slice(declMatch.index), name);
+}
+
+/**
+ * Bud/Pet trait buffs are written as `if (varName === "Trait Value") { buffs.push({...}) }`
+ * inside per-trait-group helper functions (getStemBoost, getPetAuraBoost, etc).
+ * `varToGroup` maps the local variable name checked in each `if` (e.g. "stem",
+ * "aura", "bib") to the trait group it belongs to, so the same extractor
+ * works for both budBuffs.ts and getPetBuffs.ts. Each trait only ever grants
+ * one buff (a single buffs.push() per `if` branch) so the row IS the buff —
+ * `extra` carries whatever identifying fields the caller's row shape needs
+ * beyond name/traitGroup/description/labelType/boostType/isDebuff.
+ */
+function parseTraitBuffs<TGroup extends string, TRow>(
+  source: string,
+  varToGroup: Record<string, TGroup>,
+  dict: Map<string, string>,
+  ruDict: Map<string, string>,
+  buildRow: (base: {
+    name: string;
+    traitGroup: TGroup;
+    descriptionEn: string;
+    descriptionRu: string;
+    labelType: string;
+    boostType: BoostType;
+    isDebuff: boolean;
+  }) => TRow,
+): TRow[] {
+  const rows: TRow[] = [];
+  const re = /if \((\w+) === ["']([^"']+)["']\) \{\n([\s\S]*?)\n  \}/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(source)) !== null) {
+    const [, varName, traitValue, inner] = m;
+    const traitGroup = varToGroup[varName];
+    if (!traitGroup) continue;
+    const buffs = extractBuffLabels(inner, dict, ruDict, false);
+    const buff = buffs[0];
+    if (!buff) continue;
+    rows.push(
+      buildRow({
+        name: traitValue,
+        traitGroup,
+        descriptionEn: buff.text,
+        descriptionRu: buff.textRu,
+        labelType: buff.labelType,
+        boostType: buff.boostType,
+        isDebuff: buff.isDebuff,
+      }),
+    );
+  }
+  return rows;
+}
+
+function parseBuds(dict: Map<string, string>, ruDict: Map<string, string>): BudTraitRow[] {
+  const source = readFile("src/features/game/types/budBuffs.ts");
+  return parseTraitBuffs(
+    source,
+    { type: "type", stem: "stem", aura: "aura" } as const,
+    dict,
+    ruDict,
+    (row) => row,
+  );
+}
+
+function parsePetNftTraits(dict: Map<string, string>, ruDict: Map<string, string>): PetNftTraitRow[] {
+  const source = readFile("src/features/game/types/getPetBuffs.ts");
+  return parseTraitBuffs(
+    source,
+    { aura: "aura", bib: "bib" } as const,
+    dict,
+    ruDict,
+    (row) => row,
+  );
+}
+
+/** NFT pet breed catalog (Ram, Dragon, ...). */
+function parsePetNftBreeds(): PetNftBreedRow[] {
+  const source = readFile("src/features/game/types/pets.ts");
+  const nftTypesBlock = extractConstBlock(source, "PET_NFT_TYPES");
+  return Array.from(nftTypesBlock.matchAll(/["']([^"']+)["']/g)).map((m) => ({ name: m[1] }));
+}
+
+/** Common (non-NFT) pet name → breed ("Barkley" → "Dog"). */
+// "Ramsey" is a leftover test pet — pets.ts marks it "Goat - Not used" and maps
+// it to breed "Ram", which is actually an NFT breed name, not a common one
+// (hence it never has a resource-fetch ladder). Excluded rather than shown broken.
+const EXCLUDED_COMMON_PETS = new Set(["Ramsey"]);
+
+function parsePetsCommon(): PetCommonRow[] {
+  const source = readFile("src/features/game/types/pets.ts");
+  const typesBlock = extractConstBlock(source, "PET_TYPES");
+  return Array.from(typesBlock.matchAll(/(\w+):\s*["']([^"']+)["']/g))
+    .filter((m) => !EXCLUDED_COMMON_PETS.has(m[1]))
+    .map((m) => ({
+      name: m[1],
+      breed: m[2],
+    }));
+}
+
+/** Energy each pet resource restores, from PET_RESOURCES. */
+function parsePetResources(): PetResourceRow[] {
+  const source = readFile("src/features/game/types/pets.ts");
+  const block = extractConstBlock(source, "PET_RESOURCES");
+  const entries = extractTopLevelEntries(block);
+
+  return entries.map(({ key, block: entryBlock }) => {
+    const energyM = /energy:\s*(\d+)/.exec(entryBlock);
+    return { resourceName: key, energyYield: energyM ? parseInt(energyM[1], 10) : null };
+  });
+}
+
+/**
+ * Which resources a pet type fetches, and at what level — mirrors the
+ * PET_FETCHES reduce() in pets.ts (Acorn @1, primary category resource @3,
+ * secondary @7 if present, Moonfur @12 + tertiary @25 for NFT pets, Fossil
+ * Shell @20). Update the level numbers below if that reduce() ever changes.
+ */
+function parsePetFetches(): PetFetchRow[] {
+  const source = readFile("src/features/game/types/pets.ts");
+
+  const nftTypesBlock = extractConstBlock(source, "PET_NFT_TYPES");
+  const nftTypes = new Set(
+    Array.from(nftTypesBlock.matchAll(/["']([^"']+)["']/g)).map((m) => m[1]),
+  );
+
+  const fetchesByCategory = new Map<string, string>();
+  const fetchesBlock = extractConstBlock(source, "FETCHES_BY_CATEGORY");
+  for (const m of fetchesBlock.matchAll(/(\w+):\s*["']([^"']+)["']/g)) {
+    fetchesByCategory.set(m[1], m[2]);
+  }
+
+  const categoriesBlock = extractConstBlock(source, "PET_CATEGORIES");
+  const rows: PetFetchRow[] = [];
+
+  for (const { key: petType, block: entryBlock } of extractTopLevelEntries(categoriesBlock)) {
+    const primary = /primary:\s*["']([^"']+)["']/.exec(entryBlock)?.[1];
+    const secondary = /secondary:\s*["']([^"']+)["']/.exec(entryBlock)?.[1];
+    const tertiary = /tertiary:\s*["']([^"']+)["']/.exec(entryBlock)?.[1];
+    if (!primary) continue;
+
+    const fetches: { resourceName: string; level: number }[] = [
+      { resourceName: "Acorn", level: 1 },
+      { resourceName: fetchesByCategory.get(primary)!, level: 3 },
+      { resourceName: "Fossil Shell", level: 20 },
+    ];
+    if (secondary) fetches.push({ resourceName: fetchesByCategory.get(secondary)!, level: 7 });
+    if (tertiary) {
+      fetches.push({ resourceName: "Moonfur", level: 12 });
+      fetches.push({ resourceName: fetchesByCategory.get(tertiary)!, level: 25 });
+    }
+
+    const isNft = nftTypes.has(petType);
+    for (const f of fetches) {
+      rows.push({ petType, isNft, resourceName: f.resourceName, unlockLevel: f.level });
+    }
+  }
+
+  return rows;
+}
+
+/**
+ * Every minted Bud's actual rolled traits (lib/buds/buds.ts —
+ * `Record<number, Bud>`, ~5000 entries). Distinct from parseBuds(), which
+ * only catalogues the buff each trait *value* grants. Buds are rendered
+ * server-side into a static image per ID (lib/buds/types.ts getBudImage()),
+ * not composited client-side from trait layers — so the image is just a URL.
+ */
+function parseBudInstances(): BudInstanceRow[] {
+  const source = readFile("src/lib/buds/buds.ts");
+  const block = extractConstBlock(source, "buds");
+  const entries = extractTopLevelEntries(block);
+
+  return entries.map(({ key, block: entryBlock }) => ({
+    budId: parseInt(key, 10),
+    type: /type:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+    colour: /colour:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+    stem: /stem:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+    aura: /aura:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+    ears: /ears:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+  }));
+}
+
+/** Mirrors lib/buds/types.ts getBudImage(budId, "large") for the mainnet domain. */
+function getBudImageUrl(budId: number): string {
+  return `https://buds.sunflower-land.com/images/${budId}.webp`;
+}
+
+/**
+ * Every minted Pet NFT's actual rolled traits (features/pets/data/pets-nfts.ts
+ * — `Record<number, PetTraits>`, currently ~2000 of a max 3000 supply; grows
+ * over time as reveals continue, so this needs re-running periodically. Like
+ * Buds, these are server-rendered per ID, not composited client-side — see
+ * features/island/pets/lib/petShared.ts getPetImageForMarketplace().
+ */
+function parsePetNftInstances(): PetNftInstanceRow[] {
+  const source = readFile("src/features/pets/data/pets-nfts.ts");
+  const block = extractConstBlock(source, "PETS_NFT_DATA");
+  const entries = extractTopLevelEntries(block);
+
+  return entries.map(({ key, block: entryBlock }) => ({
+    petId: parseInt(key, 10),
+    type: /type:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+    fur: /fur:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+    accessory: /accessory:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+    bib: /bib:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+    aura: /aura:\s*["']([^"']+)["']/.exec(entryBlock)?.[1] ?? "",
+  }));
+}
+
+/**
+ * Mirrors features/island/pets/lib/petShared.ts getPetImageForMarketplace()
+ * for the mainnet domain — the marketplace/card variant reads best as a
+ * single representative image. Other CDN variants exist per ID if ever
+ * needed: /idles/, /sleepings/ (append "_animated" for the animated webp),
+ * /sheets/ (Phaser spritesheet), /opensea/.
+ */
+function getPetNftImageUrl(petId: number): string {
+  return `https://pets.sunflower-land.com/marketplace/${petId}_animated.webp`;
+}
+
 // ─── Parser: Crops/seeds/resources/flowers/fruits/fish (no buffs) ────────────
 
 // Each entry names the SFL source file, the top-level Record block to read
@@ -657,6 +966,146 @@ CREATE INDEX IF NOT EXISTS idx_sfl_items_tags ON sfl_items USING GIN(tags);
 CREATE INDEX IF NOT EXISTS idx_sfl_items_game_id ON sfl_items(game_id);
 CREATE INDEX IF NOT EXISTS idx_sfl_items_is_active ON sfl_items(is_active);
 CREATE INDEX IF NOT EXISTS idx_sfl_buffs_is_active ON sfl_buffs(is_active);
+
+-- ─── Buds ───────────────────────────────────────────────────────────────────
+
+-- Trait catalog: one row per trait *value* (e.g. "Diamond Gem" as a stem) and
+-- the single buff it grants (budBuffs.ts never pushes more than one buff per
+-- trait). sprite/description_en/description_ru are edited manually for now —
+-- there's no per-trait icon or flavor text in the SFL source to derive them
+-- from automatically.
+CREATE TABLE IF NOT EXISTS sfl_buds (
+  id                     TEXT NOT NULL,
+  trait_group            TEXT NOT NULL, -- 'type' | 'stem' | 'aura'
+  sprite                 TEXT,
+  description_en         TEXT,
+  description_ru         TEXT,
+  label_type             TEXT,
+  boost_type             TEXT,
+  is_debuff              BOOLEAN DEFAULT FALSE,
+  manually_edited_fields TEXT[] DEFAULT '{}',
+  last_synced_at         TIMESTAMPTZ,
+  is_active              BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (id, trait_group)
+);
+
+-- Registry of every minted Bud's actual rolled traits, plus its pre-rendered
+-- marketplace image (SFL renders these server-side, not composited client-side
+-- — see lib/buds/types.ts getBudImage()). Join (type|stem|aura) to sfl_buds.id
+-- (matching trait_group) to resolve a specific Bud's buffs.
+CREATE TABLE IF NOT EXISTS sfl_bud_instances (
+  bud_id         INTEGER PRIMARY KEY,
+  type           TEXT NOT NULL,
+  colour         TEXT NOT NULL,
+  stem           TEXT NOT NULL,
+  aura           TEXT NOT NULL,
+  ears           TEXT NOT NULL,
+  image_url      TEXT NOT NULL,
+  last_synced_at TIMESTAMPTZ,
+  is_active      BOOLEAN DEFAULT TRUE
+);
+
+CREATE INDEX IF NOT EXISTS idx_sfl_bud_instances_is_active ON sfl_bud_instances(is_active);
+
+-- ─── NFT Pets ───────────────────────────────────────────────────────────────
+
+-- Breed catalog (Ram, Dragon, Phoenix, ...). No flavor text/dedicated icon
+-- exists in the SFL source — sprite defaults to the "blank-{breed}" NFT-card
+-- background from assets/pets/backgrounds/; description_en/ru start NULL and
+-- are filled manually via update-item-by-id.ts.
+CREATE TABLE IF NOT EXISTS sfl_pets_nft (
+  id                     TEXT PRIMARY KEY,
+  sprite                 TEXT,
+  description_en         TEXT,
+  description_ru         TEXT,
+  manually_edited_fields TEXT[] DEFAULT '{}',
+  last_synced_at         TIMESTAMPTZ,
+  is_active              BOOLEAN DEFAULT TRUE
+);
+
+-- Trait catalog for NFT pets: one row per aura/bib trait value and its buff
+-- (getPetBuffs.ts never pushes more than one buff per trait, same as Buds).
+CREATE TABLE IF NOT EXISTS sfl_pets_nft_traits (
+  id                     TEXT NOT NULL,
+  trait_group            TEXT NOT NULL, -- 'aura' | 'bib'
+  sprite                 TEXT,
+  description_en         TEXT,
+  description_ru         TEXT,
+  label_type             TEXT,
+  boost_type             TEXT,
+  is_debuff              BOOLEAN DEFAULT FALSE,
+  manually_edited_fields TEXT[] DEFAULT '{}',
+  last_synced_at         TIMESTAMPTZ,
+  is_active              BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (id, trait_group)
+);
+
+-- Registry of every minted Pet NFT's actual rolled traits, plus its
+-- pre-rendered marketplace image (also server-side rendered, not composited —
+-- see features/island/pets/lib/petShared.ts getPetImage()/getPetImageForMarketplace()).
+-- "type" is the breed — join to sfl_pets_nft.id and sfl_pet_fetches.pet_type
+-- for its catalog entry and resource schedule; join (bib|aura) to
+-- sfl_pets_nft_traits.id (matching trait_group) for buffs.
+-- Grows over time as new NFTs are revealed (currently ~2000 of a 3000 cap) —
+-- re-run sfl:populate periodically to pick up newly revealed pets.
+CREATE TABLE IF NOT EXISTS sfl_pet_nft_instances (
+  pet_id         INTEGER PRIMARY KEY,
+  type           TEXT NOT NULL,
+  fur            TEXT NOT NULL,
+  accessory      TEXT NOT NULL,
+  bib            TEXT NOT NULL,
+  aura           TEXT NOT NULL,
+  image_url      TEXT NOT NULL,
+  last_synced_at TIMESTAMPTZ,
+  is_active      BOOLEAN DEFAULT TRUE
+);
+
+CREATE INDEX IF NOT EXISTS idx_sfl_pet_nft_instances_type ON sfl_pet_nft_instances(type);
+CREATE INDEX IF NOT EXISTS idx_sfl_pet_nft_instances_is_active ON sfl_pet_nft_instances(is_active);
+
+-- ─── Common (non-NFT) Pets ──────────────────────────────────────────────────
+
+-- Name → breed catalog ("Barkley" → "Dog"). sprite resolves from the same
+-- sprite map as sfl_items (ITEM_DETAILS images already cover pet names);
+-- description_en/ru start NULL and are filled manually.
+CREATE TABLE IF NOT EXISTS sfl_pets_common (
+  id                     TEXT PRIMARY KEY,
+  breed                  TEXT NOT NULL,
+  sprite                 TEXT,
+  description_en         TEXT,
+  description_ru         TEXT,
+  manually_edited_fields TEXT[] DEFAULT '{}',
+  last_synced_at         TIMESTAMPTZ,
+  is_active              BOOLEAN DEFAULT TRUE
+);
+
+-- ─── Shared Pet mechanics (span both NFT and common pets) ──────────────────
+
+-- Energy a pet resource restores when fed to a pet (PET_RESOURCES in pets.ts).
+CREATE TABLE IF NOT EXISTS sfl_pet_resources (
+  resource_name TEXT PRIMARY KEY,
+  energy_yield  INTEGER,
+  last_synced_at TIMESTAMPTZ,
+  is_active      BOOLEAN DEFAULT TRUE
+);
+
+-- Which resource a pet type (common breed OR NFT breed, see is_nft) fetches
+-- at which level (derived from PET_CATEGORIES + FETCHES_BY_CATEGORY; see
+-- parsePetFetches()). Kept as one shared table rather than split per domain
+-- since it's the same mechanic/shape for both, just gated by is_nft.
+CREATE TABLE IF NOT EXISTS sfl_pet_fetches (
+  id             SERIAL PRIMARY KEY,
+  pet_type       TEXT NOT NULL,
+  is_nft         BOOLEAN DEFAULT FALSE,
+  resource_name  TEXT NOT NULL REFERENCES sfl_pet_resources(resource_name),
+  unlock_level   INTEGER NOT NULL,
+  last_synced_at TIMESTAMPTZ,
+  is_active      BOOLEAN DEFAULT TRUE,
+  UNIQUE (pet_type, resource_name, unlock_level)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sfl_pet_fetches_pet_type ON sfl_pet_fetches(pet_type);
+CREATE INDEX IF NOT EXISTS idx_sfl_pet_fetches_is_active ON sfl_pet_fetches(is_active);
 `;
 
 // Columns a hand-edit (scripts/update-item-by-id.ts) is allowed to freeze
@@ -680,6 +1129,14 @@ async function populateDB(
   gameIds: Map<string, number>,
   wearableIds: Map<string, number>,
   miscNames: Set<string>,
+  petResources: PetResourceRow[],
+  petFetches: PetFetchRow[],
+  budTraits: BudTraitRow[],
+  budInstances: BudInstanceRow[],
+  petNftBreeds: PetNftBreedRow[],
+  petNftTraits: PetNftTraitRow[],
+  petNftInstances: PetNftInstanceRow[],
+  petsCommon: PetCommonRow[],
 ): Promise<RunSummary> {
   const client = await pool.connect();
   const runStartTimestamp = new Date();
@@ -795,6 +1252,131 @@ async function populateDB(
       }
     }
 
+    let petResourcesUpserted = 0;
+    for (const resource of petResources) {
+      await client.query(
+        `INSERT INTO sfl_pet_resources (resource_name, energy_yield, last_synced_at, is_active)
+         VALUES ($1, $2, now(), TRUE)
+         ON CONFLICT (resource_name) DO UPDATE SET
+           energy_yield = EXCLUDED.energy_yield,
+           last_synced_at = now(),
+           is_active = TRUE`,
+        [resource.resourceName, resource.energyYield],
+      );
+      petResourcesUpserted++;
+    }
+
+    let petFetchesUpserted = 0;
+    for (const fetch of petFetches) {
+      await client.query(
+        `INSERT INTO sfl_pet_fetches (pet_type, is_nft, resource_name, unlock_level, last_synced_at, is_active)
+         VALUES ($1, $2, $3, $4, now(), TRUE)
+         ON CONFLICT (pet_type, resource_name, unlock_level) DO UPDATE SET
+           is_nft = EXCLUDED.is_nft,
+           last_synced_at = now(),
+           is_active = TRUE`,
+        [fetch.petType, fetch.isNft, fetch.resourceName, fetch.unlockLevel],
+      );
+      petFetchesUpserted++;
+    }
+
+    for (const trait of budTraits) {
+      const sprite = spriteMap.get(trait.name) ?? null;
+      await client.query(
+        `INSERT INTO sfl_buds
+           (id, trait_group, sprite, description_en, description_ru, label_type, boost_type, is_debuff, last_synced_at, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now(), TRUE)
+         ON CONFLICT (id, trait_group) DO UPDATE SET
+           sprite = CASE WHEN 'sprite' = ANY(sfl_buds.manually_edited_fields) THEN sfl_buds.sprite ELSE EXCLUDED.sprite END,
+           description_en = CASE WHEN 'description_en' = ANY(sfl_buds.manually_edited_fields) THEN sfl_buds.description_en ELSE EXCLUDED.description_en END,
+           description_ru = CASE WHEN 'description_ru' = ANY(sfl_buds.manually_edited_fields) THEN sfl_buds.description_ru ELSE EXCLUDED.description_ru END,
+           label_type = EXCLUDED.label_type,
+           boost_type = EXCLUDED.boost_type,
+           is_debuff = EXCLUDED.is_debuff,
+           last_synced_at = now(),
+           is_active = TRUE`,
+        [trait.name, trait.traitGroup, sprite, trait.descriptionEn, trait.descriptionRu, trait.labelType, trait.boostType, trait.isDebuff],
+      );
+    }
+
+    for (const bud of budInstances) {
+      await client.query(
+        `INSERT INTO sfl_bud_instances (bud_id, type, colour, stem, aura, ears, image_url, last_synced_at, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, now(), TRUE)
+         ON CONFLICT (bud_id) DO UPDATE SET
+           type = EXCLUDED.type,
+           colour = EXCLUDED.colour,
+           stem = EXCLUDED.stem,
+           aura = EXCLUDED.aura,
+           ears = EXCLUDED.ears,
+           image_url = EXCLUDED.image_url,
+           last_synced_at = now(),
+           is_active = TRUE`,
+        [bud.budId, bud.type, bud.colour, bud.stem, bud.aura, bud.ears, getBudImageUrl(bud.budId)],
+      );
+    }
+
+    for (const breed of petNftBreeds) {
+      const sprite = `pets/backgrounds/blank-${breed.name.toLowerCase()}.webp`;
+      await client.query(
+        `INSERT INTO sfl_pets_nft (id, sprite, last_synced_at, is_active)
+         VALUES ($1, $2, now(), TRUE)
+         ON CONFLICT (id) DO UPDATE SET
+           sprite = CASE WHEN 'sprite' = ANY(sfl_pets_nft.manually_edited_fields) THEN sfl_pets_nft.sprite ELSE EXCLUDED.sprite END,
+           last_synced_at = now(),
+           is_active = TRUE`,
+        [breed.name, sprite],
+      );
+    }
+
+    for (const trait of petNftTraits) {
+      await client.query(
+        `INSERT INTO sfl_pets_nft_traits
+           (id, trait_group, description_en, description_ru, label_type, boost_type, is_debuff, last_synced_at, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, now(), TRUE)
+         ON CONFLICT (id, trait_group) DO UPDATE SET
+           description_en = CASE WHEN 'description_en' = ANY(sfl_pets_nft_traits.manually_edited_fields) THEN sfl_pets_nft_traits.description_en ELSE EXCLUDED.description_en END,
+           description_ru = CASE WHEN 'description_ru' = ANY(sfl_pets_nft_traits.manually_edited_fields) THEN sfl_pets_nft_traits.description_ru ELSE EXCLUDED.description_ru END,
+           label_type = EXCLUDED.label_type,
+           boost_type = EXCLUDED.boost_type,
+           is_debuff = EXCLUDED.is_debuff,
+           last_synced_at = now(),
+           is_active = TRUE`,
+        [trait.name, trait.traitGroup, trait.descriptionEn, trait.descriptionRu, trait.labelType, trait.boostType, trait.isDebuff],
+      );
+    }
+
+    for (const pet of petNftInstances) {
+      await client.query(
+        `INSERT INTO sfl_pet_nft_instances (pet_id, type, fur, accessory, bib, aura, image_url, last_synced_at, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, now(), TRUE)
+         ON CONFLICT (pet_id) DO UPDATE SET
+           type = EXCLUDED.type,
+           fur = EXCLUDED.fur,
+           accessory = EXCLUDED.accessory,
+           bib = EXCLUDED.bib,
+           aura = EXCLUDED.aura,
+           image_url = EXCLUDED.image_url,
+           last_synced_at = now(),
+           is_active = TRUE`,
+        [pet.petId, pet.type, pet.fur, pet.accessory, pet.bib, pet.aura, getPetNftImageUrl(pet.petId)],
+      );
+    }
+
+    for (const pet of petsCommon) {
+      const sprite = spriteMap.get(pet.name) ?? null;
+      await client.query(
+        `INSERT INTO sfl_pets_common (id, breed, sprite, last_synced_at, is_active)
+         VALUES ($1, $2, $3, now(), TRUE)
+         ON CONFLICT (id) DO UPDATE SET
+           breed = EXCLUDED.breed,
+           sprite = CASE WHEN 'sprite' = ANY(sfl_pets_common.manually_edited_fields) THEN sfl_pets_common.sprite ELSE EXCLUDED.sprite END,
+           last_synced_at = now(),
+           is_active = TRUE`,
+        [pet.name, pet.breed, sprite],
+      );
+    }
+
     // Soft-delete sweep: anything not touched this run (no longer present in
     // SFL source) gets marked inactive, never physically deleted.
     const itemsSwept = await client.query(
@@ -803,6 +1385,38 @@ async function populateDB(
     );
     const buffsSwept = await client.query(
       `UPDATE sfl_buffs SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+    const petResourcesSwept = await client.query(
+      `UPDATE sfl_pet_resources SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+    const petFetchesSwept = await client.query(
+      `UPDATE sfl_pet_fetches SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+    const budTraitsSwept = await client.query(
+      `UPDATE sfl_buds SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+    const budInstancesSwept = await client.query(
+      `UPDATE sfl_bud_instances SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+    const petNftBreedsSwept = await client.query(
+      `UPDATE sfl_pets_nft SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+    const petNftTraitsSwept = await client.query(
+      `UPDATE sfl_pets_nft_traits SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+    const petNftInstancesSwept = await client.query(
+      `UPDATE sfl_pet_nft_instances SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      [runStartTimestamp],
+    );
+    const petsCommonSwept = await client.query(
+      `UPDATE sfl_pets_common SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
       [runStartTimestamp],
     );
 
@@ -818,7 +1432,21 @@ async function populateDB(
       `   Numeric values matched: ${items.filter((i) => numericValues.has(i.name)).length}/${items.length}`,
     );
     console.log(
-      `   Swept inactive: ${itemsSwept.rowCount} items, ${buffsSwept.rowCount} buffs`,
+      `   Pet resources: ${petResourcesUpserted}, pet fetches: ${petFetchesUpserted}`,
+    );
+    console.log(
+      `   Buds: ${budTraits.length} traits, ${budInstances.length} instances`,
+    );
+    console.log(
+      `   NFT pets: ${petNftBreeds.length} breeds, ${petNftTraits.length} traits, ${petNftInstances.length} instances`,
+    );
+    console.log(`   Common pets: ${petsCommon.length}`);
+    console.log(
+      `   Swept inactive: ${itemsSwept.rowCount} items, ${buffsSwept.rowCount} buffs, ` +
+        `${petResourcesSwept.rowCount} pet resources, ${petFetchesSwept.rowCount} pet fetches, ` +
+        `${budTraitsSwept.rowCount} bud traits, ${budInstancesSwept.rowCount} bud instances, ` +
+        `${petNftBreedsSwept.rowCount} pet NFT breeds, ${petNftTraitsSwept.rowCount} pet NFT traits, ` +
+        `${petNftInstancesSwept.rowCount} pet NFT instances, ${petsCommonSwept.rowCount} common pets`,
     );
 
     if (lowConfidenceItems.length > 0) {
@@ -933,7 +1561,35 @@ async function main() {
   const miscNames = parseMiscItemNames(SFL_DIR);
   console.log(`   ${miscNames.size} misc/junk item names (tickets, tokens, clutter)`);
 
-  const allItems: AnyItem[] = [...skills, ...wearables, ...collectibles, ...produce, ...decorCollectibles];
+  console.log("\n🔍 Parsing Bud trait buffs (type/stem/aura)...");
+  const budTraits = parseBuds(dict, ruDict);
+  console.log(`   ${budTraits.length} Bud traits with buffs`);
+
+  console.log("\n🔍 Parsing minted Bud instances...");
+  const budInstances = parseBudInstances();
+  console.log(`   ${budInstances.length} Bud instances`);
+
+  console.log("\n🔍 Parsing NFT pet breeds and trait buffs (aura/bib)...");
+  const petNftBreeds = parsePetNftBreeds();
+  const petNftTraits = parsePetNftTraits(dict, ruDict);
+  console.log(`   ${petNftBreeds.length} breeds, ${petNftTraits.length} traits with buffs`);
+
+  console.log("\n🔍 Parsing minted Pet NFT instances...");
+  const petNftInstances = parsePetNftInstances();
+  console.log(`   ${petNftInstances.length} Pet NFT instances`);
+
+  console.log("\n🔍 Parsing common pet catalog (name → breed)...");
+  const petsCommon = parsePetsCommon();
+  console.log(`   ${petsCommon.length} common pets`);
+
+  console.log("\n🔍 Parsing Pet fetchable resources...");
+  const petResources = parsePetResources();
+  const petFetches = parsePetFetches();
+  console.log(`   ${petResources.length} pet resources, ${petFetches.length} pet fetch rules`);
+
+  const allItems: AnyItem[] = [
+    ...skills, ...wearables, ...collectibles, ...produce, ...decorCollectibles,
+  ];
 
   if (unresolvedKeys.length > 0) {
     console.log(`\n⚠  Unresolved i18n keys (${unresolvedKeys.length}):`);
@@ -957,7 +1613,11 @@ async function main() {
   try {
     await pool.query("SELECT 1");
     console.log("   Connected.");
-    const summary = await populateDB(pool, allItems, numericValues, spriteMap, gameIds, wearableIds, miscNames);
+    const summary = await populateDB(
+      pool, allItems, numericValues, spriteMap, gameIds, wearableIds, miscNames,
+      petResources, petFetches, budTraits, budInstances, petNftBreeds, petNftTraits,
+      petNftInstances, petsCommon,
+    );
 
     const summaryPath = path.resolve("scripts/.last-run-summary.json");
     fs.writeFileSync(

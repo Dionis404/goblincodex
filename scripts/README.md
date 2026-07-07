@@ -16,6 +16,26 @@ Requires:
 - `DATABASE_URL` environment variable (`postgresql://user:pass@host:5432/dbname`)
 - SFL source clone at `_sfl_temp/` (or pass `--sfl-dir <path>`)
 
+Also parses Buds, NFT pets, and common pets — three separate domains, each in its own dedicated tables (not `sfl_items`/`sfl_buffs`), upserted/soft-deleted the same way:
+
+**Buds**
+- `sfl_buds` — trait catalog: one row per trait *value* (e.g. "Diamond Gem" as a stem, "Rare" as an aura) from `budBuffs.ts`, PK `(id, trait_group)` where `trait_group` is `type`/`stem`/`aura`. Each trait grants exactly one buff (`budBuffs.ts` never pushes more than one per `if` branch), so the buff (`description_en`/`description_ru`/`label_type`/`boost_type`/`is_debuff`) lives directly on the row instead of a separate buffs table. `sprite` is left for manual entry — there's no per-trait icon in the SFL source.
+- `sfl_bud_instances` — every minted Bud's actual rolled traits (`lib/buds/buds.ts`, ~5000 rows, PK `bud_id`) plus `image_url`, a direct CDN link (`https://buds.sunflower-land.com/images/{id}.webp`) — Buds are rendered server-side per ID, not composited client-side from trait layers (see `lib/buds/types.ts` `getBudImage()`). This is the full, closed mint, so one run is enough.
+
+**NFT pets**
+- `sfl_pets_nft` — breed catalog (Ram, Dragon, Phoenix, Griffin, Warthog, Wolf, Bear). `sprite` defaults to the `blank-{breed}` NFT-card background from `assets/pets/backgrounds/`; `description_en`/`description_ru` start `NULL` (no flavor text exists in the SFL source — fill manually).
+- `sfl_pets_nft_traits` — trait catalog for `aura`/`bib` from `getPetBuffs.ts`, same one-buff-per-trait shape as `sfl_buds`.
+- `sfl_pet_nft_instances` — every minted Pet NFT's actual rolled traits (`features/pets/data/pets-nfts.ts`, PK `pet_id`, capped at 3000 by `getPetTraits.ts`, currently ~2000 revealed) plus `image_url` (`https://pets.sunflower-land.com/marketplace/{id}_animated.webp` — also server-rendered, see `features/island/pets/lib/petShared.ts` `getPetImageForMarketplace()`). Reveals continue over time, so **this table needs periodic re-runs**, unlike Bud instances.
+
+**Common (non-NFT) pets**
+- `sfl_pets_common` — name → breed catalog (`pets.ts` `PET_TYPES`, e.g. "Barkley" → "Dog"). `sprite` resolves from the same sprite map as `sfl_items` (pet names already have `ITEM_DETAILS` images); `description_en`/`description_ru` start `NULL`.
+
+**Shared pet mechanics** (span both NFT and common pets — kept as one table rather than split per domain since it's the same shape either way, just gated by `is_nft`)
+- `sfl_pet_resources` — energy each fetchable resource restores (`pets.ts` `PET_RESOURCES`).
+- `sfl_pet_fetches` — which resource a pet type (common breed or NFT breed) fetches at which level (`pets.ts` `PET_CATEGORIES`/`FETCHES_BY_CATEGORY`). Common breeds only reach the primary/secondary tier; NFT breeds also unlock a tertiary-category resource and Moonfur. Mirrors the `PET_FETCHES` reduce() in `pets.ts` — if that level schedule changes there, update `parsePetFetches()` in `populate-buffs-db.ts` to match.
+
+`sfl:clone`'s sparse-checkout includes `src/lib/buds` and `src/features/pets/data` for this (not the rest of `src/features/pets`, which is only UI components).
+
 ### `update-item-by-id.ts`
 
 Manually correct a single `sfl_items` or `sfl_buffs` row. Marks each touched column in `manually_edited_fields` so the next `sfl:populate` run won't clobber the fix.

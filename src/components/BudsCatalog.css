@@ -1,0 +1,265 @@
+.buds-root { display: flex; flex-direction: column; gap: 8px; }
+
+.buds-lookup-status {
+  font-size: 13px;
+  color: var(--text-sec);
+  margin-bottom: 16px;
+}
+.buds-lookup-status--error { color: #B91C1C; }
+[data-theme="dark"] .buds-lookup-status--error { color: #FCA5A5; }
+
+.buds-lookup-result {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.buds-lookup-image-wrap {
+  width: 96px;
+  height: 96px;
+  border-radius: 10px;
+  background-color: var(--green-pale);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.buds-lookup-image {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  /* The CDN render has ~40% empty space above the Bud and ~6% below (game
+     reserves headroom for taller stems), so centering the raw image visually
+     shifts the art downward — nudge it back up. */
+  transform: translateY(-16%);
+}
+.buds-lookup-info { flex: 1; min-width: 0; }
+.buds-lookup-title { font-size: 18px; font-weight: 700; margin: 0 0 4px; color: var(--text); }
+.buds-lookup-market-link {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green-dark);
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+.buds-lookup-market-link:hover { text-decoration: underline; }
+.buds-lookup-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-bottom: 12px;
+}
+.buds-lookup-trait-line { font-size: 13px; color: var(--text-sec); }
+.buds-lookup-boosts { display: flex; flex-wrap: wrap; gap: 8px; }
+.buds-lookup-no-boosts { font-size: 13px; color: var(--text-ter); }
+
+/* ── Фильтр по комбинации трейтов ── */
+.buds-results-section { margin-bottom: 32px; }
+.buds-filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.buds-filter-bar-hint {
+  font-size: 12px;
+  color: var(--text-sec);
+  margin-right: 4px;
+}
+.buds-filter-id-input {
+  width: 170px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.buds-filter-id-input:focus {
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px var(--green-pale);
+}
+.buds-filter-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.buds-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--green-dark);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+.buds-filter-select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font-body);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.buds-filter-select:focus {
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px var(--green-pale);
+}
+.buds-filter-reset {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-sec);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.buds-filter-reset:hover { background: var(--green-pale); }
+
+.buds-filter-count { font-size: 13px; color: var(--text-sec); margin-bottom: 12px; }
+
+.buds-instance-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.buds-instance-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+.buds-instance-card:hover { border-color: var(--green-mid); }
+.buds-instance-image-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  background-color: var(--green-pale);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.buds-instance-image {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  transform: translateY(-16%);
+}
+.buds-instance-id { font-size: 11px; font-weight: 600; color: var(--text-sec); }
+
+.buds-filter-more {
+  display: block;
+  margin: 0 auto 8px;
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.buds-filter-more:hover { background: var(--green-pale); }
+
+/* ── Группы трейтов ── */
+.buds-group { margin-bottom: 20px; }
+.buds-group-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin-bottom: 12px;
+}
+.buds-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+.buds-trait-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  transition: border-color 0.15s, background 0.15s;
+}
+.buds-trait-card:hover { border-color: var(--green-mid); }
+.buds-trait-card.selected {
+  background: var(--green-pale);
+  border-color: var(--green-dark);
+  box-shadow: 0 0 0 2px var(--green-dark) inset;
+}
+.buds-trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.buds-trait-card .buds-badge { font-size: 10px; padding: 3px 8px; }
+
+/* ── Баффы (та же палитра, что и bc-boost--*) ── */
+.buds-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  width: fit-content;
+}
+.buds-badge--success { background: var(--green-pale); color: var(--green-dark); }
+.buds-badge--info     { background: #DBEAFE; color: #1D4ED8; }
+.buds-badge--vibrant  { background: #FFF7ED; color: #C2410C; }
+.buds-badge--danger   { background: #FEE2E2; color: #B91C1C; }
+
+[data-theme="dark"] .buds-badge--info    { background: #172554; color: #93C5FD; }
+[data-theme="dark"] .buds-badge--vibrant { background: #431407; color: #FDBA74; }
+[data-theme="dark"] .buds-badge--danger  { background: #450a0a; color: #FCA5A5; }
+
+@media (max-width: 900px) {
+  .buds-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 700px) {
+  .buds-grid { grid-template-columns: repeat(3, 1fr); }
+  .buds-instance-grid { grid-template-columns: repeat(3, 1fr); }
+  .buds-lookup-result { flex-direction: column; align-items: center; text-align: center; }
+  .buds-lookup-traits { justify-content: center; }
+  .buds-lookup-boosts { justify-content: center; }
+}

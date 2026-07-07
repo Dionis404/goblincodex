@@ -34,6 +34,31 @@ function parseArgs(): { sflDir: string; targetDir: string } {
   };
 }
 
+// Sprites referenced by populate-buffs-db.ts / the frontend that aren't
+// derivable from parseSpriteMap() (no ITEM_DETAILS-style import to scan) —
+// hand-built from known filename conventions.
+const EXTRA_SPRITES = [
+  "pets/backgrounds/blank-dragon.webp",
+  "pets/backgrounds/blank-ram.webp",
+  "pets/backgrounds/blank-phoenix.webp",
+  "pets/backgrounds/blank-griffin.webp",
+  "pets/backgrounds/blank-warthog.webp",
+  "pets/backgrounds/blank-wolf.webp",
+  "pets/backgrounds/blank-bear.webp",
+  // Bud "Type" (island) backgrounds — one per TypeTrait value, shown behind
+  // a Bud's rendered image (see BudsCatalog.tsx).
+  "buds-backgrounds/plaza_shadow.png",
+  "buds-backgrounds/woodlands_shadow.png",
+  "buds-backgrounds/cave_shadow.png",
+  "buds-backgrounds/sea_shadow.png",
+  "buds-backgrounds/castle_shadow.png",
+  "buds-backgrounds/port_shadow.png",
+  "buds-backgrounds/retreat_shadow.png",
+  "buds-backgrounds/saphiro_shadow.png",
+  "buds-backgrounds/snow_shadow.png",
+  "buds-backgrounds/beach_shadow.png",
+];
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 function main() {
@@ -53,7 +78,7 @@ function main() {
   console.log(`  ${spriteMap.size} sprites found in source`);
 
   // Collect unique sprite paths (multiple items can share a sprite)
-  const uniqueSprites = new Set(spriteMap.values());
+  const uniqueSprites = new Set([...spriteMap.values(), ...EXTRA_SPRITES]);
 
   let copied = 0;
   let upToDate = 0;

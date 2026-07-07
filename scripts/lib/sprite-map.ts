@@ -129,7 +129,9 @@ export function extractTopLevelEntries(block: string): RawEntry[] {
         key += block[i++];
       }
       i++;
-    } else if (/[A-Za-z_$]/.test(block[i])) {
+    } else if (/[A-Za-z_$0-9]/.test(block[i])) {
+      // Leading digit covers bare numeric keys (e.g. Bud/Pet NFT id registries:
+      // `1: { ... }`), which are otherwise indistinguishable from identifiers here.
       while (i < block.length && /[\w$]/.test(block[i])) {
         key += block[i++];
       }

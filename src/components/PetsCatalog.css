@@ -1,0 +1,355 @@
+.pc-root { display: flex; flex-direction: column; gap: 8px; }
+
+/* ── Обычные / NFT ── */
+.pc-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.pc-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.pc-tab:hover { background: var(--green-pale); }
+.pc-tab.active {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: #fff;
+}
+.pc-tab-count {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+/* ── Сетка карточек (переиспользует стиль bc-card) ── */
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.pc-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.pc-card--breed {
+  align-items: stretch;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color 0.15s, background 0.15s;
+}
+.pc-card--breed:hover { border-color: var(--green-mid); }
+.pc-card--breed.selected {
+  background: var(--green-pale);
+  border-color: var(--green-dark);
+  box-shadow: 0 0 0 2px var(--green-dark) inset;
+}
+.pc-card--breed .pc-card-sprite,
+.pc-card--breed .pc-card-name { align-self: center; }
+.pc-card--breed .pc-card-sprite { width: 120px; height: 120px; }
+.pc-card-sprite {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pc-sprite-img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.pc-sprite-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--green-pale);
+  border-radius: 8px;
+  color: var(--text-ter);
+  font-size: 20px;
+}
+.pc-card-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.pc-card-desc { font-size: 12px; color: var(--text-sec); line-height: 1.5; }
+.pc-breed-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--green-pale);
+  color: var(--green-dark);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ── Лесенка добычи ресурсов ── */
+.pc-fetch-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pc-fetch-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-sec);
+}
+.pc-fetch-level {
+  font-weight: 700;
+  color: var(--green-dark);
+  min-width: 44px;
+}
+.pc-fetch-resource { flex: 1; }
+.pc-fetch-energy { color: var(--text-ter); }
+
+/* ── Трейты (ауры/ошейники) ── */
+.pc-traits-section { margin-bottom: 24px; }
+.pc-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin: 8px 0 10px;
+}
+.pc-section-title:first-child { margin-top: 0; }
+.pc-traits-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.pc-trait-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 140px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  transition: border-color 0.15s, background 0.15s;
+}
+.pc-trait-card:hover { border-color: var(--green-mid); }
+.pc-trait-card.selected {
+  background: var(--green-pale);
+  border-color: var(--green-dark);
+  box-shadow: 0 0 0 2px var(--green-dark) inset;
+}
+.pc-trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+
+/* ── Баффы ── */
+.pc-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  width: fit-content;
+}
+.pc-badge--success { background: var(--green-pale); color: var(--green-dark); }
+.pc-badge--info     { background: #DBEAFE; color: #1D4ED8; }
+.pc-badge--vibrant  { background: #FFF7ED; color: #C2410C; }
+.pc-badge--danger   { background: #FEE2E2; color: #B91C1C; }
+
+[data-theme="dark"] .pc-badge--info    { background: #172554; color: #93C5FD; }
+[data-theme="dark"] .pc-badge--vibrant { background: #431407; color: #FDBA74; }
+[data-theme="dark"] .pc-badge--danger  { background: #450a0a; color: #FCA5A5; }
+
+/* ── Фильтр по трейтам/номеру ── */
+.pc-filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.pc-filter-bar-hint { font-size: 12px; color: var(--text-sec); margin-right: 4px; }
+.pc-filter-id-input {
+  width: 170px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pc-filter-id-input:focus {
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px var(--green-pale);
+}
+.pc-filter-select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font-body);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pc-filter-select:focus {
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px var(--green-pale);
+}
+.pc-filter-reset {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-sec);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.pc-filter-reset:hover { background: var(--green-pale); }
+
+.pc-filter-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.pc-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--green-dark);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pc-filter-count { font-size: 13px; color: var(--text-sec); margin-bottom: 12px; }
+.pc-filter-more {
+  display: block;
+  margin: 0 auto 8px;
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.pc-filter-more:hover { background: var(--green-pale); }
+
+.pc-results-section { margin-bottom: 32px; }
+
+/* ── Сетка мини-карточек найденных Pet NFT ── */
+.pc-instance-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.pc-instance-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+.pc-instance-card:hover { border-color: var(--green-mid); }
+.pc-instance-image {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--green-pale);
+}
+.pc-instance-id { font-size: 11px; font-weight: 600; color: var(--text-sec); }
+
+.pc-lookup-market-link {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green-dark);
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+.pc-lookup-market-link:hover { text-decoration: underline; }
+
+.pc-lookup-status { font-size: 13px; color: var(--text-sec); margin-bottom: 16px; }
+.pc-lookup-status--error { color: #B91C1C; }
+[data-theme="dark"] .pc-lookup-status--error { color: #FCA5A5; }
+
+.pc-lookup-result {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.pc-lookup-image {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--green-pale);
+  flex-shrink: 0;
+}
+.pc-lookup-info { flex: 1; min-width: 0; }
+.pc-lookup-title { font-size: 18px; font-weight: 700; margin: 0 0 4px; color: var(--text); }
+.pc-lookup-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-bottom: 12px;
+}
+.pc-lookup-trait-line { font-size: 13px; color: var(--text-sec); }
+.pc-lookup-boosts { display: flex; flex-wrap: wrap; gap: 8px; }
+.pc-lookup-no-boosts { font-size: 13px; color: var(--text-ter); }
+
+@media (max-width: 900px) {
+  .pc-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 700px) {
+  .pc-grid { grid-template-columns: repeat(2, 1fr); }
+  .pc-instance-grid { grid-template-columns: repeat(3, 1fr); }
+  .pc-lookup-result { flex-direction: column; align-items: center; text-align: center; }
+  .pc-lookup-traits { justify-content: center; }
+  .pc-lookup-boosts { justify-content: center; }
+}

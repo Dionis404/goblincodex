@@ -1,13 +1,13 @@
 import type { APIRoute } from 'astro';
-import { getCachedCatalogItems } from '../../lib/catalog-cache';
+import { getCachedBuds } from '../../lib/catalog-cache';
 import { cachedJsonResponse, errorJsonResponse } from '../../lib/cache';
 
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
   try {
-    const { data: items, cached } = await getCachedCatalogItems();
-    return cachedJsonResponse({ items }, cached);
+    const { data, cached } = await getCachedBuds();
+    return cachedJsonResponse(data, cached);
   } catch (err) {
     return errorJsonResponse(err);
   }
