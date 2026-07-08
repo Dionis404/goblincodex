@@ -32,3 +32,6 @@ scripts/.last-run-summary.json
 
 # pg_dump backups
 backups/
+
+# graphify generated output (graph.json, HTML viz, cache, reports)
+graphify-out/

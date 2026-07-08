@@ -256,7 +256,7 @@ function BudCompareTable({ buds }: { buds: BudInstance[] }) {
                         ? 'buds-compare-cell--works'
                         : 'buds-compare-cell--beaten';
                   const text = !active
-                    ? 'не действует'
+                    ? 'нет бонуса'
                     : tied
                       ? `${formatBudCategoryValue(row.cat.kind, v)} — ничья, сработает только один`
                       : wins
@@ -283,6 +283,7 @@ function BudComparator({ traits }: { traits: BudTrait[] }) {
   const [ids, setIds] = useState<string[]>(['', '']);
   const [buds, setBuds] = useState<BudInstance[] | null>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [copied, setCopied] = useState(false);
 
   function setIdAt(i: number, value: string) {
     setIds(prev => prev.map((v, idx) => (idx === i ? value : v)));
@@ -296,6 +297,44 @@ function BudComparator({ traits }: { traits: BudTrait[] }) {
     if (ids.length > MIN_COMPARE_SLOTS) setIds(prev => prev.filter((_, idx) => idx !== i));
   }
 
+  async function runCompare(parsed: number[]) {
+    setStatus('loading');
+    try {
+      const responses = await Promise.all(parsed.map(id => fetch(`/api/buds/${id}.json`)));
+      if (responses.some(r => !r.ok)) throw new Error('not found');
+      const data: BudInstance[] = await Promise.all(responses.map(r => r.json()));
+      setBuds(data);
+      setStatus('idle');
+
+      // Ссылку на конкретное сравнение можно скопировать из адресной строки —
+      // тот же приём, что и у гайдов/механик (?tab=mechanics&mech=...).
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', 'nft');
+      url.searchParams.set('nftSub', 'buds');
+      url.searchParams.set('compare', parsed.join('-'));
+      history.replaceState(null, '', url);
+    } catch {
+      setBuds(null);
+      setStatus('error');
+    }
+  }
+
+  // При заходе по расшаренной ссылке (?compare=52-60) сразу открыть панель
+  // и выполнить то же сравнение.
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get('compare');
+    if (!param) return;
+    const parsed = param.split('-').map(v => parseInt(v, 10)).slice(0, MAX_COMPARE_SLOTS);
+    const valid = parsed.length >= MIN_COMPARE_SLOTS
+      && parsed.every(n => Number.isInteger(n) && n >= MIN_BUD_ID && n <= MAX_BUD_ID);
+    if (!valid) return;
+
+    setIds(parsed.map(String));
+    setOpen(true);
+    runCompare(parsed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function handleCompare(e: React.FormEvent) {
     e.preventDefault();
     const filled = ids.map(v => v.trim()).filter(Boolean);
@@ -308,16 +347,17 @@ function BudComparator({ traits }: { traits: BudTrait[] }) {
       return;
     }
 
-    setStatus('loading');
+    await runCompare(parsed);
+  }
+
+  async function handleCopyLink() {
     try {
-      const responses = await Promise.all(parsed.map(id => fetch(`/api/buds/${id}.json`)));
-      if (responses.some(r => !r.ok)) throw new Error('not found');
-      const data: BudInstance[] = await Promise.all(responses.map(r => r.json()));
-      setBuds(data);
-      setStatus('idle');
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
-      setBuds(null);
-      setStatus('error');
+      // clipboard API can be unavailable (e.g. insecure context) — the URL
+      // is still synced in the address bar, so copying manually still works.
     }
   }
 
@@ -379,6 +419,9 @@ function BudComparator({ traits }: { traits: BudTrait[] }) {
 
           {status === 'idle' && buds && (
             <>
+              <button type="button" className="buds-compare-copy-link" onClick={handleCopyLink}>
+                {copied ? '✓ Ссылка скопирована' : '🔗 Скопировать ссылку на это сравнение'}
+              </button>
               <div className={`buds-compare-heads buds-compare-heads--${buds.length}`}>
                 {buds.map((bud, i) => <BudDetailCard key={i} bud={bud} traits={traits} />)}
               </div>

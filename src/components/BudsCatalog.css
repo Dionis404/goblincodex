@@ -125,6 +125,22 @@
   line-height: 1.6;
 }
 
+.buds-compare-copy-link {
+  display: block;
+  margin: 0 0 14px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.buds-compare-copy-link:hover { background: var(--green-pale); }
+
 /* ── Таблица результата (только активные категории) ── */
 .buds-compare-table-wrap { overflow-x: auto; margin-bottom: 12px; }
 .buds-compare-table {
