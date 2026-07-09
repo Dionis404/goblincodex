@@ -1,0 +1,104 @@
+.ref-root {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.ref-section-title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+.ref-section-desc {
+  font-size: 13px;
+  color: var(--text-sec);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+/* ── Bait → fish ── */
+.ref-bait-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ref-bait-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.ref-bait-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.ref-bait-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+}
+.ref-bait-tier {
+  font-size: 11px;
+  color: var(--green-dark);
+  background: var(--green-pale);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.ref-bait-fish {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ref-fish-chip {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-sec);
+}
+
+/* ── Resource upgrade table ── */
+.ref-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ref-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--green-pale);
+  color: var(--green-dark);
+  font-weight: 700;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.ref-table td {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  white-space: nowrap;
+}
+.ref-table-name {
+  font-weight: 600;
+}
+.ref-table tbody tr:hover {
+  background: var(--bg);
+}
+
+@media (max-width: 480px) {
+  .ref-bait-header {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
