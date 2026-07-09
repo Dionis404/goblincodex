@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useLayoutEffect } from 'react';
+import { useState, useMemo, useRef, useLayoutEffect, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import './BoostsCatalog.css';
 import { useBoostLang, pickBoostText, type BoostLang } from '../lib/useBoostLang';
@@ -243,6 +243,39 @@ export default function BoostsCatalog({ items }: Props) {
     return () => window.removeEventListener('resize', update);
   }, [boostFilter, showBoostFilter]);
 
+  // Тег доступен как фильтр только если среди предметов текущего раздела
+  // (Все/Предметы/Одежда/Прочее) реально есть хоть один с этим тегом —
+  // иначе, например, в "Прочее" были бы бессмысленные кнопки "Ноды"/"Монументы".
+  const tagsInKind = useMemo(() => {
+    const set = new Set<string>();
+    for (const item of items) {
+      if (!matchesKind(item, kindFilter)) continue;
+      for (const t of item.tags) set.add(t);
+    }
+    return set;
+  }, [items, kindFilter]);
+
+  const availableTagFilters = useMemo(
+    () => TAG_FILTERS.filter(f => f.id === 'all' || tagsInKind.has(f.id)),
+    [tagsInKind],
+  );
+  const availableChapterFilters = useMemo(
+    () => CHAPTER_FILTERS.filter(f => tagsInKind.has(f.id)),
+    [tagsInKind],
+  );
+  const availableOriginFilters = useMemo(
+    () => ORIGIN_FILTERS.filter(f => tagsInKind.has(f.id)),
+    [tagsInKind],
+  );
+
+  // Если сменили раздел и текущий выбранный тег/глава/источник в нём больше
+  // не встречается — сбросить его, а не показывать пустой список.
+  useEffect(() => {
+    if (tagFilter !== 'all' && !tagsInKind.has(tagFilter)) setTagFilter('all');
+    if (originFilter !== 'all' && !tagsInKind.has(originFilter)) setOriginFilter('all');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tagsInKind]);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
     return items.filter(item => {
@@ -294,38 +327,46 @@ export default function BoostsCatalog({ items }: Props) {
         </div>
       )}
 
-      <div className="bc-filters bc-filters--tag">
-        {TAG_FILTERS.map(tf => (
-          <button
-            key={tf.id}
-            className={`bc-filter-btn bc-filter-btn--tag${tagFilter === tf.id ? ' active' : ''}`}
-            onClick={() => setTagFilter(tf.id)}
-            type="button"
-          >
-            {tf.label}
-          </button>
-        ))}
-      </div>
+      {availableTagFilters.length > 1 && (
+        <div className="bc-filters bc-filters--tag">
+          {availableTagFilters.map(tf => (
+            <button
+              key={tf.id}
+              className={`bc-filter-btn bc-filter-btn--tag${tagFilter === tf.id ? ' active' : ''}`}
+              onClick={() => setTagFilter(tf.id)}
+              type="button"
+            >
+              {tf.label}
+            </button>
+          ))}
+        </div>
+      )}
 
-      <div className="bc-origin-wrap">
-        <select
-          className="bc-origin-select"
-          value={originFilter}
-          onChange={e => setOriginFilter(e.target.value)}
-        >
-          <option value="all">Глава / источник: все</option>
-          <optgroup label="Главы">
-            {CHAPTER_FILTERS.map(f => (
-              <option key={f.id} value={f.id}>{f.label}</option>
-            ))}
-          </optgroup>
-          <optgroup label="Источники">
-            {ORIGIN_FILTERS.map(f => (
-              <option key={f.id} value={f.id}>{f.label}</option>
-            ))}
-          </optgroup>
-        </select>
-      </div>
+      {(availableChapterFilters.length > 0 || availableOriginFilters.length > 0) && (
+        <div className="bc-origin-wrap">
+          <select
+            className="bc-origin-select"
+            value={originFilter}
+            onChange={e => setOriginFilter(e.target.value)}
+          >
+            <option value="all">Глава / источник: все</option>
+            {availableChapterFilters.length > 0 && (
+              <optgroup label="Главы">
+                {availableChapterFilters.map(f => (
+                  <option key={f.id} value={f.id}>{f.label}</option>
+                ))}
+              </optgroup>
+            )}
+            {availableOriginFilters.length > 0 && (
+              <optgroup label="Источники">
+                {availableOriginFilters.map(f => (
+                  <option key={f.id} value={f.id}>{f.label}</option>
+                ))}
+              </optgroup>
+            )}
+          </select>
+        </div>
+      )}
 
       <div className="bc-search-wrap">
         <input
