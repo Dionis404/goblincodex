@@ -25,7 +25,7 @@ import { Pool } from "pg";
 // deliberately not editable here: it's part of sfl_buffs's natural key
 // (item_id, short_description), so hand-editing it would desync the row
 // from what the parser re-derives next run.
-const ITEM_PROTECTABLE_FIELDS = ["category", "requires_game_state", "sprite", "tags"];
+const ITEM_PROTECTABLE_FIELDS = ["category", "requires_game_state", "sprite", "tags", "is_active"];
 const BUFF_PROTECTABLE_FIELDS = [
   "label_type", "short_description_ru", "boost_type", "is_debuff",
   "numeric_value", "value_type", "affected_stat", "numeric_confidence",
@@ -39,6 +39,7 @@ const ITEM_FIELD_TYPES: Record<string, FieldType> = {
   requires_game_state: "boolean",
   sprite: "text",
   tags: "text[]",
+  is_active: "boolean",
 };
 
 const BUFF_FIELD_TYPES: Record<string, FieldType> = {

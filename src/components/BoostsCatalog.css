@@ -45,6 +45,14 @@
   border-style: solid;
 }
 
+.bc-filters--tag {
+  margin-bottom: 16px;
+}
+.bc-filter-btn--tag {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
 /* ── Segmented boost/decor/misc control ── */
 .bc-segmented {
   position: relative;
@@ -86,6 +94,27 @@
 }
 .bc-segment:hover { color: var(--green-dark); }
 .bc-segment.active { color: #fff; }
+
+/* ── Chapter/origin select ── */
+.bc-origin-wrap { margin-bottom: 16px; }
+.bc-origin-select {
+  width: 100%;
+  max-width: 320px;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font-body);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.bc-origin-select:focus {
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px var(--green-pale);
+}
 
 /* ── Search ── */
 .bc-search-wrap { margin-bottom: 16px; }
@@ -217,6 +246,24 @@
 [data-theme="dark"] .bc-type--collectible {
   background: var(--amber-pale);
   color: var(--amber);
+}
+
+/* ── Tag badge ── */
+.bc-tag-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--bg);
+  color: var(--text-sec);
+  border: 1px solid var(--border);
+}
+.bc-modal-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
 }
 
 /* ── Boost badge ── */

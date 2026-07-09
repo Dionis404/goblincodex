@@ -817,6 +817,22 @@ function parseDecorCollectibles(gameIds: Map<string, number>, existingNames: Set
   return items;
 }
 
+/**
+ * Purely cosmetic wearables (hats, tops, pants, hair, backgrounds, etc.)
+ * carry no buffs at all, so they never appear in BUMPKIN_ITEM_BUFF_LABELS /
+ * SPECIAL_ITEM_LABELS and are invisible to parseWearables() — unlike
+ * collectibles, there was no fallback pass for these at all, so ~426 of the
+ * game's 558 wearable IDs (bumpkin.ts ITEM_IDS) were simply never synced.
+ * Every ITEM_IDS name not already captured as a buffed wearable is one of
+ * these; wearableIds already covers all of them (sprite too, via
+ * parseSpriteMap's `wearables/${id}.webp` convention).
+ */
+function parseDecorWearables(wearableIds: Map<string, number>, existingNames: Set<string>): WearableItem[] {
+  return [...wearableIds.keys()]
+    .filter((name) => !existingNames.has(name))
+    .map((name) => ({ name, type: "wearable" as const, buffs: [] }));
+}
+
 // ─── Parser: Numeric values from boostsUsed.push ─────────────────────────────
 
 function parseNumericValues(): Map<string, NumericValue[]> {
@@ -1114,7 +1130,7 @@ CREATE INDEX IF NOT EXISTS idx_sfl_pet_fetches_is_active ON sfl_pet_fetches(is_a
 // sfl_buffs's natural key (item_id, short_description), so editing it would
 // desync the row from what the parser re-derives next run, producing a
 // duplicate insert instead of an update.
-const ITEM_PROTECTABLE_FIELDS = ["category", "requires_game_state", "sprite", "tags"];
+const ITEM_PROTECTABLE_FIELDS = ["category", "requires_game_state", "sprite", "tags", "is_active"];
 const BUFF_PROTECTABLE_FIELDS = [
   "label_type", "short_description_ru", "boost_type", "is_debuff",
   "numeric_value", "value_type", "affected_stat", "numeric_confidence",
@@ -1139,9 +1155,19 @@ async function populateDB(
   petsCommon: PetCommonRow[],
 ): Promise<RunSummary> {
   const client = await pool.connect();
-  const runStartTimestamp = new Date();
   try {
     await client.query("BEGIN");
+    // Read the transaction's own frozen `now()` rather than capturing a
+    // client-side `new Date()` before BEGIN: every `now()` call inside this
+    // transaction (including each upsert's `last_synced_at = now()`) returns
+    // the same transaction-start instant, not the actual statement time. A
+    // client-side timestamp captured moments earlier can end up *later*
+    // than that frozen instant depending on connection/clock timing, which
+    // made the end-of-run sweep below (`last_synced_at < runStartTimestamp`)
+    // catch every row just upserted in this same run, not just stale ones —
+    // wiped is_active for the entire catalog in one run. Reading `now()`
+    // from inside the transaction guarantees an exact, comparable value.
+    const { rows: [{ now: runStartTimestamp }] } = await client.query<{ now: Date }>("SELECT now()");
 
     // Create schema (idempotent; never destroys existing rows)
     await client.query(SCHEMA_SQL);
@@ -1165,7 +1191,11 @@ async function populateDB(
 
       const sprite = spriteMap.get(item.name) ?? null;
       const tags = getItemTags(item.name, item.type);
-      if (miscNames.has(item.name) && !tags.includes("misc")) tags.push("misc");
+      // Only fall back to the generic "misc" bucket when nothing more
+      // specific already applies (e.g. WarItems in game.ts overlaps with
+      // WarTentItem, which getItemTags() already tags "war-event" — no need
+      // for both).
+      if (miscNames.has(item.name) && tags.length === 0) tags.push("misc");
       // Skills aren't marketplace items and have no game_id of their own —
       // without this, a skill can accidentally pick up an unrelated item's ID
       // by name collision (e.g. skill "Green Thumb" vs. a same-named Bud).
@@ -1189,7 +1219,7 @@ async function populateDB(
            tags = CASE WHEN 'tags' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.tags ELSE EXCLUDED.tags END,
            game_id = EXCLUDED.game_id,
            last_synced_at = now(),
-           is_active = TRUE`,
+           is_active = CASE WHEN 'is_active' = ANY(sfl_items.manually_edited_fields) THEN sfl_items.is_active ELSE TRUE END`,
         [item.name, item.type, category, requiresGameState, sprite, tags, gameId],
       );
       itemsUpserted++;
@@ -1380,7 +1410,9 @@ async function populateDB(
     // Soft-delete sweep: anything not touched this run (no longer present in
     // SFL source) gets marked inactive, never physically deleted.
     const itemsSwept = await client.query(
-      `UPDATE sfl_items SET is_active = FALSE WHERE last_synced_at < $1 AND is_active = TRUE`,
+      `UPDATE sfl_items SET is_active = FALSE
+       WHERE last_synced_at < $1 AND is_active = TRUE
+         AND NOT ('is_active' = ANY(manually_edited_fields))`,
       [runStartTimestamp],
     );
     const buffsSwept = await client.query(
@@ -1536,6 +1568,10 @@ async function main() {
   const wearableIds = parseWearableIds(SFL_DIR);
   console.log(`   ${wearableIds.size} wearable IDs mapped`);
 
+  console.log("\n🔍 Parsing buff-less cosmetic wearables...");
+  const decorWearables = parseDecorWearables(wearableIds, new Set(wearables.map((w) => w.name)));
+  console.log(`   ${decorWearables.length} additional cosmetic wearables`);
+
   // Only collectible names are excluded here: those overlaps (e.g. "Ancient
   // Tree", "Beehive") are the same game entity described in two SFL source
   // files, sharing one game_id — a redundant row, not a distinct item.
@@ -1552,7 +1588,7 @@ async function main() {
   // Buff-less decorative collectibles (e.g. Pufferfish, Fat Crab) are
   // invisible to parseCollectibles() — anything already captured above
   // (by name, across every type) is excluded so this only fills the gap.
-  const allExistingNames = new Set([...skills, ...wearables, ...collectibles, ...produce].map((i) => i.name));
+  const allExistingNames = new Set([...skills, ...wearables, ...decorWearables, ...collectibles, ...produce].map((i) => i.name));
 
   console.log("\n🔍 Parsing buff-less decorative collectibles...");
   const decorCollectibles = parseDecorCollectibles(gameIds, allExistingNames);
@@ -1588,7 +1624,7 @@ async function main() {
   console.log(`   ${petResources.length} pet resources, ${petFetches.length} pet fetch rules`);
 
   const allItems: AnyItem[] = [
-    ...skills, ...wearables, ...collectibles, ...produce, ...decorCollectibles,
+    ...skills, ...wearables, ...decorWearables, ...collectibles, ...produce, ...decorCollectibles,
   ];
 
   if (unresolvedKeys.length > 0) {
