@@ -499,8 +499,20 @@ export default function BudsCatalog({ traits, filterOptions }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
+  // Поиск по номеру и поиск по трейтам — два разных режима: у конкретного
+  // Bud уже фиксированные трейты, так что комбинировать их с номером не
+  // имеет смысла и почти всегда даёт "ничего не найдено". Каждый режим
+  // сбрасывает фильтры другого при переключении.
+  function handleBudIdChange(value: string) {
+    setFilters(value ? { ...EMPTY_FILTERS, budId: value } : EMPTY_FILTERS);
+  }
+
   function toggleTrait(group: 'type' | 'stem' | 'aura', name: string) {
-    setFilters(prev => ({ ...prev, [group]: prev[group] === name ? '' : name }));
+    setFilters(prev => ({ ...prev, budId: '', [group]: prev[group] === name ? '' : name }));
+  }
+
+  function setDropdownFilter(key: 'colour' | 'ears', value: string) {
+    setFilters(prev => ({ ...prev, budId: '', [key]: value }));
   }
 
   function handleResetFilters() {
@@ -521,13 +533,13 @@ export default function BudsCatalog({ traits, filterOptions }: Props) {
           className="buds-filter-id-input"
           placeholder={`Номер Bud (${MIN_BUD_ID}–${MAX_BUD_ID})`}
           value={filters.budId}
-          onChange={e => setFilters(prev => ({ ...prev, budId: e.target.value }))}
+          onChange={e => handleBudIdChange(e.target.value)}
         />
         <span className="buds-filter-bar-hint">или кликни по карточкам трейтов ниже:</span>
         <select
           className="buds-filter-select"
           value={filters.colour}
-          onChange={e => setFilters(prev => ({ ...prev, colour: e.target.value }))}
+          onChange={e => setDropdownFilter('colour', e.target.value)}
         >
           <option value="">Цвет: любой</option>
           {filterOptions.colours.map(v => <option key={v} value={v}>{v}</option>)}
@@ -535,7 +547,7 @@ export default function BudsCatalog({ traits, filterOptions }: Props) {
         <select
           className="buds-filter-select"
           value={filters.ears}
-          onChange={e => setFilters(prev => ({ ...prev, ears: e.target.value }))}
+          onChange={e => setDropdownFilter('ears', e.target.value)}
         >
           <option value="">Уши: любые</option>
           {filterOptions.ears.map(v => <option key={v} value={v}>{v}</option>)}
