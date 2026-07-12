@@ -104,6 +104,50 @@ export async function getCatalogItems(): Promise<SflItem[]> {
   }));
 }
 
+/**
+ * Достаёт из short_description строки вида "10% chance...", "1/10 chance..."
+ * или "+20% Chance of..." числовой % шанса (0-100). Возвращает null, если
+ * в тексте нет распознаваемой формулировки шанса.
+ */
+function parseChancePercent(text: string): number | null {
+  const fraction = text.match(/(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\s*chance/i);
+  if (fraction) {
+    return (100 * Number(fraction[1])) / Number(fraction[2]);
+  }
+  const percentBeforeChance = text.match(/(\d+(?:\.\d+)?)\s*%\s*chance/i);
+  if (percentBeforeChance) return Number(percentBeforeChance[1]);
+
+  const percentNearChance = text.match(/chance[^%\d]{0,20}(\d+(?:\.\d+)?)\s*%/i);
+  if (percentNearChance) return Number(percentNearChance[1]);
+
+  return null;
+}
+
+/**
+ * Вытаскивает % шанса срабатывания для набора имён criticalHitName
+ * (скиллы/предметы/постройки) из sfl_buffs — той же БД, что наполняется
+ * скриптом sfl:populate из исходников игры. Так процент не рассинхронизируется
+ * с реальными значениями при апдейтах игры вместо ручных констант в коде.
+ */
+export async function getPrngChances(names: string[]): Promise<Record<string, number>> {
+  if (names.length === 0) return {};
+  const pool = getPool();
+  const { rows } = await pool.query<{ id: string; short_description: string }>(
+    `SELECT i.id, b.short_description
+     FROM sfl_buffs b
+     JOIN sfl_items i ON i.id = b.item_id AND i.type = b.item_type
+     WHERE i.id = ANY($1) AND b.is_active AND b.short_description ILIKE '%chance%'`,
+    [names]
+  );
+
+  const result: Record<string, number> = {};
+  for (const row of rows) {
+    const percent = parseChancePercent(row.short_description);
+    if (percent !== null) result[row.id] = percent;
+  }
+  return result;
+}
+
 export interface TelegramPost {
   id: number;
   date: Date;

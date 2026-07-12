@@ -1,6 +1,22 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import UnderConstruction from '../components/UnderConstruction.astro';
+
+const tools = [
+  {
+    href: '/tools/mining-calculator',
+    tag: 'Калькулятор',
+    title: 'Калькулятор выгодности добычи',
+    description:
+      'Стоит ли крафтить инструмент и копать ресурс — или дешевле купить его на P2P-рынке.',
+  },
+  {
+    href: '/tools/prng-checker',
+    tag: 'Калькулятор',
+    title: 'PRNG-проверка крита',
+    description:
+      'Сработает ли крит/бонус (Native, Tough Tree, Rock Golem и другие) на конкретном действии — по формуле детерминированного PRNG из кода игры.',
+  },
+];
 ---
 
 <BaseLayout
@@ -8,8 +24,70 @@ import UnderConstruction from '../components/UnderConstruction.astro';
   description="Инструменты и калькуляторы для игроков Sunflower Land."
   currentPage="tools"
 >
-  <UnderConstruction
-    title="Инструменты в разработке"
-    description="Наши гоблины усиленно работают над этим разделом. Скоро здесь появятся калькуляторы и другие полезные инструменты!"
-  />
+  <div class="gc-content gc-page-enter">
+    <h1 class="gc-page-title">🛠️ Инструменты</h1>
+    <p class="gc-tools-sub">Калькуляторы и утилиты для игроков Sunflower Land.</p>
+
+    <div class="gc-tools-grid">
+      {tools.map((t) => (
+        <a class="gc-tools-card" href={t.href}>
+          <span class="gc-tools-tag">{t.tag}</span>
+          <h2>{t.title}</h2>
+          <p>{t.description}</p>
+        </a>
+      ))}
+    </div>
+  </div>
 </BaseLayout>
+
+<style is:global>
+  .gc-tools-sub {
+    color: var(--text-sec);
+    margin: 4px 0 24px;
+  }
+
+  .gc-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .gc-tools-card {
+    display: block;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .gc-tools-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .gc-tools-tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: var(--green-pale);
+    color: var(--green-dark);
+  }
+
+  .gc-tools-card h2 {
+    font-family: var(--font-head);
+    font-size: 18px;
+    margin: 10px 0 6px;
+    color: var(--text);
+  }
+
+  .gc-tools-card p {
+    font-size: 14px;
+    color: var(--text-sec);
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>
