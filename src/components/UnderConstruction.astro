@@ -2,11 +2,16 @@
 interface Props {
   title?: string;
   description?: string;
+  /** Если заданы оба — вместо стандартных кнопок показывается одна ссылка "назад". */
+  backHref?: string;
+  backLabel?: string;
 }
 
 const {
   title = 'Страница строится',
   description = 'Наши гоблины усиленно работают над этим разделом. Скоро здесь появится что-то полезное!',
+  backHref,
+  backLabel,
 } = Astro.props;
 ---
 
@@ -36,8 +41,14 @@ const {
     </div>
 
     <div class="gc-wip-actions">
-      <a href="/" class="gc-btn gc-btn--primary">На главную</a>
-      <a href="/#codex" class="gc-btn gc-btn--outline">Открыть гайды</a>
+      {backHref && backLabel ? (
+        <a href={backHref} class="gc-btn gc-btn--primary">← {backLabel}</a>
+      ) : (
+        <>
+          <a href="/" class="gc-btn gc-btn--primary">На главную</a>
+          <a href="/#codex" class="gc-btn gc-btn--outline">Открыть гайды</a>
+        </>
+      )}
     </div>
   </div>
 </div>

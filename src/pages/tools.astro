@@ -4,17 +4,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const tools = [
   {
     href: '/tools/mining-calculator',
-    tag: 'Калькулятор',
+    tag: 'В разработке',
     title: 'Калькулятор выгодности добычи',
     description:
       'Стоит ли крафтить инструмент и копать ресурс — или дешевле купить его на P2P-рынке.',
   },
   {
     href: '/tools/prng-checker',
-    tag: 'Калькулятор',
+    tag: 'В разработке',
     title: 'PRNG-проверка крита',
     description:
       'Сработает ли крит/бонус (Native, Tough Tree, Rock Golem и другие) на конкретном действии — по формуле детерминированного PRNG из кода игры.',
+  },
+  {
+    href: '/tools/expansion-calculator',
+    tag: 'Калькулятор',
+    title: 'Калькулятор расширений острова',
+    description:
+      'Суммарная стоимость расширений от текущего размера до полного Вулкана и дальше, после Возвышения (Ascension).',
   },
 ];
 ---
@@ -31,7 +38,7 @@ const tools = [
     <div class="gc-tools-grid">
       {tools.map((t) => (
         <a class="gc-tools-card" href={t.href}>
-          <span class="gc-tools-tag">{t.tag}</span>
+          <span class={`gc-tools-tag${t.tag === 'В разработке' ? ' gc-tools-tag--wip' : ''}`}>{t.tag}</span>
           <h2>{t.title}</h2>
           <p>{t.description}</p>
         </a>
@@ -75,6 +82,10 @@ const tools = [
     border-radius: 6px;
     background: var(--green-pale);
     color: var(--green-dark);
+  }
+  .gc-tools-tag--wip {
+    background: var(--amber-pale);
+    color: var(--amber);
   }
 
   .gc-tools-card h2 {

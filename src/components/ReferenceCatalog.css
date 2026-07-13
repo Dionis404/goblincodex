@@ -4,6 +4,61 @@
   gap: 40px;
 }
 
+/* ── Двухпанельный layout: слева меню разделов, справа контент (как у Механик) ── */
+.ref-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.ref-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  position: sticky;
+  top: 20px;
+}
+.ref-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.ref-nav-item:last-child { border-bottom: none; }
+.ref-nav-item:hover {
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.ref-nav-item.active {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  font-weight: 600;
+  border-left: 3px solid var(--green-mid);
+}
+.ref-nav-icon { font-size: 18px; flex-shrink: 0; }
+.ref-nav-label { line-height: 1.3; }
+
+.ref-content { flex: 1; min-width: 0; }
+
+@media (max-width: 720px) {
+  .ref-layout { flex-direction: column; }
+  .ref-sidebar { width: 100%; position: static; }
+}
+
 .ref-section-title {
   font-family: var(--font-head);
   font-size: 18px;
@@ -95,10 +150,93 @@
 .ref-table tbody tr:hover {
   background: var(--bg);
 }
+.ref-table tfoot td {
+  padding: 10px 14px;
+  border-top: 2px solid var(--green-dark);
+  font-weight: 700;
+  color: var(--text);
+  background: var(--green-pale);
+  white-space: normal;
+}
 
 @media (max-width: 480px) {
   .ref-bait-header {
     flex-direction: column;
     gap: 4px;
   }
+}
+
+/* ── Расширения острова: раскрывающиеся таблицы по островам ── */
+.ref-accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ref-accordion {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.ref-accordion-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 18px;
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  list-style: none;
+}
+.ref-accordion-summary::-webkit-details-marker { display: none; }
+.ref-accordion-summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 10px;
+  color: var(--green-mid);
+  transition: transform 0.15s;
+}
+.ref-accordion[open] > .ref-accordion-summary::before {
+  transform: rotate(90deg);
+}
+.ref-accordion-summary:hover {
+  background: var(--green-pale);
+}
+.ref-accordion-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-sec);
+  white-space: nowrap;
+}
+.ref-accordion-body {
+  padding: 0 18px 18px;
+}
+
+.ref-table-resources {
+  font-size: 12px;
+  color: var(--text-sec);
+  white-space: normal !important;
+  min-width: 260px;
+}
+
+.ref-level-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-sec);
+  margin-bottom: 14px;
+}
+.ref-level-picker input {
+  width: 70px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
 }
