@@ -3,11 +3,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const tools = [
   {
+    href: '/tools/expansion-calculator',
+    tag: 'Калькулятор',
+    title: 'Калькулятор расширений острова',
+    description:
+      'Суммарная стоимость расширений от текущего размера до полного Вулкана и дальше, после Возвышения (Ascension).',
+    wip: false,
+  },
+  {
     href: '/tools/mining-calculator',
     tag: 'В разработке',
     title: 'Калькулятор выгодности добычи',
     description:
       'Стоит ли крафтить инструмент и копать ресурс — или дешевле купить его на P2P-рынке.',
+    wip: true,
   },
   {
     href: '/tools/prng-checker',
@@ -15,15 +24,12 @@ const tools = [
     title: 'PRNG-проверка крита',
     description:
       'Сработает ли крит/бонус (Native, Tough Tree, Rock Golem и другие) на конкретном действии — по формуле детерминированного PRNG из кода игры.',
-  },
-  {
-    href: '/tools/expansion-calculator',
-    tag: 'Калькулятор',
-    title: 'Калькулятор расширений острова',
-    description:
-      'Суммарная стоимость расширений от текущего размера до полного Вулкана и дальше, после Возвышения (Ascension).',
+    wip: true,
   },
 ];
+
+const activeTools = tools.filter((t) => !t.wip);
+const wipTools = tools.filter((t) => t.wip);
 ---
 
 <BaseLayout
@@ -31,23 +37,45 @@ const tools = [
   description="Инструменты и калькуляторы для игроков Sunflower Land."
   currentPage="tools"
 >
-  <div class="gc-content gc-page-enter">
+  <div class="gc-content gc-tools-page gc-page-enter">
     <h1 class="gc-page-title">🛠️ Инструменты</h1>
     <p class="gc-tools-sub">Калькуляторы и утилиты для игроков Sunflower Land.</p>
 
     <div class="gc-tools-grid">
-      {tools.map((t) => (
+      {activeTools.map((t) => (
         <a class="gc-tools-card" href={t.href}>
-          <span class={`gc-tools-tag${t.tag === 'В разработке' ? ' gc-tools-tag--wip' : ''}`}>{t.tag}</span>
+          <span class="gc-tools-tag">{t.tag}</span>
           <h2>{t.title}</h2>
           <p>{t.description}</p>
         </a>
       ))}
     </div>
+
+    {wipTools.length > 0 && (
+      <>
+        <div class="gc-tools-divider">
+          <span>В разработке</span>
+        </div>
+
+        <div class="gc-tools-grid">
+          {wipTools.map((t) => (
+            <a class="gc-tools-card" href={t.href}>
+              <span class="gc-tools-tag gc-tools-tag--wip">{t.tag}</span>
+              <h2>{t.title}</h2>
+              <p>{t.description}</p>
+            </a>
+          ))}
+        </div>
+      </>
+    )}
   </div>
 </BaseLayout>
 
 <style is:global>
+  .gc-tools-page {
+    padding-top: 40px;
+  }
+
   .gc-tools-sub {
     color: var(--text-sec);
     margin: 4px 0 24px;
@@ -57,6 +85,23 @@ const tools = [
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
+  }
+
+  .gc-tools-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0 16px;
+    color: var(--text-ter);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .gc-tools-divider::before,
+  .gc-tools-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
   }
 
   .gc-tools-card {
