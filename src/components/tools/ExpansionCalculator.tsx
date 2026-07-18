@@ -27,7 +27,19 @@ type Selection =
 function resolveIndex(sel: Selection, stages: Stage[]): number {
   if (sel.kind === 'start') return -1;
   if (sel.kind === 'island') {
+    // "min - 1" — виртуальный пункт "ничего ещё не построено на этом острове":
+    // индекс сразу перед первым расширением острова (для Базового это -1, т.е. "с нуля").
+    if (sel.number === islandRange(sel.island).min - 1) {
+      const firstIndex = stages.findIndex((s) => s.group === sel.island);
+      return firstIndex - 1;
+    }
     return stages.findIndex((s) => s.group === sel.island && s.number === sel.number);
+  }
+  // number === 0 — виртуальный пункт "уровень ещё не начат": индекс сразу перед
+  // первым расширением этого уровня Возвышения (для уровня 1 это конец Вулкана).
+  if (sel.number === 0) {
+    const firstIndex = stages.findIndex((s) => s.id === `ascension-${sel.level}-1`);
+    return firstIndex - 1;
   }
   return stages.findIndex((s) => s.id === `ascension-${sel.level}-${sel.number}`);
 }
@@ -38,7 +50,7 @@ function rangeOptions(min: number, max: number): number[] {
   return opts;
 }
 
-/** Две формы выбора: остров (Базовый/Спринг/Десерт/Вулкан) или Возвышение — вместо одного гигантского списка. */
+/** Две формы выбора: остров (Базовый/Лепестковый рай/Пустыня/Вулкан) или Возвышение — вместо одного гигантского списка. */
 function StagePicker({
   label,
   value,
@@ -53,9 +65,10 @@ function StagePicker({
   const mode: 'start' | 'island' | 'ascension' = value.kind;
 
   const island = value.kind === 'island' ? value.island : 'basic';
-  const islandNumber = value.kind === 'island' ? value.number : islandRange('basic').min;
+  const islandNumber =
+    value.kind === 'island' ? value.number : islandRange('basic').min - (allowStart ? 1 : 0);
   const ascensionLevel = value.kind === 'ascension' ? value.level : 1;
-  const ascensionNumber = value.kind === 'ascension' ? value.number : 1;
+  const ascensionNumber = value.kind === 'ascension' ? value.number : (allowStart ? 0 : 1);
 
   function switchMode(next: 'start' | 'island' | 'ascension') {
     if (next === 'start') onChange({ kind: 'start' });
@@ -83,7 +96,7 @@ function StagePicker({
           data-active={mode === 'island'}
           onClick={() => switchMode('island')}
         >
-          Базовый / Спринг / Десерт / Вулкан
+          Базовый / Лепестковый рай / Пустыня / Вулкан
         </button>
         <button
           type="button"
@@ -101,7 +114,8 @@ function StagePicker({
             value={island}
             onChange={(e) => {
               const g = e.target.value as IslandChainGroup;
-              onChange({ kind: 'island', island: g, number: islandRange(g).min });
+              const defaultNumber = allowStart ? islandRange(g).min - 1 : islandRange(g).min;
+              onChange({ kind: 'island', island: g, number: defaultNumber });
             }}
           >
             {ISLAND_GROUPS_ORDER.map((g) => (
@@ -114,6 +128,11 @@ function StagePicker({
             value={islandNumber}
             onChange={(e) => onChange({ kind: 'island', island, number: Number(e.target.value) })}
           >
+            {allowStart && (
+              <option value={islandRange(island).min - 1}>
+                №{islandRange(island).min - 1} (стартовая позиция)
+              </option>
+            )}
             {rangeOptions(islandRange(island).min, islandRange(island).max).map((n) => (
               <option key={n} value={n}>
                 №{n}
@@ -147,9 +166,12 @@ function StagePicker({
               onChange({ kind: 'ascension', level: ascensionLevel, number: Number(e.target.value) })
             }
           >
+            {allowStart && (
+              <option value={0}>№0/{EXPANSIONS_PER_ASCENSION} (стартовая позиция)</option>
+            )}
             {rangeOptions(1, EXPANSIONS_PER_ASCENSION).map((n) => (
               <option key={n} value={n}>
-                Расширение {n}/{EXPANSIONS_PER_ASCENSION}
+                №{n}/{EXPANSIONS_PER_ASCENSION}
               </option>
             ))}
           </select>
@@ -200,9 +222,12 @@ export default function ExpansionCalculator() {
         </div>
         <p className="gc-calc-note">
           Расширения №1–3 не в списке — стартовые участки, выдаются бесплатно при создании фермы.
+          При переходе на новый остров несколько первых расширений уже открыты бесплатно
+          (Лепестковый рай и Пустыня — 4, Вулкан — 5) — это и есть «стартовая позиция» в списке.
           Возвышение (Ascension) полностью сбрасывает ферму и заново отстраивает те же 12
           участков с более высокой стоимостью — при выборе нескольких уровней сумма считается
-          именно так, последовательно.
+          именно так, последовательно. «Стартовая позиция» (№0/12) — это начало уровня, когда
+          ещё ничего не построено.
         </p>
       </div>
 

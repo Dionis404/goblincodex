@@ -232,6 +232,9 @@ function ExpansionTablesSection() {
         Стоимость каждого расширения по островам — от Базового до полного Вулкана, и отдельно
         Возвышение.
       </p>
+      <a href="/tools/expansion-calculator" className="gc-btn-secondary ref-calc-link">
+        🧮 Открыть калькулятор расширений
+      </a>
       <div className="ref-accordion-list">
         {ISLAND_GROUPS.map((group, i) => (
           <IslandAccordion key={group} group={group} defaultOpen={i === 0} />
@@ -255,24 +258,42 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'upgrades', icon: '⛏️', label: 'Апгрейд ресурсов', Content: ResourceUpgradeSection },
 ];
 
+function getInitialId(): string {
+  if (typeof window === 'undefined') return REF_SECTIONS[0].id;
+  const ref = new URLSearchParams(window.location.search).get('ref');
+  return REF_SECTIONS.some((s) => s.id === ref) ? ref! : REF_SECTIONS[0].id;
+}
+
 export default function ReferenceCatalog() {
-  const [activeId, setActiveId] = useState(REF_SECTIONS[0].id);
+  const [activeId, setActiveId] = useState(getInitialId);
   const active = REF_SECTIONS.find((s) => s.id === activeId) ?? REF_SECTIONS[0];
   const ActiveContent = active.Content;
+
+  function selectSection(id: string) {
+    setActiveId(id);
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', 'reference');
+    url.searchParams.set('ref', id);
+    history.replaceState(null, '', url);
+  }
 
   return (
     <div className="ref-layout">
       <aside className="ref-sidebar">
         {REF_SECTIONS.map((s) => (
-          <button
+          <a
             key={s.id}
-            type="button"
+            href={`/codex?tab=reference&ref=${s.id}`}
             className={`ref-nav-item${s.id === activeId ? ' active' : ''}`}
-            onClick={() => setActiveId(s.id)}
+            onClick={(e) => {
+              if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+              e.preventDefault();
+              selectSection(s.id);
+            }}
           >
             <span className="ref-nav-icon">{s.icon}</span>
             <span className="ref-nav-label">{s.label}</span>
-          </button>
+          </a>
         ))}
       </aside>
       <div className="ref-content">

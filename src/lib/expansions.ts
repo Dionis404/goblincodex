@@ -1,7 +1,7 @@
 /**
  * Калькулятор стоимости расширений острова Sunflower Land — чистая логика.
  *
- * Полная цепочка прогресса: Базовый остров → Спринг → Десерт → Вулкан →
+ * Полная цепочка прогресса: Базовый остров → Лепестковый рай → Пустыня → Вулкан →
  * Возвышение (Ascension). При апгрейде на новый остров счётчик "Basic Land"
  * в инвентаре СБРАСЫВАЕТСЯ (см. upgradeFarm.ts:
  * `game.inventory["Basic Land"] = new Decimal(setup.startingExpansions)`),
@@ -63,8 +63,8 @@ export type IslandGroup = 'basic' | 'spring' | 'desert' | 'volcano' | 'ascension
 
 export const ISLAND_GROUP_LABELS: Record<IslandGroup, string> = {
   basic: 'Базовый остров',
-  spring: 'Спринг',
-  desert: 'Десерт',
+  spring: 'Лепестковый рай',
+  desert: 'Пустыня',
   volcano: 'Вулкан',
   ascension: 'Возвышение',
 };
@@ -210,7 +210,7 @@ export function ascensionStageCost(ascensionLevel: number, e: number): StageCost
   };
 }
 
-/** Все расширения одного острова (Базовый/Спринг/Десерт/Вулкан) по порядку. */
+/** Все расширения одного острова (Базовый/Лепестковый рай/Пустыня/Вулкан) по порядку. */
 export function stagesForIsland(group: Exclude<IslandGroup, 'ascension'>): Stage[] {
   const { min, max, data } = ISLAND_TABLES[group];
   const stages: Stage[] = [];
@@ -241,7 +241,7 @@ export function stagesForAscensionLevel(level: number): Stage[] {
   return stages;
 }
 
-/** Строит единую упорядоченную таблицу этапов: Базовый → Спринг → Десерт → Вулкан → Возвышение 1..maxAscension. */
+/** Строит единую упорядоченную таблицу этапов: Базовый → Лепестковый рай → Пустыня → Вулкан → Возвышение 1..maxAscension. */
 export function buildStages(maxAscensionLevel: number): Stage[] {
   const stages: Stage[] = [];
 
