@@ -18,6 +18,14 @@
  * features/game/types/expansions.ts (EXPANSION_REQUIREMENTS), формула
  * Возвышения — с features/game/expansion/lib/ascension.ts
  * (`getAscensionExpansionRequirements`).
+ *
+ * Отдельно от стоимости самих расширений есть единоразовая стоимость ПЕРЕХОДА
+ * на следующий остров (действие `farm.upgraded` — features/game/events/
+ * landExpansion/upgradeFarm.ts: ISLAND_UPGRADE / getAscensionUpgradeCost).
+ * Она не входит в EXPANSION_REQUIREMENTS и раньше не учитывалась ни в таблицах,
+ * ни в калькуляторе — теперь добавлена как отдельный "переходный" этап в конце
+ * каждого острова (isTransition: true), так что она автоматически попадает в
+ * сумму при пересечении границы острова.
  */
 
 export type ExpansionResource =
@@ -52,12 +60,38 @@ export const RESOURCE_ORDER: ExpansionResource[] = [
   'Gem',
 ];
 
+/**
+ * Иконки ресурсов. Большинство — спрайты, синхронизированные из sunflower-land
+ * репо в public/sprites/ (см. scripts/sync-sprites.ts). Wood и Stone в
+ * исходниках игры подтягиваются не из репо, а с игрового CDN
+ * (SUNNYSIDE.resource.wood/stone) — скачаны вручную оттуда же
+ * (sunflower-land.com/game-assets/resources/{wood,stone}.png).
+ */
+export const RESOURCE_ICONS: Record<ExpansionResource, string> = {
+  Wood: '/sprites/resources/wood.png',
+  Stone: '/sprites/resources/stone.png',
+  Iron: '/sprites/resources/iron_ore.png',
+  Gold: '/sprites/resources/gold_ore.png',
+  Crimstone: '/sprites/resources/crimstone.png',
+  Oil: '/sprites/resources/oil.webp',
+  Obsidian: '/sprites/resources/obsidian.webp',
+  Gem: '/sprites/icons/gem.webp',
+};
+
+/** Иконка монет — тоже с игрового CDN (sunflower-land.com/game-assets/ui/coins.png), не из репо. */
+export const COINS_ICON = '/sprites/ui/coins.png';
+
 export interface StageCost {
   resources: Partial<Record<ExpansionResource, number>>;
   coins: number;
   seconds: number;
   level: number;
 }
+
+/** Бампкин-левел, начиная с которого доступно первое Возвышение (ASCENSION_BUMPKIN_LEVEL в upgradeFarm.ts). */
+const ASCENSION_BUMPKIN_LEVEL = 150;
+/** Внутриполосный уровень (0..50), при котором полоса Возвышения считается пройденной. */
+const ASCENSION_LEVEL_CAP = 50;
 
 export type IslandGroup = 'basic' | 'spring' | 'desert' | 'volcano' | 'ascension';
 
@@ -167,6 +201,218 @@ export function islandRange(group: Exclude<IslandGroup, 'ascension'>): { min: nu
   return { min, max };
 }
 
+/** Стартовое число расширений при входе на остров Возвышения (upgradeFarm.ts: ISLAND_SETUP.swamp.startingExpansions). */
+export const ASCENSION_STARTING_EXPANSIONS = 30;
+
+// --- Готовые картинки формы острова (реальный рендер игры, не наша схема) ---
+// Подтверждённый рабочий CDN-адрес: sunflower-land.com/game-assets/land/levels/
+// /{остров}/{сезон}/level_{N}.webp — есть у basic/desert/volcano и всей цепочки
+// Возвышения swamp→spooky→crystal→galaxy→marble. У Лепесткового рая (Petal
+// Paradise, наш 'spring') своей папки на CDN нет — но форма острова не
+// зависит от скина (одна и та же формула спирали для всех), поэтому вместо
+// неё берём картинку basic на нужном количестве расширений: basic рисуется
+// вплоть до level_41 (легаси-нумерация ещё со времён Land NFT), с запасом
+// перекрывает диапазон Лепесткового рая (4–16) — трава вместо цветов, но
+// форма честная.
+
+const LAND_LEVEL_IMAGE_BASE = 'https://sunflower-land.com/game-assets/land/levels';
+
+/** Острова цепочки Возвышения в порядке прохождения (game.island.ascensionLevel, 1-индексация). */
+const ASCENSION_ISLAND_NAMES = ['swamp', 'spooky', 'crystal', 'galaxy', 'marble'];
+
+/** Имя острова (для картинки) для уровня Возвышения — после marble цепочка зацикливается на marble. */
+export function ascensionIslandName(ascensionLevel: number): string {
+  const idx = Math.min(Math.max(ascensionLevel, 1), ASCENSION_ISLAND_NAMES.length) - 1;
+  return ASCENSION_ISLAND_NAMES[idx];
+}
+
+/** Имя острова для картинки формы — у Лепесткового рая своих картинок нет, берём basic (форма та же). */
+export function landLevelImageIslandName(group: Exclude<IslandGroup, 'ascension'>): string {
+  return group === 'spring' ? 'basic' : group;
+}
+
+/** URL готовой картинки формы острова на `count` расширений. */
+export function landLevelImageUrl(islandName: string, count: number): string {
+  return `${LAND_LEVEL_IMAGE_BASE}/${islandName}/autumn/level_${count}.webp`;
+}
+
+// --- Ноды, которые даёт каждое расширение ------------------------------------
+// Извлечено из sunflower-land репо (features/game/types/expansions.ts:
+// TOTAL_EXPANSION_NODES / deriveExpansionNodes, features/game/expansion/lib/
+// ascension.ts: getAscensionNodes) — реальные накопленные счётчики нод по
+// каждому номеру расширения, переведённые в разницу (что добавляет именно
+// это расширение, а не накопленный итог). Ключ таблицы — тот же номер
+// расширения, что и в EXPANSION_REQUIREMENTS (basic 3–9, spring/desert 4–…,
+// volcano 5–30); младший ключ каждой таблицы — старт (бесплатные ноды сразу
+// по прибытии на остров, ещё до первой покупки).
+
+export type NodeKey =
+  | 'CropPlot'
+  | 'Tree'
+  | 'Stone'
+  | 'Iron'
+  | 'Gold'
+  | 'Crimstone'
+  | 'Sunstone'
+  | 'FruitPatch'
+  | 'FlowerBed'
+  | 'Beehive'
+  | 'Oil'
+  | 'LavaPit';
+
+export type NodeGain = Partial<Record<NodeKey, number>>;
+
+export const NODE_ORDER: NodeKey[] = [
+  'CropPlot', 'Tree', 'Stone', 'Iron', 'Gold', 'Crimstone', 'Sunstone',
+  'FruitPatch', 'FlowerBed', 'Beehive', 'Oil', 'LavaPit',
+];
+
+export const NODE_LABELS: Record<NodeKey, string> = {
+  CropPlot: 'Грядка',
+  Tree: 'Дерево',
+  Stone: 'Камень',
+  Iron: 'Железо',
+  Gold: 'Золото',
+  Crimstone: 'Кримстоун',
+  Sunstone: 'Санстоун',
+  FruitPatch: 'Фруктовая грядка',
+  FlowerBed: 'Клумба',
+  Beehive: 'Улей',
+  Oil: 'Нефть',
+  LavaPit: 'Lava Pit',
+};
+
+export const NODE_ICONS: Record<NodeKey, string> = {
+  CropPlot: '/sprites/resources/plot.png',
+  Tree: '/sprites/resources/wood.png',
+  Stone: '/sprites/resources/stone.png',
+  Iron: '/sprites/resources/iron_ore.png',
+  Gold: '/sprites/resources/gold_ore.png',
+  Crimstone: '/sprites/resources/crimstone.png',
+  Sunstone: '/sprites/resources/sunstone/sunstone.png',
+  FruitPatch: '/sprites/resources/fruit_patch.png',
+  FlowerBed: '/sprites/bumpkins/flower_bed.webp',
+  Beehive: '/sprites/sfts/beehive.webp',
+  Oil: '/sprites/resources/oil.webp',
+  LavaPit: '/sprites/resources/lava/lava_pit.webp',
+};
+
+const BASIC_NODE_GAINS: Record<number, NodeGain> = {
+  3: { Tree: 3, Stone: 2 },
+  4: { CropPlot: 9, Tree: 2, Stone: 1, Iron: 1 },
+  5: { CropPlot: 8, Tree: 1, Stone: 1, Iron: 1, Gold: 1 },
+  6: { CropPlot: 8, Tree: 1, Stone: 1 },
+  7: { CropPlot: 2, Tree: 1, Stone: 1, Iron: 1 },
+  8: { CropPlot: 2, Tree: 1, Stone: 1, Gold: 1 },
+  9: { CropPlot: 2, Iron: 1 },
+};
+
+const SPRING_NODE_GAINS: Record<number, NodeGain> = {
+  4: { CropPlot: 31, Tree: 9, Stone: 7, Iron: 4, Gold: 2, FruitPatch: 2 },
+  5: { CropPlot: 2, Tree: 2, Stone: 2, Iron: 1, Gold: 1, FruitPatch: 1 },
+  6: { Tree: 1, Stone: 1, FruitPatch: 1, FlowerBed: 1, Beehive: 1 },
+  7: { CropPlot: 2, Tree: 1, Stone: 1, Crimstone: 1 },
+  8: { CropPlot: 2, Stone: 1, Iron: 1, Gold: 1, FruitPatch: 1 },
+  9: { Tree: 1, Sunstone: 1, FruitPatch: 1 },
+  10: { Iron: 1, Gold: 1, FruitPatch: 1, FlowerBed: 1, Beehive: 1 },
+  11: { CropPlot: 2, Tree: 1, Stone: 1, FruitPatch: 1 },
+  12: { CropPlot: 2 },
+  13: { Tree: 1, Stone: 1, Iron: 1, Sunstone: 1, FruitPatch: 1 },
+  14: { CropPlot: 2, FruitPatch: 1 },
+  15: { CropPlot: 1, Tree: 1, Stone: 1, Iron: 1, Crimstone: 1, FruitPatch: 1 },
+  16: { CropPlot: 1, Tree: 1, Gold: 1, FlowerBed: 1, Beehive: 1 },
+};
+
+const DESERT_NODE_GAINS: Record<number, NodeGain> = {
+  4: { CropPlot: 45, Tree: 18, Stone: 15, Iron: 9, Gold: 6, Crimstone: 2, Sunstone: 2, FruitPatch: 11, FlowerBed: 3, Beehive: 3 },
+  5: { CropPlot: 1, Stone: 1, Iron: 1, Oil: 1 },
+  6: { Sunstone: 1, FruitPatch: 1 },
+  7: { CropPlot: 2, Crimstone: 1 },
+  8: { CropPlot: 2, Sunstone: 1 },
+  9: { Tree: 1, Stone: 1 },
+  10: { CropPlot: 1, Iron: 1 },
+  11: { CropPlot: 1, FruitPatch: 1 },
+  12: { CropPlot: 2 },
+  13: { Tree: 1 },
+  14: { CropPlot: 1, Stone: 1 },
+  15: { CropPlot: 1, Oil: 1 },
+  16: { CropPlot: 1, Tree: 1 },
+  17: { CropPlot: 2 },
+  18: { CropPlot: 1, Gold: 1 },
+  19: { CropPlot: 1, FruitPatch: 1 },
+  20: { Tree: 1, Stone: 1, Oil: 1 },
+  21: { CropPlot: 1, Iron: 1, Sunstone: 1 },
+  22: { Tree: 1, FruitPatch: 1 },
+  23: { CropPlot: 1, Crimstone: 1 },
+  24: { CropPlot: 1, Sunstone: 1 },
+  25: { CropPlot: 1, Stone: 1 },
+};
+
+const VOLCANO_NODE_GAINS: Record<number, NodeGain> = {
+  5: { CropPlot: 65, Tree: 23, Stone: 20, Iron: 12, Gold: 7, Crimstone: 4, Sunstone: 6, FruitPatch: 15, FlowerBed: 3, Beehive: 3, Oil: 3 },
+  6: {},
+  7: { LavaPit: 1 },
+  8: { Sunstone: 1 },
+  9: {},
+  10: { Gold: 1 },
+  11: {},
+  12: { Sunstone: 1 },
+  13: {},
+  14: {},
+  15: { LavaPit: 1 },
+  16: { Oil: 1 },
+  17: { Sunstone: 1 },
+  18: {},
+  19: { Sunstone: 1 },
+  20: {},
+  21: { Sunstone: 1 },
+  22: {},
+  23: { Iron: 1 },
+  24: { LavaPit: 1 },
+  25: { Crimstone: 1 },
+  26: {},
+  27: {},
+  28: { Sunstone: 1 },
+  29: {},
+  30: { Sunstone: 1 },
+};
+
+/**
+ * Ноды одного уровня Возвышения (30–42) — извлечено для уровня 1
+ * (`getAscensionNodes({ ascensionLevel: 1 })`). Накопленный ИТОГ растёт с
+ * каждым следующим уровнем (переносятся все прошлые "капли"), но прирост за
+ * конкретное расширение внутри уровня — по той же формуле на каждом уровне,
+ * поэтому используем как общую таблицу для любого уровня Возвышения.
+ */
+const ASCENSION_NODE_GAINS: Record<number, NodeGain> = {
+  30: { CropPlot: 65, Tree: 23, Stone: 20, Iron: 13, Gold: 8, Crimstone: 5, Sunstone: 13, FruitPatch: 15, FlowerBed: 3, Beehive: 3, Oil: 4, LavaPit: 3 },
+  31: { CropPlot: 1, Stone: 1 },
+  32: { CropPlot: 1, Gold: 1 },
+  33: { Tree: 1, Iron: 1 },
+  34: { Oil: 1 },
+  35: { CropPlot: 1, Stone: 1 },
+  36: { CropPlot: 1, FruitPatch: 1 },
+  37: { Tree: 1, FlowerBed: 1, Beehive: 1 },
+  38: { CropPlot: 1 },
+  39: { Iron: 1, Crimstone: 1 },
+  40: { Stone: 1, Sunstone: 1 },
+  41: { CropPlot: 1, Tree: 1 },
+  42: { FruitPatch: 1 },
+};
+
+/** Ноды, которые даёт конкретный этап (`Stage.number`) — null для переходов и когда данных нет. */
+export function nodeGainsForStage(stage: Stage): NodeGain | null {
+  if (stage.isTransition || stage.number < 0) return null;
+  if (stage.group === 'ascension') return ASCENSION_NODE_GAINS[ASCENSION_STARTING_EXPANSIONS + stage.number] ?? null;
+  const table = { basic: BASIC_NODE_GAINS, spring: SPRING_NODE_GAINS, desert: DESERT_NODE_GAINS, volcano: VOLCANO_NODE_GAINS }[stage.group];
+  return table[stage.number] ?? null;
+}
+
+/** Реальное число расширений (Basic Land) на острове для конкретного этапа — для картинки формы острова. */
+export function landImageCountForStage(stage: Stage): number {
+  return stage.group === 'ascension' ? ASCENSION_STARTING_EXPANSIONS + stage.number : stage.number;
+}
+
 // --- Возвышение (Ascension, остров Swamp и далее) ---------------------------
 // features/game/expansion/lib/ascension.ts: 12 расширений на уровень Возвышения,
 // стоимость растёт по степенной кривой и множится на 1.3^(ascensionLevel-1).
@@ -210,7 +456,62 @@ export function ascensionStageCost(ascensionLevel: number, e: number): StageCost
   };
 }
 
-/** Все расширения одного острова (Базовый/Лепестковый рай/Пустыня/Вулкан) по порядку. */
+// --- Переход на следующий остров / Возвышение (farm.upgraded) --------------
+// upgradeFarm.ts: ISLAND_UPGRADE (статичная стоимость basic→spring→desert→volcano)
+// и getAscensionUpgradeCost (растущая ×1.4 за каждый следующий уровень Возвышения,
+// применяется и к переходу volcano→Возвышение 1, и к каждому Возвышение N→N+1).
+
+const ASCENSION_UPGRADE_BASE: Record<'Crimstone' | 'Oil' | 'Obsidian', number> = {
+  Crimstone: 30,
+  Oil: 50,
+  Obsidian: 3,
+};
+const ASCENSION_UPGRADE_BASE_COINS = 5000;
+const ASCENSION_UPGRADE_GROWTH = 1.4;
+
+/** Соответствует `getAscensionUpgradeCost` из upgradeFarm.ts (округление вниз). */
+function ascensionUpgradeCost(ascensionLevel: number): { resources: Partial<Record<ExpansionResource, number>>; coins: number } {
+  const multiplier = Math.pow(ASCENSION_UPGRADE_GROWTH, ascensionLevel - 1);
+  const scale = (base: number) => Math.floor(base * multiplier);
+  return {
+    resources: {
+      Crimstone: scale(ASCENSION_UPGRADE_BASE.Crimstone),
+      Oil: scale(ASCENSION_UPGRADE_BASE.Oil),
+      Obsidian: scale(ASCENSION_UPGRADE_BASE.Obsidian),
+    },
+    coins: scale(ASCENSION_UPGRADE_BASE_COINS),
+  };
+}
+
+/** Единоразовая стоимость перехода basic→spring→desert→volcano (upgradeFarm.ts: ISLAND_UPGRADE[group].items). */
+const ISLAND_UPGRADE_ITEMS: Record<'basic' | 'spring' | 'desert', Partial<Record<ExpansionResource, number>>> = {
+  basic: { Gold: 10 },
+  spring: { Crimstone: 20 },
+  desert: { Oil: 200 },
+};
+
+/** Переходный этап в конце острова: стоимость перехода на следующий остров (или на первое Возвышение — с Вулкана). */
+function islandTransitionStage(group: Exclude<IslandGroup, 'ascension'>, precedingLevel: number): Stage {
+  const nextLabel = group === 'basic' ? ISLAND_GROUP_LABELS.spring
+    : group === 'spring' ? ISLAND_GROUP_LABELS.desert
+    : group === 'desert' ? ISLAND_GROUP_LABELS.volcano
+    : `${ISLAND_GROUP_LABELS.ascension} 1`;
+
+  const cost = group === 'volcano'
+    ? { ...ascensionUpgradeCost(1), seconds: 0, level: ASCENSION_BUMPKIN_LEVEL }
+    : { resources: ISLAND_UPGRADE_ITEMS[group], coins: 0, seconds: 0, level: precedingLevel };
+
+  return {
+    id: `transition-${group}`,
+    group,
+    number: -1,
+    label: `Переход: ${ISLAND_GROUP_LABELS[group]} → ${nextLabel}`,
+    cost,
+    isTransition: true,
+  };
+}
+
+/** Все расширения одного острова (Базовый/Лепестковый рай/Пустыня/Вулкан) по порядку + переход на следующий остров. */
 export function stagesForIsland(group: Exclude<IslandGroup, 'ascension'>): Stage[] {
   const { min, max, data } = ISLAND_TABLES[group];
   const stages: Stage[] = [];
@@ -223,10 +524,11 @@ export function stagesForIsland(group: Exclude<IslandGroup, 'ascension'>): Stage
       cost: data[n],
     });
   }
+  stages.push(islandTransitionStage(group, stages[stages.length - 1].cost.level));
   return stages;
 }
 
-/** Все 12 расширений одного уровня Возвышения. */
+/** Все 12 расширений одного уровня Возвышения + переход на следующий уровень Возвышения. */
 export function stagesForAscensionLevel(level: number): Stage[] {
   const stages: Stage[] = [];
   for (let e = 1; e <= EXPANSIONS_PER_ASCENSION; e++) {
@@ -238,36 +540,27 @@ export function stagesForAscensionLevel(level: number): Stage[] {
       cost: ascensionStageCost(level, e),
     });
   }
+  stages.push({
+    id: `transition-ascension-${level}`,
+    group: 'ascension',
+    number: -1,
+    label: `Переход: Возвышение ${level} → Возвышение ${level + 1}`,
+    cost: { ...ascensionUpgradeCost(level + 1), seconds: 0, level: ASCENSION_LEVEL_CAP },
+    isTransition: true,
+  });
   return stages;
 }
 
-/** Строит единую упорядоченную таблицу этапов: Базовый → Лепестковый рай → Пустыня → Вулкан → Возвышение 1..maxAscension. */
+/** Строит единую упорядоченную таблицу этапов: Базовый → Лепестковый рай → Пустыня → Вулкан → Возвышение 1..maxAscension (с переходами между ними). */
 export function buildStages(maxAscensionLevel: number): Stage[] {
   const stages: Stage[] = [];
 
   (['basic', 'spring', 'desert', 'volcano'] as const).forEach((group) => {
-    const { min, max, data } = ISLAND_TABLES[group];
-    for (let n = min; n <= max; n++) {
-      stages.push({
-        id: `${group}-${n}`,
-        group,
-        number: n,
-        label: `${ISLAND_GROUP_LABELS[group]} — расширение №${n}`,
-        cost: data[n],
-      });
-    }
+    stages.push(...stagesForIsland(group));
   });
 
   for (let level = 1; level <= maxAscensionLevel; level++) {
-    for (let e = 1; e <= EXPANSIONS_PER_ASCENSION; e++) {
-      stages.push({
-        id: `ascension-${level}-${e}`,
-        group: 'ascension',
-        number: e,
-        label: `Возвышение ${level} — расширение ${e}/${EXPANSIONS_PER_ASCENSION}`,
-        cost: ascensionStageCost(level, e),
-      });
-    }
+    stages.push(...stagesForAscensionLevel(level));
   }
 
   return stages;
@@ -276,32 +569,59 @@ export function buildStages(maxAscensionLevel: number): Stage[] {
 export interface Stage {
   id: string;
   group: IslandGroup;
-  /** Порядковый номер расширения внутри своего острова, либо позиция внутри уровня Возвышения. */
+  /** Порядковый номер расширения внутри своего острова, либо позиция внутри уровня Возвышения. -1 для переходных этапов. */
   number: number;
   label: string;
   cost: StageCost;
+  /** Единоразовый переход на следующий остров/уровень Возвышения (farm.upgraded), а не покупка расширения. */
+  isTransition?: boolean;
 }
 
 export interface RangeTotal {
   resources: Partial<Record<ExpansionResource, number>>;
   coins: number;
   seconds: number;
+  /** Купленных расширений (не считая переходов между островами/уровнями Возвышения). */
   stagesCount: number;
+  /** Переходов на следующий остров или уровень Возвышения (farm.upgraded), включённых в диапазон. */
+  transitionsCount: number;
+  /** Та же стоимость, что в `resources`/`coins`, но только доля от переходов — для подсветки в итогах. */
+  transitionResources: Partial<Record<ExpansionResource, number>>;
+  transitionCoins: number;
 }
 
 /** Суммирует стоимость этапов строго после `fromIndex` (эксклюзивно) и до `toIndex` (инклюзивно). */
 export function sumRange(stages: Stage[], fromIndex: number, toIndex: number): RangeTotal {
-  const total: RangeTotal = { resources: {}, coins: 0, seconds: 0, stagesCount: 0 };
+  const total: RangeTotal = {
+    resources: {},
+    coins: 0,
+    seconds: 0,
+    stagesCount: 0,
+    transitionsCount: 0,
+    transitionResources: {},
+    transitionCoins: 0,
+  };
   if (toIndex <= fromIndex) return total;
 
   for (let i = fromIndex + 1; i <= toIndex; i++) {
-    const cost = stages[i].cost;
+    const stage = stages[i];
+    const cost = stage.cost;
     total.coins += cost.coins;
     total.seconds += cost.seconds;
-    total.stagesCount += 1;
+    if (stage.isTransition) {
+      total.transitionsCount += 1;
+      total.transitionCoins += cost.coins;
+    } else {
+      total.stagesCount += 1;
+    }
     for (const resource of RESOURCE_ORDER) {
       const amount = cost.resources[resource];
-      if (amount) total.resources[resource] = (total.resources[resource] ?? 0) + amount;
+      if (amount) {
+        total.resources[resource] = (total.resources[resource] ?? 0) + amount;
+        if (stage.isTransition) {
+          total.transitionResources[resource] = (total.transitionResources[resource] ?? 0) + amount;
+        }
+      }
     }
   }
 
@@ -311,13 +631,6 @@ export function sumRange(stages: Stage[], fromIndex: number, toIndex: number): R
 /** Суммирует стоимость всех переданных этапов (например, всей таблицы одного острова). */
 export function sumStages(stages: Stage[]): RangeTotal {
   return sumRange(stages, -1, stages.length - 1);
-}
-
-/** Компактная строка вида "Дерево 100 · Камень 40 · Железо 5" для ячейки таблицы. */
-export function formatResourceList(resources: Partial<Record<ExpansionResource, number>>): string {
-  return RESOURCE_ORDER.filter((r) => resources[r])
-    .map((r) => `${RESOURCE_LABELS[r]} ${resources[r]!.toLocaleString('ru-RU')}`)
-    .join(' · ');
 }
 
 /** Форматирует секунды в "Xд Yч" / "Yч Zм" — для отображения суммарного времени постройки. */

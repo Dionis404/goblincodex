@@ -1,0 +1,275 @@
+/* Общие стили страниц-калькуляторов в /tools/* (карточки, поля, KPI, таблицы). */
+
+.gc-calc-page {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.gc-calc-back {
+  display: inline-flex;
+  margin-bottom: 16px;
+}
+
+.gc-calc-header {
+  margin-bottom: 28px;
+}
+.gc-calc-header h1 {
+  font-family: var(--font-head);
+  font-size: 32px;
+  margin: 12px 0 8px;
+  color: var(--text);
+}
+.gc-calc-header p {
+  color: var(--text-sec);
+  line-height: 1.7;
+  max-width: 640px;
+}
+
+.gc-calc-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+
+.gc-exp-params-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 780px) {
+  .gc-exp-params-row {
+    grid-template-columns: 1fr;
+  }
+}
+.gc-exp-params-row .gc-calc-field {
+  margin-top: 0;
+}
+
+/* ── Переключатель "форм" выбора (остров vs Возвышение, уровень vs Возвышение) ── */
+.gc-exp-picker-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.gc-exp-picker-tab {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-sec);
+  font-family: var(--font-body);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.gc-exp-picker-tab:hover {
+  border-color: var(--green-mid);
+}
+.gc-exp-picker-tab[data-active='true'] {
+  background: var(--green-dark);
+  color: var(--green-pale);
+  border-color: var(--green-dark);
+}
+
+.gc-exp-picker-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.gc-exp-picker-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gc-exp-picker-inline span {
+  font-size: 12px;
+  color: var(--text-sec);
+  white-space: nowrap;
+}
+.gc-calc-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.gc-calc-h2 {
+  font-family: var(--font-head);
+  font-size: 18px;
+  margin: 0 0 14px;
+  color: var(--text);
+}
+
+.gc-calc-field {
+  display: block;
+  margin-top: 14px;
+}
+.gc-calc-field > span {
+  display: block;
+  font-size: 14px;
+  color: var(--text-sec);
+  margin-bottom: 4px;
+}
+.gc-calc-field small {
+  display: block;
+  font-size: 12px;
+  color: var(--text-ter);
+  margin-top: 4px;
+}
+.gc-calc-field input,
+.gc-calc-field select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+/* ── Результаты: слева большой блок, справа колонка из KPI ── */
+.gc-exp-results-grid {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 780px) {
+  .gc-exp-results-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gc-exp-kpi-col {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  /* Выравниваем верх колонки с верхом таблицы слева, а не с заголовком "Итого ресурсов" над ней. */
+  margin-top: 36px;
+}
+@media (max-width: 780px) {
+  .gc-exp-kpi-col {
+    margin-top: 0;
+  }
+}
+.gc-exp-kpi-col .gc-calc-kpi {
+  padding: 16px 20px;
+  text-align: center;
+  background: var(--bg);
+}
+.gc-exp-kpi-col .gc-calc-kpi + .gc-calc-kpi {
+  border-top: 1px solid var(--border);
+}
+.gc-calc-kpi-label {
+  font-size: 12px;
+  color: var(--text-sec);
+}
+.gc-calc-kpi-value {
+  font-family: var(--font-head);
+  font-size: 22px;
+  color: var(--green-dark);
+  margin-top: 4px;
+}
+
+.gc-calc-table-wrap {
+  overflow-x: auto;
+}
+.gc-calc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.gc-calc-table th {
+  background: var(--green-dark);
+  color: var(--green-pale);
+  text-align: left;
+  padding: 9px 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.gc-calc-table th:first-child {
+  border-top-left-radius: 8px;
+}
+.gc-calc-table th:last-child {
+  border-top-right-radius: 8px;
+}
+.gc-calc-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.gc-calc-table tbody tr:nth-child(odd) td {
+  background: var(--green-pale);
+}
+.gc-calc-num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.gc-calc-res-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ── Доля стоимости переходов внутри "Итого ресурсов" ── */
+.gc-calc-table td.gc-calc-num {
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+.gc-calc-transition-note {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: #7A4A0A;
+  background: var(--amber);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+[data-theme='dark'] .gc-calc-transition-note {
+  color: #2A1802;
+}
+
+.gc-calc-transition-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--amber);
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.gc-exp-resources {
+  font-size: 13px;
+  color: var(--text-sec);
+  white-space: nowrap;
+}
+.gc-exp-table tfoot td {
+  border-top: 2px solid var(--green-dark);
+  border-bottom: none;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--green-pale);
+}
+
+.gc-calc-note {
+  font-size: 13px;
+  color: var(--text-ter);
+  line-height: 1.6;
+  margin-top: 14px;
+}
+

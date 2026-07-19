@@ -331,11 +331,58 @@ export function parseSpriteMap(sflDir: string): Map<string, string> {
   }
 
   // ── Wearables: bumpkin.ts → ITEM_IDS ───────────────────────────
+  // Only fills gaps — some names collide with an unrelated ITEM_DETAILS entry
+  // (e.g. "Axe" is both a consumable tool, resolved above via its own image,
+  // and a cosmetic wearable); the ITEM_DETAILS sprite is the more relevant one
+  // when both exist, so don't clobber it.
   for (const [itemName, id] of parseWearableIds(sflDir)) {
-    spriteMap.set(itemName, `wearables/${id}.webp`);
+    if (!spriteMap.has(itemName)) spriteMap.set(itemName, `wearables/${id}.webp`);
   }
 
   return spriteMap;
+}
+
+/**
+ * Crop icon paths — the `.crop` (fully grown) stage of CROP_LIFECYCLE lives on
+ * the game's asset CDN, generated at runtime from a name→slug map rather than
+ * imported as a local file (features/island/plots/lib/plant.ts:
+ * `${CONFIG.PROTECTED_IMAGE_URL}/crops/${IMAGES[name]}/crop.png`) — so it can't
+ * be picked up by the local-import scan in parseSpriteMap. Returns crop name
+ * -> CDN-relative path (e.g. "crops/sunflower/crop.png"), for callers that can
+ * fetch over HTTP (see sync-skill-icons.ts's `cdn`-kind download).
+ */
+export function parseCropCdnMap(sflDir: string): Map<string, string> {
+  const file = path.join(sflDir, "src/features/island/plots/lib/plant.ts");
+  if (!fs.existsSync(file)) return new Map();
+  const source = fs.readFileSync(file, "utf8");
+  const block = extractNamedBlock(source, "export const IMAGES");
+  const map = new Map<string, string>();
+  const re = /(\w+):\s*"([^"]+)"/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(block))) map.set(m[1], `crops/${m[2]}/crop.png`);
+  return map;
+}
+
+/**
+ * Items whose ITEM_DETAILS.image is itself a `SUNNYSIDE.category.key` CDN ref
+ * (e.g. Axe -> SUNNYSIDE.tools.axe) rather than a locally-imported file —
+ * `parseSpriteMap` skips these (its regex only matches lowercase local import
+ * vars). Returns item name -> "category.key", for resolving against the same
+ * category.key -> path map sync-skill-icons.ts already builds from
+ * assets/sunnyside.ts for direct SUNNYSIDE.* skill image refs.
+ */
+export function parseItemDetailsCdnRefs(sflDir: string): Map<string, string> {
+  const file = path.join(sflDir, "src/features/game/types/images.ts");
+  if (!fs.existsSync(file)) return new Map();
+  const source = fs.readFileSync(file, "utf8");
+  const itemDetailsBlock = extractNamedBlock(source, "ITEM_DETAILS");
+  const entries = extractTopLevelEntries(itemDetailsBlock);
+  const map = new Map<string, string>();
+  for (const { key, block: entryBlock } of entries) {
+    const m = /\bimage:\s*SUNNYSIDE\??\.(\w+)\??\.(\w+)/.exec(entryBlock);
+    if (m) map.set(key, `${m[1]}.${m[2]}`);
+  }
+  return map;
 }
 
 /**

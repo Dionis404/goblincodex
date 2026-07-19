@@ -60,13 +60,6 @@
   .ref-sidebar { width: 100%; position: static; }
 }
 
-.ref-section-title {
-  font-family: var(--font-head);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 6px;
-}
 .ref-section-desc {
   font-size: 13px;
   color: var(--text-sec);
@@ -156,6 +149,21 @@
 .ref-table tbody tr:hover {
   background: var(--bg);
 }
+.ref-table-transition td {
+  background: var(--amber-pale);
+  font-style: italic;
+}
+.ref-table-transition:hover td {
+  background: var(--amber-pale);
+}
+.ref-table-transition-label {
+  display: block;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--amber);
+  margin-bottom: 2px;
+}
+
 .ref-table tfoot td {
   padding: 10px 14px;
   border-top: 2px solid var(--green-dark);
@@ -228,6 +236,16 @@
   white-space: normal !important;
   min-width: 260px;
 }
+.ref-resource-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+.ref-resource-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
 
 .ref-level-picker {
   display: inline-flex;
@@ -237,12 +255,336 @@
   color: var(--text-sec);
   margin-bottom: 14px;
 }
-.ref-level-picker input {
-  width: 70px;
-  padding: 6px 8px;
+/* ── Опыт по уровням / Возвышение: длинные таблицы, скроллим по вертикали ── */
+.ref-table-wrap--scroll {
+  max-height: 420px;
+  overflow-y: auto;
+}
+.ref-table-wrap--scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* ── Клик по расширению → превью острова и нод ── */
+.ref-table-clickable {
+  cursor: pointer;
+}
+.ref-table-clickable:hover td {
+  background: var(--green-pale);
+}
+.ref-table-row-selected td {
+  background: var(--green-pale) !important;
+  box-shadow: inset 3px 0 0 var(--green-dark);
+}
+
+.ref-stage-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 16px;
+  border-top: 2px solid var(--green-dark);
+  background: var(--green-pale);
+}
+.ref-stage-preview-image-col {
+  flex: 0 0 auto;
+}
+.ref-stage-preview-nodes-col {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.ref-stage-preview-title {
+  font-family: var(--font-head);
+  font-size: 14px;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+.ref-node-gains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ref-node-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* ── Навыки: сводка выбранной сборки ── */
+.ref-skills-summary {
+  position: sticky;
+  top: 20px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.ref-skills-summary-total {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-sec);
+}
+.ref-skills-summary-total strong {
+  font-family: var(--font-head);
+  font-size: 20px;
+  color: var(--green-dark);
+}
+.ref-skills-summary-shards {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--amber);
+  background: var(--amber-pale);
+  border: 1px solid var(--amber);
+  border-radius: 8px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+.ref-skills-reset {
+  margin-left: auto;
+  background: transparent;
   border: 1px solid var(--border);
   border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text-sec);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.ref-skills-reset:hover {
+  background: var(--amber-pale);
+  color: var(--amber);
+  border-color: var(--amber);
+}
+.ref-skills-summary-trees {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ref-skills-summary-chip {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 6px;
   background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-sec);
+  white-space: nowrap;
+}
+.ref-skills-summary-chip--active {
+  background: var(--green-pale);
+  border-color: var(--green-mid);
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+/* ── Навыки: карточки внутри дерева ── */
+.ref-skill-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+.ref-skill-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.15s, background 0.15s;
+}
+.ref-skill-card:hover {
+  border-color: var(--green-mid);
+}
+.ref-skill-card--selected {
+  background: var(--green-pale);
+  border-color: var(--green-dark);
+}
+.ref-skill-card--locked:not(.ref-skill-card--selected) {
+  opacity: 0.6;
+}
+
+.ref-skill-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* "Книжная" подложка иконки навыка — реальный арт из игры, цвет по тиру (1 зелёная / 2 синяя / 3 оранжевая). */
+.ref-skill-book {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+}
+.ref-skill-book--tier1 { background-image: url('/sprites/skills/books/tier1.webp'); }
+.ref-skill-book--tier2 { background-image: url('/sprites/skills/books/tier2.webp'); }
+.ref-skill-book--tier3 { background-image: url('/sprites/skills/books/tier3.webp'); }
+
+.ref-skill-icon-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+}
+.ref-skill-icon-emoji {
+  font-size: 20px;
+}
+
+.ref-skill-card-body {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.ref-skill-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.ref-skill-name {
+  font-weight: 700;
+  font-size: 13px;
   color: var(--text);
+}
+.ref-skill-tier {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--green-dark);
+  background: var(--green-pale);
+  padding: 1px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.ref-skill-tier--2 {
+  color: #1D4ED8;
+  background: #DBEAFE;
+}
+.ref-skill-tier--3 {
+  color: #A5690A;
+  background: var(--amber-pale);
+}
+.ref-skill-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--text-sec);
+}
+.ref-skill-points,
+.ref-skill-island,
+.ref-skill-cooldown {
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+.ref-skill-desc {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text);
+  margin: 0;
+}
+.ref-skill-debuff {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--red);
+  margin: 4px 0 0;
+}
+.ref-skill-ranks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border);
+  font-size: 11px;
+  color: var(--text-ter);
+}
+.ref-skill-rank--active {
+  color: var(--green-dark);
+  font-weight: 600;
+}
+.ref-skill-rank-cost {
+  color: var(--amber);
+  margin-top: 2px;
+}
+.ref-skill-rank-cost--locked {
+  color: var(--red);
+}
+.ref-skill-locked-note {
+  font-size: 11px;
+  color: var(--red);
+  margin: 4px 0 0;
+}
+
+/* ── Прокачка/изучение — прижато к низу карточки, под текстом ── */
+.ref-skill-card-control {
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+.ref-skill-card-control .gc-stepper {
+  width: 100%;
+  justify-content: center;
+}
+.ref-skill-learn-btn {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--green-dark);
+  background: var(--green-dark);
+  color: var(--card-bg);
   font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+.ref-skill-learn-btn:hover:not(:disabled) {
+  background: var(--green-mid);
+  border-color: var(--green-mid);
+}
+.ref-skill-learn-btn--learned {
+  background: var(--card-bg);
+  color: var(--green-dark);
+}
+.ref-skill-learn-btn--learned:hover:not(:disabled) {
+  background: var(--green-pale);
+}
+.ref-skill-learn-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (max-width: 480px) {
+  .ref-skills-summary {
+    position: static;
+  }
 }

@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import NumberStepper from '../NumberStepper';
+import ResourceIcon, { CoinsIcon } from '../ResourceIcon';
 import {
   buildStages,
   sumRange,
@@ -146,18 +148,11 @@ function StagePicker({
         <div className="gc-exp-picker-row">
           <label className="gc-exp-picker-inline">
             <span>Уровень</span>
-            <input
-              type="number"
+            <NumberStepper
+              value={ascensionLevel}
+              onChange={(level) => onChange({ kind: 'ascension', level, number: ascensionNumber })}
               min={1}
               max={50}
-              value={ascensionLevel}
-              onChange={(e) =>
-                onChange({
-                  kind: 'ascension',
-                  level: Math.max(1, Number(e.target.value)),
-                  number: ascensionNumber,
-                })
-              }
             />
           </label>
           <select
@@ -227,7 +222,9 @@ export default function ExpansionCalculator() {
           Возвышение (Ascension) полностью сбрасывает ферму и заново отстраивает те же 12
           участков с более высокой стоимостью — при выборе нескольких уровней сумма считается
           именно так, последовательно. «Стартовая позиция» (№0/12) — это начало уровня, когда
-          ещё ничего не построено.
+          ещё ничего не построено. Если диапазон пересекает границу острова или уровня
+          Возвышения, в сумму автоматически добавляется стоимость самого перехода (действие
+          «Апгрейд фермы») — она не входит в стоимость расширений и растёт отдельно.
         </p>
       </div>
 
@@ -252,18 +249,44 @@ export default function ExpansionCalculator() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Монеты (Coins)</td>
-                      <td className="gc-calc-num">{fmt(total.coins)}</td>
+                      <td className="gc-calc-res-label">
+                        <CoinsIcon />
+                        Монеты (Coins)
+                      </td>
+                      <td className="gc-calc-num">
+                        {fmt(total.coins)}
+                        {total.transitionCoins > 0 && (
+                          <span className="gc-calc-transition-note">
+                            переход: {fmt(total.transitionCoins)}
+                          </span>
+                        )}
+                      </td>
                     </tr>
                     {RESOURCE_ORDER.filter((r) => total.resources[r]).map((r) => (
                       <tr key={r}>
-                        <td>{RESOURCE_LABELS[r]}</td>
-                        <td className="gc-calc-num">{fmt(total.resources[r]!)}</td>
+                        <td className="gc-calc-res-label">
+                          <ResourceIcon resource={r} />
+                          {RESOURCE_LABELS[r]}
+                        </td>
+                        <td className="gc-calc-num">
+                          {fmt(total.resources[r]!)}
+                          {total.transitionResources[r] ? (
+                            <span className="gc-calc-transition-note">
+                              переход: {fmt(total.transitionResources[r]!)}
+                            </span>
+                          ) : null}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+              {total.transitionsCount > 0 && (
+                <p className="gc-calc-note">
+                  <span className="gc-calc-transition-swatch" /> Выделено — часть стоимости, которая
+                  приходится на переход между островами/уровнями Возвышения, а не на сами расширения.
+                </p>
+              )}
             </div>
 
             <div className="gc-exp-kpi-col">
@@ -271,6 +294,12 @@ export default function ExpansionCalculator() {
                 <div className="gc-calc-kpi-label">Расширений в пути</div>
                 <div className="gc-calc-kpi-value">{total.stagesCount}</div>
               </div>
+              {total.transitionsCount > 0 && (
+                <div className="gc-calc-kpi">
+                  <div className="gc-calc-kpi-label">Переходов между островами</div>
+                  <div className="gc-calc-kpi-value">{total.transitionsCount}</div>
+                </div>
+              )}
               <div className="gc-calc-kpi">
                 <div className="gc-calc-kpi-label">Требуемый уровень</div>
                 <div className="gc-calc-kpi-value">{requiredLevel}</div>

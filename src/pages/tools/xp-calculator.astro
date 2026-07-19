@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import XpCalculator from '../../components/tools/XpCalculator.tsx';
+import '../../styles/calculator.css';
+
+const title = 'Калькулятор опыта — GoblinCodex';
+const description =
+  'Узнай свой текущий уровень бампкина по опыту и сколько опыта осталось до цели — уровня или Возвышения (Ascension) в Sunflower Land.';
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="gc-calc-page">
+    <a href="/tools" class="gc-btn-secondary gc-calc-back">← Инструменты</a>
+
+    <header class="gc-calc-header">
+      <span class="gc-calc-tag">Калькулятор</span>
+      <h1>Калькулятор опыта</h1>
+      <p>
+        Введи текущий опыт бампкина — покажем уровень, прогресс до следующего, и сколько опыта
+        осталось набрать до выбранной цели: обычного уровня или уровня в рамках Возвышения
+        (Ascension).
+      </p>
+    </header>
+
+    <XpCalculator client:load />
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .gc-xp-progress-bar {
+    margin-top: 14px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .gc-xp-progress-fill {
+    height: 100%;
+    background: var(--green-mid);
+    border-radius: 999px;
+    transition: width 0.2s ease;
+  }
+</style>
