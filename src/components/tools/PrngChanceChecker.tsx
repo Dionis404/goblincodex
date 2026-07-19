@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { prngChance } from '../../lib/prng';
+import NumberStepper from '../NumberStepper';
 import {
   PRNG_MECHANICS,
   PRNG_RESOURCE_GROUPS,
@@ -99,6 +100,10 @@ export default function PrngChanceChecker() {
           Введи свой Farm ID и текущее значение счётчика действия (сколько раз это конкретное
           действие уже совершалось на ферме).
         </small>
+        <label className="gc-calc-field">
+          <span>Проверить на N действий вперёд</span>
+          <NumberStepper value={scanCount} onChange={setScanCount} min={1} max={1000} step={10} />
+        </label>
       </div>
 
       <div className="gc-prng-tabs">
@@ -142,21 +147,22 @@ export default function PrngChanceChecker() {
 
           const expanded = expandedId === m.id;
 
-          const scanRows = expanded
-            ? Array.from({ length: scanCount }, (_, i) => {
-                const c = counter + i;
-                return {
-                  counter: c,
-                  hit: prngChance({
-                    farmId,
-                    itemId: m.itemId,
-                    counter: c,
-                    chance,
-                    criticalHitName: m.criticalHitName,
-                  }),
-                };
-              })
-            : [];
+          // Всегда считаем (не только когда таблица раскрыта) — нужно для
+          // сводки "X из N" в KPI, независимо от того, открыт ли список строк.
+          const scanRows = Array.from({ length: scanCount }, (_, i) => {
+            const c = counter + i;
+            return {
+              counter: c,
+              hit: prngChance({
+                farmId,
+                itemId: m.itemId,
+                counter: c,
+                chance,
+                criticalHitName: m.criticalHitName,
+              }),
+            };
+          });
+          const hitCount = scanRows.reduce((sum, r) => sum + (r.hit ? 1 : 0), 0);
 
           return (
             <div key={m.id} className="gc-calc-card gc-prng-mechanic-card">
@@ -184,13 +190,23 @@ export default function PrngChanceChecker() {
                     {hit ? 'Сработает' : 'Нет'}
                   </div>
                 </div>
+                <div className="gc-calc-kpi">
+                  <div className="gc-calc-kpi-label">За {scanCount} действий</div>
+                  <div className="gc-calc-kpi-value" data-profit={hitCount > 0 ? 'good' : 'bad'}>
+                    {hitCount} раз{hitCount === 1 ? '' : hitCount >= 2 && hitCount <= 4 ? 'а' : ''}
+                  </div>
+                </div>
               </div>
+              <p className="gc-calc-note" style={{ margin: '0 0 10px' }}>
+                Из {scanCount} следующих действий (счётчик {counter}–{counter + scanCount - 1})
+                крит сработает <strong>{hitCount}</strong> раз ({fmtChance((hitCount / scanCount) * 100)} от N).
+              </p>
 
               <button
                 className="gc-btn gc-btn-secondary"
                 onClick={() => setExpandedId(expanded ? null : m.id)}
               >
-                {expanded ? 'Скрыть скан' : `Скан следующих ${scanCount} действий`}
+                {expanded ? 'Скрыть список действий' : 'Показать список по каждому действию'}
               </button>
 
               {expanded && (

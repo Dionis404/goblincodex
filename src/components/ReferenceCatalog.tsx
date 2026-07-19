@@ -41,7 +41,6 @@ import {
   totalShardsSpent,
   pointsLabel,
   shardsLabel,
-  getSkillRankUpCost,
   getSkillRankTierRequirement,
   getUnlockedTierForTree,
   maxAchievableRank,
@@ -469,7 +468,17 @@ function SkillRankBar({ skill, rank, maxRank }: { skill: Skill; rank: number; ma
 
   const maxLevel = upgrade.maxLevel;
   const canUpgradeFurther = rank < maxLevel;
-  const nextCost = canUpgradeFurther ? getSkillRankUpCost(skill.tier) : null;
+  // Стоимость ИМЕННО следующего ранга — разница совокупной стоимости, а не
+  // фиксированная "цена апгрейда" (getSkillRankUpCost): та годится для ранга
+  // 2/3, но для ранга 1 (ещё не изучен) даёт неправильные Осколки Возвышения
+  // — базовое изучение стоит только очки, без осколков.
+  const nextCost = canUpgradeFurther
+    ? (() => {
+        const cur = costForSkillRank(skill, rank);
+        const next = costForSkillRank(skill, rank + 1);
+        return { points: next.points - cur.points, shards: next.shards - cur.shards };
+      })()
+    : null;
   const nextTierReq = canUpgradeFurther ? getSkillRankTierRequirement(skill.tier, rank) : null;
   const blockedByTier = canUpgradeFurther && rank >= maxRank;
 
@@ -490,8 +499,11 @@ function SkillRankBar({ skill, rank, maxRank }: { skill: Skill; rank: number; ma
       })}
       {nextCost && nextTierReq != null && (
         <span className={`ref-skill-rank-cost${blockedByTier ? ' ref-skill-rank-cost--locked' : ''}`}>
-          {blockedByTier ? '🔒 ' : ''}Ранг {rank + 1}: {nextCost.points} {pointsLabel(nextCost.points)} +{' '}
-          {nextCost.shards} {shardsLabel(nextCost.shards)} Возвышения (нужен тир {nextTierReq} ветки)
+          {blockedByTier ? '🔒 ' : ''}Ранг {rank + 1}: {nextCost.points} {pointsLabel(nextCost.points)}
+          {nextCost.shards > 0 && (
+            <> + {nextCost.shards} {shardsLabel(nextCost.shards)} Возвышения</>
+          )}
+          {rank >= 1 && nextTierReq > skill.tier && <> (нужен тир {nextTierReq} ветки)</>}
         </span>
       )}
     </div>
@@ -633,6 +645,10 @@ function SkillsSection() {
         Возвышения — жмите +/- на карточке. Ниже сразу видно, сколько очков и осколков потребует ваша
         сборка, по каждой ветке отдельно и в сумме.
       </p>
+      <div className="ref-skills-beta-note">
+        ⚠️ Бонусы от прокачанных рангов навыков (2 и 3) сейчас в бета-тестировании и
+        после релиза могут измениться.
+      </div>
       <div className="ref-skills-summary">
         <div className="ref-skills-summary-total">
           <span>Выбрано очков навыков</span>

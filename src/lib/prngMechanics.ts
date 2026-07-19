@@ -190,6 +190,9 @@ export const HARVEST_CROP_IDS: Record<string, number> = {
   Broccoli: 261,
   Pepper: 262,
   Onion: 263,
+  Turnip: 264,
+  Artichoke: 265,
+  Saltwort: 3027,
 };
 
 export type HarvestMechanicTemplate = {
@@ -232,6 +235,15 @@ export const HARVEST_MECHANICS: HarvestMechanicTemplate[] = [
     effect: '+0.35 золота за подсолнух',
     requirement: { kind: 'skill', name: 'Golden Sunflower' },
     onlyForCrop: 'Sunflower',
+  },
+  {
+    id: 'green-amulet',
+    label: 'Green Amulet — x10 к урожаю',
+    counterKey: '{crop} Harvested',
+    criticalHitName: 'Green Amulet',
+    defaultChance: 10,
+    effect: 'x10 множитель ко всему собранному урожаю (любая культура)',
+    requirement: { kind: 'wearable', name: 'Green Amulet' },
   },
 ];
 

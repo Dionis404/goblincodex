@@ -273,3 +273,39 @@
   margin-top: 14px;
 }
 
+/* ── Общие мелкие блоки калькуляторов: ряд полей, ряд KPI-плашек, бейдж да/нет ── */
+.gc-calc-field-row {
+  display: grid;
+  gap: 12px;
+}
+.gc-calc-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+.gc-calc-kpis .gc-calc-kpi {
+  padding: 12px 14px;
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.gc-calc-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.gc-calc-badge[data-profit='good'] {
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.gc-calc-badge[data-profit='bad'] {
+  background: var(--amber-pale);
+  color: var(--red);
+}
+.gc-calc-kpi-value[data-profit='good'] { color: var(--green-dark); }
+.gc-calc-kpi-value[data-profit='bad'] { color: var(--red); }
+
