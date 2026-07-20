@@ -140,7 +140,7 @@ export default function XpCalculator() {
         <h2 className="gc-calc-h2">Параметры</h2>
 
         <label className="gc-calc-field">
-          <span>Текущий опыт (game.bumpkin.experience)</span>
+          <span>Текущий опыт</span>
           <input
             type="number"
             min={0}

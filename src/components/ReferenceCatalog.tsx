@@ -47,6 +47,7 @@ import {
   normalizeRanks,
   costForSkillRank,
   describeSkillRank,
+  liveSkillDescription,
   SKILL_TREE_EMOJI,
   type SkillTree,
   type Skill,
@@ -126,7 +127,7 @@ function LevelXpAccordion({ defaultOpen }: { defaultOpen?: boolean }) {
   return (
     <details className="ref-accordion" open={defaultOpen}>
       <summary className="ref-accordion-summary">
-        Опыт по уровням
+        <span className="ref-accordion-title--center">Опыт по уровням</span>
         <span className="ref-accordion-count">{PRE_ASCENSION_MAX_LEVEL} уровней</span>
       </summary>
       <div className="ref-accordion-body">
@@ -178,7 +179,7 @@ function AscensionXpAccordion() {
   return (
     <details className="ref-accordion">
       <summary className="ref-accordion-summary">
-        Возвышение — опыт
+        <span className="ref-accordion-title--center">Возвышение</span>
         <span className="ref-accordion-count">{LEVELS_PER_ASCENSION} уровней на Возвышение</span>
       </summary>
       <div className="ref-accordion-body">
@@ -224,6 +225,9 @@ function AscensionXpAccordion() {
 function LevelsAndAscensionSection() {
   return (
     <section className="ref-section">
+      <a href="/tools/xp-calculator" className="gc-btn-secondary ref-calc-link">
+        🧮 Открыть калькулятор опыта
+      </a>
       <div className="ref-accordion-list">
         <LevelXpAccordion defaultOpen />
         <AscensionXpAccordion />
@@ -493,7 +497,7 @@ function SkillRankBar({ skill, rank, maxRank }: { skill: Skill; rank: number; ma
             className={`ref-skill-rank${rank >= rankNum ? ' ref-skill-rank--active' : ''}`}
           >
             Ранг {rankNum}: {info.text}
-            {info.debuffText ? ` (−${info.debuffText})` : ''}
+            {info.debuffText ? <span className="ref-skill-rank-debuff"> ({info.debuffText})</span> : ''}
           </span>
         );
       })}
@@ -524,6 +528,7 @@ function SkillCard({
   const upgrade = skill.upgrade;
   const learned = rank > 0;
   const locked = maxRank <= 0;
+  const live = liveSkillDescription(skill, rank);
 
   return (
     <div className={`ref-skill-card${learned ? ' ref-skill-card--selected' : ''}${locked ? ' ref-skill-card--locked' : ''}`}>
@@ -548,9 +553,9 @@ function SkillCard({
             <span className="ref-skill-cooldown">Откат {formatDuration(skill.cooldownSeconds)}</span>
           )}
         </div>
-        <p className="ref-skill-desc">{skill.description}</p>
-        {skill.debuffDescription && (
-          <p className="ref-skill-debuff">− {skill.debuffDescription}</p>
+        <p className="ref-skill-desc">{live.description}</p>
+        {live.debuffDescription && (
+          <p className="ref-skill-debuff">{live.debuffDescription}</p>
         )}
         {locked && !learned && (
           <p className="ref-skill-locked-note">🔒 Сначала откройте тир {skill.tier} этого дерева</p>
@@ -702,11 +707,12 @@ interface RefSection {
 }
 
 const REF_SECTIONS: RefSection[] = [
+  { id: 'skills', icon: '🎓', label: 'Навыки', Content: SkillsSection },
   { id: 'expansions', icon: '🌋', label: 'Стоимость расширений', Content: ExpansionTablesSection },
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
   { id: 'bait', icon: '🎣', label: 'Улов по наживке', Content: BaitFishSection },
   { id: 'upgrades', icon: '⛏️', label: 'Апгрейд ресурсов', Content: ResourceUpgradeSection },
-  { id: 'skills', icon: '🎓', label: 'Навыки', Content: SkillsSection },
+  
 ];
 
 function getInitialId(): string {

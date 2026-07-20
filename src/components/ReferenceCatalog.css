@@ -226,6 +226,17 @@
   color: var(--text-sec);
   white-space: nowrap;
 }
+.ref-accordion-title--center {
+  flex: 1;
+  text-align: center;
+}
+/* Фиксированная ширина под счётчик, чтобы заголовки соседних аккордеонов
+   (с разной длиной текста счётчика справа) центрировались на одной линии,
+   а не "гуляли" из-за разной оставшейся ширины. */
+.ref-accordion-summary:has(.ref-accordion-title--center) .ref-accordion-count {
+  min-width: 190px;
+  text-align: right;
+}
 .ref-accordion-body {
   padding: 0 18px 18px;
 }
@@ -540,6 +551,9 @@
   border-top: 1px dashed var(--border);
   font-size: 11px;
   color: var(--text-ter);
+}
+.ref-skill-rank-debuff {
+  color: var(--red);
 }
 .ref-skill-rank--active {
   color: var(--green-dark);

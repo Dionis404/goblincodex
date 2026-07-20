@@ -892,3 +892,102 @@ export function describeSkillRank(effect: SkillRankEffect, i: 0 | 1 | 2): SkillR
     }
   }
 }
+
+/**
+ * "Сырое" число ранга `i`, ровно в том виде, в каком оно встречается буквально
+ * в тексте `description` (primary) / `debuffDescription` (debuff) — не в
+ * формате бейджа рангов (describeSkillRank), который иногда использует другую
+ * запись (× вместо x, доля вместо процента и т.п.). Возвращает null там, где
+ * эффект не сводится к одному однозначному числу в тексте (AOE, стоки,
+ * составные формулировки) — такие описания просто не обновляются по рангу.
+ */
+function literalRankNumbers(effect: SkillRankEffect, i: 0 | 1 | 2): { primary: number | null; debuff: number | null } {
+  switch (effect.kind) {
+    case 'growthMultiplier':
+    case 'multiplier':
+    case 'costMultiplier':
+    case 'additiveYield':
+    case 'flatBonus':
+    case 'dailyLimit':
+    case 'flatReduction':
+    case 'flatDebuff':
+    case 'chance':
+      return { primary: effect.ranks[i], debuff: null };
+    case 'coinBonus':
+    case 'xpBonus':
+    case 'productionRate':
+    case 'timeReduction':
+    case 'oilReduction':
+    case 'dropChance':
+      return { primary: effect.ranks[i] * 100, debuff: null };
+    case 'yieldWithDebuff':
+      return { primary: effect.buff[i], debuff: effect.debuff[i] };
+    case 'growthWithDebuff':
+      return { primary: effect.buff[i], debuff: (effect.debuff[i] - 1) * 100 };
+    case 'growthWithOilDebuff':
+      return { primary: effect.growth[i], debuff: effect.oilPenalty[i] * 100 };
+    case 'yieldWithOilDebuff':
+      return { primary: effect.yield[i], debuff: (effect.oilMultiplier[i] - 1) * 100 };
+    case 'rateWithGrowthDebuff':
+      return { primary: effect.rate[i], debuff: (effect.growth[i] - 1) * 100 };
+    case 'costWithDebuff':
+      return { primary: effect.buff[i], debuff: (effect.debuff[i] - 1) * 100 };
+    case 'xpWithFeedDebuff':
+      return { primary: effect.xp[i], debuff: (effect.feed[i] - 1) * 100 };
+    case 'sicknessWithSpread':
+      return { primary: effect.sickness[i], debuff: (effect.spread[i] - 1) * 100 };
+    case 'doubleNom':
+      return { primary: effect.food[i], debuff: null };
+    default:
+      return { primary: null, debuff: null };
+  }
+}
+
+/** Находит в тексте число, по модулю равное `from` (с плавающей погрешностью),
+ * и меняет его на `to` — не трогая окружающие символы (%, x, знак минуса,
+ * слова). Сравнение по модулю: сами эффекты всегда хранят положительную
+ * магнитуду, а знак ("+"/"-" перед числом) — часть текста, не regex-токена.
+ * Если такого числа в тексте нет, возвращает текст без изменений (безопасный
+ * no-op). */
+function replaceLiteralNumber(text: string, from: number, to: number): string {
+  const re = /\d+(?:\.\d+)?/g;
+  const eps = 1e-6;
+  const fromAbs = Math.abs(from);
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text))) {
+    if (Math.abs(parseFloat(match[0]) - fromAbs) < eps) {
+      return text.slice(0, match.index) + trimNum(Math.abs(to)) + text.slice(match.index + match[0].length);
+    }
+  }
+  return text;
+}
+
+/**
+ * Описание навыка (description/debuffDescription) с подставленным значением
+ * текущего ранга вместо базового (ранг 1) — вместо статичного текста, всегда
+ * показывающего цифры ранга 1. Для навыков без прокачки или ещё не изученных
+ * (rank <= 1) возвращает исходный текст как есть.
+ */
+export function liveSkillDescription(
+  skill: Skill,
+  rank: number,
+): { description: string; debuffDescription?: string } {
+  if (!skill.upgrade || rank <= 1) {
+    return { description: skill.description, debuffDescription: skill.debuffDescription };
+  }
+  const idx = (Math.min(rank, skill.upgrade.maxLevel) - 1) as 0 | 1 | 2;
+  const base = literalRankNumbers(skill.upgrade.effect, 0);
+  const current = literalRankNumbers(skill.upgrade.effect, idx);
+
+  const description =
+    base.primary != null && current.primary != null
+      ? replaceLiteralNumber(skill.description, base.primary, current.primary)
+      : skill.description;
+
+  const debuffDescription =
+    skill.debuffDescription != null && base.debuff != null && current.debuff != null
+      ? replaceLiteralNumber(skill.debuffDescription, base.debuff, current.debuff)
+      : skill.debuffDescription;
+
+  return { description, debuffDescription };
+}
