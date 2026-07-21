@@ -884,8 +884,18 @@ export function describeSkillRank(effect: SkillRankEffect, i: 0 | 1 | 2): SkillR
       return { text: fmtMultiplier(effect.buff[i]), debuffText: fmtMultiplier(effect.debuff[i]) };
     case 'xpWithFeedDebuff':
       return { text: fmtMultiplier(effect.xp[i]), debuffText: fmtMultiplier(effect.feed[i]) };
-    case 'sicknessWithSpread':
-      return { text: fmtMultiplier(effect.sickness[i]), debuffText: fmtMultiplier(effect.spread[i]) };
+    case 'sicknessWithSpread': {
+      // spread — не дебафф, а второй бафф: насколько слабее распространяется
+      // болезнь от больных соседей (меньше = лучше). В игре это отдельная
+      // условная фраза (skill.healthyLivestock.ranked.withSpread) в процентах
+      // снижения — и не показывается на ранге 1, где spread=1 (нет изменений).
+      const spreadReduction = (1 - effect.spread[i]) * 100;
+      const text =
+        spreadReduction > 0
+          ? `${fmtMultiplier(effect.sickness[i])}, распространение −${trimNum(spreadReduction)}%`
+          : fmtMultiplier(effect.sickness[i]);
+      return { text };
+    }
     default: {
       const _exhaustive: never = effect;
       return _exhaustive;
@@ -935,7 +945,9 @@ function literalRankNumbers(effect: SkillRankEffect, i: 0 | 1 | 2): { primary: n
     case 'xpWithFeedDebuff':
       return { primary: effect.xp[i], debuff: (effect.feed[i] - 1) * 100 };
     case 'sicknessWithSpread':
-      return { primary: effect.sickness[i], debuff: (effect.spread[i] - 1) * 100 };
+      // spread — второй бафф, не дебафф (см. комментарий в describeSkillRank); нет
+      // отдельного debuffDescription-текста, в который его можно было бы подставлять.
+      return { primary: effect.sickness[i], debuff: null };
     case 'doubleNom':
       return { primary: effect.food[i], debuff: null };
     default:
@@ -979,7 +991,7 @@ export function liveSkillDescription(
   const base = literalRankNumbers(skill.upgrade.effect, 0);
   const current = literalRankNumbers(skill.upgrade.effect, idx);
 
-  const description =
+  let description =
     base.primary != null && current.primary != null
       ? replaceLiteralNumber(skill.description, base.primary, current.primary)
       : skill.description;
@@ -988,6 +1000,16 @@ export function liveSkillDescription(
     skill.debuffDescription != null && base.debuff != null && current.debuff != null
       ? replaceLiteralNumber(skill.debuffDescription, base.debuff, current.debuff)
       : skill.debuffDescription;
+
+  // Healthy Livestock: в игре это условное продолжение того же предложения
+  // (skill.healthyLivestock.ranked.withSpread), а не отдельная строка — на
+  // ранге 1 (spread=1, без изменений) его нет вовсе.
+  if (skill.upgrade.effect.kind === 'sicknessWithSpread') {
+    const spreadReduction = (1 - skill.upgrade.effect.spread[idx]) * 100;
+    if (spreadReduction > 0) {
+      description += `, распространение −${trimNum(spreadReduction)}%`;
+    }
+  }
 
   return { description, debuffDescription };
 }
