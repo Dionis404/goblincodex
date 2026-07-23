@@ -2,9 +2,10 @@
  * backfill-telegram-posts.ts
  * One-off import of the @URGSFL channel's message history into the
  * telegram_posts table, by scraping the public t.me/s/ preview page.
- * The webhook (src/pages/api/telegram-webhook.ts) only receives posts
- * published after it's registered — this script backfills everything
- * published before that point. Safe to re-run (ON CONFLICT DO UPDATE).
+ * The goblin-bot service (long-polling, writes to telegram_posts directly)
+ * only receives posts published after it starts running — this script
+ * backfills everything published before that point. Safe to re-run
+ * (ON CONFLICT DO UPDATE).
  *
  * t.me is blocked without a VPN/proxy in some networks (e.g. Russia) — if
  * that's the case, set HTTPS_PROXY (or TELEGRAM_SCRAPE_PROXY) to a proxy URL

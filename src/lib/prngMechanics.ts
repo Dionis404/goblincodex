@@ -54,6 +54,84 @@ export const PRNG_RESOURCE_GROUPS: Record<PrngResourceGroup, string> = {
   crop: 'Урожай',
 };
 
+/**
+ * Дерево имеет 3 тира (Tree / Ancient Tree / Sacred Tree), и игра считает крит
+ * ОТДЕЛЬНО для каждого тира — свой itemId и свой counterKey в farmActivity
+ * (chop.ts: `${treeName === "Tree" ? "Basic Tree" : treeName} Chopped`).
+ * Т.е. счётчик рубок обычного Tree никак не связан со счётчиком Ancient/Sacred
+ * Tree — это три независимые PRNG-последовательности.
+ */
+type TreeTier = {
+  itemLabel: string;
+  itemId: number;
+  counterKey: string;
+  /** Множитель выхода тира — на него умножается и добыча древесины, и монеты Money Tree. */
+  multiplier: number;
+};
+
+const TREE_TIERS: TreeTier[] = [
+  { itemLabel: 'Tree', itemId: 618, counterKey: 'Basic Tree Chopped', multiplier: 1 },
+  { itemLabel: 'Ancient Tree', itemId: 2702, counterKey: 'Ancient Tree Chopped', multiplier: 4 },
+  { itemLabel: 'Sacred Tree', itemId: 2703, counterKey: 'Sacred Tree Chopped', multiplier: 16 },
+];
+
+function buildTreeTierMechanics(): PrngMechanic[] {
+  return TREE_TIERS.flatMap((tier) => {
+    const suffix = tier.itemLabel === 'Tree' ? '' : ` (${tier.itemLabel})`;
+    const moneyTreeCoins = 200 * tier.multiplier;
+    return [
+      {
+        id: `chop-native-${tier.itemId}`,
+        group: 'wood' as const,
+        label: `Native — +1 дерево${suffix}`,
+        itemId: tier.itemId,
+        itemLabel: tier.itemLabel,
+        counterKey: tier.counterKey,
+        criticalHitName: 'Native',
+        defaultChance: 20,
+        effect: '+1 к добытой древесине',
+        requirement: { kind: 'always' as const },
+      },
+      {
+        id: `chop-tough-tree-${tier.itemId}`,
+        group: 'wood' as const,
+        label: `Tough Tree — x3 древесины${suffix}`,
+        itemId: tier.itemId,
+        itemLabel: tier.itemLabel,
+        counterKey: tier.counterKey,
+        criticalHitName: 'Tough Tree',
+        defaultChance: 10,
+        effect: 'Утраивает добытую древесину',
+        requirement: { kind: 'skill' as const, name: 'Tough Tree' },
+      },
+      {
+        id: `chop-tree-turnaround-${tier.itemId}`,
+        group: 'wood' as const,
+        label: `Tree Turnaround — мгновенное восстановление${suffix}`,
+        itemId: tier.itemId,
+        itemLabel: tier.itemLabel,
+        counterKey: tier.counterKey,
+        criticalHitName: 'Tree Turnaround',
+        defaultChance: 15,
+        effect: 'Дерево восстанавливается мгновенно',
+        requirement: { kind: 'skill' as const, name: 'Tree Turnaround' },
+      },
+      {
+        id: `chop-money-tree-${tier.itemId}`,
+        group: 'wood' as const,
+        label: `Money Tree — +${moneyTreeCoins} монет${suffix}`,
+        itemId: tier.itemId,
+        itemLabel: tier.itemLabel,
+        counterKey: tier.counterKey,
+        criticalHitName: 'Money Tree',
+        defaultChance: 1,
+        effect: `+${moneyTreeCoins} монет за рубку (200 × ${tier.multiplier} тира)`,
+        requirement: { kind: 'skill' as const, name: 'Money Tree' },
+      },
+    ];
+  });
+}
+
 export const PRNG_MECHANICS: PrngMechanic[] = [
   {
     id: 'gold-native',
@@ -115,54 +193,7 @@ export const PRNG_MECHANICS: PrngMechanic[] = [
     effect: 'Скала восстанавливается мгновенно',
     requirement: { kind: 'collectible', name: 'Crimstone Clam' },
   },
-  {
-    id: 'chop-native',
-    group: 'wood',
-    label: 'Native — +1 дерево',
-    itemId: 618,
-    itemLabel: 'Tree',
-    counterKey: 'Basic Tree Chopped',
-    criticalHitName: 'Native',
-    defaultChance: 20,
-    effect: '+1 к добытой древесине',
-    requirement: { kind: 'always' },
-  },
-  {
-    id: 'chop-tough-tree',
-    group: 'wood',
-    label: 'Tough Tree — x3 древесины',
-    itemId: 618,
-    itemLabel: 'Tree',
-    counterKey: 'Basic Tree Chopped',
-    criticalHitName: 'Tough Tree',
-    defaultChance: 10,
-    effect: 'Утраивает добытую древесину',
-    requirement: { kind: 'skill', name: 'Tough Tree' },
-  },
-  {
-    id: 'chop-tree-turnaround',
-    group: 'wood',
-    label: 'Tree Turnaround — мгновенное восстановление',
-    itemId: 618,
-    itemLabel: 'Tree',
-    counterKey: 'Basic Tree Chopped',
-    criticalHitName: 'Tree Turnaround',
-    defaultChance: 15,
-    effect: 'Дерево восстанавливается мгновенно',
-    requirement: { kind: 'skill', name: 'Tree Turnaround' },
-  },
-  {
-    id: 'chop-money-tree',
-    group: 'wood',
-    label: 'Money Tree — +200 монет',
-    itemId: 618,
-    itemLabel: 'Tree',
-    counterKey: 'Basic Tree Chopped',
-    criticalHitName: 'Money Tree',
-    defaultChance: 1,
-    effect: '+200 монет за рубку',
-    requirement: { kind: 'skill', name: 'Money Tree' },
-  },
+  ...buildTreeTierMechanics(),
 ];
 
 /** Урожай: itemId и criticalHitName зависят от конкретной культуры, поэтому считаются отдельно. */

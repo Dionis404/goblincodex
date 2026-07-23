@@ -48,7 +48,6 @@ jobs:
               "env": [
                 {"name": "DATABASE_URL", "value": "'"${{ secrets.DATABASE_URL }}"'"},
                 {"name": "TELEGRAM_BOT_TOKEN", "value": "'"${{ secrets.TELEGRAM_BOT_TOKEN }}"'"},
-                {"name": "TELEGRAM_WEBHOOK_SECRET", "value": "'"${{ secrets.TELEGRAM_WEBHOOK_SECRET }}"'"},
                 {"name": "NODE_ENV", "value": "production"}
               ]
             }'

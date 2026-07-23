@@ -14,7 +14,6 @@
 - **Инструменты** — раздел `/tools` в разработке (заглушка "скоро"); первый калькулятор добычи ресурсов уже доступен по прямой ссылке `/tools/mining-calculator`
 - **Профили** — публичные страницы фермеров (`/profile/[username]`)
 - **Донаты** — отдельная страница `/donate`
-- **Telegram-бот** — вебхук для интеграции с сообществом (`src/pages/api/telegram-webhook.ts`)
 
 Игровые данные (предметы, баффы, Bud'ы, питомцы) синхронизируются из исходников [sunflower-land](https://github.com/sunflower-land/sunflower-land) скриптами в [scripts/](scripts/README.md) и хранятся в PostgreSQL.
 
@@ -42,7 +41,7 @@ npm run dev        # http://localhost:4321
 
 Подробности по скриптам синхронизации данных — в [scripts/README.md](scripts/README.md).
 
-Для запуска через Docker: `docker compose up -d` (требуются переменные `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`).
+Для запуска через Docker: `docker compose up -d` (требуются переменные `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`).
 
 ## 🗂️ Структура
 

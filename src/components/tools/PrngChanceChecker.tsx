@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { prngChance } from '../../lib/prng';
+import { useFarmData } from '../../lib/useFarmData';
+import { formatUpdatedAt } from '../../lib/formatRelativeTime';
 import NumberStepper from '../NumberStepper';
 import {
   PRNG_MECHANICS,
@@ -60,6 +62,8 @@ export default function PrngChanceChecker() {
   const [farmId, setFarmId] = useState(1);
   const [counter, setCounter] = useState(0);
 
+  const { farm, loading, refreshing, error, staleNotice, refresh, retry } = useFarmData(farmId || null);
+
   useEffect(() => {
     fetch('/api/prng-chances.json')
       .then((r) => (r.ok ? r.json() : {}))
@@ -100,6 +104,47 @@ export default function PrngChanceChecker() {
           Введи свой Farm ID и текущее значение счётчика действия (сколько раз это конкретное
           действие уже совершалось на ферме).
         </small>
+
+        {loading && (
+          <div className="gc-farm-status">
+            <span className="gc-farm-status-loading">
+              <span className="gc-spinner" aria-hidden="true" />
+              Загружаем данные фермы…
+            </span>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="gc-farm-status">
+            <span className="gc-farm-status-error">
+              SFL сейчас недоступен, не удалось загрузить данные фермы.
+            </span>
+            <button className="gc-btn gc-btn-secondary" onClick={retry}>
+              Попробовать снова
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && farm && (
+          <div className="gc-farm-status">
+            <span>{formatUpdatedAt(farm.updated_at)}</span>
+            <button
+              className="gc-btn gc-btn-secondary gc-farm-refresh-btn"
+              onClick={refresh}
+              disabled={refreshing}
+            >
+              {refreshing && <span className="gc-spinner" aria-hidden="true" />}
+              Обновить
+            </button>
+          </div>
+        )}
+
+        {staleNotice && (
+          <small className="gc-farm-status-stale">
+            Не удалось обновить, показаны последние сохранённые данные.
+          </small>
+        )}
+
         <label className="gc-calc-field">
           <span>Проверить на N действий вперёд</span>
           <NumberStepper value={scanCount} onChange={setScanCount} min={1} max={1000} step={10} />

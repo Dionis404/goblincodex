@@ -309,3 +309,51 @@
 .gc-calc-kpi-value[data-profit='good'] { color: var(--green-dark); }
 .gc-calc-kpi-value[data-profit='bad'] { color: var(--red); }
 
+/* ── Статус подгрузки данных фермы (goblin-api): лоадер / ошибка / метка времени ── */
+.gc-farm-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text-ter);
+}
+.gc-farm-status-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gc-farm-status-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--red);
+}
+.gc-farm-status-stale {
+  color: var(--red);
+  margin-top: 4px;
+}
+.gc-farm-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.gc-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--green-dark);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
