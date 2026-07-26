@@ -1,0 +1,54 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LpLeaderboardPage from '../../components/LpLeaderboardPage.jsx';
+
+let leaderboard: any[] = [];
+let meta: any = null;
+let apiError = false;
+
+try {
+  const res = await fetch('http://goblin-api:8000/lp/leaderboard');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const json = await res.json();
+  leaderboard = json.leaderboard ?? [];
+  meta = json.meta ?? null;
+} catch (e) {
+  apiError = true;
+  console.error('LP leaderboard API error:', e);
+}
+---
+
+<BaseLayout
+  title="Лидерборд ликвидности — GoblinCodex"
+  description="Топ-500 поставщиков ликвидности пула FLOWER/USDC (Uniswap v3, Base)."
+  currentPage="community"
+>
+  <div class="gc-content gc-page-enter">
+
+    <a href="/community" class="gc-btn-secondary gc-lp-back">← Сообщество</a>
+
+    <div class="gc-community-header">
+      <h1 class="gc-page-title">💧 Лидерборд ликвидности</h1>
+      <p class="gc-community-sub">
+        Топ-500 поставщиков ликвидности пула FLOWER/USDC (Uniswap v3, сеть Base)
+      </p>
+    </div>
+
+    {apiError ? (
+      <div class="gc-community-error gc-card">
+        ⚠️ Данные временно недоступны. Попробуйте позже.
+      </div>
+    ) : (
+      <LpLeaderboardPage leaderboard={leaderboard} meta={meta} client:load />
+    )}
+
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .gc-lp-back {
+    display: inline-flex;
+    margin: 20px 0 0;
+  }
+</style>
