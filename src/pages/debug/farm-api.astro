@@ -1,0 +1,135 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FarmApiDebug from '../../components/debug/FarmApiDebug.tsx';
+import '../../styles/calculator.css';
+---
+
+<BaseLayout
+  title="Debug: goblin-api"
+  description="Внутренняя проверка работы goblin-api и записи данных ферм в БД."
+  noindex={true}
+>
+  <main class="gc-calc-page">
+    <header class="gc-calc-header">
+      <span class="gc-calc-tag">Debug</span>
+      <h1>goblin-api: проверка ферм</h1>
+      <p>
+        Служебная страница вне навигации сайта — проверяет, что <code>/api/farm/:id</code>,
+        <code>/api/farm/:id/refresh</code> и <code>/api/farms</code> отвечают корректно и что
+        запись обновлений в БД реально происходит (смотрите на изменение <code>updated_at</code>
+        после нажатия «Обновить»).
+      </p>
+    </header>
+
+    <FarmApiDebug client:load />
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .gc-debug-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .gc-debug-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .gc-debug-row input {
+    flex: 1;
+    min-width: 180px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+  }
+
+  .gc-debug-status {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-sec);
+  }
+  .gc-debug-status--error {
+    color: var(--red, #c94b3d);
+  }
+  .gc-debug-status--warn {
+    color: var(--amber, #b8860b);
+  }
+
+  .gc-debug-result {
+    margin-top: 16px;
+  }
+  .gc-debug-kv {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .gc-debug-kv span {
+    color: var(--text-sec);
+  }
+
+  .gc-debug-json {
+    margin-top: 10px;
+    max-height: 360px;
+    overflow: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .gc-debug-table-wrap {
+    margin-top: 14px;
+    overflow-x: auto;
+  }
+
+  .gc-debug-log-section {
+    order: 3;
+  }
+  .gc-debug-log {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    font-family: monospace;
+  }
+  .gc-debug-log li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+  .gc-debug-log-item--error {
+    border-color: var(--red, #c94b3d);
+  }
+  .gc-debug-log-time {
+    color: var(--text-ter);
+  }
+  .gc-debug-log-label {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .gc-debug-log-ms {
+    color: var(--green-dark);
+  }
+  .gc-debug-log-detail {
+    color: var(--text-sec);
+  }
+</style>

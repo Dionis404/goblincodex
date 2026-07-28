@@ -16,5 +16,10 @@ export default defineConfig({
     port: 4321
   },
 
-  integrations: [react(), sitemap()],
+  integrations: [
+    react(),
+    sitemap({
+      filter: (page) => !page.includes('/debug/'),
+    }),
+  ],
 });
