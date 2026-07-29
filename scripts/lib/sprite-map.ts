@@ -121,6 +121,39 @@ export function extractTopLevelEntries(block: string): RawEntry[] {
       continue;
     }
 
+    // Skip spread entries: `...someExpr(...),` — arbitrarily complex (nested
+    // calls/objects/template literals), so scan to the next top-level comma
+    // rather than trying to parse it as a key:value pair. Without this, a
+    // spread like `...Object.fromEntries(...)` desyncs the scanner: it misreads
+    // braces/parens inside the spread's body as top-level entries, corrupting
+    // everything parsed afterward (including real keys that follow the spread
+    // in the same object literal, e.g. COLLECTIBLE_BUFF_LABELS in SFL source).
+    if (block[i] === "." && block[i + 1] === "." && block[i + 2] === ".") {
+      i += 3;
+      let depth = 0;
+      while (i < block.length) {
+        const c = block[i];
+        if (c === '"' || c === "'" || c === "`") {
+          const q = c;
+          i++;
+          while (i < block.length) {
+            if (block[i] === "\\" && i + 1 < block.length) { i += 2; continue; }
+            if (block[i] === q) { i++; break; }
+            i++;
+          }
+          continue;
+        }
+        if (c === "{" || c === "[" || c === "(") { depth++; i++; continue; }
+        if (c === "}" || c === "]" || c === ")") {
+          if (depth === 0) break;
+          depth--; i++; continue;
+        }
+        if (c === "," && depth === 0) { i++; break; }
+        i++;
+      }
+      continue;
+    }
+
     let key = "";
     if (block[i] === '"' || block[i] === "'") {
       const q = block[i++];
@@ -170,6 +203,20 @@ export function extractTopLevelEntries(block: string): RawEntry[] {
 
     while (i < block.length && depth > 0) {
       const c = block[i];
+      // Comments must be skipped BEFORE the quote check below: a `//` line
+      // comment containing an apostrophe (e.g. "Bale's +0.1 base") would
+      // otherwise be misread as an unterminated string literal, consuming
+      // everything up to some unrelated later quote and permanently
+      // desyncing the brace-depth count for the rest of the value.
+      if (c === "/" && block[i + 1] === "/") {
+        while (i < block.length && block[i] !== "\n") i++;
+        continue;
+      }
+      if (c === "/" && block[i + 1] === "*") {
+        while (i < block.length - 1 && !(block[i] === "*" && block[i + 1] === "/")) i++;
+        i += 2;
+        continue;
+      }
       if (c === '"' || c === "'" || c === "`") {
         const q = c;
         if (q === "`") {
