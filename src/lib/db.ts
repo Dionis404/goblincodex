@@ -5,6 +5,7 @@ const { Pool } = pg;
 
 let pool: InstanceType<typeof Pool> | null = null;
 let telegramPostsTableReady: Promise<void> | null = null;
+let telegramStatsTableReady: Promise<void> | null = null;
 
 function getPool(): InstanceType<typeof Pool> {
   if (!pool) {
@@ -31,6 +32,19 @@ function ensureTelegramPostsTable(pool: InstanceType<typeof Pool>): Promise<void
     `).then(() => undefined);
   }
   return telegramPostsTableReady;
+}
+
+function ensureTelegramStatsTable(pool: InstanceType<typeof Pool>): Promise<void> {
+  if (!telegramStatsTableReady) {
+    telegramStatsTableReady = pool.query(`
+      CREATE TABLE IF NOT EXISTS telegram_stats (
+        channel      TEXT PRIMARY KEY,
+        member_count INTEGER NOT NULL,
+        updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+    `).then(() => undefined);
+  }
+  return telegramStatsTableReady;
 }
 
 interface SflBuff {
@@ -191,6 +205,29 @@ export async function getTelegramPosts(limit: number): Promise<TelegramPost[]> {
     text: r.text,
     imageUrl: r.image_url,
   }));
+}
+
+export async function saveTelegramSubscriberCount(channel: string, memberCount: number): Promise<void> {
+  const pool = getPool();
+  await ensureTelegramStatsTable(pool);
+  await pool.query(
+    `INSERT INTO telegram_stats (channel, member_count, updated_at)
+     VALUES ($1, $2, now())
+     ON CONFLICT (channel) DO UPDATE SET
+       member_count = EXCLUDED.member_count,
+       updated_at   = now()`,
+    [channel, memberCount]
+  );
+}
+
+export async function getTelegramSubscriberCount(channel: string): Promise<number | null> {
+  const pool = getPool();
+  await ensureTelegramStatsTable(pool);
+  const { rows } = await pool.query<{ member_count: number }>(
+    `SELECT member_count FROM telegram_stats WHERE channel = $1`,
+    [channel]
+  );
+  return rows[0]?.member_count ?? null;
 }
 
 // ─── Buds ───────────────────────────────────────────────────────────────────
