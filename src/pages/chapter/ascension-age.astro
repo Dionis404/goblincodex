@@ -1,25 +1,25 @@
 ---
 export const prerender = false;
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, getEntry, render } from 'astro:content';
-import ChapterAuctions from '../components/ChapterAuctions.tsx';
-import auctionsData from '../data/chapter-auctions.json';
-import type { getCatalogItems } from '../lib/db';
-import { getCachedCatalogItems } from '../lib/catalog-cache';
+import ChapterAuctions from '../../components/ChapterAuctions.tsx';
+import auctionsData from '../../data/next-chapter-auctions.json';
+import type { getCatalogItems } from '../../lib/db';
+import { getCachedCatalogItems } from '../../lib/catalog-cache';
 
-const CURRENT_CHAPTER = 14;
+const NEXT_CHAPTER = 15;
 
 let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
 try {
   const { data: items } = await getCachedCatalogItems();
   itemCatalog = Object.fromEntries(items.map((i) => [i.name, i]));
 } catch (err) {
-  console.error('[chapter] DB fetch error:', err);
+  console.error('[chapter/ascension-age] DB fetch error:', err);
 }
 
 const chapterGuides = await getCollection(
   'guides',
-  ({ data }) => !data.draft && data.chapter === CURRENT_CHAPTER
+  ({ data }) => !data.draft && data.chapter === NEXT_CHAPTER
 );
 chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
 
@@ -47,24 +47,20 @@ const mechanicCards = await Promise.all(
 
 <BaseLayout
   currentPage="chapter"
-  title="Глава — GoblinCodex"
-  description="Гайды по механике текущей главы, предметы и расписание аукционов Sunflower Land."
+  title="Ascension Age — GoblinCodex"
+  description="Гайды по механике будущей главы Ascension Age, предметы и расписание аукционов Sunflower Land."
 >
   <div class="gc-content gc-page-enter">
 
     <div class="gc-chapter-block">
-      <div class="gc-chapter-banner">
-        <img src="/images/Chapter14.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--light" />
-        <img src="/images/Chapter14Night.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--dark" />
+      <div class="gc-chapter-banner gc-chapter-banner--placeholder">
+        <img src="/sprites/decorations/banners/ascension_banner.webp" alt="Ascension Age — Chapter 15" class="gc-chapter-img gc-chapter-img--icon" />
       </div>
-      <a href="/chapter/ascension-age" class="gc-next-chapter-link">
-        🔜 Смотреть аукционы следующей главы — Ascension Age →
-      </a>
     </div>
 
     <div class="gc-wip-note">
       <span class="gc-wip-note-dot"></span>
-      🚧 Страница в разработке — часть данных пока заполняется вручную, скоро добавим больше
+      🔜 Глава Ascension Age ещё не началась (старт 2026-08-03, сразу после Salt Awakening) — часть данных уточняется по мере анонсов разработчиков
     </div>
 
     <!-- ── Основные механики ── -->
@@ -118,7 +114,7 @@ const mechanicCards = await Promise.all(
 
     <!-- ── Расписание аукционов ── -->
     <section class="gc-chapter-section">
-      <ChapterAuctions client:load auctions={auctions} chapterName="The Salt Awakening" itemCatalog={itemCatalog} initialNow={now} />
+      <ChapterAuctions client:load auctions={auctions} chapterName="Ascension Age" itemCatalog={itemCatalog} initialNow={now} />
     </section>
 
   </div>
@@ -149,9 +145,11 @@ const mechanicCards = await Promise.all(
   display: block;
   image-rendering: pixelated;
 }
-:global(.gc-chapter-img--dark)  { display: none; }
-:global([data-theme="dark"]) :global(.gc-chapter-img--light) { display: none; }
-:global([data-theme="dark"]) :global(.gc-chapter-img--dark)  { display: block; }
+:global(.gc-chapter-img--icon) {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto;
+}
 
 .gc-chapter-block {
   position: relative;
@@ -164,24 +162,13 @@ const mechanicCards = await Promise.all(
   border-radius: 12px;
   overflow: hidden;
 }
-
-.gc-next-chapter-link {
-  display: inline-flex;
+.gc-chapter-banner--placeholder {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  background: var(--amber-pale);
-  border: 1px solid var(--amber);
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.15s;
-}
-.gc-next-chapter-link:hover {
-  transform: translateY(-1px);
+  justify-content: center;
+  padding: 40px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
 }
 
 .gc-wip-note {
