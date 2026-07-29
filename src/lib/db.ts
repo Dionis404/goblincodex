@@ -39,7 +39,7 @@ function ensureTelegramStatsTable(pool: InstanceType<typeof Pool>): Promise<void
     telegramStatsTableReady = pool.query(`
       CREATE TABLE IF NOT EXISTS telegram_stats (
         channel      TEXT PRIMARY KEY,
-        member_count INTEGER NOT NULL,
+        subscribers  INTEGER NOT NULL,
         updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
       );
     `).then(() => undefined);
@@ -211,11 +211,11 @@ export async function saveTelegramSubscriberCount(channel: string, memberCount: 
   const pool = getPool();
   await ensureTelegramStatsTable(pool);
   await pool.query(
-    `INSERT INTO telegram_stats (channel, member_count, updated_at)
+    `INSERT INTO telegram_stats (channel, subscribers, updated_at)
      VALUES ($1, $2, now())
      ON CONFLICT (channel) DO UPDATE SET
-       member_count = EXCLUDED.member_count,
-       updated_at   = now()`,
+       subscribers = EXCLUDED.subscribers,
+       updated_at  = now()`,
     [channel, memberCount]
   );
 }
@@ -223,11 +223,11 @@ export async function saveTelegramSubscriberCount(channel: string, memberCount: 
 export async function getTelegramSubscriberCount(channel: string): Promise<number | null> {
   const pool = getPool();
   await ensureTelegramStatsTable(pool);
-  const { rows } = await pool.query<{ member_count: number }>(
-    `SELECT member_count FROM telegram_stats WHERE channel = $1`,
+  const { rows } = await pool.query<{ subscribers: number }>(
+    `SELECT subscribers FROM telegram_stats WHERE channel = $1`,
     [channel]
   );
-  return rows[0]?.member_count ?? null;
+  return rows[0]?.subscribers ?? null;
 }
 
 // ─── Buds ───────────────────────────────────────────────────────────────────
