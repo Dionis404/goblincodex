@@ -95,6 +95,7 @@ const CHAPTER_FILTERS: { id: string; label: string }[] = [
   { id: 'chapter-paw-prints',        label: 'Paw Prints' },
   { id: 'chapter-crabs-and-traps',   label: 'Crabs and Traps' },
   { id: 'chapter-salt-awakening',    label: 'Salt Awakening' },
+  { id: 'chapter-ascension-age',     label: 'Ascension Age' },
 ];
 
 /** Источники без привязки к конкретной главе: разовые события, постоянные NPC-фичи. */

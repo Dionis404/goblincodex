@@ -26,6 +26,11 @@ chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new 
 const auctions: any[] = auctionsData.auctions.auctions;
 const now = Date.now();
 
+const CHAPTER_TAG = 'chapter-ascension-age';
+const chapterItems = Object.values(itemCatalog)
+  .filter((i) => i.tags?.includes(CHAPTER_TAG))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
 // ── Основные механики: карточки, открывающие гайд из кодекса в модалке ──
 const MECHANIC_CARDS = [
   { id: 'delivery',     icon: '🚚', title: 'Доставки' },
@@ -107,9 +112,39 @@ const mechanicCards = await Promise.all(
     <!-- ── Предметы главы ── -->
     <section class="gc-chapter-section">
       <h2 class="gc-block-title-lg">💎 Предметы главы</h2>
-      <div class="gc-guides-empty">
-        Каталог предметов главы скоро появится здесь — данные будут подгружаться из базы.
-      </div>
+      {chapterItems.length > 0 ? (
+        <div class="gc-chapter-items-grid">
+          {chapterItems.map((item) => (
+            <div class="gc-chapter-item-card">
+              <div class="gc-chapter-item-sprite">
+                {item.sprite ? (
+                  <img src={`/sprites/${item.sprite}`} alt={item.name} loading="lazy" />
+                ) : (
+                  <span class="gc-chapter-item-sprite-placeholder">?</span>
+                )}
+              </div>
+              <div class="gc-chapter-item-info">
+                <div class="gc-chapter-item-name">{item.name}</div>
+                {item.boosts.length > 0 ? (
+                  <div class="gc-chapter-item-boosts">
+                    {item.boosts.map((b) => (
+                      <span class={`gc-chapter-item-boost gc-chapter-item-boost--${b.labelType}`}>
+                        {b.shortDescriptionRu || b.shortDescription}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <span class="gc-chapter-item-no-boost">Без бонусов</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="gc-guides-empty">
+          Каталог предметов главы скоро появится здесь — данные будут подгружаться из базы.
+        </div>
+      )}
     </section>
 
     <!-- ── Расписание аукционов ── -->
@@ -314,6 +349,77 @@ const mechanicCards = await Promise.all(
 }
 @media (max-width: 640px) {
   .gc-guides-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── Предметы главы ── */
+.gc-chapter-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.gc-chapter-item-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.gc-chapter-item-sprite {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: 8px;
+}
+.gc-chapter-item-sprite img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.gc-chapter-item-sprite-placeholder {
+  color: var(--text-ter);
+  font-size: 16px;
+}
+.gc-chapter-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.gc-chapter-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.gc-chapter-item-boosts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.gc-chapter-item-boost {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.gc-chapter-item-boost--danger {
+  background: color-mix(in srgb, var(--red, #c94b3d) 14%, transparent);
+  color: var(--red, #c94b3d);
+}
+.gc-chapter-item-boost--vibrant {
+  background: var(--amber-pale);
+  color: var(--amber);
+}
+.gc-chapter-item-no-boost {
+  font-size: 11px;
+  color: var(--text-ter);
 }
 
 /* ── Модалка гайда по механике ── */

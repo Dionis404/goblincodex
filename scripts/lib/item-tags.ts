@@ -231,6 +231,30 @@ const CHAPTER_ITEM_NAMES: Record<string, string> = {
   "Spa Slippers": "chapter-salt-awakening",
   "Bubble Aura": "chapter-salt-awakening",
   "Deep Sea Salt Cave Background": "chapter-salt-awakening",
+  // Salt Awakening — from chapter-auctions.json (auction-only items, not in megastore)
+  "Navigation Table": "chapter-salt-awakening",
+  "Crab House": "chapter-salt-awakening",
+  "Fat Crab": "chapter-salt-awakening",
+  "Pufferfish": "chapter-salt-awakening",
+  "Giant Onion": "chapter-salt-awakening",
+  "Obsidian Turtle": "chapter-salt-awakening",
+  "Pistol Shrimp": "chapter-salt-awakening",
+  "Royal Crab Pot": "chapter-salt-awakening",
+  "Speed Trap": "chapter-salt-awakening",
+  "Summer Guardian": "chapter-salt-awakening",
+  // Ascension Age — from next-chapter-auctions.json (chapter not yet started)
+  "Salt Rug": "chapter-ascension-age",
+  "Coat Rack": "chapter-ascension-age",
+  "Vibraphone": "chapter-ascension-age",
+  "Surfer Hair": "chapter-ascension-age",
+  "Winged Vase": "chapter-ascension-age",
+  "Ascended Idol": "chapter-ascension-age",
+  "Salt Worker Gnome": "chapter-ascension-age",
+  "Quarry": "chapter-ascension-age",
+  "Autumn's Embrace": "chapter-ascension-age",
+  "Tomato Clown": "chapter-ascension-age",
+  "Rice Shirt": "chapter-ascension-age",
+  "Alchemist Apron": "chapter-ascension-age",
 };
 
 /** Chapter banners (`${ChapterName} Banner`) — chapter.ts CHAPTER_BANNERS, one per chapter (all 14). */
@@ -249,6 +273,7 @@ const CHAPTER_BANNER_NAMES: Record<string, string> = {
   "Paw Prints Banner": "chapter-paw-prints",
   "Crabs and Traps Banner": "chapter-crabs-and-traps",
   "Salt Awakening Banner": "chapter-salt-awakening",
+  "Ascension Age Banner": "chapter-ascension-age",
 };
 
 /**
