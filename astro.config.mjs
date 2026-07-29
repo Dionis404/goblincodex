@@ -19,7 +19,12 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
-      filter: (page) => !page.includes('/debug/'),
+      filter: (page) =>
+        !page.includes('/debug/') &&
+        !page.endsWith('/cookies') &&
+        !page.endsWith('/cookies/') &&
+        !page.endsWith('/terms') &&
+        !page.endsWith('/terms/'),
     }),
   ],
 });

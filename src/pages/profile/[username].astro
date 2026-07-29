@@ -37,12 +37,20 @@ const guidesByUser = { [lowerUsername]: { authored, contributed } };
 
 const notFound = !farmer && authored.length === 0 && contributed.length === 0;
 const displayName = farmer?.game_username ?? (username![0].toUpperCase() + username!.slice(1));
+
+const pageTitle = notFound
+  ? 'Профиль не найден — GoblinCodex'
+  : `${displayName} — GoblinCodex`;
+const pageDescription = notFound
+  ? `Игрок @${username} не найден в сообществе GoblinCodex — не привязал ферму и не упоминается в гайдах.`
+  : `Профиль игрока ${displayName} в сообществе GoblinCodex: привязанная ферма Sunflower Land, авторство и вклад в гайды.`;
 ---
 
 <BaseLayout
-  title={`${displayName} — GoblinCodex`}
-  description={`Профиль игрока ${displayName} в сообществе GoblinCodex`}
+  title={pageTitle}
+  description={pageDescription}
   currentPage="community"
+  noindex={notFound}
 >
   <div class="gc-content gc-page-enter">
 
