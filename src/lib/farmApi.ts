@@ -1,16 +1,20 @@
 /**
  * Клиент к внутреннему goblin-api (данные ферм SFL).
- * Все запросы идут через свой домен (nginx проксирует /api/farm/* на goblin-api),
- * никогда напрямую в api.sunflower-land.com — внешний SFL API может быть медленным
- * или недоступным, а goblin-api сам кеширует/обновляет данные в БД.
+ * Единственный реальный роут — GET /api/farms?ids=1,2,3 (батч, query-параметр,
+ * список ID через запятую) — нет отдельных /farm/:id или /farm/:id/refresh.
+ * goblin-api сам гарантирует строку в БД (farm_cache) и в фоне обновляет её из
+ * api.sunflower-land.com — ответ отдаётся сразу с тем, что есть в кэше на
+ * данный момент, поэтому первый запрос по новому ID может вернуть null, а
+ * повторный запрос через несколько секунд — уже реальные данные ("обновление"
+ * это просто повторный вызов /farms, отдельного refresh-эндпоинта нет).
  */
 
 const API_BASE = (import.meta.env.PUBLIC_API_BASE as string | undefined) ?? '/api';
 
+/** Сырой ответ SFL API (api.sunflower-land.com/community/farms/:id) как есть. */
 export type FarmData = Record<string, unknown>;
 
 export type FarmResponse = {
-  farm_id: number;
   data: FarmData;
   updated_at: string;
 };
@@ -22,11 +26,6 @@ async function parseJsonOrThrow<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export async function fetchFarm(farmId: number | string, signal?: AbortSignal): Promise<FarmResponse> {
-  const res = await fetch(`${API_BASE}/farm/${farmId}`, { signal });
-  return parseJsonOrThrow<FarmResponse>(res);
-}
-
 export async function fetchFarms(
   farmIds: Array<number | string>,
   signal?: AbortSignal
@@ -36,7 +35,7 @@ export async function fetchFarms(
   return parseJsonOrThrow<Record<string, FarmResponse | null>>(res);
 }
 
-export async function refreshFarm(farmId: number | string, signal?: AbortSignal): Promise<{ status: string }> {
-  const res = await fetch(`${API_BASE}/farm/${farmId}/refresh`, { method: 'POST', signal });
-  return parseJsonOrThrow<{ status: string }>(res);
+export async function fetchFarm(farmId: number | string, signal?: AbortSignal): Promise<FarmResponse | null> {
+  const res = await fetchFarms([farmId], signal);
+  return res[String(farmId)] ?? null;
 }

@@ -33,28 +33,26 @@ export default function FarmApiDebug() {
   function handleFetch() {
     const trimmed = farmIdInput.trim();
     if (!trimmed) return;
-    const startedAt = performance.now();
     setActiveFarmId(trimmed);
     // useFarmData сам логирует запрос через свой error/farm стейт; отдельно
     // логируем факт клика для видимости момента запуска.
     pushLog({
       at: nowLabel(),
-      label: `GET /farm/${trimmed}`,
+      label: `GET /farms?ids=${trimmed}`,
       ms: 0,
       ok: true,
       detail: 'запрос отправлен',
     });
-    void startedAt;
   }
 
   function handleRefresh() {
     if (!activeFarmId) return;
     pushLog({
       at: nowLabel(),
-      label: `POST /farm/${activeFarmId}/refresh`,
+      label: `GET /farms?ids=${activeFarmId} (повтор)`,
       ms: 0,
       ok: true,
-      detail: 'обновление запущено, ждём поллинг',
+      detail: 'ждём, пока фон goblin-api обновит запись',
     });
     refresh();
   }
@@ -101,7 +99,7 @@ export default function FarmApiDebug() {
   return (
     <div className="gc-debug-grid">
       <section className="gc-calc-card">
-        <h2 className="gc-calc-h2">1. Одна ферма — fetchFarm / refreshFarm</h2>
+        <h2 className="gc-calc-h2">1. Одна ферма — GET /farms?ids=</h2>
 
         <div className="gc-debug-row">
           <input
@@ -119,7 +117,7 @@ export default function FarmApiDebug() {
             onClick={handleRefresh}
             disabled={!activeFarmId || refreshing}
           >
-            {refreshing ? 'Обновляется…' : 'Обновить (refresh + poll)'}
+            {refreshing ? 'Обновляется…' : 'Обновить (повтор + poll)'}
           </button>
           {error && (
             <button className="gc-btn gc-btn-secondary" onClick={retry}>
@@ -136,11 +134,18 @@ export default function FarmApiDebug() {
           </p>
         )}
 
+        {activeFarmId && !loading && !error && farm === null && (
+          <p className="gc-debug-status gc-debug-status--warn">
+            Ферма ещё не в кэше (null) — goblin-api запустил фоновую загрузку из SFL API,
+            подождите пару секунд и нажмите «Получить» ещё раз.
+          </p>
+        )}
+
         {farm && (
           <div className="gc-debug-result">
             <div className="gc-debug-kv">
               <span>farm_id</span>
-              <strong>{farm.farm_id}</strong>
+              <strong>{activeFarmId}</strong>
             </div>
             <div className="gc-debug-kv">
               <span>updated_at</span>

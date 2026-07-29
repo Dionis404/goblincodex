@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchFarm, refreshFarm, type FarmResponse } from './farmApi';
+import { fetchFarm, type FarmResponse } from './farmApi';
 
 const POLL_INTERVAL_MS = 1750;
 const POLL_TIMEOUT_MS = 10000;
@@ -77,6 +77,12 @@ export function useFarmData(farmId: number | string | null): FarmDataState {
     load(farmId);
   }, [farmId, load]);
 
+  /**
+   * Нет отдельного refresh-эндпоинта — goblin-api обновляет запись в фоне при
+   * каждом запросе GET /farms. "Обновить" здесь означает: перезапросить и
+   * подождать, пока updated_at не станет новее момента клика (фон успевает
+   * за несколько секунд), либо сдаться по таймауту.
+   */
   const refresh = useCallback(() => {
     if (farmId === null || farmId === undefined || farmId === '') return;
     stopPolling();
@@ -85,32 +91,25 @@ export function useFarmData(farmId: number | string | null): FarmDataState {
 
     const clickedAt = Date.now();
 
-    refreshFarm(farmId)
-      .then(() => {
-        pollTimer.current = setInterval(() => {
-          fetchFarm(farmId)
-            .then((res) => {
-              if (new Date(res.updated_at).getTime() > clickedAt) {
-                setFarm(res);
-                setRefreshing(false);
-                stopPolling();
-              }
-            })
-            .catch(() => {
-              // Отдельный сбой одного тика поллинга не прерываем — подождём таймаута.
-            });
-        }, POLL_INTERVAL_MS);
+    pollTimer.current = setInterval(() => {
+      fetchFarm(farmId)
+        .then((res) => {
+          if (res && new Date(res.updated_at).getTime() > clickedAt) {
+            setFarm(res);
+            setRefreshing(false);
+            stopPolling();
+          }
+        })
+        .catch(() => {
+          // Отдельный сбой одного тика поллинга не прерываем — подождём таймаута.
+        });
+    }, POLL_INTERVAL_MS);
 
-        pollDeadline.current = setTimeout(() => {
-          stopPolling();
-          setRefreshing(false);
-          setStaleNotice(true);
-        }, POLL_TIMEOUT_MS);
-      })
-      .catch(() => {
-        setRefreshing(false);
-        setStaleNotice(true);
-      });
+    pollDeadline.current = setTimeout(() => {
+      stopPolling();
+      setRefreshing(false);
+      setStaleNotice(true);
+    }, POLL_TIMEOUT_MS);
   }, [farmId, stopPolling]);
 
   return { farm, loading, refreshing, error, staleNotice, refresh, retry };

@@ -15,10 +15,11 @@ import '../../styles/calculator.css';
       <span class="gc-calc-tag">Debug</span>
       <h1>goblin-api: проверка ферм</h1>
       <p>
-        Служебная страница вне навигации сайта — проверяет, что <code>/api/farm/:id</code>,
-        <code>/api/farm/:id/refresh</code> и <code>/api/farms</code> отвечают корректно и что
-        запись обновлений в БД реально происходит (смотрите на изменение <code>updated_at</code>
-        после нажатия «Обновить»).
+        Служебная страница вне навигации сайта — проверяет, что <code>GET /api/farms?ids=</code>
+        отвечает корректно. Отдельного refresh-эндпоинта нет: goblin-api сам гарантирует строку
+        в БД и в фоне обновляет её из SFL API при каждом запросе — первый ответ по новому
+        <code>farm_id</code> может быть <code>null</code>, повторный через несколько секунд
+        уже должен вернуть данные (смотрите на <code>updated_at</code>).
       </p>
     </header>
 
