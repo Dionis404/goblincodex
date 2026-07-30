@@ -699,6 +699,268 @@ function SkillsSection() {
   );
 }
 
+interface MarvelRow {
+  marvel: string;
+  marvelIcon: string;
+  fish: string;
+  fishIcon: string;
+  odds: number;
+}
+
+const CURRENT_CHAPTER_MARVELS: MarvelRow[] = [
+  { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Tuna', fishIcon: '/sprites/fish/tuna.png', odds: 0.8 },
+  { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Sea Bass', fishIcon: '/sprites/fish/sea_bass.png', odds: 3 },
+  { marvel: 'Deep Sea Slug', marvelIcon: '/sprites/fish/deep_sea_slug.webp', fish: 'Surgeonfish', fishIcon: '/sprites/fish/surgeonfish.png', odds: 0.1 },
+  { marvel: 'Deep Sea Slug', marvelIcon: '/sprites/fish/deep_sea_slug.webp', fish: 'Barred Knifejaw', fishIcon: '/sprites/fish/barred_knifejaw.png', odds: 1 },
+  { marvel: 'Deep Sea Pig', marvelIcon: '/sprites/fish/deep_sea_pig.webp', fish: 'Sunfish', fishIcon: '/sprites/fish/sunfish.png', odds: 0.5 },
+  { marvel: 'Deep Sea Pig', marvelIcon: '/sprites/fish/deep_sea_pig.webp', fish: 'Coelacanth', fishIcon: '/sprites/fish/coelacanth.png', odds: 0.5 },
+];
+
+const NEXT_CHAPTER_MARVELS: MarvelRow[] = [
+  { marvel: 'Crocodile', marvelIcon: '/sprites/sfts/crocodile.webp', fish: 'Red Snapper', fishIcon: '/sprites/fish/red_snapper.png', odds: 0.5 },
+  { marvel: 'Crocodile', marvelIcon: '/sprites/sfts/crocodile.webp', fish: 'Moray Eel', fishIcon: '/sprites/fish/moray_eel.png', odds: 1.5 },
+  { marvel: 'Dumbo Octopus', marvelIcon: '/sprites/sfts/dumbo_octopus.webp', fish: 'Olive Flounder', fishIcon: '/sprites/fish/olive_flounder.png', odds: 0.5 },
+  { marvel: 'Dumbo Octopus', marvelIcon: '/sprites/sfts/dumbo_octopus.webp', fish: 'Napoleanfish', fishIcon: '/sprites/fish/napoleonfish.png', odds: 0.5 },
+  { marvel: 'Seahorse Dad', marvelIcon: '/sprites/sfts/seahorse_dad.webp', fish: 'Angelfish', fishIcon: '/sprites/fish/angel_fish.png', odds: 0.1 },
+  { marvel: 'Seahorse Dad', marvelIcon: '/sprites/sfts/seahorse_dad.webp', fish: 'Porgy', fishIcon: '/sprites/fish/porgy.png', odds: 1 },
+];
+
+const BASE_MARVELS: MarvelRow[] = [
+  { marvel: 'Starlight Tuna', marvelIcon: '/sprites/fish/starlight_tuna.png', fish: 'Halibut', fishIcon: '/sprites/fish/halibut.png', odds: 2.5 },
+  { marvel: 'Starlight Tuna', marvelIcon: '/sprites/fish/starlight_tuna.png', fish: 'Horse Mackerel', fishIcon: '/sprites/fish/horse_mackerel.png', odds: 36 },
+  { marvel: 'Twilight Anglerfish', marvelIcon: '/sprites/fish/twilight_anglerfish.png', fish: 'Clownfish', fishIcon: '/sprites/fish/clownfish.png', odds: 2.5 },
+  { marvel: 'Twilight Anglerfish', marvelIcon: '/sprites/fish/twilight_anglerfish.png', fish: 'Parrotfish', fishIcon: '/sprites/fish/parrot_fish.png', odds: 21 },
+  { marvel: 'Gilded Swordfish', marvelIcon: '/sprites/fish/gilded_swordfish.png', fish: 'Rock Blackfish', fishIcon: '/sprites/fish/rock_blackfish.png', odds: 5 },
+  { marvel: 'Gilded Swordfish', marvelIcon: '/sprites/fish/gilded_swordfish.png', fish: 'White Shark', fishIcon: '/sprites/fish/white_shark.png', odds: 30 },
+  { marvel: 'Radiant Ray', marvelIcon: '/sprites/fish/radiant_ray.png', fish: 'Trout', fishIcon: '/sprites/fish/trout.png', odds: 2 },
+  { marvel: 'Radiant Ray', marvelIcon: '/sprites/fish/radiant_ray.png', fish: 'Hammerhead shark', fishIcon: '/sprites/fish/hammerhead_shark.png', odds: 5 },
+  { marvel: 'Phantom Barracuda', marvelIcon: '/sprites/fish/phantom_barracuda.png', fish: 'Mahi Mahi', fishIcon: '/sprites/fish/mahi_mahi.png', odds: 0.18 },
+  { marvel: 'Phantom Barracuda', marvelIcon: '/sprites/fish/phantom_barracuda.png', fish: 'Squid', fishIcon: '/sprites/fish/squid.png', odds: 5 },
+];
+
+const CRABS_AND_TRAPS_MARVELS: MarvelRow[] = [
+  { marvel: 'Giant Isopod', marvelIcon: '/sprites/fish/isopod.webp', fish: 'Anchovy', fishIcon: '/sprites/fish/anchovy.png', odds: 0.8 },
+  { marvel: 'Giant Isopod', marvelIcon: '/sprites/fish/isopod.webp', fish: 'Oarfish', fishIcon: '/sprites/fish/oarfish.png', odds: 3 },
+  { marvel: 'Nautilus', marvelIcon: '/sprites/fish/nautilus.webp', fish: 'Sea Horse', fishIcon: '/sprites/fish/seahorse.png', odds: 1 },
+  { marvel: 'Nautilus', marvelIcon: '/sprites/fish/nautilus.webp', fish: 'Tuna', fishIcon: '/sprites/fish/tuna.png', odds: 0.2 },
+  { marvel: 'Dollocaris', marvelIcon: '/sprites/fish/dollocaris.webp', fish: 'Sunfish', fishIcon: '/sprites/fish/sunfish.png', odds: 0.5 },
+  { marvel: 'Dollocaris', marvelIcon: '/sprites/fish/dollocaris.webp', fish: 'Football fish', fishIcon: '/sprites/fish/football_fish.png', odds: 0.5 },
+];
+
+const PAW_PRINTS_MARVELS: MarvelRow[] = [
+  { marvel: 'Super Star', marvelIcon: '/sprites/sfts/starfish_marvel.webp', fish: 'Red Snapper', fishIcon: '/sprites/fish/red_snapper.png', odds: 1 },
+  { marvel: 'Super Star', marvelIcon: '/sprites/sfts/starfish_marvel.webp', fish: 'Whale Shark', fishIcon: '/sprites/fish/whale_shark.png', odds: 10 },
+];
+
+const ARCHIVED_MARVELS = [
+  { marvel: 'Crimson Carp', icon: '/sprites/fish/crimson_carp.png' },
+  { marvel: 'Battle Fish', icon: '/sprites/fish/battle_fish.webp' },
+  { marvel: 'Lemon Shark', icon: '/sprites/fish/lemon_shark.webp' },
+  { marvel: 'Longhorn Cowfish', icon: '/sprites/fish/cow_fish.webp' },
+  { marvel: 'Pink Dolphin', icon: '/sprites/fish/pink_dolphin.webp' },
+  { marvel: 'Poseidon', icon: '/sprites/sfts/poseidon_fish.webp' },
+  { marvel: 'Jellyfish', icon: '/sprites/fish/jellyfish.webp' },
+];
+
+interface MarvelBoosts {
+  navigationTable: boolean;
+  deepSeaHelm: boolean;
+  fullMoon: boolean;
+  guardian: boolean;
+}
+
+function marvelMultiplier(boosts: MarvelBoosts): number {
+  let multiplier = 1;
+  if (boosts.navigationTable) multiplier += 1;
+  if (boosts.deepSeaHelm) multiplier += 1;
+  if (boosts.fullMoon) multiplier += 1;
+  if (boosts.guardian) multiplier += 1;
+  return multiplier;
+}
+
+function MarvelBoostWidget({ boosts, onChange }: { boosts: MarvelBoosts; onChange: (b: MarvelBoosts) => void }) {
+  const multiplier = marvelMultiplier(boosts);
+
+  function toggle(key: keyof MarvelBoosts) {
+    const next = { ...boosts, [key]: !boosts[key] };
+    if (key === 'fullMoon' && !next.fullMoon) next.guardian = false;
+    onChange(next);
+  }
+
+  return (
+    <div className="ref-marvel-boost-widget">
+      <label className="ref-marvel-boost-check">
+        <input type="checkbox" checked={boosts.navigationTable} onChange={() => toggle('navigationTable')} />
+        <img className="ref-marvel-icon" src="/sprites/sfts/navigation_table.webp" alt="" />
+        <span>Navigation Table (+100%)</span>
+      </label>
+      <label className="ref-marvel-boost-check">
+        <input type="checkbox" checked={boosts.deepSeaHelm} onChange={() => toggle('deepSeaHelm')} />
+        <img className="ref-marvel-icon" src="/sprites/wearables/255.webp" alt="" />
+        <span>Deep Sea Helm (+100%)</span>
+      </label>
+      <label className="ref-marvel-boost-check">
+        <input type="checkbox" checked={boosts.fullMoon} onChange={() => toggle('fullMoon')} />
+        <span>🌕 Full Moon</span>
+      </label>
+      <label className="ref-marvel-boost-check ref-marvel-boost-check--nested">
+        <input type="checkbox" checked={boosts.guardian} disabled={!boosts.fullMoon} onChange={() => toggle('guardian')} />
+        <span>🛡️ Season Guardian (только вместе с Full Moon)</span>
+      </label>
+      <p className="ref-marvel-boost-total">
+        <strong>{multiplier > 1 ? `Множитель: ×${multiplier}` : 'Выберите бонус'}</strong>
+      </p>
+    </div>
+  );
+}
+
+function MarvelTable({ rows, multiplier }: { rows: MarvelRow[]; multiplier: number }) {
+  return (
+    <div className="ref-table-wrap">
+      <table className="ref-table">
+        <thead>
+          <tr>
+            <th>Марвел</th>
+            <th>Триггерная рыба</th>
+            <th>Базовый шанс</th>
+            <th>Шанс с бустами</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => {
+            const boosted = row.odds * multiplier;
+            return (
+              <tr key={i}>
+                <td className="ref-table-name">
+                  <img className="ref-marvel-icon" src={row.marvelIcon} alt="" />
+                  {row.marvel}
+                </td>
+                <td>
+                  <img className="ref-marvel-icon" src={row.fishIcon} alt="" />
+                  {row.fish}
+                </td>
+                <td>{row.odds}%</td>
+                <td className={multiplier > 1 ? 'ref-marvel-odds ref-marvel-odds--boosted' : 'ref-marvel-odds'}>
+                  {multiplier > 1 ? `${Math.round(boosted * 100) / 100}%` : 'Выберите бонус'}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function MarvelsSection() {
+  const [boosts, setBoosts] = useState<MarvelBoosts>({
+    navigationTable: false,
+    deepSeaHelm: false,
+    fullMoon: false,
+    guardian: false,
+  });
+  const multiplier = marvelMultiplier(boosts);
+
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Марвелы (Marine Marvels) — самые редкие виды рыбы в игре. Ни один марвел не ловится
+        напрямую удочкой — чтобы его получить, нужно случайно найти все 9 фрагментов карты, ловя
+        определённую обычную рыбу. Часть марвелов доступна постоянно ("базовые"), часть привязана
+        к текущей или прошлой сюжетной главе.
+      </p>
+      <p className="ref-section-desc">
+        Для каждого марвела есть одна или несколько триггерных рыб — обычных видов, которые вы
+        ловите как всегда. При каждой поимке такой рыбы есть шанс получить фрагмент карты нужного
+        марвела; когда собраны все 9, марвела можно забрать. Шанс относится именно к дропу
+        фрагмента после успешной поимки рыбы, а не к шансу поймать саму рыбу.
+      </p>
+      <p className="ref-section-desc">
+        Прямых бустов, повышающих шанс поимки самой рыбы, нет — все бусты влияют на шанс дропа
+        фрагмента карты после того, как рыба уже поймана: <strong>Navigation Table</strong>{' '}
+        (коллекционный предмет, +100%), <strong>Deep Sea Helm</strong> (корона за milestone Deep
+        Sea Diver, +100%), 🌕 <strong>Full Moon</strong> (календарное событие раз в месяц) и{' '}
+        🛡️ <strong>Season Guardian</strong> (усиливает Full Moon в свой сезон, недоступен без
+        активного события).
+      </p>
+
+      <MarvelBoostWidget boosts={boosts} onChange={setBoosts} />
+
+      <div className="ref-accordion-list">
+        <details className="ref-accordion" open>
+          <summary className="ref-accordion-summary">
+            Марвелы текущей главы — Salt Awakening
+            <span className="ref-accordion-count">{CURRENT_CHAPTER_MARVELS.length / 2} марвела</span>
+          </summary>
+          <div className="ref-accordion-body">
+            <MarvelTable rows={CURRENT_CHAPTER_MARVELS} multiplier={multiplier} />
+          </div>
+        </details>
+
+        <details className="ref-accordion">
+          <summary className="ref-accordion-summary">
+            Марвелы следующей главы — Ascension Age
+            <span className="ref-accordion-count">старт 2026-08-03</span>
+          </summary>
+          <div className="ref-accordion-body">
+            <p className="ref-section-desc">Марвел-талисман главы — <strong>Seahorse Dad</strong>.</p>
+            <MarvelTable rows={NEXT_CHAPTER_MARVELS} multiplier={multiplier} />
+          </div>
+        </details>
+
+        <details className="ref-accordion">
+          <summary className="ref-accordion-summary">
+            Базовые марвелы (доступны постоянно)
+            <span className="ref-accordion-count">{BASE_MARVELS.length / 2} марвелов</span>
+          </summary>
+          <div className="ref-accordion-body">
+            <MarvelTable rows={BASE_MARVELS} multiplier={multiplier} />
+          </div>
+        </details>
+
+        <details className="ref-accordion">
+          <summary className="ref-accordion-summary">
+            Марвелы прошлых глав: Crabs and Traps
+          </summary>
+          <div className="ref-accordion-body">
+            <MarvelTable rows={CRABS_AND_TRAPS_MARVELS} multiplier={multiplier} />
+          </div>
+        </details>
+
+        <details className="ref-accordion">
+          <summary className="ref-accordion-summary">
+            Марвелы прошлых глав: Paw Prints
+          </summary>
+          <div className="ref-accordion-body">
+            <MarvelTable rows={PAW_PRINTS_MARVELS} multiplier={multiplier} />
+          </div>
+        </details>
+
+        <details className="ref-accordion">
+          <summary className="ref-accordion-summary">
+            Архив (данные не сохранились)
+          </summary>
+          <div className="ref-accordion-body">
+            <p className="ref-section-desc">
+              Эти марвелы тоже привязаны к главам, но триггеры и точные шансы дропа фрагментов для
+              них в текущей версии игры больше не хранятся — их главы уже завершились раньше, и
+              данные были вычищены из кода.
+            </p>
+            <div className="ref-bait-fish">
+              {ARCHIVED_MARVELS.map((m) => (
+                <span className="ref-fish-chip" key={m.marvel}>
+                  <img className="ref-marvel-icon" src={m.icon} alt="" />
+                  {m.marvel}
+                </span>
+              ))}
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+  );
+}
+
 interface RefSection {
   id: string;
   icon: string;
@@ -712,7 +974,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
   { id: 'bait', icon: '🎣', label: 'Улов по наживке', Content: BaitFishSection },
   { id: 'upgrades', icon: '⛏️', label: 'Апгрейд ресурсов', Content: ResourceUpgradeSection },
-  
+  { id: 'marvels', icon: '🐋', label: 'Морские марвелы', Content: MarvelsSection },
 ];
 
 function getInitialId(): string {
