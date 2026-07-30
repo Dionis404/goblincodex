@@ -69,18 +69,18 @@ order: 16
 
 ## Марвелы следующей главы — Ascension Age
 
-> 🔜 Глава Ascension Age ещё не началась (стартует 2026-08-03, сразу после окончания Salt Awakening). Данные ниже уже зашиты в код игры, но пока недоступны в игре — разработчики сами помечают марвела-талисман главы как неподтверждённый (в коде оставлен `TODO: confirm which of the 3 chapter fish is the marvel`), так что состав или шансы могут измениться до релиза.
+> 🔜 Глава Ascension Age стартует 2026-08-03, сразу после окончания Salt Awakening. Марвел-талисман главы — **Seahorse Dad**.
 
 <div class="gc-marvel-table-wrap">
 
 | Марвел | Триггерная рыба | Базовый шанс | Шанс с бустами |
 |---|---|---|---|
-| <img class="gc-marvel-icon" src="/sprites/sfts/crocodile.webp" alt="" /> Crocodile | <img class="gc-marvel-icon" src="/sprites/fish/red_snapper.png" alt="" /> Red Snapper | 0.8% | <span class="gc-marvel-odds" data-base="0.8">Выберите бонус</span> |
-| <img class="gc-marvel-icon" src="/sprites/sfts/crocodile.webp" alt="" /> Crocodile | <img class="gc-marvel-icon" src="/sprites/fish/moray_eel.png" alt="" /> Moray Eel | 3% | <span class="gc-marvel-odds" data-base="3">Выберите бонус</span> |
-| <img class="gc-marvel-icon" src="/sprites/sfts/dumbo_octopus.webp" alt="" /> Dumbo Octopus | <img class="gc-marvel-icon" src="/sprites/fish/olive_flounder.png" alt="" /> Olive Flounder | 0.1% | <span class="gc-marvel-odds" data-base="0.1">Выберите бонус</span> |
-| <img class="gc-marvel-icon" src="/sprites/sfts/dumbo_octopus.webp" alt="" /> Dumbo Octopus | <img class="gc-marvel-icon" src="/sprites/fish/napoleonfish.png" alt="" /> Napoleanfish | 1% | <span class="gc-marvel-odds" data-base="1">Выберите бонус</span> |
-| <img class="gc-marvel-icon" src="/sprites/sfts/seahorse_dad.webp" alt="" /> Seahorse Dad | <img class="gc-marvel-icon" src="/sprites/fish/angel_fish.png" alt="" /> Angelfish | 0.5% | <span class="gc-marvel-odds" data-base="0.5">Выберите бонус</span> |
-| <img class="gc-marvel-icon" src="/sprites/sfts/seahorse_dad.webp" alt="" /> Seahorse Dad | <img class="gc-marvel-icon" src="/sprites/fish/porgy.png" alt="" /> Porgy | 0.5% | <span class="gc-marvel-odds" data-base="0.5">Выберите бонус</span> |
+| <img class="gc-marvel-icon" src="/sprites/sfts/crocodile.webp" alt="" /> Crocodile | <img class="gc-marvel-icon" src="/sprites/fish/red_snapper.png" alt="" /> Red Snapper | 0.5% | <span class="gc-marvel-odds" data-base="0.5">Выберите бонус</span> |
+| <img class="gc-marvel-icon" src="/sprites/sfts/crocodile.webp" alt="" /> Crocodile | <img class="gc-marvel-icon" src="/sprites/fish/moray_eel.png" alt="" /> Moray Eel | 1.5% | <span class="gc-marvel-odds" data-base="1.5">Выберите бонус</span> |
+| <img class="gc-marvel-icon" src="/sprites/sfts/dumbo_octopus.webp" alt="" /> Dumbo Octopus | <img class="gc-marvel-icon" src="/sprites/fish/olive_flounder.png" alt="" /> Olive Flounder | 0.5% | <span class="gc-marvel-odds" data-base="0.5">Выберите бонус</span> |
+| <img class="gc-marvel-icon" src="/sprites/sfts/dumbo_octopus.webp" alt="" /> Dumbo Octopus | <img class="gc-marvel-icon" src="/sprites/fish/napoleonfish.png" alt="" /> Napoleanfish | 0.5% | <span class="gc-marvel-odds" data-base="0.5">Выберите бонус</span> |
+| <img class="gc-marvel-icon" src="/sprites/sfts/seahorse_dad.webp" alt="" /> Seahorse Dad | <img class="gc-marvel-icon" src="/sprites/fish/angel_fish.png" alt="" /> Angelfish | 0.1% | <span class="gc-marvel-odds" data-base="0.1">Выберите бонус</span> |
+| <img class="gc-marvel-icon" src="/sprites/sfts/seahorse_dad.webp" alt="" /> Seahorse Dad | <img class="gc-marvel-icon" src="/sprites/fish/porgy.png" alt="" /> Porgy | 1% | <span class="gc-marvel-odds" data-base="1">Выберите бонус</span> |
 
 </div>
 
