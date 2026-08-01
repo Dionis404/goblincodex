@@ -132,7 +132,7 @@
 .ref-recipe-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-size: 13px;
   color: var(--text);
   padding: 4px 0;
@@ -144,14 +144,14 @@
   image-rendering: pixelated;
   flex-shrink: 0;
   vertical-align: middle;
-  margin-right: 2px;
 }
-.ref-recipe-name { flex: 1; }
 .ref-recipe-amount {
   font-weight: 700;
   color: var(--green-dark);
   font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
+.ref-recipe-name { color: var(--text); }
 
 /* ── Resource upgrade table ── */
 .ref-table-wrap {

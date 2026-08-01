@@ -402,8 +402,8 @@ function ObsidianSection() {
               {r.items.map((item) => (
                 <li className="ref-recipe-row" key={item.name}>
                   <img className="ref-recipe-icon" src={item.icon} alt="" />
-                  <span className="ref-recipe-name">{item.name}</span>
                   <span className="ref-recipe-amount">{item.amount.toLocaleString('ru-RU')}×</span>
+                  <span className="ref-recipe-name">{item.name}</span>
                 </li>
               ))}
             </ul>
