@@ -120,7 +120,17 @@
   color: var(--text-sec);
 }
 
-/* ── Lava Pit recipe list ── */
+/* ── Lava Pit recipes ── */
+.ref-recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 560px) {
+  .ref-recipe-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .ref-recipe-list {
   display: flex;
   flex-direction: column;

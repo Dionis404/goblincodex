@@ -392,7 +392,7 @@ function ObsidianSection() {
         Запуск цикла требует набор ресурсов, который зависит от текущего игрового сезона (не
         путать с сюжетными главами) — набор действует на момент старта плавки, а не сбора.
       </p>
-      <div className="ref-bait-list">
+      <div className="ref-recipe-grid">
         {LAVA_PIT_RECIPES.map((r) => (
           <div className="ref-bait-card" key={r.season}>
             <div className="ref-bait-header">
@@ -416,7 +416,7 @@ function ObsidianSection() {
         запуска цикла (×0.5 к ресурсам). <strong>Obsidian Necklace</strong> — ускоряет цикл вдвое
         (×0.5 к времени). <strong>Magma Stone</strong> (постройка) — одновременно ускоряет цикл на
         15% (×0.85 к времени) и увеличивает выход на 15% (+0.15 обсидиана за цикл).{' '}
-        <strong>Obsidian Turtle</strong> (питомец) — увеличивает выход на 0.5 обсидиана за цикл.
+        <strong>Obsidian Turtle</strong>  — увеличивает выход на 0.5 обсидиана за цикл.
       </p>
     </section>
   );
