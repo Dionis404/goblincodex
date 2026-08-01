@@ -365,8 +365,8 @@ function ObsidianSection() {
             <tr>
               <td className="ref-table-name">Покупка постройки</td>
               <td>
-                <img className="ref-recipe-icon" src="/sprites/resources/sunstone/sunstone.png" alt="" />
-                40 Sunstone за первую, +40 Sunstone за каждую следующую
+                <img className="ref-recipe-icon" src="/sprites/resources/sunstone/sunstone.png" alt="" /> 
+                 40 Sunstone за первую, +40 Sunstone за каждую следующую
               </td>
             </tr>
             <tr>
@@ -412,11 +412,11 @@ function ObsidianSection() {
       </div>
 
       <p className="ref-section-desc ref-section-desc--spaced">
-        <strong>Бусты:</strong> <strong>Lava Swimwear</strong> (шапка) — вдвое снижает стоимость
+        <strong>Бусты:</strong> <strong>Lava Swimwear</strong> — вдвое снижает стоимость
         запуска цикла (×0.5 к ресурсам). <strong>Obsidian Necklace</strong> — ускоряет цикл вдвое
-        (×0.5 к времени). <strong>Magma Stone</strong> (постройка) — одновременно ускоряет цикл на
+        (×0.5 к времени). <strong>Magma Stone</strong>  — одновременно ускоряет цикл на
         15% (×0.85 к времени) и увеличивает выход на 15% (+0.15 обсидиана за цикл).{' '}
-        <strong>Obsidian Turtle</strong>  — увеличивает выход на 0.5 обсидиана за цикл.
+        <strong>Obsidian Turtle</strong>  — увеличивает выход на + 0.5 обсидиана за цикл.
       </p>
     </section>
   );

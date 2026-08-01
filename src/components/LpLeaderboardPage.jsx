@@ -51,7 +51,7 @@ export default function LpLeaderboardPage({ leaderboard = [], meta }) {
   if (!leaderboard.length) {
     return (
       <div className="gc-community-empty gc-card">
-        <div className="gc-community-empty-icon">💧</div>
+        <img className="gc-community-empty-icon" src="/sprites/icons/money_bag.png" alt="" width="40" height="40" />
         <p className="gc-community-empty-text">
           Лидерборд пока пуст. Данные обновляются пакетной задачей — загляните позже.
         </p>
