@@ -66,6 +66,9 @@
   margin: 0 0 16px;
   line-height: 1.5;
 }
+.ref-section-desc--spaced {
+  margin-top: 20px;
+}
 
 .ref-calc-link {
   display: inline-flex;

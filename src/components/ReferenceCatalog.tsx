@@ -123,6 +123,18 @@ const RESOURCE_UPGRADES: ResourceUpgradeRow[] = [
   { resource: 'Prime Gold Rock',     tier: 3, requiresName: 'Pure Gold Rock',      requiresAmount: 4, obsidian: 20, price: 350_000 },
 ];
 
+interface LavaPitRecipe {
+  season: string;
+  items: string[];
+}
+
+const LAVA_PIT_RECIPES: LavaPitRecipe[] = [
+  { season: 'Осень', items: ['30× Artichoke', '750× Broccoli', '1000× Yam', '5× Gold', '6× Crimstone'] },
+  { season: 'Зима', items: ['150× Merino Wool', '400× Onion', '200× Turnip', '5× Crimstone'] },
+  { season: 'Весна', items: ['2× Celestine', '2× Lunara', '2× Duskberry', '2000× Rhubarb', '10× Crimstone'] },
+  { season: 'Лето', items: ['70× Oil', '750× Pepper', '1000× Zucchini', '4× Crimstone'] },
+];
+
 function LevelXpAccordion({ defaultOpen }: { defaultOpen?: boolean }) {
   return (
     <details className="ref-accordion" open={defaultOpen}>
@@ -289,6 +301,71 @@ function ResourceUpgradeSection() {
           </tbody>
         </table>
       </div>
+    </section>
+  );
+}
+
+function ObsidianSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Обсидиан крафтится на постройке <strong>Lava Pit</strong>, доступной с острова Volcano.
+        Сама постройка не крафтится за ресурсы — покупается за <strong>Sunstone</strong> и просто
+        ставится на карту; на каждый следующий экземпляр цена растёт.
+      </p>
+      <div className="ref-table-wrap">
+        <table className="ref-table">
+          <thead>
+            <tr>
+              <th>Что</th>
+              <th>Значение</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="ref-table-name">Покупка постройки</td>
+              <td>40 Sunstone за первую, +40 Sunstone за каждую следующую</td>
+            </tr>
+            <tr>
+              <td className="ref-table-name">Остров</td>
+              <td>Volcano</td>
+            </tr>
+            <tr>
+              <td className="ref-table-name">Время цикла</td>
+              <td>72 часа</td>
+            </tr>
+            <tr>
+              <td className="ref-table-name">Выход за цикл</td>
+              <td>1 Obsidian</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p className="ref-section-desc ref-section-desc--spaced">
+        Запуск цикла требует набор ресурсов, который зависит от текущего игрового сезона (не
+        путать с сюжетными главами) — набор действует на момент старта плавки, а не сбора.
+      </p>
+      <div className="ref-bait-list">
+        {LAVA_PIT_RECIPES.map((r) => (
+          <div className="ref-bait-card" key={r.season}>
+            <div className="ref-bait-header">
+              <span className="ref-bait-name">{r.season}</span>
+            </div>
+            <div className="ref-bait-fish">
+              {r.items.map((item) => <span className="ref-fish-chip" key={item}>{item}</span>)}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <p className="ref-section-desc ref-section-desc--spaced">
+        <strong>Бусты:</strong> <strong>Lava Swimwear</strong> (шапка) — вдвое снижает стоимость
+        запуска цикла (×0.5 к ресурсам). <strong>Obsidian Necklace</strong> — ускоряет цикл вдвое
+        (×0.5 к времени). <strong>Magma Stone</strong> (постройка) — одновременно ускоряет цикл на
+        15% (×0.85 к времени) и увеличивает выход на 15% (+0.15 обсидиана за цикл).{' '}
+        <strong>Obsidian Turtle</strong> (питомец) — увеличивает выход на 0.5 обсидиана за цикл.
+      </p>
     </section>
   );
 }
@@ -974,6 +1051,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
   { id: 'bait', icon: '🎣', label: 'Улов по наживке', Content: BaitFishSection },
   { id: 'upgrades', icon: '⛏️', label: 'Апгрейд ресурсов', Content: ResourceUpgradeSection },
+  { id: 'obsidian', icon: '🌋', label: 'Обсидиан (Lava Pit)', Content: ObsidianSection },
   { id: 'marvels', icon: '🐋', label: 'Морские марвелы', Content: MarvelsSection },
 ];
 
