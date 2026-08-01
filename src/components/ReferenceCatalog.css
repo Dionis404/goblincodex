@@ -120,6 +120,39 @@
   color: var(--text-sec);
 }
 
+/* ── Lava Pit recipe list ── */
+.ref-recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ref-recipe-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text);
+  padding: 4px 0;
+}
+.ref-recipe-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+.ref-recipe-name { flex: 1; }
+.ref-recipe-amount {
+  font-weight: 700;
+  color: var(--green-dark);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Resource upgrade table ── */
 .ref-table-wrap {
   overflow-x: auto;

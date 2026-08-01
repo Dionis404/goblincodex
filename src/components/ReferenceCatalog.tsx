@@ -123,16 +123,56 @@ const RESOURCE_UPGRADES: ResourceUpgradeRow[] = [
   { resource: 'Prime Gold Rock',     tier: 3, requiresName: 'Pure Gold Rock',      requiresAmount: 4, obsidian: 20, price: 350_000 },
 ];
 
+interface LavaPitIngredient {
+  name: string;
+  amount: number;
+  icon: string;
+}
+
 interface LavaPitRecipe {
   season: string;
-  items: string[];
+  items: LavaPitIngredient[];
 }
 
 const LAVA_PIT_RECIPES: LavaPitRecipe[] = [
-  { season: 'Осень', items: ['30× Artichoke', '750× Broccoli', '1000× Yam', '5× Gold', '6× Crimstone'] },
-  { season: 'Зима', items: ['150× Merino Wool', '400× Onion', '200× Turnip', '5× Crimstone'] },
-  { season: 'Весна', items: ['2× Celestine', '2× Lunara', '2× Duskberry', '2000× Rhubarb', '10× Crimstone'] },
-  { season: 'Лето', items: ['70× Oil', '750× Pepper', '1000× Zucchini', '4× Crimstone'] },
+  {
+    season: 'Осень',
+    items: [
+      { name: 'Artichoke', amount: 30, icon: '/sprites/crops/artichoke/crop.png' },
+      { name: 'Broccoli', amount: 750, icon: '/sprites/crops/brocolli/crop.png' },
+      { name: 'Yam', amount: 1000, icon: '/sprites/crops/yam/crop.png' },
+      { name: 'Gold', amount: 5, icon: '/sprites/resources/gold_ore.png' },
+      { name: 'Crimstone', amount: 6, icon: '/sprites/resources/crimstone.png' },
+    ],
+  },
+  {
+    season: 'Зима',
+    items: [
+      { name: 'Merino Wool', amount: 150, icon: '/sprites/resources/animals/merino_wool.webp' },
+      { name: 'Onion', amount: 400, icon: '/sprites/crops/onion/crop.png' },
+      { name: 'Turnip', amount: 200, icon: '/sprites/crops/turnip/crop.png' },
+      { name: 'Crimstone', amount: 5, icon: '/sprites/resources/crimstone.png' },
+    ],
+  },
+  {
+    season: 'Весна',
+    items: [
+      { name: 'Celestine', amount: 2, icon: '/sprites/fruit/celestine/celestine.webp' },
+      { name: 'Lunara', amount: 2, icon: '/sprites/fruit/lunara/lunara.webp' },
+      { name: 'Duskberry', amount: 2, icon: '/sprites/fruit/duskberry/duskberry.webp' },
+      { name: 'Rhubarb', amount: 2000, icon: '/sprites/crops/rhubarb/crop.png' },
+      { name: 'Crimstone', amount: 10, icon: '/sprites/resources/crimstone.png' },
+    ],
+  },
+  {
+    season: 'Лето',
+    items: [
+      { name: 'Oil', amount: 70, icon: '/sprites/resources/oil.webp' },
+      { name: 'Pepper', amount: 750, icon: '/sprites/crops/pepper/crop.png' },
+      { name: 'Zucchini', amount: 1000, icon: '/sprites/crops/zucchini/crop.png' },
+      { name: 'Crimstone', amount: 4, icon: '/sprites/resources/crimstone.png' },
+    ],
+  },
 ];
 
 function LevelXpAccordion({ defaultOpen }: { defaultOpen?: boolean }) {
@@ -324,7 +364,10 @@ function ObsidianSection() {
           <tbody>
             <tr>
               <td className="ref-table-name">Покупка постройки</td>
-              <td>40 Sunstone за первую, +40 Sunstone за каждую следующую</td>
+              <td>
+                <img className="ref-recipe-icon" src="/sprites/resources/sunstone/sunstone.png" alt="" />
+                40 Sunstone за первую, +40 Sunstone за каждую следующую
+              </td>
             </tr>
             <tr>
               <td className="ref-table-name">Остров</td>
@@ -336,7 +379,10 @@ function ObsidianSection() {
             </tr>
             <tr>
               <td className="ref-table-name">Выход за цикл</td>
-              <td>1 Obsidian</td>
+              <td>
+                <img className="ref-recipe-icon" src="/sprites/resources/obsidian.webp" alt="" />
+                1 Obsidian
+              </td>
             </tr>
           </tbody>
         </table>
@@ -352,9 +398,15 @@ function ObsidianSection() {
             <div className="ref-bait-header">
               <span className="ref-bait-name">{r.season}</span>
             </div>
-            <div className="ref-bait-fish">
-              {r.items.map((item) => <span className="ref-fish-chip" key={item}>{item}</span>)}
-            </div>
+            <ul className="ref-recipe-list">
+              {r.items.map((item) => (
+                <li className="ref-recipe-row" key={item.name}>
+                  <img className="ref-recipe-icon" src={item.icon} alt="" />
+                  <span className="ref-recipe-name">{item.name}</span>
+                  <span className="ref-recipe-amount">{item.amount.toLocaleString('ru-RU')}×</span>
+                </li>
+              ))}
+            </ul>
           </div>
         ))}
       </div>
