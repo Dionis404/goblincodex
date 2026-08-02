@@ -64,13 +64,16 @@ function mapAuction(a: ApiAuction): UiAuction {
 }
 
 /**
- * Возвращает и будущие, и завершённые аукционы — фильтрация по статусу (вкладки
- * "Скоро"/"Завершены") делается на фронте в ChapterAuctions.tsx. Пустой массив
- * при ошибке сети/API — страница просто покажет пустое расписание.
+ * Пока goblin-api подтверждённо поддерживает только upcoming=true (без параметра
+ * эндпоинт либо не реализован, либо ведёт себя иначе — из-за этого 03.08.2026
+ * список аукционов на проде пропал). Поэтому здесь запрашиваются только
+ * предстоящие аукционы; вкладка "Завершены" временно пустая, пока API не
+ * подтвердит другой режим. Пустой массив при ошибке сети/API — страница просто
+ * покажет пустое расписание.
  */
 export async function fetchUpcomingAuctions(): Promise<UiAuction[]> {
   try {
-    const res = await fetch(`${GOBLIN_API_BASE}/api/auctions`);
+    const res = await fetch(`${GOBLIN_API_BASE}/api/auctions?upcoming=true`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data: ApiAuction[] = await res.json();
     return data.map(mapAuction);
