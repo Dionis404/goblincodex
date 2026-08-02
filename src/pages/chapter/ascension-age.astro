@@ -3,7 +3,8 @@ export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, getEntry, render } from 'astro:content';
 import ChapterAuctions from '../../components/ChapterAuctions.tsx';
-import auctionsData from '../../data/next-chapter-auctions.json';
+// import auctionsData from '../../data/next-chapter-auctions.json'; // fallback JSON — не удалять, пока goblin-api не стабилизируется
+import { fetchUpcomingAuctions } from '../../lib/auctionsApi';
 import type { getCatalogItems } from '../../lib/db';
 import { getCachedCatalogItems } from '../../lib/catalog-cache';
 
@@ -23,7 +24,7 @@ const chapterGuides = await getCollection(
 );
 chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
 
-const auctions: any[] = auctionsData.auctions.auctions;
+const auctions = await fetchUpcomingAuctions();
 const now = Date.now();
 
 const CHAPTER_TAG = 'chapter-ascension-age';
