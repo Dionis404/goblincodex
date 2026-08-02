@@ -63,10 +63,14 @@ function mapAuction(a: ApiAuction): UiAuction {
   return base;
 }
 
-/** Возвращает [] при ошибке сети/API — страница просто покажет пустое расписание. */
+/**
+ * Возвращает и будущие, и завершённые аукционы — фильтрация по статусу (вкладки
+ * "Скоро"/"Завершены") делается на фронте в ChapterAuctions.tsx. Пустой массив
+ * при ошибке сети/API — страница просто покажет пустое расписание.
+ */
 export async function fetchUpcomingAuctions(): Promise<UiAuction[]> {
   try {
-    const res = await fetch(`${GOBLIN_API_BASE}/api/auctions?upcoming=true`);
+    const res = await fetch(`${GOBLIN_API_BASE}/api/auctions`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data: ApiAuction[] = await res.json();
     return data.map(mapAuction);

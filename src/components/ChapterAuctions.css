@@ -479,6 +479,38 @@
 [data-theme="dark"] .ca-boost--vibrant { background: #431407; color: #FDBA74; }
 [data-theme="dark"] .ca-boost--danger  { background: #450a0a; color: #FCA5A5; }
 
+.ca-results {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ca-results-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-sec);
+}
+.ca-leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ca-leaderboard-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg);
+  border-radius: 6px;
+  font-size: 13px;
+}
+.ca-leaderboard-name { color: var(--text); font-weight: 600; }
+.ca-leaderboard-amount { color: var(--text-sec); }
+
 @keyframes ca-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }

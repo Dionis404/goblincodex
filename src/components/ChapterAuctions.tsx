@@ -38,6 +38,19 @@ interface Props {
   initialNow?: number;
 }
 
+interface AuctionResults {
+  my_status: string;
+  participant_count: number;
+  supply: number;
+  leaderboard: { name: string; amount: number }[];
+}
+
+type ResultsState =
+  | { status: 'loading' }
+  | { status: 'none' }
+  | { status: 'error' }
+  | { status: 'ready'; data: AuctionResults };
+
 const TYPE_ICON: Record<Auction['type'], string> = {
   collectible: '📦',
   wearable: '👕',
@@ -214,6 +227,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
   const [nameFilter, setNameFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Auction | null>(null);
+  const [results, setResults] = useState<ResultsState>({ status: 'loading' });
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const segmentedRef = useRef<HTMLDivElement>(null);
   const segRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -222,6 +236,26 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
     const id = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    if (!selected) return;
+    let cancelled = false;
+    setResults({ status: 'loading' });
+    fetch(`/api/auctions/${encodeURIComponent(selected.auctionId)}/results.json`)
+      .then(res => {
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<AuctionResults>;
+      })
+      .then(data => {
+        if (cancelled) return;
+        setResults(data ? { status: 'ready', data } : { status: 'none' });
+      })
+      .catch(() => {
+        if (!cancelled) setResults({ status: 'error' });
+      });
+    return () => { cancelled = true; };
+  }, [selected]);
 
   useEffect(() => {
     try {
@@ -465,6 +499,40 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                 }
               </div>
             </div>
+
+            {getStatus(selected, now) !== 'upcoming' && (
+              <div className="ca-modal-section">
+                <h3 className="ca-modal-section-title">Результаты ставки</h3>
+                {results.status === 'loading' && (
+                  <span className="ca-modal-no-boosts">Загрузка...</span>
+                )}
+                {results.status === 'error' && (
+                  <span className="ca-modal-no-boosts">Не удалось загрузить результаты</span>
+                )}
+                {results.status === 'none' && (
+                  <span className="ca-modal-no-boosts">Результаты пока недоступны</span>
+                )}
+                {results.status === 'ready' && (
+                  <div className="ca-results">
+                    <div className="ca-results-summary">
+                      <span>Участников: <strong>{results.data.participant_count}</strong></span>
+                      <span>Лимит: <strong>{results.data.supply}</strong></span>
+                      <span>Мой статус: <strong>{results.data.my_status}</strong></span>
+                    </div>
+                    {results.data.leaderboard.length > 0 && (
+                      <ol className="ca-leaderboard">
+                        {results.data.leaderboard.map((entry, i) => (
+                          <li key={`${entry.name}-${i}`} className="ca-leaderboard-row">
+                            <span className="ca-leaderboard-name">{entry.name}</span>
+                            <span className="ca-leaderboard-amount">{entry.amount}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>,
         document.body
