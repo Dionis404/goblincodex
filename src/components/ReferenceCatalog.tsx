@@ -837,21 +837,21 @@ interface MarvelRow {
 }
 
 const CURRENT_CHAPTER_MARVELS: MarvelRow[] = [
-  { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Tuna', fishIcon: '/sprites/fish/tuna.png', odds: 0.8 },
-  { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Sea Bass', fishIcon: '/sprites/fish/sea_bass.png', odds: 3 },
-  { marvel: 'Deep Sea Slug', marvelIcon: '/sprites/fish/deep_sea_slug.webp', fish: 'Surgeonfish', fishIcon: '/sprites/fish/surgeonfish.png', odds: 0.1 },
-  { marvel: 'Deep Sea Slug', marvelIcon: '/sprites/fish/deep_sea_slug.webp', fish: 'Barred Knifejaw', fishIcon: '/sprites/fish/barred_knifejaw.png', odds: 1 },
-  { marvel: 'Deep Sea Pig', marvelIcon: '/sprites/fish/deep_sea_pig.webp', fish: 'Sunfish', fishIcon: '/sprites/fish/sunfish.png', odds: 0.5 },
-  { marvel: 'Deep Sea Pig', marvelIcon: '/sprites/fish/deep_sea_pig.webp', fish: 'Coelacanth', fishIcon: '/sprites/fish/coelacanth.png', odds: 0.5 },
-];
-
-const NEXT_CHAPTER_MARVELS: MarvelRow[] = [
   { marvel: 'Crocodile', marvelIcon: '/sprites/sfts/crocodile.webp', fish: 'Red Snapper', fishIcon: '/sprites/fish/red_snapper.png', odds: 0.5 },
   { marvel: 'Crocodile', marvelIcon: '/sprites/sfts/crocodile.webp', fish: 'Moray Eel', fishIcon: '/sprites/fish/moray_eel.png', odds: 1.5 },
   { marvel: 'Dumbo Octopus', marvelIcon: '/sprites/sfts/dumbo_octopus.webp', fish: 'Olive Flounder', fishIcon: '/sprites/fish/olive_flounder.png', odds: 0.5 },
   { marvel: 'Dumbo Octopus', marvelIcon: '/sprites/sfts/dumbo_octopus.webp', fish: 'Napoleanfish', fishIcon: '/sprites/fish/napoleonfish.png', odds: 0.5 },
   { marvel: 'Seahorse Dad', marvelIcon: '/sprites/sfts/seahorse_dad.webp', fish: 'Angelfish', fishIcon: '/sprites/fish/angel_fish.png', odds: 0.1 },
   { marvel: 'Seahorse Dad', marvelIcon: '/sprites/sfts/seahorse_dad.webp', fish: 'Porgy', fishIcon: '/sprites/fish/porgy.png', odds: 1 },
+];
+
+const PREVIOUS_CHAPTER_MARVELS: MarvelRow[] = [
+  { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Tuna', fishIcon: '/sprites/fish/tuna.png', odds: 0.8 },
+  { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Sea Bass', fishIcon: '/sprites/fish/sea_bass.png', odds: 3 },
+  { marvel: 'Deep Sea Slug', marvelIcon: '/sprites/fish/deep_sea_slug.webp', fish: 'Surgeonfish', fishIcon: '/sprites/fish/surgeonfish.png', odds: 0.1 },
+  { marvel: 'Deep Sea Slug', marvelIcon: '/sprites/fish/deep_sea_slug.webp', fish: 'Barred Knifejaw', fishIcon: '/sprites/fish/barred_knifejaw.png', odds: 1 },
+  { marvel: 'Deep Sea Pig', marvelIcon: '/sprites/fish/deep_sea_pig.webp', fish: 'Sunfish', fishIcon: '/sprites/fish/sunfish.png', odds: 0.5 },
+  { marvel: 'Deep Sea Pig', marvelIcon: '/sprites/fish/deep_sea_pig.webp', fish: 'Coelacanth', fishIcon: '/sprites/fish/coelacanth.png', odds: 0.5 },
 ];
 
 const BASE_MARVELS: MarvelRow[] = [
@@ -1018,22 +1018,22 @@ function MarvelsSection() {
       <div className="ref-accordion-list">
         <details className="ref-accordion" open>
           <summary className="ref-accordion-summary">
-            Марвелы текущей главы — Salt Awakening
+            Марвелы текущей главы — Ascension Age
             <span className="ref-accordion-count">{CURRENT_CHAPTER_MARVELS.length / 2} марвела</span>
           </summary>
           <div className="ref-accordion-body">
+            <p className="ref-section-desc">Марвел-талисман главы — <strong>Seahorse Dad</strong>.</p>
             <MarvelTable rows={CURRENT_CHAPTER_MARVELS} multiplier={multiplier} />
           </div>
         </details>
 
         <details className="ref-accordion">
           <summary className="ref-accordion-summary">
-            Марвелы следующей главы — Ascension Age
-            <span className="ref-accordion-count">старт 2026-08-03</span>
+            Марвелы прошлой главы — Salt Awakening
+            <span className="ref-accordion-count">{PREVIOUS_CHAPTER_MARVELS.length / 2} марвела</span>
           </summary>
           <div className="ref-accordion-body">
-            <p className="ref-section-desc">Марвел-талисман главы — <strong>Seahorse Dad</strong>.</p>
-            <MarvelTable rows={NEXT_CHAPTER_MARVELS} multiplier={multiplier} />
+            <MarvelTable rows={PREVIOUS_CHAPTER_MARVELS} multiplier={multiplier} />
           </div>
         </details>
 

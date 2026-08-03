@@ -8,7 +8,7 @@ import { fetchUpcomingAuctions } from '../lib/auctionsApi';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
 
-const CURRENT_CHAPTER = 14;
+const CURRENT_CHAPTER = 15;
 
 let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
 try {
@@ -27,7 +27,7 @@ chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new 
 const auctions = await fetchUpcomingAuctions();
 const now = Date.now();
 
-const CHAPTER_TAG = 'chapter-salt-awakening';
+const CHAPTER_TAG = 'chapter-ascension-age';
 const chapterItems = Object.values(itemCatalog)
   .filter((i) => i.tags?.includes(CHAPTER_TAG))
   .sort((a, b) => a.name.localeCompare(b.name));
@@ -53,19 +53,16 @@ const mechanicCards = await Promise.all(
 
 <BaseLayout
   currentPage="chapter"
-  title="Salt Awakening — текущая глава Sunflower Land | GoblinCodex"
-  description="Гайды по механике главы Salt Awakening, предметы и расписание аукционов Sunflower Land."
+  title="Ascension Age — текущая глава Sunflower Land | GoblinCodex"
+  description="Гайды по механике главы Ascension Age, предметы и расписание аукционов Sunflower Land."
 >
   <div class="gc-content gc-page-enter">
 
     <div class="gc-chapter-block">
       <div class="gc-chapter-banner">
-        <img src="/images/Chapter14.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--light" />
-        <img src="/images/Chapter14Night.png" alt="The Salt Awakening — Chapter 14" class="gc-chapter-img gc-chapter-img--dark" />
+        <img src="/images/chapter 15.png" alt="The Ascension Age — Chapter 15" class="gc-chapter-img gc-chapter-img--light" />
+        <img src="/images/chapter 15.png" alt="The Ascension Age — Chapter 15" class="gc-chapter-img gc-chapter-img--dark" />
       </div>
-      <a href="/chapter/ascension-age" class="gc-next-chapter-link">
-        🔜 Смотреть аукционы следующей главы — Ascension Age →
-      </a>
     </div>
 
     <div class="gc-wip-note">
@@ -154,7 +151,7 @@ const mechanicCards = await Promise.all(
 
     <!-- ── Расписание аукционов ── -->
     <section class="gc-chapter-section">
-      <ChapterAuctions client:load auctions={auctions} chapterName="The Salt Awakening" itemCatalog={itemCatalog} initialNow={now} />
+      <ChapterAuctions client:load auctions={auctions} chapterName="Ascension Age" itemCatalog={itemCatalog} initialNow={now} />
     </section>
 
   </div>
@@ -201,25 +198,6 @@ const mechanicCards = await Promise.all(
   filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
   border-radius: 12px;
   overflow: hidden;
-}
-
-.gc-next-chapter-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  background: var(--amber-pale);
-  border: 1px solid var(--amber);
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.15s;
-}
-.gc-next-chapter-link:hover {
-  transform: translateY(-1px);
 }
 
 .gc-wip-note {

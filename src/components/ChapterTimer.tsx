@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 // Дата окончания сезона — меняй здесь
-const SEASON_END = new Date('2026-08-03T00:00:00Z');
+const SEASON_END = new Date('2026-11-02T00:00:00Z');
 
 function pad(n: number) {
   return String(n).padStart(2, '0');
