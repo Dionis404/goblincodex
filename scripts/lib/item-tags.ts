@@ -242,7 +242,7 @@ const CHAPTER_ITEM_NAMES: Record<string, string> = {
   "Royal Crab Pot": "chapter-salt-awakening",
   "Speed Trap": "chapter-salt-awakening",
   "Summer Guardian": "chapter-salt-awakening",
-  // Ascension Age — from next-chapter-auctions.json (chapter not yet started)
+  // Ascension Age — from next-chapter-auctions.json (auction-only items)
   "Salt Rug": "chapter-ascension-age",
   "Coat Rack": "chapter-ascension-age",
   "Vibraphone": "chapter-ascension-age",
@@ -255,6 +255,16 @@ const CHAPTER_ITEM_NAMES: Record<string, string> = {
   "Tomato Clown": "chapter-ascension-age",
   "Rice Shirt": "chapter-ascension-age",
   "Alchemist Apron": "chapter-ascension-age",
+  // Ascension Age — Stella's Megastore (ASCENSION_AGE_ITEMS in megastore.ts;
+  // no Hourglass type is tagged — they're the recurring "buy with chapter
+  // currency" collectible, sold every chapter under different names)
+  "Swamp Lily Hat": "chapter-ascension-age",
+  "Swamp Armor": "chapter-ascension-age",
+  "Swamp Pants": "chapter-ascension-age",
+  "Moon Hair": "chapter-ascension-age",
+  "Astrolabe": "chapter-ascension-age",
+  "Ascension Monument": "chapter-ascension-age",
+  "Otty the Otter": "chapter-ascension-age",
 };
 
 /** Chapter banners (`${ChapterName} Banner`) — chapter.ts CHAPTER_BANNERS, one per chapter (all 14). */
