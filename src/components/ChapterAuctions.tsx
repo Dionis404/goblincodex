@@ -91,6 +91,11 @@ const KIND_LABEL: Record<Kind, string> = {
 const ITEM_KIND: Record<string, Kind> = {
   'Pufferfish': 'decor',
   'Fat Crab': 'decor',
+  // Ascension Age — нет записи в collectibleItemBuffs.ts/bumpkinItemBuffs.ts
+  'Coat Rack': 'decor',
+  'Quarry': 'decor',
+  'Salt Rug': 'decor',
+  'Vibraphone': 'decor',
 };
 
 function itemName(a: Auction): string {
