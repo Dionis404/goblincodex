@@ -34,12 +34,13 @@ const chapterItems = Object.values(itemCatalog)
 
 // ── Основные механики: карточки, открывающие гайд из кодекса в модалке ──
 const MECHANIC_CARDS = [
-  { id: 'delivery',     icon: '🚚', title: 'Доставки' },
-  { id: 'auction',      icon: '🔨', title: 'Аукционы' },
-  { id: 'raffle',       icon: '🎟️', title: 'Рафлы' },
-  { id: 'bounty-board', icon: '📋', title: 'Баунтиборд' },
-  { id: 'chore',        icon: '✅', title: 'Chore (задания)' },
-  { id: 'chapter-pass', icon: '🎫', title: 'Чаптерпасс' },
+  { id: 'delivery',          icon: '🚚', title: 'Доставки' },
+  { id: 'auction',           icon: '🔨', title: 'Аукционы' },
+  { id: 'raffle',            icon: '🎟️', title: 'Рафлы' },
+  { id: 'bounty-board',      icon: '📋', title: 'Баунтиборд' },
+  { id: 'chore',             icon: '✅', title: 'Chore (задания)' },
+  { id: 'chapter-pass',      icon: '🎫', title: 'Чаптерпасс' },
+  { id: 'ascension-shards',  icon: '💠', title: 'Осколки возвышения' },
 ];
 
 const mechanicCards = await Promise.all(
@@ -238,7 +239,7 @@ const mechanicCards = await Promise.all(
 /* ── Основные механики ── */
 .gc-mechanics-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 16px;
 }
 .gc-mechanic-card {
