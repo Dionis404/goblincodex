@@ -6,7 +6,6 @@ import {
   stagesForIsland,
   stagesForAscensionLevel,
   sumStages,
-  sumNodeGains,
   formatDuration,
   ISLAND_GROUP_LABELS,
   RESOURCE_ORDER,
@@ -481,7 +480,6 @@ function StagePreview({ stage, ascensionLevel }: { stage: Stage; ascensionLevel?
 
 function StageTable({ stages, ascensionLevel }: { stages: Stage[]; ascensionLevel?: number }) {
   const total = sumStages(stages);
-  const totalNodeGains = sumNodeGains(stages, -1, stages.length - 1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedStage = stages.find((s) => s.id === selectedId) ?? null;
 
@@ -526,10 +524,6 @@ function StageTable({ stages, ascensionLevel }: { stages: Stage[]; ascensionLeve
           </tr>
         </tfoot>
       </table>
-      <div className="ref-total-nodes">
-        <h4 className="ref-stage-preview-title">Всего нод на карте за эти расширения</h4>
-        <NodeGainList gains={totalNodeGains} />
-      </div>
       {selectedStage && <StagePreview stage={selectedStage} ascensionLevel={ascensionLevel} />}
     </div>
   );

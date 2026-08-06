@@ -356,9 +356,6 @@
   margin: 0 0 10px;
   color: var(--text);
 }
-.ref-total-nodes {
-  margin-top: 16px;
-}
 .ref-node-gains {
   display: flex;
   flex-wrap: wrap;

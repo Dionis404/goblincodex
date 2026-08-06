@@ -377,33 +377,105 @@ const VOLCANO_NODE_GAINS: Record<number, NodeGain> = {
   30: { Sunstone: 1 },
 };
 
-/**
- * Ноды одного уровня Возвышения (30–42) — извлечено для уровня 1
- * (`getAscensionNodes({ ascensionLevel: 1 })`). Накопленный ИТОГ растёт с
- * каждым следующим уровнем (переносятся все прошлые "капли"), но прирост за
- * конкретное расширение внутри уровня — по той же формуле на каждом уровне,
- * поэтому используем как общую таблицу для любого уровня Возвышения.
- */
-const ASCENSION_NODE_GAINS: Record<number, NodeGain> = {
-  30: { CropPlot: 65, Tree: 23, Stone: 20, Iron: 13, Gold: 8, Crimstone: 5, Sunstone: 13, FruitPatch: 15, FlowerBed: 3, Beehive: 3, Oil: 4, LavaPit: 3 },
-  31: { CropPlot: 1, Stone: 1 },
-  32: { CropPlot: 1, Gold: 1 },
-  33: { Tree: 1, Iron: 1 },
-  34: { Oil: 1 },
-  35: { CropPlot: 1, Stone: 1 },
-  36: { CropPlot: 1, FruitPatch: 1 },
-  37: { Tree: 1, FlowerBed: 1, Beehive: 1 },
-  38: { CropPlot: 1 },
-  39: { Iron: 1, Crimstone: 1 },
-  40: { Stone: 1, Sunstone: 1 },
-  41: { CropPlot: 1, Tree: 1 },
-  42: { FruitPatch: 1 },
+// --- Ноды Возвышения — формула, не хардкод ----------------------------------
+// Портировано из features/game/expansion/lib/ascension.ts (getAscensionNodes /
+// getAscensionExpansionDelta). ВАЖНО: количество нод по уровням Возвышения НЕ
+// одинаковое — с каждым уровнем "капельная" выдача (drip) становится реже
+// (getAscensionNodeDrip растягивает интервал на 25% за уровень), поэтому один
+// и тот же 12-этапный цикл на A2 даёт меньше нод, чем на A1, и т.д. Раньше тут
+// был статический снимок для A1, ошибочно переиспользуемый для всех уровней —
+// это давало одинаковые числа независимо от выбранного уровня Возвышения.
+
+/** SWAMP_NODE_DRIP — базовый интервал (в расширениях) между каплями каждого типа нод на A1. */
+const SWAMP_NODE_DRIP: Record<NodeKey, number> = {
+  CropPlot: 2, Tree: 4, Stone: 4, FruitPatch: 6, Iron: 6, Gold: 8,
+  Crimstone: 8, Oil: 12, LavaPit: 16, Beehive: 10, FlowerBed: 10, Sunstone: 10,
 };
+
+/** DRIP_WIDEN_PER_ASCENSION — интервал растёт на эту долю за каждый следующий уровень Возвышения. */
+const DRIP_WIDEN_PER_ASCENSION = 0.25;
+
+/** NO_DRIP_CAP_NODES — этим типам не ограничивают расширенный drip потолком в 12 (span). */
+const NO_DRIP_CAP_NODES: NodeKey[] = ['Beehive', 'FlowerBed', 'Oil', 'Sunstone', 'Crimstone', 'LavaPit'];
+
+/** getAscensionNodeDrip: эффективный интервал выдачи ноды на уровне `ascensionLevel` (1-индексация). */
+function ascensionNodeDrip(node: NodeKey, ascensionLevel: number): number {
+  const base = SWAMP_NODE_DRIP[node];
+  if (!base || base <= 0) return 0;
+  const widened = Math.floor(base * (1 + DRIP_WIDEN_PER_ASCENSION * (ascensionLevel - 1)));
+  return NO_DRIP_CAP_NODES.includes(node) ? widened : Math.min(widened, EXPANSIONS_PER_ASCENSION);
+}
+
+/** getAscensionCumulativeNodes: сколько нод типа `node` накопится к концу уровня `ascensionLevel` включительно (0 для уровня 0). */
+function ascensionCumulativeNodes(node: NodeKey, ascensionLevel: number): number {
+  let total = 0;
+  for (let a = 1; a <= ascensionLevel; a++) {
+    const drip = ascensionNodeDrip(node, a);
+    if (drip > 0) total += EXPANSIONS_PER_ASCENSION / drip;
+  }
+  return Math.floor(total);
+}
+
+/** getAscensionNodeTotal: сколько нод типа `node` выдаётся ИМЕННО на уровне `ascensionLevel` (все 12 расширений). */
+function ascensionNodeTotalForLevel(node: NodeKey, ascensionLevel: number): number {
+  return ascensionCumulativeNodes(node, ascensionLevel) - ascensionCumulativeNodes(node, ascensionLevel - 1);
+}
+
+/** (√5 − 1) / 2 — фаза для разнесения нод одного количества по разным расширениям (как в игре). */
+const GOLDEN_RATIO = 0.6180339887498949;
+
+/**
+ * buildAscensionSchedule: раскладывает капли уровня `ascensionLevel` по его 12
+ * расширениям равномерно (каждое получает ⌊N/12⌋…⌈N/12⌉ капель каждого типа).
+ * Возвращает массив длиной 12 (индекс 0 = локальное расширение №1).
+ */
+function buildAscensionSchedule(ascensionLevel: number): NodeGain[] {
+  const span = EXPANSIONS_PER_ASCENSION;
+  const items: { pos: number; node: NodeKey; tie: number }[] = [];
+
+  NODE_ORDER.forEach((node, t) => {
+    if (node === 'FlowerBed') return; // едет вместе с Beehive
+    const count = ascensionNodeTotalForLevel(node, ascensionLevel);
+    const phase = (t * GOLDEN_RATIO) % 1;
+    for (let i = 0; i < count; i++) {
+      items.push({ pos: (i + phase) / count, node, tie: t });
+    }
+  });
+
+  items.sort((a, b) => a.pos - b.pos || a.tie - b.tie);
+
+  const schedule: NodeGain[] = Array.from({ length: span }, () => ({}));
+  items.forEach((item, k) => {
+    const slot = Math.floor((k * span) / items.length);
+    schedule[slot][item.node] = (schedule[slot][item.node] ?? 0) + 1;
+    if (item.node === 'Beehive') {
+      schedule[slot].FlowerBed = (schedule[slot].FlowerBed ?? 0) + 1;
+    }
+  });
+
+  return schedule;
+}
+
+const ascensionScheduleCache = new Map<number, NodeGain[]>();
+
+function ascensionSchedule(ascensionLevel: number): NodeGain[] {
+  const cached = ascensionScheduleCache.get(ascensionLevel);
+  if (cached) return cached;
+  const schedule = buildAscensionSchedule(ascensionLevel);
+  ascensionScheduleCache.set(ascensionLevel, schedule);
+  return schedule;
+}
+
+/** getAscensionExpansionDelta: ноды, которые даёт конкретное расширение `e` (1..12) уровня `ascensionLevel`. */
+function ascensionExpansionDelta(ascensionLevel: number, e: number): NodeGain {
+  if (e < 1 || e > EXPANSIONS_PER_ASCENSION) return {};
+  return ascensionSchedule(Math.max(1, ascensionLevel))[e - 1];
+}
 
 /** Ноды, которые даёт конкретный этап (`Stage.number`) — null для переходов и когда данных нет. */
 export function nodeGainsForStage(stage: Stage): NodeGain | null {
   if (stage.isTransition || stage.number < 0) return null;
-  if (stage.group === 'ascension') return ASCENSION_NODE_GAINS[ASCENSION_STARTING_EXPANSIONS + stage.number] ?? null;
+  if (stage.group === 'ascension') return ascensionExpansionDelta(stage.ascensionLevel ?? 1, stage.number);
   const table = { basic: BASIC_NODE_GAINS, spring: SPRING_NODE_GAINS, desert: DESERT_NODE_GAINS, volcano: VOLCANO_NODE_GAINS }[stage.group];
   return table[stage.number] ?? null;
 }
@@ -538,6 +610,7 @@ export function stagesForAscensionLevel(level: number): Stage[] {
       number: e,
       label: `Возвышение ${level} — расширение ${e}/${EXPANSIONS_PER_ASCENSION}`,
       cost: ascensionStageCost(level, e),
+      ascensionLevel: level,
     });
   }
   stages.push({
@@ -575,6 +648,8 @@ export interface Stage {
   cost: StageCost;
   /** Единоразовый переход на следующий остров/уровень Возвышения (farm.upgraded), а не покупка расширения. */
   isTransition?: boolean;
+  /** Только для group === 'ascension' — нужен, т.к. количество нод зависит от уровня (drip растёт реже с каждым уровнем). */
+  ascensionLevel?: number;
 }
 
 export interface RangeTotal {
