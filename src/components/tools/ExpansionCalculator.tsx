@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import NumberStepper from '../NumberStepper';
-import ResourceIcon, { CoinsIcon } from '../ResourceIcon';
+import ResourceIcon, { CoinsIcon, NodeIcon } from '../ResourceIcon';
 import {
   buildStages,
   sumRange,
+  sumNodeGains,
   formatDuration,
   islandRange,
   ISLAND_GROUPS_ORDER,
@@ -11,6 +12,8 @@ import {
   EXPANSIONS_PER_ASCENSION,
   RESOURCE_LABELS,
   RESOURCE_ORDER,
+  NODE_LABELS,
+  NODE_ORDER,
   type IslandGroup,
   type Stage,
 } from '../../lib/expansions';
@@ -206,6 +209,8 @@ export default function ExpansionCalculator() {
   const total = sumRange(stages, fromIndex, toIndex);
   const invalidRange = toIndex <= fromIndex;
   const requiredLevel = invalidRange ? 0 : stages[toIndex].cost.level;
+  const nodeGains = sumNodeGains(stages, fromIndex, toIndex);
+  const nodeEntries = NODE_ORDER.filter((n) => nodeGains[n]);
 
   return (
     <div className="gc-calc">
@@ -236,7 +241,7 @@ export default function ExpansionCalculator() {
         </div>
       ) : (
         <div className="gc-calc-card">
-          <div className="gc-exp-results-grid">
+          <div className="gc-exp-results-grid gc-exp-results-grid--expansions">
             <div>
               <h2 className="gc-calc-h2">Итого ресурсов</h2>
               <div className="gc-calc-table-wrap">
@@ -285,6 +290,37 @@ export default function ExpansionCalculator() {
                 <p className="gc-calc-note">
                   <span className="gc-calc-transition-swatch" /> Выделено — часть стоимости, которая
                   приходится на переход между островами/уровнями Возвышения, а не на сами расширения.
+                </p>
+              )}
+            </div>
+
+            <div>
+              <h2 className="gc-calc-h2">Ноды при открытии</h2>
+              {nodeEntries.length > 0 ? (
+                <div className="gc-calc-table-wrap">
+                  <table className="gc-calc-table">
+                    <thead>
+                      <tr>
+                        <th>Нода</th>
+                        <th>Количество</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {nodeEntries.map((n) => (
+                        <tr key={n}>
+                          <td className="gc-calc-res-label">
+                            <NodeIcon node={n} />
+                            {NODE_LABELS[n]}
+                          </td>
+                          <td className="gc-calc-num">{fmt(nodeGains[n]!)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="gc-calc-note">
+                  В этом диапазоне новых нод не появится — только переход между островами/уровнями Возвышения.
                 </p>
               )}
             </div>

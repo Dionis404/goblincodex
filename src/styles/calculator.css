@@ -148,6 +148,24 @@
   }
 }
 
+/* ── Калькулятор расширений: ресурсы + ноды, справа колонка из KPI ── */
+.gc-exp-results-grid--expansions {
+  grid-template-columns: 1fr 1fr 220px;
+}
+@media (max-width: 1020px) {
+  .gc-exp-results-grid--expansions {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gc-exp-results-grid--expansions .gc-exp-kpi-col {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 780px) {
+  .gc-exp-results-grid--expansions {
+    grid-template-columns: 1fr;
+  }
+}
+
 .gc-exp-kpi-col {
   display: flex;
   flex-direction: column;

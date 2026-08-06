@@ -633,6 +633,23 @@ export function sumStages(stages: Stage[]): RangeTotal {
   return sumRange(stages, -1, stages.length - 1);
 }
 
+/** Суммирует ноды, которые дадут этапы строго после `fromIndex` (эксклюзивно) и до `toIndex` (инклюзивно). */
+export function sumNodeGains(stages: Stage[], fromIndex: number, toIndex: number): NodeGain {
+  const total: NodeGain = {};
+  if (toIndex <= fromIndex) return total;
+
+  for (let i = fromIndex + 1; i <= toIndex; i++) {
+    const gains = nodeGainsForStage(stages[i]);
+    if (!gains) continue;
+    for (const key of NODE_ORDER) {
+      const amount = gains[key];
+      if (amount) total[key] = (total[key] ?? 0) + amount;
+    }
+  }
+
+  return total;
+}
+
 /** Форматирует секунды в "Xд Yч" / "Yч Zм" — для отображения суммарного времени постройки. */
 export function formatDuration(seconds: number): string {
   if (seconds <= 0) return '0м';
