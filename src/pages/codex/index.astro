@@ -6,6 +6,7 @@ import BoostsCatalog from '../../components/BoostsCatalog.tsx';
 import BudsCatalog from '../../components/BudsCatalog.tsx';
 import PetsCatalog from '../../components/PetsCatalog.tsx';
 import ReferenceCatalog from '../../components/ReferenceCatalog.tsx';
+import FishAgingTable from '../../components/tools/FishAgingTable.tsx';
 import type { getCatalogItems, getBudTraits, getBudFilterOptions, getPetNftBreeds, getPetNftTraits, getPetNftFilterOptions, getPetsCommon, getPetResources, getPetFetches } from '../../lib/db';
 import {
   getCachedCatalogItems,
@@ -208,6 +209,7 @@ const tagColors: Record<string, string> = {
                 >
                   <article class="gc-guide-article">
                     <MechContent />
+                    {m.entry.id === 'fish-aging' && <FishAgingTable client:visible />}
                   </article>
                 </div>
               );
