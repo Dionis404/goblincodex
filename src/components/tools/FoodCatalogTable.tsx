@@ -91,6 +91,8 @@ interface Recipe {
   ingredients: [string, number][];
   isCake?: boolean;
   isHoney?: boolean;
+  /** Входит в FISH_CONSUMABLES игры — получает бусты типа Luminous Anglerfish Topper. */
+  isFish?: boolean;
 }
 
 const FIRE_PIT: Recipe[] = [
@@ -106,13 +108,12 @@ const FIRE_PIT: Recipe[] = [
   { name: 'Cabbers n Mash', building: 'Fire Pit', experience: 250, cookingSeconds: 2400, ingredients: [['Mashed Potato', 10], ['Cabbage', 20]] },
   { name: 'Kale Stew', building: 'Fire Pit', experience: 400, cookingSeconds: 7200, ingredients: [['Kale', 10]] },
   { name: 'Fried Tofu', building: 'Fire Pit', experience: 400, cookingSeconds: 5400, ingredients: [['Soybean', 15], ['Sunflower', 200]] },
-  { name: 'Gumbo', building: 'Fire Pit', experience: 600, cookingSeconds: 14400, ingredients: [['Potato', 50], ['Pumpkin', 30], ['Carrot', 20], ['Red Snapper', 3]] },
   { name: 'Kale Omelette', building: 'Fire Pit', experience: 1250, cookingSeconds: 12600, ingredients: [['Egg', 40], ['Kale', 5]] },
   { name: 'Rice Bun', building: 'Fire Pit', experience: 2600, cookingSeconds: 18000, ingredients: [['Rice', 2], ['Wheat', 50]] },
   { name: 'Saltbite', building: 'Fire Pit', experience: 3000, cookingSeconds: 14400, ingredients: [['Saltwort', 10]] },
   { name: 'Antipasto', building: 'Fire Pit', experience: 3000, cookingSeconds: 10800, ingredients: [['Olive', 2], ['Grape', 2]] },
   { name: 'Pizza Margherita', building: 'Fire Pit', experience: 25000, cookingSeconds: 72000, ingredients: [['Tomato', 30], ['Cheese', 5], ['Wheat', 20]] },
-  { name: 'Furikake Sprinkle', building: 'Fire Pit', experience: 1000, cookingSeconds: 0, ingredients: [['Fish Flake', 1], ['Seaweed', 1]] },
+  { name: 'Furikake Sprinkle', building: 'Fire Pit', experience: 1000, cookingSeconds: 0, ingredients: [['Fish Flake', 1], ['Seaweed', 1]], isFish: true },
 ];
 
 const KITCHEN: Recipe[] = [
@@ -126,24 +127,16 @@ const KITCHEN: Recipe[] = [
   { name: 'Bumpkin Salad', building: 'Kitchen', experience: 290, cookingSeconds: 12600, ingredients: [['Beetroot', 20], ['Parsnip', 10]] },
   { name: 'Goblin’s Treat', building: 'Kitchen', experience: 500, cookingSeconds: 21600, ingredients: [['Pumpkin', 10], ['Radish', 20], ['Cabbage', 10]] },
   { name: 'Pancakes', building: 'Kitchen', experience: 1000, cookingSeconds: 3600, ingredients: [['Wheat', 10], ['Egg', 10], ['Honey', 6]], isHoney: true },
-  { name: 'Fish Burger', building: 'Kitchen', experience: 1300, cookingSeconds: 7200, ingredients: [['Beetroot', 10], ['Wheat', 10], ['Horse Mackerel', 1]] },
-  { name: 'Ocean’s Olive', building: 'Kitchen', experience: 2000, cookingSeconds: 7200, ingredients: [['Olive Flounder', 1], ['Olive', 2]] },
-  { name: 'Fried Calamari', building: 'Kitchen', experience: 1500, cookingSeconds: 18000, ingredients: [['Sunflower', 200], ['Wheat', 15], ['Squid', 1]] },
-  { name: 'Fish Omelette', building: 'Kitchen', experience: 1500, cookingSeconds: 18000, ingredients: [['Egg', 40], ['Surgeonfish', 1], ['Butterflyfish', 2]] },
   { name: 'Bumpkin ganoush', building: 'Kitchen', experience: 1000, cookingSeconds: 18000, ingredients: [['Eggplant', 30], ['Potato', 50], ['Parsnip', 10]] },
-  { name: 'Sushi Roll', building: 'Kitchen', experience: 2000, cookingSeconds: 3600, ingredients: [['Angelfish', 1], ['Seaweed', 1], ['Rice', 2]] },
-  { name: 'Fish n Chips', building: 'Kitchen', experience: 2000, cookingSeconds: 14400, ingredients: [['Fancy Fries', 1], ['Halibut', 1]] },
-  { name: 'Seafood Basket', building: 'Kitchen', experience: 2200, cookingSeconds: 18000, ingredients: [['Blowfish', 2], ['Napoleanfish', 2], ['Sunfish', 2]] },
   { name: 'Bumpkin Roast', building: 'Kitchen', experience: 2500, cookingSeconds: 43200, ingredients: [['Mashed Potato', 20], ['Roast Veggies', 5]] },
   { name: 'Goblin Brunch', building: 'Kitchen', experience: 2500, cookingSeconds: 43200, ingredients: [['Boiled Eggs', 5], ['Goblin’s Treat', 1]] },
   { name: 'Tofu Scramble', building: 'Kitchen', experience: 1000, cookingSeconds: 10800, ingredients: [['Soybean', 20], ['Egg', 20], ['Cauliflower', 10]] },
-  { name: 'Chowder', building: 'Kitchen', experience: 1000, cookingSeconds: 28800, ingredients: [['Beetroot', 10], ['Wheat', 10], ['Parsnip', 5], ['Anchovy', 3]] },
   { name: 'Caprese Salad', building: 'Kitchen', experience: 6000, cookingSeconds: 10800, ingredients: [['Cheese', 1], ['Tomato', 25], ['Kale', 20]] },
   { name: 'Steamed Red Rice', building: 'Kitchen', experience: 3000, cookingSeconds: 14400, ingredients: [['Rice', 3], ['Beetroot', 50]] },
   { name: 'Spaghetti al Limone', building: 'Kitchen', experience: 15000, cookingSeconds: 54000, ingredients: [['Wheat', 10], ['Lemon', 15], ['Cheese', 3]] },
-  { name: 'Surimi Rice Bowl', building: 'Kitchen', experience: 3000, cookingSeconds: 0, ingredients: [['Fish Stick', 1], ['Rice', 1], ['Onion', 1]] },
-  { name: 'Creamy Crab Bite', building: 'Kitchen', experience: 10000, cookingSeconds: 0, ingredients: [['Crab Stick', 1], ['Cheese', 3]] },
-  { name: 'Crimstone Infused Fish Oil', building: 'Kitchen', experience: 18000, cookingSeconds: 0, ingredients: [['Fish Oil', 1], ['Crimstone', 1]] },
+  { name: 'Surimi Rice Bowl', building: 'Kitchen', experience: 3000, cookingSeconds: 0, ingredients: [['Fish Stick', 1], ['Rice', 1], ['Onion', 1]], isFish: true },
+  { name: 'Creamy Crab Bite', building: 'Kitchen', experience: 10000, cookingSeconds: 0, ingredients: [['Crab Stick', 1], ['Cheese', 3]], isFish: true },
+  { name: 'Crimstone Infused Fish Oil', building: 'Kitchen', experience: 18000, cookingSeconds: 0, ingredients: [['Fish Oil', 1], ['Crimstone', 1]], isFish: true },
 ];
 
 const BAKERY: Recipe[] = [
@@ -174,7 +167,6 @@ const DELI: Recipe[] = [
   { name: 'Sauerkraut', building: 'Deli', experience: 500, cookingSeconds: 86400, ingredients: [['Cabbage', 20]] },
   { name: 'Fancy Fries', building: 'Deli', experience: 1000, cookingSeconds: 86400, ingredients: [['Sunflower', 500], ['Potato', 500]] },
   { name: 'Blue Cheese', building: 'Deli', experience: 6000, cookingSeconds: 10800, ingredients: [['Cheese', 2], ['Blueberry', 10]] },
-  { name: 'Fermented Fish', building: 'Deli', experience: 3000, cookingSeconds: 86400, ingredients: [['Tuna', 6]] },
   { name: 'Honey Cheddar', building: 'Deli', experience: 15000, cookingSeconds: 43200, ingredients: [['Cheese', 3], ['Honey', 5]], isHoney: true },
 ];
 
@@ -365,6 +357,13 @@ function xpMultiplier(recipe: Recipe, b: XpBoosts): number {
   }
   if (recipe.isHoney && b.buzzworthyTreatsRank > 0) {
     mult *= 1 + BUZZWORTHY_TREATS_RANKS[b.buzzworthyTreatsRank - 1];
+  }
+  // Furikake Sprinkle/Surimi Rice Bowl/Creamy Crab Bite/Crimstone Infused Fish
+  // Oil входят в FISH_CONSUMABLES в игре — получают те же бусты, что рыба.
+  if (recipe.isFish) {
+    if (b.fishyFeastRank > 0) mult *= 1 + FISHY_FEAST_RANKS[b.fishyFeastRank - 1];
+    if (b.luminousAnglerfishTopper) mult *= 1.5;
+    if (b.skillShrimpy) mult *= 1.2;
   }
   return mult;
 }
