@@ -479,7 +479,7 @@ const SKILL_UPGRADES: Record<string, SkillUpgrade> = {
  * исходниках игры вообще нет поля `image`, сюда не попадают — для них
  * SkillCard рисует эмодзи дерева (SKILL_TREE_EMOJI).
  */
-const SKILL_ICONS: Record<string, string> = {
+export const SKILL_ICONS: Record<string, string> = {
   'Green Thumb': '/sprites/skills/land/crops/green_thumb_LE.png',
   'Young Farmer': '/sprites/crops/sunflower/crop.png',
   'Experienced Farmer': '/sprites/crops/cauliflower/crop.png',
@@ -546,6 +546,12 @@ const SKILL_ICONS: Record<string, string> = {
   'Midas Rush': '/sprites/icons/skill_icons/midas_rush.png',
   'Nom Nom': '/sprites/icons/skill_icons/nom_nom.png',
   'Munching Mastery': '/sprites/icons/xp.png',
+  // Эти 4 навыка не имеют своей image в BUMPKIN_REVAMP_SKILL_TREE — используем их
+  // boosts.buff.boostedItemIcon (см. bumpkinSkills.ts) как замену.
+  'Fast Feasts': '/sprites/wearables/25.webp',
+  'Frosted Cakes': '/sprites/food/cakes/radish_cake.png',
+  'Juicy Boost': '/sprites/buildings/icons/smoothie_shack_icon.png',
+  'Drive-Through Deli': '/sprites/buildings/icons/deli_icon.png',
   'Swift Sizzle': '/sprites/icons/skill_icons/swift_sizzle.png',
   'Turbo Fry': '/sprites/icons/skill_icons/turbo_fry.png',
   'Instant Gratification': '/sprites/icons/skill_icons/InstantGratification.webp',

@@ -1,0 +1,22 @@
+{
+  "Luna's Hat": "/sprites/wearables/161.webp",
+  "Master Chef's Cleaver": "/sprites/wearables/500.webp",
+  "Super Totem": "/sprites/sfts/super_totem.webp",
+  "Time Warp Totem": "/sprites/sfts/time_warp_totem.webp",
+  "Desert Gnome": "/sprites/sfts/desert_gnome.webp",
+  "Legendary Shrine": "/sprites/sfts/shrines/legendary_shrine.webp",
+  "Boar Shrine": "/sprites/sfts/shrines/boar_shrine.webp",
+  "Gourmet Hourglass": "/sprites/factions/boosts/cooking_boost_full.webp",
+  "Golden Spatula": "/sprites/wearables/58.webp",
+  "Pan": "/sprites/wearables/314.webp",
+  "Observatory": "/sprites/sfts/mom/observatory.webp",
+  "Blossombeard": "/sprites/sfts/blossom_beard.webp",
+  "Luminous Anglerfish Topper": "/sprites/wearables/221.webp",
+  "Skill Shrimpy": "/sprites/sfts/skill_shrimpy.webp",
+  "Winged Vase": "/sprites/sfts/winged_vase.webp",
+  "Bumpkin Medallion": "/sprites/wearables/388.webp",
+  "Goblin Medallion": "/sprites/wearables/389.webp",
+  "Nightshade Medallion": "/sprites/wearables/390.webp",
+  "Sunflorian Medallion": "/sprites/wearables/391.webp",
+  "Salt Sculpture": "/sprites/sculptures/salt_sculpture_01.webp"
+}

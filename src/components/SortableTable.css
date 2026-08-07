@@ -53,3 +53,65 @@
 .gc-sortable-name {
   font-weight: 600;
 }
+
+/* На узких экранах таблица не помещается по ширине даже с горизонтальным
+   скроллом внутри карточек-переключателей — превращаем строки в карточки
+   (data-label на каждой <td> становится подписью поля) вместо листания в бок. */
+@media (max-width: 640px) {
+  .gc-sortable-wrap {
+    overflow-x: visible;
+    border: none;
+  }
+  .gc-sortable-table,
+  .gc-sortable-table tbody,
+  .gc-sortable-table tr,
+  .gc-sortable-table td {
+    display: block;
+    width: 100%;
+  }
+  .gc-sortable-table thead {
+    display: none;
+  }
+  .gc-sortable-table tr {
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+  }
+  .gc-sortable-table tr:last-child {
+    margin-bottom: 0;
+  }
+  .gc-sortable-table td {
+    padding: 6px 0;
+    border-top: none;
+    white-space: normal;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .gc-sortable-table td[data-label]::before {
+    content: attr(data-label);
+    color: var(--text-sec);
+    font-weight: 600;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .gc-sortable-table td.gc-sortable-name {
+    justify-content: flex-start;
+    padding-top: 0;
+    padding-bottom: 10px;
+    font-size: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .gc-sortable-table td.gc-sortable-name::before {
+    content: none;
+  }
+  .ref-table-resources {
+    flex-direction: column;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 6px;
+  }
+}

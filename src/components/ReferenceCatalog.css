@@ -58,6 +58,7 @@
 @media (max-width: 720px) {
   .ref-layout { flex-direction: column; }
   .ref-sidebar { width: 100%; position: static; }
+  .ref-content { width: 100%; min-width: 0; max-width: 100%; }
 }
 
 .ref-section-desc {
@@ -662,35 +663,58 @@
 
 /* ── Морские марвелы ── */
 .ref-marvel-icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
   image-rendering: pixelated;
   vertical-align: middle;
-  margin-right: 4px;
+  margin-right: 6px;
+  flex-shrink: 0;
 }
 .ref-marvel-boost-widget {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px 18px;
+  padding: 16px 20px;
   margin: 12px 0 20px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 20px;
+  gap: 14px 24px;
+}
+
+/* Еда: у этого виджета чекбоксы и выпадающие списки идут двумя отдельными
+   группами (не вперемешку) — сам виджет становится колонкой из двух рядов. */
+.ref-marvel-boost-widget:has(.ref-food-boost-checks) {
+  flex-direction: column;
+  align-items: stretch;
+}
+.ref-food-boost-checks,
+.ref-food-boost-selects {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+}
+.ref-food-boost-selects {
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.ref-food-boost-checks:empty,
+.ref-food-boost-selects:empty {
+  display: none;
 }
 .ref-marvel-boost-check {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 10px;
+  font-size: 15px;
   cursor: pointer;
   white-space: nowrap;
 }
-.ref-marvel-boost-check input {
-  width: 16px;
-  height: 16px;
+.ref-marvel-boost-check input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   cursor: pointer;
 }
@@ -709,7 +733,46 @@
 }
 .ref-marvel-boost-total {
   margin: 0 0 0 auto;
-  font-size: 13px;
+  font-size: 15px;
+}
+.ref-marvel-boost-widget:has(.ref-food-boost-checks) .ref-marvel-boost-total {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .ref-marvel-boost-widget {
+    gap: 12px;
+    padding: 14px 16px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .ref-marvel-boost-check {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    font-size: 16px;
+  }
+  .ref-marvel-boost-check:has(select) {
+    justify-content: space-between;
+  }
+  .ref-marvel-boost-check > span {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .ref-marvel-boost-check--nested {
+    flex-basis: calc(100% - 12px);
+    width: calc(100% - 12px);
+    min-width: 0;
+    max-width: calc(100% - 12px);
+  }
+  .ref-marvel-boost-total {
+    margin: 0;
+    flex: 1 1 100%;
+  }
 }
 .ref-marvel-odds {
   font-weight: 700;
@@ -717,4 +780,100 @@
 }
 .ref-marvel-odds--boosted {
   color: var(--green-dark);
+}
+
+.ref-food-boost-badge {
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+/* ── Еда: выбор ранга скилла внутри boost-виджета ── */
+.ref-food-rank-select {
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+.ref-food-icon--sm {
+  width: 20px;
+  height: 20px;
+  margin-right: 3px;
+}
+
+@media (max-width: 640px) {
+  .ref-food-rank-select {
+    font-size: 16px;
+    padding: 8px 10px;
+    max-width: 45%;
+  }
+}
+
+/* ── Еда: выпадающий список сортировки, дублирующий клик по заголовку таблицы
+   (заголовки скрыты на мобильном, где таблица превращается в карточки) ── */
+.ref-food-mobile-sort {
+  display: none;
+}
+@media (max-width: 640px) {
+  .ref-food-mobile-sort {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-sec);
+  }
+  .ref-food-mobile-sort .ref-food-rank-select {
+    max-width: 60%;
+  }
+}
+
+/* ── Еда: вкладки по зданию (Fire Pit / Kitchen / Bakery / Deli / Smoothie Shack) ── */
+.ref-food-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.ref-food-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ref-food-tab:hover {
+  background: var(--green-pale);
+}
+.ref-food-tab--active {
+  background: var(--green-pale);
+  border-color: var(--green-dark);
+  color: var(--green-dark);
+}
+.ref-food-tab .ref-accordion-count {
+  margin-left: 2px;
+}
+
+@media (max-width: 640px) {
+  .ref-food-tabs {
+    gap: 8px 10px;
+  }
+  .ref-food-tab {
+    flex: 1 1 calc(50% - 5px);
+    justify-content: center;
+    font-size: 14px;
+    padding: 10px 8px;
+  }
 }

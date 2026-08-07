@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './ReferenceCatalog.css';
+import FoodCatalogTable from './tools/FoodCatalogTable';
 import NumberStepper from './NumberStepper';
 import ResourceIcon, { CoinsIcon } from './ResourceIcon';
 import {
@@ -1090,6 +1091,29 @@ function MarvelsSection() {
   );
 }
 
+function FoodSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Вся еда, которую можно приготовить в игре, разбита по кухням: <strong>Fire Pit</strong>,{' '}
+        <strong>Kitchen</strong>, <strong>Bakery</strong>, <strong>Deli</strong> и{' '}
+        <strong>Smoothie Shack</strong>. Для каждого блюда показаны опыт, время готовки и нужные
+        ингредиенты. Отдельная вкладка <strong>Рыба</strong> — сырую рыбу можно съесть сразу без
+        готовки, а после соления в Aging Shed она даёт заметно больше опыта (подробности — в
+        статье «Соление рыбы»).
+      </p>
+      <p className="ref-section-desc">
+        Включите переключатели ниже, чтобы посмотреть, как навыки, предметы и масло в здании
+        меняют время готовки и получаемый опыт — таблица пересчитывается сразу. Первый блок
+        бустов сокращает время, второй — увеличивает опыт. Буст от масла зависит от конкретного
+        здания (Swift Sizzle/Turbo Fry/Fry Frenzy повышают процент по рангу для Fire Pit/Kitchen/
+        Deli — у Bakery и Smoothie Shack фиксированный процент без скилла).
+      </p>
+      <FoodCatalogTable />
+    </section>
+  );
+}
+
 interface RefSection {
   id: string;
   icon: string;
@@ -1105,6 +1129,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'upgrades', icon: '⛏️', label: 'Апгрейд ресурсов', Content: ResourceUpgradeSection },
   { id: 'obsidian', icon: '🌋', label: 'Обсидиан (Lava Pit)', Content: ObsidianSection },
   { id: 'marvels', icon: '🐋', label: 'Морские марвелы', Content: MarvelsSection },
+  { id: 'food', icon: '🍳', label: 'Еда и готовка', Content: FoodSection },
 ];
 
 function getInitialId(): string {
