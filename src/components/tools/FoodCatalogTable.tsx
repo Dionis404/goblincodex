@@ -110,7 +110,6 @@ const FIRE_PIT: Recipe[] = [
   { name: 'Fried Tofu', building: 'Fire Pit', experience: 400, cookingSeconds: 5400, ingredients: [['Soybean', 15], ['Sunflower', 200]] },
   { name: 'Kale Omelette', building: 'Fire Pit', experience: 1250, cookingSeconds: 12600, ingredients: [['Egg', 40], ['Kale', 5]] },
   { name: 'Rice Bun', building: 'Fire Pit', experience: 2600, cookingSeconds: 18000, ingredients: [['Rice', 2], ['Wheat', 50]] },
-  { name: 'Saltbite', building: 'Fire Pit', experience: 3000, cookingSeconds: 14400, ingredients: [['Saltwort', 10]] },
   { name: 'Antipasto', building: 'Fire Pit', experience: 3000, cookingSeconds: 10800, ingredients: [['Olive', 2], ['Grape', 2]] },
   { name: 'Pizza Margherita', building: 'Fire Pit', experience: 25000, cookingSeconds: 72000, ingredients: [['Tomato', 30], ['Cheese', 5], ['Wheat', 20]] },
   { name: 'Furikake Sprinkle', building: 'Fire Pit', experience: 1000, cookingSeconds: 0, ingredients: [['Fish Flake', 1], ['Seaweed', 1]], isFish: true },
