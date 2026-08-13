@@ -1,0 +1,568 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const faq = [
+  {
+    q: 'Влияет ли Yakkamon на развитие Sunflower Land?',
+    a: 'Нет. Sunflower Land продолжает активно развиваться отдельно. Разделение проектов позволяет обеим играм двигаться быстрее — добавление полноценного коллекционера существ прямо в фермерскую игру только замедлило бы обе.',
+  },
+  {
+    q: 'Создаётся ли новый токен?',
+    a: 'Нет. Yakkamon использует тот же токен $FLOWER, что и остальные игры экосистемы — это увеличивает его полезность и общий размер экосистемы.',
+  },
+  {
+    q: 'Когда запустится игра?',
+    a: 'Ранний доступ откроется волнами в Q4 2026. Тренеры с более высоким рейтингом по очкам получают доступ раньше.',
+  },
+  {
+    q: 'Обязательно ли уже играть в Sunflower Land?',
+    a: 'Нет. Yakkamon — полностью новая игра. Предзарегистрироваться можно по одному email, без переноса данных из SFL. Игроки Sunflower Land не получают требований или ограничений.',
+  },
+  {
+    q: 'В чём разница между Monster Egg, NFT-airdrop и free mint?',
+    a: 'Это три независимые награды. Monster Egg — игровой предмет (не NFT), который получают все зарегистрировавшиеся (до 500 000 штук) и который просто появляется на ферме при первом входе. Trainer Point Airdrop — NFT-монстры для топ-5000 игроков по очкам. Ronin Free Mint — 10 000 NFT, минтятся 1 октября по вайтлисту. Получить можно все три награды одновременно.',
+  },
+  {
+    q: 'Даёт ли ранняя регистрация ранний доступ к игре?',
+    a: 'Нет. Ранняя регистрация влияет только на тир полученного Monster Egg. Сам ранний доступ получают только топ-100 000 тренеров по очкам — регистрация делает ранг лишь стартовой точкой, а не гарантией.',
+  },
+  {
+    q: 'Я зарегистрировался поздно — я что-то упустил?',
+    a: 'Не обязательно. Ранг зависит от количества очков, а не от места в очереди регистрации. Активный игрок с самым скромным яйцом вполне может обогнать неактивного игрока с лучшим яйцом.',
+  },
+  {
+    q: 'NFT-airdrop раздаётся по принципу «кто первый»?',
+    a: 'Нет. 5000 Monster NFT распределяются среди топ-5000 тренеров по очкам на момент фиксации таблицы лидеров, а не по порядку регистрации.',
+  },
+  {
+    q: 'На какой сети работает игра?',
+    a: 'На сети Ronin — там же, где будет проходить free mint монстров.',
+  },
+];
+
+const mechanics = [
+  { icon: '🌾', title: 'Idle-фарминг', desc: 'Монстры собирают ресурсы автоматически, даже офлайн' },
+  { icon: '🐾', title: 'Коллекционирование', desc: 'Охота и поимка существ в дикой природе' },
+  { icon: '🛠️', title: 'Крафт', desc: 'Снаряжение из ресурсов для охоты на редких монстров' },
+  { icon: '⚔️', title: 'PvP-арены', desc: 'Бои с другими игроками за славу' },
+];
+
+const rewardWaves = [
+  { range: '1 – 10 000', tier: 'Platinum' },
+  { range: '10 001 – 25 000', tier: 'Gold' },
+  { range: '25 001 – 50 000', tier: 'Silver' },
+  { range: '50 001 – 100 000', tier: 'Bronze' },
+  { range: '100 001 – 500 000', tier: 'Basic' },
+];
+
+const accessWaves = [
+  { wave: 'Волна 1', range: 'Топ 1 – 1 000' },
+  { wave: 'Волна 2', range: '1 001 – 5 000' },
+  { wave: 'Волна 3', range: '5 001 – 20 000' },
+  { wave: 'Волна 4', range: '20 001 – 100 000' },
+];
+
+const airdropTiers = [
+  { range: '1 – 3', reward: 'Storm + Echo', rarity: 'mythic' },
+  { range: '4 – 10', reward: 'Storm + Bloom', rarity: 'legendary' },
+  { range: '11 – 50', reward: 'Storm', rarity: 'legendary' },
+  { range: '51 – 250', reward: 'Echo', rarity: 'epic' },
+  { range: '251 – 500', reward: 'Bloom', rarity: 'epic-alt' },
+  { range: '501 – 2 000', reward: 'Tide', rarity: 'rare' },
+  { range: '2 001 – 5 000', reward: 'Rare Egg (всего 4 000 шт.)', rarity: 'common' },
+];
+---
+
+<BaseLayout
+  currentPage="yakkamon"
+  title="Yakkamon на русском — обзор игры и предрегистрация | GoblinCodex"
+  description="Неофициальный русскоязычный пересказ документации Yakkamon: idle-фарминг, коллекционер существ, ранний доступ, free mint и NFT-airdrop от команды Sunflower Land."
+>
+  <div class="gc-yk-wrap gc-page-enter">
+
+    <!-- ── Хиро ── -->
+    <div class="gc-yk-hero">
+      <span class="gc-tag gc-tag--green">🥚 Новый проект от команды Sunflower Land</span>
+      <h1 class="gc-yk-logo-title">
+        <img src="/images/yakkamon%20.png" alt="Yakkamon" class="gc-yk-logo" />
+      </h1>
+      <p class="gc-yk-sub">
+        Idle-фарминг встречает коллекционера и бойца существ. Ловите монстров, отправляйте их
+        работать на ферме — даже пока вы офлайн, крафтите снаряжение и сражайтесь на аренах.
+      </p>
+      <div class="gc-hero-actions" style="justify-content: center;">
+        <a href="https://docs.yakkamon.com/" target="_blank" rel="noopener noreferrer" class="gc-btn-primary">
+          📄 Официальная документация
+        </a>
+        <a href="#faq" class="gc-btn-secondary">Частые вопросы</a>
+      </div>
+    </div>
+
+    <!-- ── Дисклеймер ── -->
+    <div class="gc-card gc-yk-disclaimer">
+      ℹ️ Это неофициальный пересказ англоязычной документации <strong>docs.yakkamon.com</strong> на
+      русском языке, подготовленный командой GoblinCodex. Мы не являемся разработчиками Yakkamon —
+      за самой актуальной и точной информацией всегда обращайтесь к
+      <a href="https://docs.yakkamon.com/" target="_blank" rel="noopener noreferrer">официальному источнику</a>.
+      Проект находится на стадии пре-релиза, детали могут меняться.
+    </div>
+
+    <!-- ── О игре ── -->
+    <div class="gc-card gc-yk-section">
+      <h2 class="gc-roadmap-h2">🎮 О игре</h2>
+      <p class="gc-yk-text">
+        Yakkamon сочетает пассивный idle-фарминг с активными механиками охоты и коллекционирования.
+        Игра делится на две части: пока вас нет в игре, пойманные монстры продолжают работать на
+        ферме и собирать ресурсы — прогресс не останавливается. Когда вы в игре, можно ловить новых
+        существ в дикой природе, крафтить из собранных ресурсов снаряжение для охоты на редких
+        монстров и сражаться с другими игроками на PvP-аренах за славу.
+      </p>
+      <div class="gc-grid-4 gc-yk-mech-grid">
+        {mechanics.map(m => (
+          <div class="gc-yk-mech-card">
+            <div class="gc-yk-mech-icon">{m.icon}</div>
+            <div class="gc-cost-title">{m.title}</div>
+            <div class="gc-cost-desc">{m.desc}</div>
+          </div>
+        ))}
+      </div>
+      <p class="gc-yk-text" style="margin-top: 20px;">
+        Мир игры включает несколько биомов — пустыни, вулканы, огненные регионы и водные
+        территории, каждый со своими уникальными ресурсами. Динамический цикл дня и ночи влияет на
+        то, какие монстры встречаются игроку, а раз в три месяца стартует новый сезон с новыми
+        видами существ в дикой природе. Все ресурсы и пойманные монстры торгуемы on-chain.
+      </p>
+    </div>
+
+    <!-- ── Команда ── -->
+    <div class="gc-card gc-yk-section">
+      <h2 class="gc-roadmap-h2">👥 Команда</h2>
+      <p class="gc-yk-text">
+        Yakkamon разрабатывает та же команда, что создала и уже более 5 лет поддерживает
+        <strong>Sunflower Land</strong> — одну из долгоживущих блокчейн-игр с реальной экономикой,
+        собравшую более миллиона игроков. Вокруг Sunflower Land сложилось открытое сообщество из
+        100+ контрибьюторов открытого кода, разработка ведётся публично, с открытой дорожной картой.
+        Над визуальным стилем Yakkamon, включая дизайн монстров и HD UI-арт, работает художник
+        <strong>Daniel Diggle</strong>.
+      </p>
+    </div>
+
+    <!-- ── Ранний доступ ── -->
+    <div class="gc-card gc-yk-section">
+      <h2 class="gc-roadmap-h2">🚀 Ранний доступ и очки</h2>
+      <p class="gc-yk-text">
+        Ранний доступ к игре получат только топ-100 000 тренеров по количеству набранных очков —
+        одной регистрации недостаточно. Порядок регистрации определяет лишь тир стартового
+        Monster Egg, а дальнейший ранг зависит целиком от активности.
+      </p>
+
+      <h3 class="gc-yk-h3">Как зарабатывать очки</h3>
+      <ul class="gc-yk-list">
+        <li>Ежедневный уход за яйцом (бонус растёт со сроком)</li>
+        <li>Квесты с верификацией Discord и Twitter</li>
+        <li>Реферальная программа — первые 5 приглашённых засчитываются сразу, остальные должны верифицировать соцсети и набрать 100 очков</li>
+        <li>Депозиты $FLOWER — бонус растёт экспоненциально с размером депозита</li>
+        <li>Минт Monster NFT на сети Ronin</li>
+      </ul>
+
+      <h3 class="gc-yk-h3">Тир стартового яйца по времени регистрации</h3>
+      <div class="gc-yk-table-wrap">
+        <table class="gc-yk-table">
+          <thead><tr><th>Место в очереди регистрации</th><th>Тир яйца</th></tr></thead>
+          <tbody>
+            {rewardWaves.map(r => (
+              <tr><td>{r.range}</td><td>{r.tier}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="gc-yk-note">Платиновое яйцо не даёт преимущества в таблице лидеров — это только косметический бонус за скорость регистрации.</p>
+
+      <h3 class="gc-yk-h3">Волны раннего доступа (Q4 2026)</h3>
+      <div class="gc-yk-table-wrap">
+        <table class="gc-yk-table">
+          <thead><tr><th>Волна</th><th>Ранг по очкам</th></tr></thead>
+          <tbody>
+            {accessWaves.map(w => (
+              <tr><td>{w.wave}</td><td>{w.range}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Free Mint ── -->
+    <div class="gc-card gc-yk-section">
+      <h2 class="gc-roadmap-h2">🎁 Free Mint</h2>
+      <p class="gc-yk-text">
+        1 октября на сети Ronin пройдёт бесплатный минт 10 000 монстров ограниченного выпуска —
+        переиздания не планируются. Среди них спрятано 5 мифических Genesis Legendary существ
+        (вероятность получить одного из них — 5 из 10 000). Все характеристики монстров
+        раскрываются одновременно, заранее никто не знает, что достанется.
+      </p>
+      <ul class="gc-yk-list">
+        <li>Стоимость — бесплатно, оплачивается только комиссия сети</li>
+        <li>Обязательна предварительная регистрация и верификация аккаунта до 1 октября</li>
+        <li>Участвовать могут только кошельки из вайтлиста</li>
+        <li>Один минт на тренера — мультиаккаунты и боты исключены</li>
+      </ul>
+    </div>
+
+    <!-- ── NFT Airdrop ── -->
+    <div class="gc-card gc-yk-section">
+      <h2 class="gc-roadmap-h2">✨ NFT-airdrop (Legendary Founder NFTs)</h2>
+      <p class="gc-yk-text">
+        Бесплатный airdrop для топ-5000 тренеров по очкам на момент фиксации таблицы лидеров — не
+        по порядку регистрации. Всего распределяется 5010 Monster NFT среди 5000 игроков: это
+        полноценные боевые персонажи с сильными характеристиками, а не косметика, полностью
+        торгуемые on-chain на Ronin.
+      </p>
+      <div class="gc-yk-table-wrap">
+        <table class="gc-yk-table">
+          <thead><tr><th>Ранг по очкам</th><th>Награда</th></tr></thead>
+          <tbody>
+            {airdropTiers.map(t => (
+              <tr class={`gc-yk-rarity-row gc-yk-rarity-row--${t.rarity}`}>
+                <td>{t.range}</td>
+                <td><span class={`gc-yk-rarity-badge gc-yk-rarity-badge--${t.rarity}`}>{t.reward}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="gc-yk-note">
+        При запуске раннего доступа пройдёт совместный Reveal Event — все 15 000 монстров (5000 из
+        airdrop + 10 000 из free mint) раскрываются одновременно.
+      </p>
+    </div>
+
+    <!-- ── $FLOWER Deposits ── -->
+    <div class="gc-card gc-yk-section">
+      <h2 class="gc-roadmap-h2">🌻 Депозиты $FLOWER</h2>
+      <p class="gc-yk-text">
+        Можно заранее пополнить баланс токена $FLOWER (единый ERC20-токен экосистемы Sunflower
+        Land и Yakkamon) — это одновременно и задел игрового баланса на будущее, и способ заработать
+        очки в таблице лидеров: чем крупнее депозит, тем экспоненциально больше очков он приносит.
+        Токены при этом остаются вашими — очки не расходуют баланс.
+      </p>
+      <ul class="gc-yk-list">
+        <li>$FLOWER можно получить на Base через Uniswap или на Ronin через Ronin Wallet (адрес контракта одинаков в обеих сетях)</li>
+        <li>Депозит не блокируется — вывод возможен без штрафов и налога</li>
+        <li>В первые недели после запуска действуют процентные лимиты на вывод — для стабильности экономики</li>
+        <li>Крупный баланс на старте открывает скидки на Gems, VIP-статус, ограниченные по времени предметы и доступ к аукционам</li>
+      </ul>
+    </div>
+
+    <!-- ── FAQ ── -->
+    <div class="gc-yk-section" id="faq">
+      <h2 class="gc-roadmap-h2">❓ Частые вопросы</h2>
+      <div class="gc-yk-faq">
+        {faq.map(item => (
+          <details class="gc-yk-faq-item">
+            <summary class="gc-yk-faq-q">{item.q}</summary>
+            <p class="gc-yk-faq-a">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+
+    <!-- ── CTA ── -->
+    <div class="gc-cta-banner">
+      <div>
+        <div class="gc-cta-title">📄 Хотите первоисточник?</div>
+        <div class="gc-cta-desc">Полная англоязычная документация, включая условия использования и политику конфиденциальности</div>
+      </div>
+      <a href="https://docs.yakkamon.com/" target="_blank" rel="noopener noreferrer" class="gc-btn-cta">docs.yakkamon.com →</a>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+.gc-yk-wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 48px 40px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Фирменный акцент Yakkamon — один цвет поверх обычных компонентов сайта, без отдельной системы */
+.gc-yk-wrap { --yk-accent: #6FA23A; }
+[data-theme="dark"] .gc-yk-wrap { --yk-accent: #9AD46A; }
+
+/* ── Хиро: собственная подложка, чтобы выделяться на фоне страницы ── */
+.gc-yk-hero {
+  position: relative;
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 48px 40px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--card-bg) 0%, color-mix(in srgb, var(--yk-accent) 16%, var(--card-bg)) 100%);
+  border: 1px solid color-mix(in srgb, var(--yk-accent) 30%, var(--border));
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06), 0 16px 40px color-mix(in srgb, var(--yk-accent) 18%, transparent);
+}
+.gc-yk-hero::before {
+  content: '';
+  position: absolute;
+  inset: -30% -10% auto -10%;
+  height: 200px;
+  background: radial-gradient(ellipse at top, color-mix(in srgb, var(--yk-accent) 35%, transparent), transparent 70%);
+  pointer-events: none;
+}
+.gc-yk-hero .gc-tag {
+  position: relative;
+  margin-bottom: 20px;
+  background: color-mix(in srgb, var(--yk-accent) 20%, transparent);
+  color: var(--yk-accent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--yk-accent) 20%, transparent);
+}
+.gc-yk-logo-title { position: relative; margin: 0; line-height: 0; }
+.gc-yk-logo {
+  max-width: 440px;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.22));
+  transition: transform 0.2s ease;
+}
+.gc-yk-logo:hover { transform: scale(1.02) rotate(-0.5deg); }
+.gc-yk-sub {
+  position: relative;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-sec);
+  margin: 20px auto 28px;
+  max-width: 560px;
+}
+.gc-yk-hero .gc-hero-actions { position: relative; }
+.gc-yk-hero .gc-btn-primary {
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--green-dark) 35%, transparent);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.gc-yk-hero .gc-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--green-dark) 40%, transparent);
+}
+
+.gc-yk-disclaimer {
+  padding: 20px 24px;
+  border-left: 4px solid var(--yk-accent);
+  background: color-mix(in srgb, var(--yk-accent) 5%, var(--card-bg));
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-sec);
+}
+.gc-yk-disclaimer a { color: var(--yk-accent); font-weight: 600; }
+.gc-yk-disclaimer strong { color: var(--text); }
+
+/* ── Секции: каждая своя карточка-панель ── */
+.gc-yk-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 34px 38px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.gc-yk-section:hover { box-shadow: var(--shadow-hover); }
+.gc-yk-section .gc-roadmap-h2 {
+  font-size: 22px;
+  border-left: 4px solid var(--yk-accent);
+  padding-left: 14px;
+  margin-bottom: 18px;
+}
+.gc-yk-text {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text);
+}
+.gc-yk-h3 {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--yk-accent);
+  margin: 26px 0 12px;
+}
+.gc-yk-list {
+  margin: 4px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.gc-yk-note {
+  font-size: 13px;
+  color: var(--text-sec);
+  font-style: italic;
+  margin-top: 10px;
+}
+
+/* ── Карточки механик ── */
+.gc-yk-mech-grid { gap: 16px; margin-top: 22px; }
+.gc-yk-mech-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.gc-yk-mech-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--yk-accent);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--yk-accent) 20%, transparent);
+}
+.gc-yk-mech-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  border-radius: 14px;
+  background: linear-gradient(155deg, color-mix(in srgb, var(--yk-accent) 24%, transparent), color-mix(in srgb, var(--yk-accent) 10%, transparent));
+  margin-bottom: 4px;
+  transition: transform 0.18s ease;
+}
+.gc-yk-mech-card:hover .gc-yk-mech-icon { transform: scale(1.08) rotate(-4deg); }
+.gc-yk-mech-card .gc-cost-title { font-family: var(--font-head); font-weight: 700; }
+
+/* ── Таблицы ── */
+.gc-yk-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-top: 8px;
+}
+.gc-yk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.gc-yk-table th, .gc-yk-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.gc-yk-table th {
+  background: color-mix(in srgb, var(--yk-accent) 10%, var(--bg));
+  font-weight: 700;
+  color: var(--yk-accent);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.gc-yk-table tbody tr { transition: background 0.15s; }
+.gc-yk-table tbody tr:hover { background: color-mix(in srgb, var(--yk-accent) 6%, transparent); }
+.gc-yk-table tbody tr:last-child td { border-bottom: none; }
+.gc-yk-table td { color: var(--text); }
+
+/* ── Редкость наград (таблица NFT-airdrop) ── */
+.gc-yk-rarity-row--mythic { background: color-mix(in srgb, #F5568C 9%, transparent); }
+.gc-yk-rarity-row--mythic:hover { background: color-mix(in srgb, #F5568C 16%, transparent) !important; }
+.gc-yk-rarity-row--legendary { background: color-mix(in srgb, #F5B942 7%, transparent); }
+.gc-yk-rarity-row--legendary:hover { background: color-mix(in srgb, #F5B942 14%, transparent) !important; }
+
+.gc-yk-rarity-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.gc-yk-rarity-badge--mythic {
+  background: linear-gradient(135deg, #F5568C, #C9328F);
+  color: #fff;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #F5568C 55%, transparent), 0 2px 10px color-mix(in srgb, #F5568C 50%, transparent);
+}
+.gc-yk-rarity-badge--legendary {
+  background: linear-gradient(135deg, #F5B942, #E8912A);
+  color: #3D2400;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #F5B942 50%, transparent), 0 2px 8px color-mix(in srgb, #F5B942 45%, transparent);
+}
+.gc-yk-rarity-badge--epic {
+  background: color-mix(in srgb, #A468E8 16%, transparent);
+  color: #7B3FC4;
+}
+[data-theme="dark"] .gc-yk-rarity-badge--epic { color: #C9A0F5; }
+.gc-yk-rarity-badge--epic-alt {
+  background: color-mix(in srgb, #34B9A8 16%, transparent);
+  color: #1E8C7D;
+}
+[data-theme="dark"] .gc-yk-rarity-badge--epic-alt { color: #6FE0CE; }
+.gc-yk-rarity-badge--rare {
+  background: color-mix(in srgb, #4A9FE8 14%, transparent);
+  color: #2E6FB0;
+}
+[data-theme="dark"] .gc-yk-rarity-badge--rare { color: #8CC3F0; }
+.gc-yk-rarity-badge--common {
+  background: var(--border);
+  color: var(--text-sec);
+  font-weight: 600;
+}
+
+/* ── FAQ ── */
+.gc-yk-faq { display: flex; flex-direction: column; gap: 10px; }
+.gc-yk-faq-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.gc-yk-faq-item:hover { border-color: color-mix(in srgb, var(--yk-accent) 50%, var(--border)); }
+.gc-yk-faq-q {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--text);
+  list-style: none;
+}
+.gc-yk-faq-q::-webkit-details-marker { display: none; }
+.gc-yk-faq-q::before { content: '▸ '; color: var(--yk-accent); font-size: 16px; }
+.gc-yk-faq-item[open] {
+  border-color: var(--yk-accent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--yk-accent) 14%, transparent);
+}
+.gc-yk-faq-item[open] .gc-yk-faq-q::before { content: '▾ '; }
+.gc-yk-faq-a {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-sec);
+}
+
+/* ── Адаптив ── */
+@media (max-width: 700px) {
+  .gc-yk-wrap { padding: 20px 14px 40px; gap: 20px; }
+  .gc-yk-hero { padding: 26px 16px; border-radius: 14px; }
+  .gc-yk-logo { max-width: 240px; }
+  .gc-yk-sub { font-size: 14px; margin: 14px auto 22px; }
+  .gc-yk-section { padding: 18px 14px; border-radius: 14px; }
+  .gc-yk-disclaimer { padding: 16px 16px; border-radius: 14px; }
+  .gc-yk-mech-grid { grid-template-columns: 1fr !important; }
+  .gc-hero-actions { flex-direction: column; align-items: stretch; gap: 14px; }
+  .gc-yk-hero .gc-btn-primary,
+  .gc-yk-hero .gc-btn-secondary { width: 100%; justify-content: center; }
+  .gc-yk-hero .gc-btn-secondary {
+    background: var(--card-bg);
+    border: 1.5px solid var(--yk-accent);
+    color: var(--yk-accent);
+  }
+}
+
+@media (max-width: 420px) {
+  .gc-yk-wrap { padding-left: 10px; padding-right: 10px; }
+  .gc-yk-hero { padding: 22px 12px; }
+  .gc-yk-section { padding: 16px 12px; }
+}
+</style>

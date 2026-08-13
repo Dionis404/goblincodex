@@ -108,6 +108,17 @@ const subscriberCount = await getTelegramSubscriberCount();
       </a>
     </div>
 
+    <!-- ── Тизер Yakkamon ── -->
+    <a href="/yakkamon" class="gc-yk-teaser gc-card gc-card-hover">
+      <div class="gc-yk-teaser-icon">🥚</div>
+      <div class="gc-yk-teaser-text">
+        <div class="gc-yk-teaser-badge">Новый проект от команды SFL</div>
+        <div class="gc-yk-teaser-title">Yakkamon — idle-фарминг встречает коллекционера существ</div>
+        <div class="gc-yk-teaser-desc">Обзор игры на русском: механики, ранний доступ, free mint и NFT-airdrop</div>
+      </div>
+      <div class="gc-yk-teaser-arrow">→</div>
+    </a>
+
     <!-- ── 3 колонки ── -->
     <div class="gc-grid-3c" style="margin-bottom: 40px;">
 
@@ -220,6 +231,51 @@ const subscriberCount = await getTelegramSubscriberCount();
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+/* ── Тизер Yakkamon ── */
+.gc-yk-teaser {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 28px;
+  margin-bottom: 40px;
+  text-decoration: none;
+  border-left: 4px solid var(--amber, #f5a623);
+}
+.gc-yk-teaser-icon { font-size: 36px; line-height: 1; flex-shrink: 0; }
+.gc-yk-teaser-text { flex: 1; min-width: 0; }
+.gc-yk-teaser-badge {
+  display: inline-block;
+  background: var(--amber-soft, rgba(245, 166, 35, 0.15));
+  color: var(--amber, #f5a623);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+.gc-yk-teaser-title {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.gc-yk-teaser-desc {
+  font-size: 13px;
+  color: var(--text-sec);
+  margin-top: 4px;
+}
+.gc-yk-teaser-arrow {
+  font-size: 22px;
+  color: var(--green-dark);
+  flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .gc-yk-teaser { padding: 18px 20px; gap: 14px; }
+  .gc-yk-teaser-icon { font-size: 28px; }
 }
 .gc-hero-img {
   display: block;
