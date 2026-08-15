@@ -7,6 +7,7 @@ import BudsCatalog from '../../components/BudsCatalog.tsx';
 import PetsCatalog from '../../components/PetsCatalog.tsx';
 import ReferenceCatalog from '../../components/ReferenceCatalog.tsx';
 import FishAgingTable from '../../components/tools/FishAgingTable.tsx';
+import SearchWidget from '../../components/SearchWidget.tsx';
 import type { getCatalogItems, getBudTraits, getBudFilterOptions, getPetNftBreeds, getPetNftTraits, getPetNftFilterOptions, getPetsCommon, getPetResources, getPetFetches } from '../../lib/db';
 import {
   getCachedCatalogItems,
@@ -100,6 +101,8 @@ const tagColors: Record<string, string> = {
       <h1 class="gc-page-title">📚 Кодекс</h1>
       <p class="gc-guides-sub">Гайды для новичков и глубокие разборы механик</p>
     </div>
+
+    <SearchWidget client:load />
 
     <!-- Вкладки секций -->
     <div class="gc-section-tabs" id="sectionTabs">

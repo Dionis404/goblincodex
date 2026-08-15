@@ -1,0 +1,128 @@
+.gc-search-widget {
+  position: relative;
+  max-width: 520px;
+  margin: 0 auto 24px;
+}
+
+.gc-search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+}
+
+.gc-search-icon {
+  font-size: 16px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.gc-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font-body);
+  outline: none;
+}
+.gc-search-input::placeholder { color: var(--text-sec); }
+
+.gc-search-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--green-dark);
+  border-radius: 50%;
+  animation: gc-search-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes gc-search-spin { to { transform: rotate(360deg); } }
+
+.gc-search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hover);
+  padding: 8px;
+  z-index: 20;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.gc-search-empty {
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-sec);
+}
+
+.gc-search-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 8px;
+}
+.gc-search-result:hover { background: var(--green-pale); }
+
+.gc-search-result-link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.gc-search-result-tag {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--green-dark);
+  background: var(--green-pale);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.gc-search-result-title {
+  font-size: 13.5px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gc-search-rate {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  padding-right: 6px;
+}
+
+.gc-search-rate-btn {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.15s, background 0.15s;
+}
+.gc-search-rate-btn:hover:not(:disabled) { opacity: 1; background: var(--border); }
+.gc-search-rate-btn.active { opacity: 1; }
+.gc-search-rate-btn:disabled { cursor: default; }

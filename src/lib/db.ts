@@ -690,3 +690,67 @@ export async function getPetFetches(): Promise<PetFetch[]> {
     unlockLevel: r.unlock_level,
   }));
 }
+
+// ─── Semantic search (guides + mechanics embeddings via routerai.ru) ──────
+// Schema lives in scripts/migrate-add-search-embeddings.sql (requires the
+// pgvector extension on the server — not auto-created here since CREATE
+// EXTENSION needs superuser and the .so may not be installed on every host).
+
+export interface SearchResult {
+  collection: 'guides' | 'mechanics';
+  entryId: string;
+  title: string;
+  distance: number;
+}
+
+export async function upsertSearchEmbedding(
+  collection: 'guides' | 'mechanics',
+  entryId: string,
+  title: string,
+  embedding: number[],
+): Promise<void> {
+  const pool = getPool();
+  const vectorLiteral = `[${embedding.join(',')}]`;
+  await pool.query(
+    `
+    INSERT INTO search_embeddings (collection, entry_id, title, embedding, updated_at)
+    VALUES ($1, $2, $3, $4, now())
+    ON CONFLICT (collection, entry_id)
+    DO UPDATE SET title = EXCLUDED.title, embedding = EXCLUDED.embedding, updated_at = now()
+    `,
+    [collection, entryId, title, vectorLiteral],
+  );
+}
+
+export async function searchByEmbedding(embedding: number[], limit = 8): Promise<SearchResult[]> {
+  const pool = getPool();
+  const vectorLiteral = `[${embedding.join(',')}]`;
+  const { rows } = await pool.query(
+    `
+    SELECT collection, entry_id, title, embedding <=> $1 AS distance
+    FROM search_embeddings
+    ORDER BY embedding <=> $1
+    LIMIT $2
+    `,
+    [vectorLiteral, limit],
+  );
+  return rows.map(r => ({
+    collection: r.collection,
+    entryId: r.entry_id,
+    title: r.title,
+    distance: Number(r.distance),
+  }));
+}
+
+export async function recordSearchFeedback(
+  query: string,
+  collection: string,
+  entryId: string,
+  rating: 1 | -1,
+): Promise<void> {
+  const pool = getPool();
+  await pool.query(
+    `INSERT INTO search_feedback (query, collection, entry_id, rating) VALUES ($1, $2, $3, $4)`,
+    [query, collection, entryId, rating],
+  );
+}
