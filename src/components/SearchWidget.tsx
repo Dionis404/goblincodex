@@ -29,6 +29,8 @@ export default function SearchWidget() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [answer, setAnswer] = useState<string | null>(null);
+  const [answerLoading, setAnswerLoading] = useState(false);
   const [rated, setRated] = useState<Record<string, 1 | -1>>({});
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestSeq = useRef(0);
@@ -42,11 +44,15 @@ export default function SearchWidget() {
       setLoading(false);
       setError(false);
       setHasSearched(false);
+      setAnswer(null);
+      setAnswerLoading(false);
       return;
     }
 
     setLoading(true);
     setError(false);
+    setAnswer(null);
+    setAnswerLoading(true);
     debounceRef.current = setTimeout(async () => {
       const seq = ++requestSeq.current;
       try {
@@ -63,6 +69,23 @@ export default function SearchWidget() {
           setError(true);
           setLoading(false);
           setHasSearched(true);
+        }
+      }
+
+      // Краткий ответ грузится отдельно и не блокирует список результатов —
+      // это второй, более медленный вызов (эмбеддинг + генерация текста).
+      try {
+        const res = await fetch(`/api/search-answer.json?q=${encodeURIComponent(trimmed)}`);
+        if (!res.ok) throw new Error(String(res.status));
+        const data = await res.json();
+        if (seq === requestSeq.current) {
+          setAnswer(data.answer ?? null);
+          setAnswerLoading(false);
+        }
+      } catch {
+        if (seq === requestSeq.current) {
+          setAnswer(null);
+          setAnswerLoading(false);
         }
       }
     }, DEBOUNCE_MS);
@@ -104,6 +127,22 @@ export default function SearchWidget() {
         />
         {loading && <span className="gc-search-spinner" aria-hidden="true" />}
       </div>
+
+      {showPanel && !loading && !error && (answerLoading || answer) && (
+        <div className="gc-search-answer">
+          {answerLoading ? (
+            <span className="gc-search-answer-loading">
+              <span className="gc-search-loading-icon" aria-hidden="true">🧙‍♂️</span>
+              Гоблины формулируют ответ…
+            </span>
+          ) : (
+            <>
+              <span className="gc-search-answer-icon" aria-hidden="true">💡</span>
+              <span className="gc-search-answer-text">{answer}</span>
+            </>
+          )}
+        </div>
+      )}
 
       {showPanel && (
         <div className="gc-search-results">

@@ -44,6 +44,31 @@
 }
 @keyframes gc-search-spin { to { transform: rotate(360deg); } }
 
+.gc-search-answer {
+  margin-top: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--green-mid, var(--green-dark));
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.gc-search-answer-icon { font-size: 15px; flex-shrink: 0; line-height: 1.5; }
+.gc-search-answer-text {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.gc-search-answer-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text-sec);
+}
+
 .gc-search-results {
   margin-top: 12px;
   background: var(--card-bg);
