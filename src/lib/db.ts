@@ -697,14 +697,14 @@ export async function getPetFetches(): Promise<PetFetch[]> {
 // EXTENSION needs superuser and the .so may not be installed on every host).
 
 export interface SearchResult {
-  collection: 'guides' | 'mechanics';
+  collection: 'guides' | 'mechanics' | 'reference';
   entryId: string;
   title: string;
   distance: number;
 }
 
 export async function upsertSearchEmbedding(
-  collection: 'guides' | 'mechanics',
+  collection: 'guides' | 'mechanics' | 'reference',
   entryId: string,
   title: string,
   embedding: number[],

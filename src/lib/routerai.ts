@@ -1,26 +1,49 @@
 const ROUTERAI_BASE_URL = 'https://routerai.ru/api/v1';
 const EMBEDDING_MODEL = 'qwen/qwen3-embedding-4b';
 
+// routerai.ru иногда отвечает 429 "Model busy, retry later" при перегрузке
+// провайдера (DeepInfra) — временная проблема на их стороне, не в ключе/коде.
+// Ретраим с задержкой вместо падения с первой попытки.
+const MAX_RETRIES = 4;
+const RETRY_DELAY_MS = 3000;
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export async function getEmbedding(text: string): Promise<number[]> {
   const apiKey = process.env.ROUTERAI_API_KEY;
   if (!apiKey) throw new Error('ROUTERAI_API_KEY is not set');
 
-  const res = await fetch(`${ROUTERAI_BASE_URL}/embeddings`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ model: EMBEDDING_MODEL, input: text }),
-  });
+  let lastError: Error | null = null;
 
-  if (!res.ok) {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    if (attempt > 0) await sleep(RETRY_DELAY_MS * attempt);
+
+    const res = await fetch(`${ROUTERAI_BASE_URL}/embeddings`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ model: EMBEDDING_MODEL, input: text }),
+    });
+
+    if (res.ok) {
+      const data = await res.json() as { data: { embedding: number[] }[] };
+      const embedding = data.data?.[0]?.embedding;
+      if (!embedding) throw new Error('routerai embeddings response missing data[0].embedding');
+      return embedding;
+    }
+
     const body = await res.text().catch(() => '');
-    throw new Error(`routerai embeddings request failed: ${res.status} ${body}`);
+    lastError = new Error(`routerai embeddings request failed: ${res.status} ${body}`);
+
+    // Перегрузка модели — стоит подождать и повторить. Остальные ошибки
+    // (401 неверный ключ, 400 плохой запрос) ретраить бессмысленно.
+    const retryable = res.status === 429 || res.status === 503 || body.includes('engine_overloaded');
+    if (!retryable) throw lastError;
   }
 
-  const data = await res.json() as { data: { embedding: number[] }[] };
-  const embedding = data.data?.[0]?.embedding;
-  if (!embedding) throw new Error('routerai embeddings response missing data[0].embedding');
-  return embedding;
+  throw lastError ?? new Error('routerai embeddings request failed after retries');
 }

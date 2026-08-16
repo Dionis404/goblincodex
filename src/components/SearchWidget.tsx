@@ -2,10 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import './SearchWidget.css';
 
 interface SearchResult {
-  collection: 'guides' | 'mechanics';
+  collection: 'guides' | 'mechanics' | 'reference';
   entryId: string;
   title: string;
   distance: number;
+}
+
+const COLLECTION_LABEL: Record<SearchResult['collection'], string> = {
+  guides: 'Гайд',
+  mechanics: 'Механика',
+  reference: 'Справочник',
+};
+
+function resultHref(r: SearchResult): string {
+  if (r.collection === 'mechanics') return `/codex?tab=mechanics&mech=${r.entryId}`;
+  if (r.collection === 'reference') return `/codex?tab=reference&ref=${r.entryId}`;
+  return `/codex/${r.entryId}`;
 }
 
 const DEBOUNCE_MS = 400;
@@ -108,14 +120,12 @@ export default function SearchWidget() {
           {!loading && !error &&
             results.map(r => {
               const key = `${r.collection}:${r.entryId}`;
-              const href = r.collection === 'mechanics'
-                ? `/codex?tab=mechanics&mech=${r.entryId}`
-                : `/codex/${r.entryId}`;
+              const href = resultHref(r);
               return (
                 <div className="gc-search-result" key={key}>
                   <a href={href} className="gc-search-result-link">
                     <span className="gc-search-result-tag">
-                      {r.collection === 'guides' ? 'Гайд' : 'Механика'}
+                      {COLLECTION_LABEL[r.collection]}
                     </span>
                     <span className="gc-search-result-title">{r.title}</span>
                   </a>
