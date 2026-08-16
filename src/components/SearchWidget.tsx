@@ -16,7 +16,7 @@ export default function SearchWidget() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [rated, setRated] = useState<Record<string, 1 | -1>>({});
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestSeq = useRef(0);
@@ -29,6 +29,7 @@ export default function SearchWidget() {
       setResults([]);
       setLoading(false);
       setError(false);
+      setHasSearched(false);
       return;
     }
 
@@ -43,11 +44,13 @@ export default function SearchWidget() {
         if (seq === requestSeq.current) {
           setResults(data.results ?? []);
           setLoading(false);
+          setHasSearched(true);
         }
       } catch {
         if (seq === requestSeq.current) {
           setError(true);
           setLoading(false);
+          setHasSearched(true);
         }
       }
     }, DEBOUNCE_MS);
@@ -74,6 +77,8 @@ export default function SearchWidget() {
     }).catch(() => {});
   }
 
+  const showPanel = loading || hasSearched;
+
   return (
     <div className="gc-search-widget">
       <div className="gc-search-input-wrap">
@@ -84,19 +89,23 @@ export default function SearchWidget() {
           placeholder="Спросите справочник своими словами…"
           value={query}
           onChange={e => setQuery(e.target.value)}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 150)}
         />
         {loading && <span className="gc-search-spinner" aria-hidden="true" />}
       </div>
 
-      {open && query.trim().length >= MIN_QUERY_LENGTH && (
+      {showPanel && (
         <div className="gc-search-results">
-          {error && <div className="gc-search-empty">Поиск сейчас недоступен, попробуйте позже.</div>}
-          {!error && !loading && results.length === 0 && (
+          {loading && (
+            <div className="gc-search-loading">
+              <span className="gc-search-loading-icon" aria-hidden="true">🧙‍♂️</span>
+              Гоблины роются в архивах справочника…
+            </div>
+          )}
+          {!loading && error && <div className="gc-search-empty">Поиск сейчас недоступен, попробуйте позже.</div>}
+          {!loading && !error && results.length === 0 && (
             <div className="gc-search-empty">Ничего не нашлось — попробуйте переформулировать.</div>
           )}
-          {!error &&
+          {!loading && !error &&
             results.map(r => {
               const key = `${r.collection}:${r.entryId}`;
               const href = r.collection === 'mechanics'

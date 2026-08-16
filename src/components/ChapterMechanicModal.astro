@@ -1,0 +1,116 @@
+---
+// Модалка с гайдом по механике главы, открываемая кнопками из
+// ChapterContent.astro ("Основные механики"). Рендерится ОТДЕЛЬНО от
+// основного контента главы, вне .gc-content — так же, как было в
+// исходном chapter.astro до вынесения общей логики в компонент —
+// чтобы position:fixed overlay гарантированно считался от вьюпорта
+// и не зависел от вложенности/скрытых родителей (#chapterPanel и т.п.).
+import { getEntry, render } from 'astro:content';
+
+const MECHANIC_CARDS = [
+  { id: 'delivery',     icon: '🚚', title: 'Доставки' },
+  { id: 'auction',      icon: '🔨', title: 'Аукционы' },
+  { id: 'raffle',       icon: '🎟️', title: 'Рафлы' },
+  { id: 'bounty-board', icon: '📋', title: 'Баунтиборд' },
+  { id: 'chore',        icon: '✅', title: 'Chore (задания)' },
+  { id: 'chapter-pass', icon: '🎫', title: 'Чаптерпасс' },
+];
+
+const mechanicCards = await Promise.all(
+  MECHANIC_CARDS.map(async (card) => {
+    const entry = await getEntry('mechanics', card.id);
+    const Content = entry ? (await render(entry)).Content : null;
+    return { ...card, Content };
+  })
+);
+---
+
+<div class="gc-modal-overlay gc-mech-modal-overlay" id="mechModalOverlay" style="display:none">
+  <div class="gc-modal-box gc-mech-modal-box" id="mechModalBox">
+    <button type="button" class="gc-modal-close" id="mechModalClose" aria-label="Закрыть">✕</button>
+    <div class="gc-mech-modal-scroll">
+      {mechanicCards.map(card => {
+        const CardContent = card.Content;
+        return (
+          <div class="gc-mech-modal-article" data-mech-article={card.id} style="display:none">
+            <h3 class="gc-mech-modal-title">{card.icon} {card.title}</h3>
+            <article class="gc-guide-article">
+              {CardContent ? <CardContent /> : <p>Гайд в разработке — скоро появится здесь.</p>}
+            </article>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</div>
+
+<style>
+.gc-mech-modal-box {
+  max-width: 720px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0;
+  /* Скругление живёт на внешнем боксе с overflow:hidden — скролл идёт во
+     вложенном .gc-mech-modal-scroll, иначе скроллбар браузера обрезает
+     угол некрасивой прямой линией поверх border-radius. */
+  overflow: hidden;
+  max-height: 90vh;
+}
+.gc-mech-modal-scroll {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 32px 36px;
+}
+.gc-mech-modal-title {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.gc-mech-modal-article .gc-guide-article {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+@media (max-width: 640px) {
+  .gc-mech-modal-scroll { padding: 24px 20px; }
+}
+</style>
+
+<script>
+  // Кнопки, открывающие эту модалку, живут в ChapterContent.astro и шлют
+  // CustomEvent вместо прямого DOM-обращения — компоненты не зависят друг
+  // от друга по порядку скриптов на странице.
+  const mechOverlay  = document.getElementById('mechModalOverlay');
+  const mechClose    = document.getElementById('mechModalClose');
+  const mechArticles = document.querySelectorAll<HTMLElement>('[data-mech-article]');
+
+  function openMechModal(id: string) {
+    mechArticles.forEach(a => {
+      a.style.display = a.dataset.mechArticle === id ? 'block' : 'none';
+    });
+    if (mechOverlay) mechOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMechModal() {
+    if (mechOverlay) mechOverlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  window.addEventListener('gc:open-mech-modal', (e) => {
+    const id = (e as CustomEvent<string>).detail;
+    if (id) openMechModal(id);
+  });
+
+  mechClose?.addEventListener('click', closeMechModal);
+  mechOverlay?.addEventListener('click', (e) => {
+    if (e.target === mechOverlay) closeMechModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMechModal();
+  });
+</script>

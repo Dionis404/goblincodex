@@ -21,7 +21,7 @@ import { getCollection } from 'astro:content';
 
 const latestGuides = await getCollection('guides', ({ data }) => !data.draft);
 latestGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
-const guides = latestGuides.slice(0, 3).map(g => ({
+const guides = latestGuides.slice(0, 5).map(g => ({
   title: g.data.title,
   time:  `${g.data.readTime} мин`,
   link:  `/codex/${g.id}`,
@@ -65,6 +65,17 @@ const subscriberCount = await getTelegramSubscriberCount();
 
   <div class="gc-content">
 
+    <!-- ── Тизер Yakkamon ── -->
+    <a href="/yakkamon" class="gc-yk-teaser gc-card gc-card-hover">
+      <img src="/images/yakkamon-egg.png" alt="Яйцо Yakkamon" class="gc-yk-teaser-icon" />
+      <div class="gc-yk-teaser-text">
+        <div class="gc-yk-teaser-badge">Новый проект от команды SFL</div>
+        <div class="gc-yk-teaser-title">Yakkamon — idle-фарминг встречает коллекционера существ</div>
+        <div class="gc-yk-teaser-desc">Обзор игры на русском: механики, ранний доступ, free mint и NFT-airdrop</div>
+      </div>
+      <div class="gc-yk-teaser-arrow">→</div>
+    </a>
+
     <!-- ── Блок главы + таймер ── -->
     <div class="gc-chapter-block">
       <a href="/chapter" class="gc-chapter-banner">
@@ -73,8 +84,17 @@ const subscriberCount = await getTelegramSubscriberCount();
       </a>
       <div class="gc-chapter-timer">
         <ChapterTimer client:load />
-        <a href="/chapter" class="gc-btn-cta">Узнать больше</a>
+        <a href="/codex?tab=chapter" class="gc-btn-cta">Узнать больше</a>
       </div>
+    </div>
+
+    <!-- ── Нейропоиск ── -->
+    <div class="gc-neuro-search gc-card">
+      <div class="gc-neuro-search-head">
+        <span class="gc-neuro-search-badge">✨ Новое: нейропоиск</span>
+        <span class="gc-neuro-search-title">Спроси справочник своими словами</span>
+      </div>
+      <SearchWidget client:load />
     </div>
 
     <!-- ── 4 карточки разделов ── -->
@@ -108,28 +128,6 @@ const subscriberCount = await getTelegramSubscriberCount();
         </div>
       </a>
     </div>
-
-    <!-- ── Нейропоиск ── -->
-    <div class="gc-neuro-search gc-card">
-      <div class="gc-neuro-search-badge">✨ Новое: нейропоиск</div>
-      <div class="gc-neuro-search-title">Спроси справочник своими словами</div>
-      <div class="gc-neuro-search-desc">
-        Поиск понимает смысл вопроса, а не только точные слова — попробуй спросить,
-        как получить осколки или где взять цветочный мёд
-      </div>
-      <SearchWidget client:load />
-    </div>
-
-    <!-- ── Тизер Yakkamon ── -->
-    <a href="/yakkamon" class="gc-yk-teaser gc-card gc-card-hover">
-      <div class="gc-yk-teaser-icon">🥚</div>
-      <div class="gc-yk-teaser-text">
-        <div class="gc-yk-teaser-badge">Новый проект от команды SFL</div>
-        <div class="gc-yk-teaser-title">Yakkamon — idle-фарминг встречает коллекционера существ</div>
-        <div class="gc-yk-teaser-desc">Обзор игры на русском: механики, ранний доступ, free mint и NFT-airdrop</div>
-      </div>
-      <div class="gc-yk-teaser-arrow">→</div>
-    </a>
 
     <!-- ── 3 колонки ── -->
     <div class="gc-grid-3c" style="margin-bottom: 40px;">
@@ -247,10 +245,17 @@ const subscriberCount = await getTelegramSubscriberCount();
 
 /* ── Нейропоиск ── */
 .gc-neuro-search {
-  text-align: center;
-  padding: 32px 28px;
+  padding: 16px 24px;
   margin-bottom: 24px;
   border-top: 4px solid var(--green-dark, #2f7d3c);
+}
+.gc-neuro-search-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 .gc-neuro-search-badge {
   display: inline-block;
@@ -262,25 +267,18 @@ const subscriberCount = await getTelegramSubscriberCount();
   letter-spacing: 0.04em;
   padding: 4px 12px;
   border-radius: 999px;
-  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 .gc-neuro-search-title {
   font-family: var(--font-head);
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 6px;
 }
-.gc-neuro-search-desc {
-  font-size: 13.5px;
-  color: var(--text-sec);
-  max-width: 480px;
-  margin: 0 auto 20px;
-  line-height: 1.5;
-}
-.gc-neuro-search :global(.gc-search-widget) { margin: 0 auto; }
+.gc-neuro-search :global(.gc-search-widget) { margin: 0 auto; max-width: 100%; }
 @media (max-width: 600px) {
-  .gc-neuro-search { padding: 24px 18px; }
+  .gc-neuro-search { padding: 14px 18px; }
+  .gc-neuro-search-head { flex-direction: column; gap: 6px; }
 }
 
 /* ── Тизер Yakkamon ── */
@@ -293,7 +291,7 @@ const subscriberCount = await getTelegramSubscriberCount();
   text-decoration: none;
   border-left: 4px solid var(--amber, #f5a623);
 }
-.gc-yk-teaser-icon { font-size: 36px; line-height: 1; flex-shrink: 0; }
+.gc-yk-teaser-icon { width: 56px; height: 56px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
 .gc-yk-teaser-text { flex: 1; min-width: 0; }
 .gc-yk-teaser-badge {
   display: inline-block;
@@ -325,7 +323,7 @@ const subscriberCount = await getTelegramSubscriberCount();
 }
 @media (max-width: 600px) {
   .gc-yk-teaser { padding: 18px 20px; gap: 14px; }
-  .gc-yk-teaser-icon { font-size: 28px; }
+  .gc-yk-teaser-icon { width: 34px; height: 34px; }
 }
 .gc-hero-img {
   display: block;

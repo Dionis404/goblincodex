@@ -6,6 +6,8 @@ import BoostsCatalog from '../../components/BoostsCatalog.tsx';
 import BudsCatalog from '../../components/BudsCatalog.tsx';
 import PetsCatalog from '../../components/PetsCatalog.tsx';
 import ReferenceCatalog from '../../components/ReferenceCatalog.tsx';
+import ChapterContent from '../../components/ChapterContent.astro';
+import ChapterMechanicModal from '../../components/ChapterMechanicModal.astro';
 import FishAgingTable from '../../components/tools/FishAgingTable.tsx';
 import SearchWidget from '../../components/SearchWidget.tsx';
 import type { getCatalogItems, getBudTraits, getBudFilterOptions, getPetNftBreeds, getPetNftTraits, getPetNftFilterOptions, getPetsCommon, getPetResources, getPetFetches } from '../../lib/db';
@@ -74,6 +76,7 @@ const sections = [
   { id: 'mechanics', label: 'Механики',      icon: '⚙️', sub: 'Глубокий разбор'  },
   { id: 'nft',       label: 'NFT Предметы',  icon: '💎', sub: 'Бонусы и буферы'  },
   { id: 'reference', label: 'Справочник',    icon: '📐', sub: 'Игровые таблицы'  },
+  { id: 'chapter',   label: 'Глава',         icon: '🗓️', sub: 'Текущий сезон'    },
 ];
 
 const tagColors: Record<string, string> = {
@@ -277,7 +280,17 @@ const tagColors: Record<string, string> = {
       <ReferenceCatalog client:visible />
     </div>
 
+    <!-- ═══════════════════════════════════════════════
+         ГЛАВА
+         ═══════════════════════════════════════════════ -->
+    <div id="chapterPanel" style="display:none">
+      <ChapterContent />
+    </div>
+
   </div>
+
+  <!-- Вне .gc-content, чтобы position:fixed оверлея не зависел от вложенности -->
+  <ChapterMechanicModal />
 </BaseLayout>
 
 <script>
@@ -294,6 +307,7 @@ const tagColors: Record<string, string> = {
   const mechanicsPanel = document.getElementById('mechanicsPanel');
   const nftPanel       = document.getElementById('nftPanel');
   const referencePanel = document.getElementById('referencePanel');
+  const chapterPanel   = document.getElementById('chapterPanel');
 
   // Механики: навигация по левому меню
   const mechNavItems  = document.querySelectorAll<HTMLAnchorElement>('.gc-mech-nav-item');
@@ -373,6 +387,7 @@ const tagColors: Record<string, string> = {
     const isMechanics = section === 'mechanics';
     const isNft       = section === 'nft';
     const isReference = section === 'reference';
+    const isChapter   = section === 'chapter';
 
     if (guidesGrid)     guidesGrid.style.display     = isGuides ? '' : 'none';
     if (searchWrap)     searchWrap.style.display      = isGuides ? '' : 'none';
@@ -383,6 +398,7 @@ const tagColors: Record<string, string> = {
     if (mechanicsPanel) mechanicsPanel.style.display  = isMechanics ? 'flex' : 'none';
     if (nftPanel)       nftPanel.style.display        = isNft ? '' : 'none';
     if (referencePanel) referencePanel.style.display  = isReference ? '' : 'none';
+    if (chapterPanel)   chapterPanel.style.display    = isChapter ? '' : 'none';
   }
 
   function getCategories(section: string): string[] {
@@ -508,7 +524,7 @@ const tagColors: Record<string, string> = {
 /* ── Вкладки ── */
 .gc-section-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;

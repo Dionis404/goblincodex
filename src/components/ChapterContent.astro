@@ -1,0 +1,396 @@
+---
+// Общий контент главы (баннер, механики, гайды, предметы, аукционы) —
+// подключается и на отдельной странице /chapter, и как 5-я панель
+// внутри /codex, чтобы не дублировать логику.
+import { getCollection } from 'astro:content';
+import ChapterAuctions from './ChapterAuctions.tsx';
+// import auctionsData from '../data/chapter-auctions.json'; // fallback JSON — не удалять, пока goblin-api не стабилизируется
+import { fetchUpcomingAuctions } from '../lib/auctionsApi';
+import type { getCatalogItems } from '../lib/db';
+import { getCachedCatalogItems } from '../lib/catalog-cache';
+
+const CURRENT_CHAPTER = 15;
+
+let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
+try {
+  const { data: items } = await getCachedCatalogItems();
+  itemCatalog = Object.fromEntries(items.map((i) => [i.name, i]));
+} catch (err) {
+  console.error('[ChapterContent] DB fetch error:', err);
+}
+
+const chapterGuides = await getCollection(
+  'guides',
+  ({ data }) => !data.draft && data.chapter === CURRENT_CHAPTER
+);
+chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
+
+const auctions = await fetchUpcomingAuctions();
+const now = Date.now();
+
+const CHAPTER_TAG = 'chapter-ascension-age';
+const chapterItems = Object.values(itemCatalog)
+  .filter((i) => i.tags?.includes(CHAPTER_TAG))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+// Карточки-кнопки, открывающие гайд по механике в модалке —
+// сама модалка вынесена в отдельный ChapterMechanicModal.astro
+// (см. src/pages/chapter.astro и src/pages/codex/index.astro).
+const MECHANIC_CARDS = [
+  { id: 'delivery',     icon: '🚚', title: 'Доставки' },
+  { id: 'auction',      icon: '🔨', title: 'Аукционы' },
+  { id: 'raffle',       icon: '🎟️', title: 'Рафлы' },
+  { id: 'bounty-board', icon: '📋', title: 'Баунтиборд' },
+  { id: 'chore',        icon: '✅', title: 'Chore (задания)' },
+  { id: 'chapter-pass', icon: '🎫', title: 'Чаптерпасс' },
+];
+---
+
+<div class="gc-chapter-block">
+  <div class="gc-chapter-banner">
+    <img src="/images/chapter 15.png" alt="The Ascension Age — Chapter 15" class="gc-chapter-img gc-chapter-img--light" />
+    <img src="/images/chapter 15.png" alt="The Ascension Age — Chapter 15" class="gc-chapter-img gc-chapter-img--dark" />
+  </div>
+</div>
+
+<div class="gc-wip-note">
+  <span class="gc-wip-note-dot"></span>
+  🚧 Страница в разработке — часть данных пока заполняется вручную, скоро добавим больше
+</div>
+
+<!-- ── Основные механики ── -->
+<section class="gc-chapter-section">
+  <h2 class="gc-block-title-lg">⚙️ Основные механики</h2>
+  <div class="gc-mechanics-grid">
+    {MECHANIC_CARDS.map(card => (
+      <button type="button" class="gc-mechanic-card" data-mech-open={card.id}>
+        <div class="gc-mechanic-icon">{card.icon}</div>
+        <div class="gc-mechanic-title">{card.title}</div>
+      </button>
+    ))}
+  </div>
+</section>
+
+<!-- ── Гайды по механике главы ── -->
+<section class="gc-chapter-section">
+  <h2 class="gc-block-title-lg">📗 Гайды по механике главы</h2>
+  {chapterGuides.length > 0 ? (
+    <div class="gc-guides-grid">
+      {chapterGuides.map(guide => (
+        <a href={`/codex/${guide.id}`} class="gc-card gc-card-hover gc-guide-card">
+          <div class="gc-guide-card-top">
+            <div class="gc-guide-card-icon">{guide.data.icon}</div>
+            <div class="gc-guide-card-info">
+              <div class="gc-guide-card-title">{guide.data.title}</div>
+              <div class="gc-guide-card-meta">
+                <span class="gc-tag gc-tag--green">{guide.data.category}</span>
+                <span class="gc-guide-card-time">⏱ {guide.data.readTime} мин</span>
+              </div>
+            </div>
+          </div>
+          <div class="gc-guide-card-desc">{guide.data.description}</div>
+        </a>
+      ))}
+    </div>
+  ) : (
+    <div class="gc-guides-empty">
+      Гайдов по этой главе пока нет. Загляни в <a href="/codex">Кодекс</a> за общими гайдами.
+    </div>
+  )}
+</section>
+
+<!-- ── Предметы главы ── -->
+<section class="gc-chapter-section">
+  <h2 class="gc-block-title-lg">💎 Предметы главы</h2>
+  {chapterItems.length > 0 ? (
+    <div class="gc-chapter-items-grid">
+      {chapterItems.map((item) => (
+        <div class="gc-chapter-item-card">
+          <div class="gc-chapter-item-sprite">
+            {item.sprite ? (
+              <img src={`/sprites/${item.sprite}`} alt={item.name} loading="lazy" />
+            ) : (
+              <span class="gc-chapter-item-sprite-placeholder">?</span>
+            )}
+          </div>
+          <div class="gc-chapter-item-info">
+            <div class="gc-chapter-item-name">{item.name}</div>
+            {item.boosts.length > 0 ? (
+              <div class="gc-chapter-item-boosts">
+                {item.boosts.map((b) => (
+                  <span class={`gc-chapter-item-boost gc-chapter-item-boost--${b.labelType}`}>
+                    {b.shortDescriptionRu || b.shortDescription}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span class="gc-chapter-item-no-boost">Без бонусов</span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div class="gc-guides-empty">
+      Каталог предметов главы скоро появится здесь — данные будут подгружаться из базы.
+    </div>
+  )}
+</section>
+
+<!-- ── Расписание аукционов ── -->
+<section class="gc-chapter-section">
+  <ChapterAuctions client:load auctions={auctions} chapterName="Ascension Age" itemCatalog={itemCatalog} initialNow={now} />
+</section>
+
+<style>
+:global(.gc-chapter-img) {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+}
+:global(.gc-chapter-img--dark)  { display: none; }
+:global([data-theme="dark"]) :global(.gc-chapter-img--light) { display: none; }
+:global([data-theme="dark"]) :global(.gc-chapter-img--dark)  { display: block; }
+
+.gc-chapter-block {
+  position: relative;
+  margin-bottom: 32px;
+}
+.gc-chapter-banner {
+  width: 100%;
+  line-height: 0;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.gc-wip-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--amber-pale);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 32px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.gc-wip-note-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-ter);
+  flex-shrink: 0;
+  animation: gc-wip-note-pulse 1.8s ease-in-out infinite;
+}
+@keyframes gc-wip-note-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+.gc-chapter-section { margin-bottom: 40px; }
+.gc-block-title-lg {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+/* ── Основные механики ── */
+.gc-mechanics-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+.gc-mechanic-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.gc-mechanic-card:hover {
+  border-color: var(--green-mid);
+  transform: translateY(-2px);
+}
+.gc-mechanic-icon {
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--green-pale);
+  border-radius: 10px;
+}
+.gc-mechanic-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+@media (max-width: 900px) {
+  .gc-mechanics-grid { grid-template-columns: repeat(3, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .gc-mechanics-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ── Сетка гайдов (как в /codex) ── */
+.gc-guides-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--text-sec);
+  font-size: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.gc-guides-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.gc-guide-card {
+  text-decoration: none;
+  color: var(--text);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gc-guide-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.gc-guide-card-icon {
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--green-pale);
+  border-radius: 10px;
+}
+.gc-guide-card-info { flex: 1; }
+.gc-guide-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.gc-guide-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gc-guide-card-time { font-size: 11px; color: var(--text-sec); }
+.gc-guide-card-desc { font-size: 12px; color: var(--text-sec); line-height: 1.5; }
+
+@media (max-width: 900px) {
+  .gc-guides-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .gc-guides-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── Предметы главы ── */
+.gc-chapter-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.gc-chapter-item-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.gc-chapter-item-sprite {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: 8px;
+}
+.gc-chapter-item-sprite img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.gc-chapter-item-sprite-placeholder {
+  color: var(--text-ter);
+  font-size: 16px;
+}
+.gc-chapter-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.gc-chapter-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.gc-chapter-item-boosts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.gc-chapter-item-boost {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.gc-chapter-item-boost--danger {
+  background: color-mix(in srgb, var(--red, #c94b3d) 14%, transparent);
+  color: var(--red, #c94b3d);
+}
+.gc-chapter-item-boost--vibrant {
+  background: var(--amber-pale);
+  color: var(--amber);
+}
+.gc-chapter-item-no-boost {
+  font-size: 11px;
+  color: var(--text-ter);
+}
+</style>
+
+<script>
+  // Кнопки "Основные механики" только открывают модалку — сама модалка и её
+  // логика вынесены в ChapterMechanicModal.astro, подключённый отдельно
+  // рядом с этим компонентом (см. src/pages/chapter.astro и codex/index.astro).
+  const mechButtons = document.querySelectorAll<HTMLButtonElement>('[data-mech-open]');
+  mechButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.mechOpen;
+      if (id) window.dispatchEvent(new CustomEvent('gc:open-mech-modal', { detail: id }));
+    });
+  });
+</script>

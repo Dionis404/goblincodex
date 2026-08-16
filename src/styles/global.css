@@ -313,7 +313,7 @@ input[type='number']::-webkit-inner-spin-button {
   margin: 0 auto;
   padding: 15px 40px 48px;
   display: grid;
-  grid-template-columns: 1fr 420px;
+  grid-template-columns: 1fr 252px;
   gap: 56px;
   align-items: center;
 }

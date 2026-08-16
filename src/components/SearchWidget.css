@@ -45,16 +45,11 @@
 @keyframes gc-search-spin { to { transform: rotate(360deg); } }
 
 .gc-search-results {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  right: 0;
+  margin-top: 12px;
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-hover);
   padding: 8px;
-  z-index: 20;
   max-height: 420px;
   overflow-y: auto;
 }
@@ -64,6 +59,25 @@
   text-align: center;
   font-size: 13px;
   color: var(--text-sec);
+}
+
+.gc-search-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--text-sec);
+}
+.gc-search-loading-icon {
+  font-size: 18px;
+  animation: gc-search-bounce 1s ease-in-out infinite;
+}
+@keyframes gc-search-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
 .gc-search-result {
