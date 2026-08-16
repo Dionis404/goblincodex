@@ -24,6 +24,10 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+# search-content.ts читает markdown-статьи напрямую с диска (fs.readdirSync)
+# для сборки контекста краткого ответа нейропоиска — эти файлы не входят
+# в dist (там только скомпилированный вывод), поэтому копируем исходники отдельно
+COPY --from=builder /app/src/content ./src/content
 
 # Порт на котором Astro слушает внутри контейнера
 EXPOSE 4321
