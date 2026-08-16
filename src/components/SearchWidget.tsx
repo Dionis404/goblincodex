@@ -20,7 +20,7 @@ function resultHref(r: SearchResult): string {
   return `/codex/${r.entryId}`;
 }
 
-const DEBOUNCE_MS = 400;
+const DEBOUNCE_MS = 600;
 const MIN_QUERY_LENGTH = 3;
 
 export default function SearchWidget() {
@@ -33,13 +33,18 @@ export default function SearchWidget() {
   const [answerLoading, setAnswerLoading] = useState(false);
   const [rated, setRated] = useState<Record<string, 1 | -1>>({});
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const requestSeq = useRef(0);
+  // Реально отменяет предыдущие ещё не завершившиеся fetch-запросы — без
+  // этого debounce только откладывает СТАРТ следующего запроса, но не мешает
+  // уже запущенным долетать до сервера, если пользователь печатает быстрее,
+  // чем успевает пройти пауза (обычная ситуация при обычном наборе текста).
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     const trimmed = query.trim();
     if (trimmed.length < MIN_QUERY_LENGTH) {
+      abortRef.current?.abort();
       setResults([]);
       setLoading(false);
       setError(false);
@@ -54,39 +59,40 @@ export default function SearchWidget() {
     setAnswer(null);
     setAnswerLoading(true);
     debounceRef.current = setTimeout(async () => {
-      const seq = ++requestSeq.current;
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       try {
-        const res = await fetch(`/api/search.json?q=${encodeURIComponent(trimmed)}`);
+        const res = await fetch(`/api/search.json?q=${encodeURIComponent(trimmed)}`, {
+          signal: controller.signal,
+        });
         if (!res.ok) throw new Error(String(res.status));
         const data = await res.json();
-        if (seq === requestSeq.current) {
-          setResults(data.results ?? []);
-          setLoading(false);
-          setHasSearched(true);
-        }
-      } catch {
-        if (seq === requestSeq.current) {
-          setError(true);
-          setLoading(false);
-          setHasSearched(true);
-        }
+        setResults(data.results ?? []);
+        setLoading(false);
+        setHasSearched(true);
+      } catch (e) {
+        if ((e as Error).name === 'AbortError') return;
+        setError(true);
+        setLoading(false);
+        setHasSearched(true);
       }
 
       // Краткий ответ грузится отдельно и не блокирует список результатов —
       // это второй, более медленный вызов (эмбеддинг + генерация текста).
       try {
-        const res = await fetch(`/api/search-answer.json?q=${encodeURIComponent(trimmed)}`);
+        const res = await fetch(`/api/search-answer.json?q=${encodeURIComponent(trimmed)}`, {
+          signal: controller.signal,
+        });
         if (!res.ok) throw new Error(String(res.status));
         const data = await res.json();
-        if (seq === requestSeq.current) {
-          setAnswer(data.answer ?? null);
-          setAnswerLoading(false);
-        }
-      } catch {
-        if (seq === requestSeq.current) {
-          setAnswer(null);
-          setAnswerLoading(false);
-        }
+        setAnswer(data.answer ?? null);
+        setAnswerLoading(false);
+      } catch (e) {
+        if ((e as Error).name === 'AbortError') return;
+        setAnswer(null);
+        setAnswerLoading(false);
       }
     }, DEBOUNCE_MS);
 
