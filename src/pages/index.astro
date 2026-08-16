@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ChapterTimer from '../components/ChapterTimer.tsx';
+import SearchWidget from '../components/SearchWidget.tsx';
 import { fetchMergedNews, type NewsItem } from '../lib/news-feed';
 import { getTelegramSubscriberCount } from '../lib/telegram-subscribers';
 
@@ -106,6 +107,17 @@ const subscriberCount = await getTelegramSubscriberCount();
           <div class="gc-section-desc">База фермеров и чат нашей банды</div>
         </div>
       </a>
+    </div>
+
+    <!-- ── Нейропоиск ── -->
+    <div class="gc-neuro-search gc-card">
+      <div class="gc-neuro-search-badge">✨ Новое: нейропоиск</div>
+      <div class="gc-neuro-search-title">Спроси справочник своими словами</div>
+      <div class="gc-neuro-search-desc">
+        Поиск понимает смысл вопроса, а не только точные слова — попробуй спросить,
+        как получить осколки или где взять цветочный мёд
+      </div>
+      <SearchWidget client:load />
     </div>
 
     <!-- ── Тизер Yakkamon ── -->
@@ -231,6 +243,44 @@ const subscriberCount = await getTelegramSubscriberCount();
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+/* ── Нейропоиск ── */
+.gc-neuro-search {
+  text-align: center;
+  padding: 32px 28px;
+  margin-bottom: 24px;
+  border-top: 4px solid var(--green-dark, #2f7d3c);
+}
+.gc-neuro-search-badge {
+  display: inline-block;
+  background: var(--green-pale, rgba(47, 125, 60, 0.12));
+  color: var(--green-dark, #2f7d3c);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+.gc-neuro-search-title {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.gc-neuro-search-desc {
+  font-size: 13.5px;
+  color: var(--text-sec);
+  max-width: 480px;
+  margin: 0 auto 20px;
+  line-height: 1.5;
+}
+.gc-neuro-search :global(.gc-search-widget) { margin: 0 auto; }
+@media (max-width: 600px) {
+  .gc-neuro-search { padding: 24px 18px; }
 }
 
 /* ── Тизер Yakkamon ── */
