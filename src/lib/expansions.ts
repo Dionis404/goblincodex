@@ -392,6 +392,21 @@ const SWAMP_NODE_DRIP: Record<NodeKey, number> = {
   Crimstone: 8, Oil: 12, LavaPit: 16, Beehive: 10, FlowerBed: 10, Sunstone: 10,
 };
 
+/**
+ * Порядок ключей ровно как в SWAMP_NODE_DRIP из ascension.ts игры — НЕ то же
+ * самое, что NODE_ORDER (который только для отображения). Индекс узла в этом
+ * массиве — это `t` (tie-break) в buildAscensionSchedule ниже: он определяет
+ * фазовый сдвиг `(t * GOLDEN_RATIO) % 1`, а значит и то, на какое КОНКРЕТНОЕ
+ * расширение попадёт нода при равном ранге. Использование NODE_ORDER здесь
+ * (разный порядок ключей) давало верные накопленные суммы за возвышение, но
+ * неверное распределение по номерам расширений — сверено с getAscensionNodes
+ * из ascension.ts на A1: расширения 7 и 8 не совпадали.
+ */
+const SCHEDULE_TIE_ORDER: NodeKey[] = [
+  'CropPlot', 'Tree', 'Stone', 'FruitPatch', 'Iron', 'Gold',
+  'Crimstone', 'Oil', 'LavaPit', 'Beehive', 'FlowerBed', 'Sunstone',
+];
+
 /** DRIP_WIDEN_PER_ASCENSION — интервал растёт на эту долю за каждый следующий уровень Возвышения. */
 const DRIP_WIDEN_PER_ASCENSION = 0.25;
 
@@ -433,7 +448,7 @@ function buildAscensionSchedule(ascensionLevel: number): NodeGain[] {
   const span = EXPANSIONS_PER_ASCENSION;
   const items: { pos: number; node: NodeKey; tie: number }[] = [];
 
-  NODE_ORDER.forEach((node, t) => {
+  SCHEDULE_TIE_ORDER.forEach((node, t) => {
     if (node === 'FlowerBed') return; // едет вместе с Beehive
     const count = ascensionNodeTotalForLevel(node, ascensionLevel);
     const phase = (t * GOLDEN_RATIO) % 1;
