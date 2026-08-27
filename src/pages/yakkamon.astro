@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import YakkamonPointsCalculator from '../components/tools/YakkamonPointsCalculator.tsx';
+import '../styles/calculator.css';
 
 const faq = [
   {
@@ -254,6 +256,13 @@ const airdropTiers = [
         <li>Множитель бонусных очков за депозиты постепенно снижается — чем раньше внести депозит, тем выгоднее курс начисления очков</li>
         <li>Крупный баланс на старте открывает скидки на Gems, VIP-статус, ограниченные по времени предметы и доступ к аукционам</li>
       </ul>
+
+      <h3 class="gc-yk-h3">Калькулятор очков за депозит</h3>
+      <p class="gc-yk-text" style="margin-bottom: 4px;">
+        Неофициальный инструмент сообщества — считает очки по community-формуле (тир по сумме
+        депозита + текущий недельный множитель). Официальную формулу Yakkamon не публикует.
+      </p>
+      <YakkamonPointsCalculator client:load />
     </div>
 
     <!-- ── FAQ ── -->
@@ -567,5 +576,47 @@ const airdropTiers = [
   .gc-yk-wrap { padding-left: 10px; padding-right: 10px; }
   .gc-yk-hero { padding: 22px 12px; }
   .gc-yk-section { padding: 16px 12px; }
+}
+</style>
+
+<style is:global>
+/*
+ * Стили калькулятора очков за депозит — is:global, потому что модалка
+ * рендерится через React createPortal прямо в document.body, вне DOM-дерева
+ * этой Astro-страницы, и Astro-scoped стили (data-astro-cid-*) её не находят.
+ */
+.gc-yk-calc-card {
+  background: var(--bg);
+}
+.gc-yk-calc-card .gc-calc-kpi-value {
+  color: var(--yk-accent);
+}
+
+/* Модалка шире стандартных 420px — под 3 KPI в ряд */
+.gc-yk-calc-modal-box {
+  max-width: 560px;
+}
+.gc-yk-calc-modal-card {
+  padding: 28px 24px;
+}
+.gc-yk-calc-modal-card .gc-yk-h3 {
+  color: var(--yk-accent);
+}
+.gc-yk-calc-modal-card .gc-calc-card {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+.gc-yk-calc-modal-card .gc-calc-kpi-value {
+  font-size: 17px;
+  white-space: nowrap;
+}
+.gc-yk-calc-modal-card .gc-calc-kpi {
+  padding: 12px 8px;
+}
+@media (max-width: 480px) {
+  .gc-yk-calc-modal-card .gc-calc-kpis {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

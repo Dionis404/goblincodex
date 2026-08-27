@@ -1,0 +1,61 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TicketsLeaderboardPage from '../../components/TicketsLeaderboardPage.jsx';
+
+let leaderboard: any[] = [];
+let updatedAt: string | null = null;
+let apiError = false;
+
+try {
+  const res = await fetch('http://goblin-api:8000/api/tickets/top500');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const json = await res.json();
+  leaderboard = json.leaderboard ?? [];
+  updatedAt = json.updated_at ?? null;
+} catch (e) {
+  apiError = true;
+  console.error('Tickets leaderboard API error:', e);
+}
+---
+
+<BaseLayout
+  title="Лидерборд тикетов — GoblinCodex"
+  description="Топ-500 глобального лидерборда тикетов Sunflower Land с историей по датам."
+  currentPage="community"
+>
+  <div class="gc-content gc-page-enter">
+
+    <a href="/community" class="gc-btn-secondary gc-lp-back">← Сообщество</a>
+
+    <div class="gc-community-header">
+      <h1 class="gc-page-title gc-page-title-icon">
+        <img src="/sprites/icons/ticket.png" alt="" width="16" height="16" />
+        Лидерборд тикетов
+      </h1>
+      <p class="gc-community-sub">
+        Топ-500 глобального лидерборда тикетов Sunflower Land
+      </p>
+    </div>
+
+    {apiError ? (
+      <div class="gc-community-error gc-card">
+        ⚠️ Данные временно недоступны. Попробуйте позже.
+      </div>
+    ) : (
+      <TicketsLeaderboardPage
+        client:load
+        initialLeaderboard={leaderboard}
+        initialUpdatedAt={updatedAt}
+      />
+    )}
+
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .gc-lp-back {
+    display: inline-flex;
+    margin: 20px 0 0;
+  }
+</style>

@@ -134,6 +134,9 @@
   color: var(--text);
   font-family: var(--font-body);
 }
+.gc-calc-field input::placeholder {
+  color: var(--text-ter);
+}
 
 /* ── Результаты: слева большой блок, справа колонка из KPI ── */
 .gc-exp-results-grid {

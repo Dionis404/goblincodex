@@ -1305,6 +1305,66 @@ input[type='number']::-webkit-inner-spin-button {
   .gc-lp-col-change { grid-area: change; }
 }
 
+/* ─── TICKETS LEADERBOARD ─── */
+.gc-tickets-row {
+  grid-template-columns: 48px 1fr 120px 110px;
+}
+.gc-tickets-row .gc-lp-col-owner {
+  font-family: inherit;
+}
+@media (max-width: 700px) {
+  .gc-tickets-row {
+    grid-template-columns: 32px 1fr 100px;
+    grid-template-areas:
+      "rank owner change"
+      ".    value value";
+  }
+  .gc-tickets-row .gc-lp-col-value { text-align: left; }
+}
+
+.gc-tickets-history {
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gc-tickets-history-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sec);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.gc-tickets-history-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.gc-tickets-preset-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.gc-tickets-preset-active {
+  color: var(--green-dark);
+  background: var(--green-pale);
+  border-color: var(--green-dark);
+}
+.gc-tickets-date-input {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+}
+.gc-tickets-history-hint {
+  font-size: 12px;
+  color: var(--text-sec);
+}
+
 /* ─── PROFILE CARD ─── */
 .gc-profile-card {
   padding: 20px;
