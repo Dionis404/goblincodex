@@ -1,0 +1,92 @@
+---
+// Модалка с полным текстом Telegram-поста, открываемая кликом по карточке
+// с source==='telegram' на /news или главной. Все посты уже загружены на
+// сервере (fetchMergedNews), поэтому просто рендерим их все в скрытые
+// блоки и переключаем видимость по клику — тот же паттерн, что и в
+// ChapterMechanicModal.astro. Рендерится ОТДЕЛЬНО от .gc-content, чтобы
+// position:fixed overlay гарантированно считался от вьюпорта.
+import type { NewsItem } from '../lib/news-feed';
+
+interface Props {
+  posts: NewsItem[];
+}
+
+const { posts } = Astro.props;
+---
+
+<div class="gc-modal-overlay" id="tgModalOverlay" style="display:none">
+  <div class="gc-modal-box gc-tg-modal-box" id="tgModalBox">
+    <button type="button" class="gc-modal-close" id="tgModalClose" aria-label="Закрыть">✕</button>
+    {posts.map(post => (
+      <div class="gc-tg-modal-post" data-tg-post={post.link} style="display:none">
+        {post.image && <img src={post.image} alt="" class="gc-tg-modal-img" loading="lazy" />}
+        <div class="gc-tg-modal-date">{post.dateLabel}</div>
+        <div class="gc-tg-modal-text">{post.fullText ?? post.desc}</div>
+        <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-telegram gc-btn-telegram--full">Подписаться</a>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+.gc-tg-modal-box {
+  max-width: 480px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 28px 28px;
+}
+.gc-tg-modal-img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  display: block;
+}
+.gc-tg-modal-date {
+  font-size: 12px;
+  color: var(--text-sec);
+  margin-bottom: 8px;
+}
+.gc-tg-modal-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+  margin-bottom: 20px;
+}
+@media (max-width: 640px) {
+  .gc-tg-modal-box { padding: 24px 20px 20px; }
+}
+</style>
+
+<script>
+  const tgOverlay = document.getElementById('tgModalOverlay');
+  const tgClose   = document.getElementById('tgModalClose');
+  const tgPosts   = document.querySelectorAll<HTMLElement>('[data-tg-post]');
+
+  function openTgModal(link: string) {
+    tgPosts.forEach(p => {
+      p.style.display = p.dataset.tgPost === link ? 'block' : 'none';
+    });
+    if (tgOverlay) tgOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeTgModal() {
+    if (tgOverlay) tgOverlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  window.addEventListener('gc:open-tg-modal', (e) => {
+    const link = (e as CustomEvent<string>).detail;
+    if (link) openTgModal(link);
+  });
+
+  tgClose?.addEventListener('click', closeTgModal);
+  tgOverlay?.addEventListener('click', (e) => {
+    if (e.target === tgOverlay) closeTgModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeTgModal();
+  });
+</script>

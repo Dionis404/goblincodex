@@ -1,0 +1,167 @@
+---
+// Полноэкранный ридер для статей коллекции news (архив блога Teletype).
+// Открывается кликом по карточке с source==='news' на /news или главной —
+// контент подгружается лениво через /api/news/[slug].json (не рендерим
+// все статьи коллекции на каждый запрос /news, коллекция растёт).
+// Поддерживает диплинк через ?article=slug, как ?tab=/?mech= в /codex.
+---
+
+<div class="gc-article-overlay" id="articleOverlay" style="display:none">
+  <div class="gc-article-scroll" id="articleScroll">
+    <div class="gc-article-inner">
+      <div class="gc-article-close-bar">
+        <button type="button" class="gc-article-close" id="articleClose" aria-label="Закрыть">← Назад</button>
+      </div>
+      <div class="gc-article-loading" id="articleLoading">Загрузка…</div>
+      <div class="gc-article-error" id="articleError" style="display:none">Не удалось загрузить статью.</div>
+      <div class="gc-article-body" id="articleBody" style="display:none">
+        <h1 class="gc-article-title" id="articleTitle"></h1>
+        <div class="gc-article-meta" id="articleMeta"></div>
+        <article class="gc-guide-article" id="articleContent"></article>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.gc-article-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--bg);
+}
+.gc-article-scroll {
+  height: 100%;
+  overflow-y: auto;
+}
+.gc-article-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}
+.gc-article-close-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg);
+  padding: 24px 0 20px;
+  margin-bottom: 4px;
+}
+.gc-article-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.gc-article-close:hover {
+  border-color: var(--green-mid);
+  color: var(--green-dark);
+}
+.gc-article-loading,
+.gc-article-error {
+  padding: 80px 0;
+  text-align: center;
+  color: var(--text-sec);
+  font-size: 14px;
+}
+.gc-article-title {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.gc-article-meta {
+  font-size: 13px;
+  color: var(--text-sec);
+  margin-bottom: 20px;
+}
+@media (max-width: 640px) {
+  .gc-article-inner { padding: 0 16px 48px; }
+  .gc-article-close-bar { padding: 16px 0 14px; }
+  .gc-article-title { font-size: 22px; }
+}
+</style>
+
+<script>
+  const overlay      = document.getElementById('articleOverlay');
+  const scroll        = document.getElementById('articleScroll');
+  const closeBtn      = document.getElementById('articleClose');
+  const loadingEl      = document.getElementById('articleLoading');
+  const errorEl        = document.getElementById('articleError');
+  const bodyEl         = document.getElementById('articleBody');
+  const metaEl         = document.getElementById('articleMeta');
+  const titleEl        = document.getElementById('articleTitle');
+  const contentEl      = document.getElementById('articleContent');
+
+  function formatDate(iso: string): string {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function setQueryParam(slug: string | null) {
+    const url = new URL(window.location.href);
+    if (slug) url.searchParams.set('article', slug);
+    else url.searchParams.delete('article');
+    history.replaceState(null, '', url);
+  }
+
+  async function openArticle(slug: string) {
+    if (!overlay) return;
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    if (scroll) scroll.scrollTop = 0;
+
+    loadingEl?.style.setProperty('display', 'block');
+    errorEl?.style.setProperty('display', 'none');
+    bodyEl?.style.setProperty('display', 'none');
+
+    try {
+      const res = await fetch(`/api/news/${encodeURIComponent(slug)}.json`);
+      if (!res.ok) throw new Error('not ok');
+      const data = await res.json();
+
+      if (titleEl) titleEl.textContent = data.title;
+      if (metaEl) metaEl.textContent = [data.category, formatDate(data.date)].filter(Boolean).join(' · ');
+      if (contentEl) contentEl.innerHTML = data.html;
+
+      loadingEl?.style.setProperty('display', 'none');
+      bodyEl?.style.setProperty('display', 'block');
+      setQueryParam(slug);
+    } catch {
+      loadingEl?.style.setProperty('display', 'none');
+      errorEl?.style.setProperty('display', 'block');
+    }
+  }
+
+  function closeArticle() {
+    if (overlay) overlay.style.display = 'none';
+    document.body.style.overflow = '';
+    setQueryParam(null);
+  }
+
+  window.addEventListener('gc:open-article', (e) => {
+    const slug = (e as CustomEvent<string>).detail;
+    if (slug) openArticle(slug);
+  });
+
+  closeBtn?.addEventListener('click', closeArticle);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay?.style.display !== 'none') closeArticle();
+  });
+
+  const initialSlug = new URLSearchParams(window.location.search).get('article');
+  if (initialSlug) openArticle(initialSlug);
+</script>

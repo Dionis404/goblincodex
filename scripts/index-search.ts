@@ -1,6 +1,6 @@
 /**
  * index-search.ts
- * Считает эмбеддинги для всех статей guides/, mechanics/ и разделов
+ * Считает эмбеддинги для всех статей guides/, mechanics/, news/ и разделов
  * Справочника через routerai.ru и сохраняет их в таблицу search_embeddings
  * (semantic search backend).
  *
@@ -18,9 +18,11 @@ import { loadCollection, stripMarkdown, REFERENCE_ENTRIES } from "../src/lib/sea
 const MAX_CHARS = 6000; // грубый бюджет на эмбеддинг-модель, статьи справочника короче
 
 async function main() {
-  const entries = [...loadCollection("guides"), ...loadCollection("mechanics")].filter(
-    e => !e.draft,
-  );
+  const entries = [
+    ...loadCollection("guides"),
+    ...loadCollection("mechanics"),
+    ...loadCollection("news"),
+  ].filter(e => !e.draft);
 
   console.log(`Найдено статей для индексации: ${entries.length}`);
 

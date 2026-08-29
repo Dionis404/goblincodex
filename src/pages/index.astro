@@ -2,20 +2,25 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ChapterTimer from '../components/ChapterTimer.tsx';
 import SearchWidget from '../components/SearchWidget.tsx';
+import ArticleReaderOverlay from '../components/ArticleReaderOverlay.astro';
+import TelegramPostModal from '../components/TelegramPostModal.astro';
 import { fetchMergedNews, type NewsItem } from '../lib/news-feed';
 import { getTelegramSubscriberCount } from '../lib/telegram-subscribers';
 
 let news: NewsItem[] = [];
 
 try {
-  const { items } = await fetchMergedNews({ telegramLimit: 4, rssMaxPages: 1 });
+  const { items } = await fetchMergedNews({ telegramLimit: 4 });
   news = items.slice(0, 4);
 } catch (e) {
-  // Fallback если новости недоступны
+  // Fallback если новости недоступны — source не 'news'/'telegram', чтобы
+  // клик по карточке не перехватывался gc:open-article/gc:open-tg-modal
+  // (нет slug для оверлея) и вёл по обычной ссылке на /news
   news = [
-    { title: 'Загрузка новостей...', date: new Date(0), dateLabel: '', tag: '', tagColor: 'green', link: '/news', image: '', desc: '', source: 'rss' },
+    { title: 'Загрузка новостей...', date: new Date(0), dateLabel: '', tag: '', tagColor: 'green', link: '/news', image: '', desc: '', source: 'fallback' },
   ];
 }
+const telegramPosts = news.filter(n => n.source === 'telegram');
 
 import { getCollection } from 'astro:content';
 
@@ -138,9 +143,14 @@ const subscriberCount = await getTelegramSubscriberCount();
           <span class="gc-block-title">🔥 Что нового в SFL</span>
           <a href="/news" class="gc-block-link">Все новости →</a>
         </div>
-        <div class="gc-news-list">
+        <div class="gc-news-list" id="homeNewsList">
           {news.map(item => (
-            <a href={item.link} target="_blank" rel="noopener" class="gc-list-item gc-news-item">
+            <a
+              href={item.link}
+              class="gc-list-item gc-news-item"
+              data-source={item.source}
+              data-slug={item.slug ?? ''}
+            >
               <div class="gc-news-dot"></div>
               <div>
                 <div class="gc-news-title">{item.title}</div>
@@ -226,7 +236,25 @@ const subscriberCount = await getTelegramSubscriberCount();
 
   </div>
 
+  <ArticleReaderOverlay />
+  <TelegramPostModal posts={telegramPosts} />
 </BaseLayout>
+
+<script>
+  const homeNewsCards = document.querySelectorAll<HTMLElement>('#homeNewsList .gc-news-item');
+  homeNewsCards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      const source = card.dataset.source;
+      if (source === 'news') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('gc:open-article', { detail: card.dataset.slug }));
+      } else if (source === 'telegram') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('gc:open-tg-modal', { detail: card.getAttribute('href') }));
+      }
+    });
+  });
+</script>
 
 <style>
 .gc-hero-desc {

@@ -1,8 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleReaderOverlay from '../components/ArticleReaderOverlay.astro';
+import TelegramPostModal from '../components/TelegramPostModal.astro';
 import { fetchMergedNews } from '../lib/news-feed';
 
 const { items: news, tags } = await fetchMergedNews({ telegramLimit: 100 });
+const telegramPosts = news.filter(n => n.source === 'telegram');
 ---
 
 <BaseLayout
@@ -32,10 +35,10 @@ const { items: news, tags } = await fetchMergedNews({ telegramLimit: 100 });
         {news.map(item => (
           <a
             href={item.link}
-            target="_blank"
-            rel="noopener"
             class="gc-card gc-card-hover gc-news-card"
             data-tag={item.tag}
+            data-source={item.source}
+            data-slug={item.slug ?? ''}
           >
             {item.image && (
               <div class="gc-news-card-img">
@@ -56,6 +59,9 @@ const { items: news, tags } = await fetchMergedNews({ telegramLimit: 100 });
     )}
 
   </div>
+
+  <ArticleReaderOverlay />
+  <TelegramPostModal posts={telegramPosts} />
 </BaseLayout>
 
 <script>
@@ -75,6 +81,19 @@ const { items: news, tags } = await fetchMergedNews({ telegramLimit: 100 });
         const cardTag = card.dataset.tag ?? '';
         card.style.display = (tag === 'all' || cardTag === tag) ? '' : 'none';
       });
+    });
+  });
+
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      const source = card.dataset.source;
+      if (source === 'news') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('gc:open-article', { detail: card.dataset.slug }));
+      } else if (source === 'telegram') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('gc:open-tg-modal', { detail: card.getAttribute('href') }));
+      }
     });
   });
 </script>

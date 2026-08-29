@@ -1654,6 +1654,13 @@ input[type='number']::-webkit-inner-spin-button {
   color: var(--green-dark);
   text-decoration: underline;
 }
+.gc-guide-article img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  display: block;
+}
 .gc-guide-article hr {
   border: none;
   border-top: 1px solid var(--border);

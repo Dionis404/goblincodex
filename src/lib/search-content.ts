@@ -7,7 +7,7 @@ import * as path from 'node:path';
 // с тем, что реально проиндексировано.
 
 export interface ContentEntry {
-  collection: 'guides' | 'mechanics';
+  collection: 'guides' | 'mechanics' | 'news';
   id: string;
   title: string;
   description: string;
@@ -37,16 +37,20 @@ function parseFrontmatter(raw: string): { data: Record<string, string>; body: st
   return { data, body: match[2] };
 }
 
-export function loadCollection(collection: 'guides' | 'mechanics'): ContentEntry[] {
+export function loadCollection(collection: 'guides' | 'mechanics' | 'news'): ContentEntry[] {
   const dir = path.resolve(`./src/content/${collection}`);
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
 
   return files.map(file => {
     const raw = fs.readFileSync(path.join(dir, file), 'utf-8');
     const { data, body } = parseFrontmatter(raw);
+    // news-статьи используют slug из фронтматтера как id (совпадает с
+    // именем файла по построению — см. scripts/import-teletype-news.ts),
+    // у guides/mechanics id — это само имя файла.
+    const id = collection === 'news' ? (data.slug ?? file.replace(/\.md$/, '')) : file.replace(/\.md$/, '');
     return {
       collection,
-      id: file.replace(/\.md$/, ''),
+      id,
       title: data.title ?? file,
       description: data.description ?? '',
       body,
@@ -55,7 +59,7 @@ export function loadCollection(collection: 'guides' | 'mechanics'): ContentEntry
   });
 }
 
-export function findEntry(collection: 'guides' | 'mechanics', id: string): ContentEntry | undefined {
+export function findEntry(collection: 'guides' | 'mechanics' | 'news', id: string): ContentEntry | undefined {
   return loadCollection(collection).find(e => e.id === id);
 }
 

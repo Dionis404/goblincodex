@@ -4,7 +4,7 @@
 -- it for this database, it doesn't install the .so; ask the host provider if this fails.
 CREATE EXTENSION IF NOT EXISTS vector;
 
--- One row per indexed entry: content-collection article (guides/mechanics)
+-- One row per indexed entry: content-collection article (guides/mechanics/news)
 -- OR a hand-written reference-table section (collection='reference', entry_id
 -- matches one of REF_SECTIONS' id in ReferenceCatalog.tsx, e.g. 'bait'/'marvels').
 -- embedding dimension is fixed by the routerai.ru model in use
@@ -12,7 +12,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 -- re-creating this column (ALTER COLUMN TYPE can't resize a vector in place
 -- with existing rows) and a full re-index via index-search.ts.
 CREATE TABLE IF NOT EXISTS search_embeddings (
-  collection   TEXT NOT NULL,           -- 'guides' | 'mechanics' | 'reference'
+  collection   TEXT NOT NULL,           -- 'guides' | 'mechanics' | 'reference' | 'news'
   entry_id     TEXT NOT NULL,           -- content collection entry id, or REF_SECTIONS id for 'reference'
   title        TEXT NOT NULL,
   embedding    vector(2560) NOT NULL,

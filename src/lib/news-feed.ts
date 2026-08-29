@@ -1,3 +1,4 @@
+import { getCollection } from 'astro:content';
 import { getTelegramPosts } from './db';
 
 export type NewsItem = {
@@ -9,11 +10,11 @@ export type NewsItem = {
   link: string;
   image: string;
   desc: string;
-  source: 'rss' | 'telegram';
+  source: 'news' | 'telegram' | 'fallback';
+  slug?: string;
+  fullText?: string;
 };
 
-const BLOG_RSS = 'https://blog.goblincodex.fun/data/rss';
-const MAX_RSS_PAGES = 50;
 const TELEGRAM_CHANNEL = 'URGSFL';
 
 const tagColors: Record<string, string> = {
@@ -26,6 +27,8 @@ const tagColors: Record<string, string> = {
   'Бродкаст':   'purple',
   'Новость':    'green',
   'Телеграм':   'blue',
+  'GitHub':     'blue',
+  'Yakkamon':   'amber',
 };
 
 function formatDate(date: Date): string {
@@ -43,46 +46,28 @@ function proxyTelegramImage(url: string): string {
   return `https://wsrv.nl/?url=${encodeURIComponent(url)}`;
 }
 
-function parseRssItems(xml: string): NewsItem[] {
-  const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
-  return items.map(item => {
-    const title    = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/)?.[1]?.trim() ?? '';
-    const link     = item.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() ?? '#';
-    const pubDate  = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() ?? '';
-    const category = item.match(/<category>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/category>/)?.[1]?.trim() ?? 'Новость';
-    const image    = item.match(/media:content[^>]*url="([^"]+)"/)?.[1] ?? '';
-    const descRaw  = item.match(/<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/description>/)?.[1]?.trim() ?? '';
-    const desc     = truncate(descRaw, 120);
-    const date     = pubDate ? new Date(pubDate) : new Date(0);
-
-    return {
-      title, date, dateLabel: formatDate(date),
-      tag: category, tagColor: tagColors[category] ?? 'green',
-      link, image, desc, source: 'rss' as const,
-    };
-  });
-}
-
-function parseNextRssUrl(xml: string): string | null {
-  const match = xml.match(/<atom:link[^>]*rel=["']next["'][^>]*href=["']([^"']+)["']/i)
-             ?? xml.match(/<atom:link[^>]*href=["']([^"']+)["'][^>]*rel=["']next["']/i);
-  return match?.[1] ?? null;
-}
-
-async function fetchRssNews(maxPages: number): Promise<NewsItem[]> {
-  const news: NewsItem[] = [];
+async function fetchCollectionNews(): Promise<NewsItem[]> {
   try {
-    let nextUrl: string | null = BLOG_RSS;
-    for (let page = 0; page < maxPages && nextUrl; page++) {
-      const res = await fetch(nextUrl);
-      const xml = await res.text();
-      news.push(...parseRssItems(xml));
-      nextUrl = parseNextRssUrl(xml);
-    }
+    const entries = await getCollection('news', ({ data }) => !data.draft);
+    return entries.map(e => {
+      const date = new Date(e.data.date);
+      return {
+        title: e.data.title,
+        date,
+        dateLabel: formatDate(date),
+        tag: e.data.category,
+        tagColor: tagColors[e.data.category] ?? 'green',
+        link: `/news?article=${e.id}`,
+        slug: e.id,
+        image: e.data.image ?? '',
+        desc: e.data.description,
+        source: 'news' as const,
+      };
+    });
   } catch (e) {
-    console.error('[news-feed] RSS fetch error:', e);
+    console.error('[news-feed] News collection read error:', e);
+    return [];
   }
-  return news;
 }
 
 async function fetchTelegramNews(limit: number): Promise<NewsItem[]> {
@@ -99,6 +84,7 @@ async function fetchTelegramNews(limit: number): Promise<NewsItem[]> {
         link: `https://t.me/${TELEGRAM_CHANNEL}/${post.id}`,
         image: post.imageUrl ? proxyTelegramImage(post.imageUrl) : '',
         desc: truncate(post.text, 120),
+        fullText: post.text,
         source: 'telegram' as const,
       };
     });
@@ -108,13 +94,13 @@ async function fetchTelegramNews(limit: number): Promise<NewsItem[]> {
   }
 }
 
-export async function fetchMergedNews(opts: { telegramLimit: number; rssMaxPages?: number }): Promise<{ items: NewsItem[]; tags: string[] }> {
-  const [rssNews, telegramNews] = await Promise.all([
-    fetchRssNews(opts.rssMaxPages ?? MAX_RSS_PAGES),
+export async function fetchMergedNews(opts: { telegramLimit: number }): Promise<{ items: NewsItem[]; tags: string[] }> {
+  const [collectionNews, telegramNews] = await Promise.all([
+    fetchCollectionNews(),
     fetchTelegramNews(opts.telegramLimit),
   ]);
 
-  const items = [...rssNews, ...telegramNews].sort((a, b) => b.date.getTime() - a.date.getTime());
+  const items = [...collectionNews, ...telegramNews].sort((a, b) => b.date.getTime() - a.date.getTime());
   const tags = [...new Set(items.map(n => n.tag).filter(Boolean))];
 
   return { items, tags };

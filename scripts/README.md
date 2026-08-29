@@ -68,9 +68,9 @@ npx tsx scripts/sync-skill-icons.ts [--sfl-dir ./_sfl_temp] [--target-dir ./publ
 
 ### `index-search.ts`
 
-Builds the semantic-search index: computes embeddings (via routerai.ru, model `qwen/qwen3-embedding-4b`) for every non-draft `guides`/`mechanics` article and every hand-written Справочник section, and upserts them into the `search_embeddings` table. This is what powers the site's neuropoisk (semantic search). Requires the `migrate-add-search-embeddings.sql` migration applied first (needs the `pgvector` Postgres extension).
+Builds the semantic-search index: computes embeddings (via routerai.ru, model `qwen/qwen3-embedding-4b`) for every non-draft `guides`/`mechanics`/`news` article and every hand-written Справочник section, and upserts them into the `search_embeddings` table. This is what powers the site's neuropoisk (semantic search) — one combined index across guides, mechanics, Справочник, and the news/blog archive. Requires the `migrate-add-search-embeddings.sql` migration applied first (needs the `pgvector` Postgres extension).
 
-Re-run this whenever guide/mechanics content changes (new article, edited text) — it's not triggered automatically by anything, and stale embeddings just mean search results won't reflect the latest wording.
+Re-run this whenever guide/mechanics/news content changes (new article, edited text) — it's not triggered automatically by anything, and stale embeddings just mean search results won't reflect the latest wording. After a `news:import` run, re-run this to index the newly imported articles.
 
 ```sh
 DATABASE_URL="..." ROUTERAI_API_KEY="..." npm run search:index
@@ -82,6 +82,34 @@ One-off/re-runnable import of the `@URGSFL` Telegram channel's message history i
 
 ```sh
 DATABASE_URL="postgresql://..." npx tsx scripts/backfill-telegram-posts.ts
+```
+
+### `import-teletype-news.ts`
+
+One-time import of the Teletype article archive (`@urg` blog export) into the `news` content
+collection. Parses each raw `.md` export's title (`# heading`), date+category (`> 📅 ... · 🏷 ...`
+line — the category segment is sometimes absent entirely, not just blank), and original URL
+(`> 🔗 Оригинал: ...` line), strips the metadata header, and writes `src/content/news/<slug>.md`
+with clean frontmatter (slug is `<date>-<transliterated-title>`, deduped on collision). Not part of
+any ongoing pipeline — new articles going forward are added by hand as new `.md` files in
+`src/content/news/`, same workflow as `guides`/`mechanics`.
+
+```sh
+npx tsx scripts/import-teletype-news.ts --source "<path to Teletype export folder>" --target ./src/content/news
+```
+
+### `sync-news-images.ts`
+
+Downloads every `img{1,2,3}.teletype.media` image referenced in `src/content/news/*.md` into
+`public/blog-images/` (preserving the CDN's `xx/yy/` subpath, mirroring how `sync-sprites.ts`
+mirrors SFL's own subdirectory structure) and rewrites the markdown links to the local path — so
+article images are self-hosted instead of hotlinked. Also backfills each article's frontmatter
+`image` field from its first successfully-downloaded image (used for card thumbnails). Skips files
+that already exist locally (a given Teletype uuid's content never changes), so it's safe to re-run
+after adding new articles that reference new images.
+
+```sh
+npx tsx scripts/sync-news-images.ts [--content-dir ./src/content/news] [--target-dir ./public/blog-images]
 ```
 
 ### `lib/sprite-map.ts`, `lib/resource-classifier.ts`, `lib/item-tags.ts`
@@ -156,6 +184,8 @@ git tag vX.Y.Z
 | `npm run sfl:backup` | `pg_dump` the database to `backups/` |
 | `npm run search:index` | Recompute semantic-search embeddings for guides/mechanics/reference |
 | `npm run telegram:backfill` | Backfill `telegram_posts` from the `@URGSFL` channel history |
+| `npm run news:import` | One-time import of the Teletype archive into `src/content/news/` |
+| `npm run news:sync-images` | Download and self-host `news` article images into `public/blog-images/` |
 
 ---
 
