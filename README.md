@@ -14,8 +14,23 @@
 - **Инструменты** — раздел `/tools` в разработке (заглушка "скоро"); первый калькулятор добычи ресурсов уже доступен по прямой ссылке `/tools/mining-calculator`
 - **Профили** — публичные страницы фермеров (`/profile/[username]`)
 - **Донаты** — отдельная страница `/donate`
+- **Поиск** — семантический поиск (нейропоиск) по гайдам, механикам и Справочнику через эмбеддинги (routerai.ru)
 
-Игровые данные (предметы, баффы, Bud'ы, питомцы) синхронизируются из исходников [sunflower-land](https://github.com/sunflower-land/sunflower-land) скриптами в [scripts/](scripts/README.md) и хранятся в PostgreSQL.
+## 📥 Откуда берутся данные и как их обновлять
+
+| Данные | Источник | Как обновляется |
+|---|---|---|
+| Предметы, баффы, теги, Bud'ы, питомцы | Исходники [sunflower-land](https://github.com/sunflower-land/sunflower-land) (типы, i18n-словари, ассеты) | `npm run sfl:clone` → `sfl:populate`, вручную по мере выхода новых версий игры. Апсертит в PostgreSQL, не удаляет — устаревшие строки помечаются `is_active=false` |
+| Спрайты предметов | Тот же клон SFL | `npm run sfl:sync-sprites` → копирует в `public/sprites/` |
+| Иконки скиллов | Тот же клон SFL | `npm run sfl:sync-skill-icons` → копирует спрайты и печатает мэппинг для ручной вставки в `src/lib/skills.ts` |
+| Гайды и механики | Пишутся вручную | Markdown-файлы в `src/content/guides` / `src/content/mechanics` — правится как обычный контент, коммитится в репозиторий |
+| Справочник (таблицы игровых констант) | Исходники SFL + ручной ввод | Хардкод-данные в `src/components/ReferenceCatalog.tsx`, обновляется вручную при изменении механик игры |
+| Эмбеддинги для поиска | Тексты гайдов/механик/справочника | `npm run search:index` — пересчитывает после любого изменения контента гайдов/механик |
+| Новости (лента) | RSS | Подтягивается автоматически при рендере страницы `/news` |
+| Посты Telegram-канала | @URGSFL | Новые посты пишет фоновый сервис `goblin-bot` (long-polling); историю до его запуска один раз догрузили через `npm run telegram:backfill` |
+| Профили фермеров | Игровой API фермы (goblin-api) | Проксируется на лету через `/api/farm/*` (`PUBLIC_API_BASE`), в БД не хранится |
+
+Подробности по каждому скрипту синхронизации, порядку миграций БД и полному первоначальному сетапу — в [scripts/README.md](scripts/README.md).
 
 ## 🧱 Стек
 
@@ -33,15 +48,20 @@ npm run dev        # http://localhost:4321
 | `npm run dev` | Локальный дев-сервер |
 | `npm run build` | Продакшен-сборка в `./dist/` |
 | `npm run preview` | Локальный просмотр сборки |
-| `npm run sfl:clone` | Скачать исходники Sunflower Land для парсинга данных |
-| `npm run sfl:populate` | Распарсить и залить игровые данные в БД |
-| `npm run sfl:sync-sprites` | Синхронизировать спрайты в `public/sprites/` |
-| `npm run sfl:backup` | Бэкап БД перед обновлением |
-| `npm run telegram:backfill` | Догрузить прошлые посты из Telegram |
 
-Подробности по скриптам синхронизации данных — в [scripts/README.md](scripts/README.md).
+Полный список команд синхронизации данных (`sfl:*`, `search:index`, `telegram:backfill`) — в [scripts/README.md](scripts/README.md).
 
-Для запуска через Docker: `docker compose up -d` (требуются переменные `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`).
+### Переменные окружения
+
+См. [.env.example](.env.example) за полным списком. Ключевые:
+
+| Переменная | Назначение |
+|---|---|
+| `DATABASE_URL` | Строка подключения PostgreSQL |
+| `TELEGRAM_BOT_TOKEN` | Telegram Bot API, для счётчика подписчиков канала |
+| `ADMIN_TELEGRAM_ID` | Чат для уведомлений о негативных оценках поиска |
+| `ROUTERAI_API_KEY` | API-ключ routerai.ru для эмбеддингов семантического поиска |
+| `PUBLIC_API_BASE` | Базовый URL для проксирования `/api/farm/*` (по умолчанию `/api`) |
 
 ## 🗂️ Структура
 

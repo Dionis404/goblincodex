@@ -1,6 +1,6 @@
-# GoblinCodex SFL Data Scripts
+# GoblinCodex Data Scripts
 
-Scripts for extracting game data from a [sunflower-land](https://github.com/sunflower-land/sunflower-land) source clone and populating the GoblinCodex database.
+Scripts for populating the GoblinCodex database from external sources: game data extracted from a [sunflower-land](https://github.com/sunflower-land/sunflower-land) source clone (`sfl:*` scripts, the bulk of this doc), the semantic-search embedding index (`search:index`), and Telegram channel history (`telegram:backfill`).
 
 ## Scripts
 
@@ -58,6 +58,32 @@ Copies sprite image files from the SFL source clone into `public/sprites/`, skip
 
 Defaults: `--sfl-dir ./_sfl_temp`, `--target-dir ./public/sprites`
 
+### `sync-skill-icons.ts`
+
+Copies bumpkin skill-tree icon sprites from the SFL source clone into `public/sprites/`, and prints a name → public-path mapping to paste manually into `src/lib/skills.ts` (the `icon` field on each `Skill`). Icons come from three different source shapes in `BUMPKIN_REVAMP_SKILL_TREE` (local asset import, reused `ITEM_DETAILS` image, or a `SUNNYSIDE` CDN path) — skills with no `image` field at all have no icon and fall back to a per-tree emoji on the site (`SKILL_TREE_EMOJI` in `ReferenceCatalog.tsx`). Not part of the automated `sfl:populate` pipeline — run it by hand only when SFL adds/changes skill-tree icons.
+
+```sh
+npx tsx scripts/sync-skill-icons.ts [--sfl-dir ./_sfl_temp] [--target-dir ./public/sprites]
+```
+
+### `index-search.ts`
+
+Builds the semantic-search index: computes embeddings (via routerai.ru, model `qwen/qwen3-embedding-4b`) for every non-draft `guides`/`mechanics` article and every hand-written Справочник section, and upserts them into the `search_embeddings` table. This is what powers the site's neuropoisk (semantic search). Requires the `migrate-add-search-embeddings.sql` migration applied first (needs the `pgvector` Postgres extension).
+
+Re-run this whenever guide/mechanics content changes (new article, edited text) — it's not triggered automatically by anything, and stale embeddings just mean search results won't reflect the latest wording.
+
+```sh
+DATABASE_URL="..." ROUTERAI_API_KEY="..." npm run search:index
+```
+
+### `backfill-telegram-posts.ts`
+
+One-off/re-runnable import of the `@URGSFL` Telegram channel's message history into the `telegram_posts` table, by scraping the public `t.me/s/URGSFL` preview page (`ON CONFLICT DO UPDATE`, safe to re-run). The separate always-on `goblin-bot` service long-polls the channel and writes new posts as they're published, but only from whenever it started running — this script fills in everything published before that. `t.me` is blocked without a VPN/proxy on some networks (e.g. Russia); set `HTTPS_PROXY` or `TELEGRAM_SCRAPE_PROXY` to route around that.
+
+```sh
+DATABASE_URL="postgresql://..." npx tsx scripts/backfill-telegram-posts.ts
+```
+
 ### `lib/sprite-map.ts`, `lib/resource-classifier.ts`, `lib/item-tags.ts`
 
 Shared parsers used by the scripts above: sprite path resolution, resource-keyword classification for `affected_stat`, and node/monument/building tagging for `tags`.
@@ -83,6 +109,7 @@ Apply these once in DBeaver as the `admin` user, in order, before the next `sfl:
 - `scripts/migrate-add-upsert-tracking.sql` — adds `manually_edited_fields`, `last_synced_at`, `is_active` to both tables, and the `UNIQUE (item_id, short_description)` constraint on `sfl_buffs` that makes upserting possible (dedupes any pre-existing duplicate rows first).
 - `scripts/migrate-add-composite-pk.sql` — widens `sfl_items`' primary key from `(id)` to `(id, type)` and the matching `sfl_buffs` FK/unique constraints to `(item_id, item_type)`, fixing silent overwrites when a wearable and an unrelated item share the same display name.
 - `scripts/migrate-add-game-id.sql` — adds `sfl_items.game_id` (and its index) for marketplace numbering.
+- `scripts/migrate-add-search-embeddings.sql` — adds `search_embeddings` + `search_feedback` tables for semantic search (requires the `pgvector` Postgres extension to be installed on the server first).
 
 ### 3. (Optional) Back up before populating prod
 
@@ -102,7 +129,13 @@ DATABASE_URL="postgresql://user:pass@host:5432/dbname" npm run sfl:populate
 npm run sfl:sync-sprites
 ```
 
-### 6. Commit sprites and tag the version
+### 6. Re-index search (if guide/mechanics content changed)
+
+```sh
+DATABASE_URL="..." ROUTERAI_API_KEY="..." npm run search:index
+```
+
+### 7. Commit sprites and tag the version
 
 ```sh
 git add public/sprites/
@@ -119,7 +152,10 @@ git tag vX.Y.Z
 | `npm run sfl:clone` | Sparse-clone SFL repo into `_sfl_temp/` |
 | `npm run sfl:populate` | Parse SFL sources and upsert the database |
 | `npm run sfl:sync-sprites` | Copy sprite assets into `public/sprites/` |
+| `npm run sfl:sync-skill-icons` | Copy skill-tree icon sprites, print mapping for `src/lib/skills.ts` |
 | `npm run sfl:backup` | `pg_dump` the database to `backups/` |
+| `npm run search:index` | Recompute semantic-search embeddings for guides/mechanics/reference |
+| `npm run telegram:backfill` | Backfill `telegram_posts` from the `@URGSFL` channel history |
 
 ---
 
