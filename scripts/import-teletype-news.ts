@@ -63,12 +63,16 @@ function transliterate(text: string): string {
     .join("");
 }
 
+const SLUG_WORD_COUNT = 4;
+
 function slugify(date: string, title: string): string {
-  const base = transliterate(title)
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80)
-    .replace(/-+$/g, "");
+  const words = transliterate(title)
+    .replace(/[^a-z0-9\s]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, SLUG_WORD_COUNT);
+  const base = words.join("-");
   return `${date}-${base}`;
 }
 

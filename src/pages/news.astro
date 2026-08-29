@@ -3,15 +3,35 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ArticleReaderOverlay from '../components/ArticleReaderOverlay.astro';
 import TelegramPostModal from '../components/TelegramPostModal.astro';
 import { fetchMergedNews } from '../lib/news-feed';
+import { getEntry } from 'astro:content';
 
 const { items: news, tags } = await fetchMergedNews({ telegramLimit: 100 });
 const telegramPosts = news.filter(n => n.source === 'telegram');
+
+// Если открыт диплинк на конкретную статью (?article=slug) — подменяем
+// SEO/OG-мету на данные статьи, чтобы шаринг ссылки в Telegram/соцсети
+// показывал превью с заголовком, описанием и картинкой статьи, а не общую
+// заглушку страницы /news.
+const articleSlug = Astro.url.searchParams.get('article');
+const articleEntry = articleSlug ? await getEntry('news', articleSlug) : undefined;
+
+const seoTitle = articleEntry && !articleEntry.data.draft
+  ? `${articleEntry.data.title} — GoblinCodex`
+  : 'Новости Sunflower Land — GoblinCodex';
+const seoDescription = articleEntry && !articleEntry.data.draft
+  ? articleEntry.data.description
+  : 'Последние новости и обновления игры Sunflower Land на русском языке.';
+const seoImage = articleEntry && !articleEntry.data.draft ? articleEntry.data.image : undefined;
+const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news?article=${articleEntry.id}` : undefined;
 ---
 
 <BaseLayout
   currentPage="news"
-  title="Новости Sunflower Land — GoblinCodex"
-  description="Последние новости и обновления игры Sunflower Land на русском языке."
+  title={seoTitle}
+  description={seoDescription}
+  image={seoImage}
+  type={articleEntry ? 'article' : 'website'}
+  shareUrl={seoShareUrl}
 >
   <div class="gc-content gc-page-enter">
 

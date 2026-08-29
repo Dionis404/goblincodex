@@ -5,6 +5,7 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
+  shareUrl?: string;
 }
 
 const {
@@ -13,9 +14,15 @@ const {
   image = '/og-default.png',
   type = 'website',
   noindex = false,
+  shareUrl,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// og:url обычно совпадает с canonical, но для страниц с "виртуальными"
+// query-параметрами (?article=slug на /news — отдельная сущность в глазах
+// шаринга, хоть и не отдельный маршрут) нужен явный shareUrl, иначе
+// Telegram/соцсети привяжут превью к общему URL страницы, а не к статье.
+const ogURL = shareUrl ? new URL(shareUrl, Astro.site) : canonicalURL;
 const imageURL = new URL(image, Astro.site);
 const siteName = 'Goblin Codex';
 
@@ -24,7 +31,7 @@ const jsonLd = {
   "@type": type === 'article' ? 'Article' : 'WebSite',
   "name": title,
   "description": description,
-  "url": canonicalURL.toString(),
+  "url": ogURL.toString(),
   "image": imageURL.toString(),
   "inLanguage": "ru",
   "publisher": {
@@ -44,7 +51,7 @@ const jsonLd = {
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={imageURL} />
-<meta property="og:url" content={canonicalURL} />
+<meta property="og:url" content={ogURL} />
 <meta property="og:site_name" content={siteName} />
 <meta property="og:locale" content="ru_RU" />
 

@@ -12,6 +12,7 @@ interface Props {
   type?: 'website' | 'article';
   noindex?: boolean;
   currentPage?: string;
+  shareUrl?: string;
 }
 
 const {
@@ -20,13 +21,14 @@ const {
   image,
   type,
   noindex,
-  currentPage = 'home'
+  currentPage = 'home',
+  shareUrl,
 } = Astro.props;
 ---
 
 <html lang="ru">
   <head>
-    <SEO title={title} description={description} image={image} type={type} noindex={noindex} />
+    <SEO title={title} description={description} image={image} type={type} noindex={noindex} shareUrl={shareUrl} />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
