@@ -2,7 +2,8 @@
 title: "Yakkamon: новая игра от создателей Sunflower Land — что нужно знать уже сейчас"
 slug: "2026-07-29-yakkamon-novaya-igra-ot"
 date: "2026-07-29"
-category: "Yakkamon"
+category: "Другое"
+game: "yakkamon"
 description: "Пока комьюнити Sunflower Land следит за Ascension Age, студия приоткрыла дверь в проект, который многие уже давно ждали под другим именем. Project 2 п..."
 originalUrl: "https://teletype.in/@urg/hqBJvOCSQVW"
 ---

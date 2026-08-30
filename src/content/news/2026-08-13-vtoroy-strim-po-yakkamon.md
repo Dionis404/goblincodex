@@ -2,7 +2,8 @@
 title: "Второй стрим по Yakkamon: разбираем изменения дроп-листа, депозиты, звук и первые кадры геймплея"
 slug: "2026-08-13-vtoroy-strim-po-yakkamon"
 date: "2026-08-13"
-category: "Yakkamon"
+category: "Стримы"
+game: "yakkamon"
 description: "📅 Дата: 13 Августа 2026 Скандал с наградами трейнерского аирдропа Главная тема эфира — реакция сообщества на вчерашнее объявление об изменении наград..."
 originalUrl: "https://teletype.in/@urg/YEm57P_9EwQ"
 ---

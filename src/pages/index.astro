@@ -17,7 +17,7 @@ try {
   // клик по карточке не перехватывался gc:open-article/gc:open-tg-modal
   // (нет slug для оверлея) и вёл по обычной ссылке на /news
   news = [
-    { title: 'Загрузка новостей...', date: new Date(0), dateLabel: '', tag: '', tagColor: 'green', link: '/news', image: '', desc: '', source: 'fallback' },
+    { title: 'Загрузка новостей...', date: new Date(0), dateLabel: '', tag: '', tagColor: 'green', link: '/news', image: '', desc: '', source: 'fallback', game: 'sunflower' },
   ];
 }
 const telegramPosts = news.filter(n => n.source === 'telegram');

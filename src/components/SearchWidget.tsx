@@ -18,7 +18,7 @@ const COLLECTION_LABEL: Record<SearchResult['collection'], string> = {
 function resultHref(r: SearchResult): string {
   if (r.collection === 'mechanics') return `/codex?tab=mechanics&mech=${r.entryId}`;
   if (r.collection === 'reference') return `/codex?tab=reference&ref=${r.entryId}`;
-  if (r.collection === 'news') return `/news?article=${r.entryId}`;
+  if (r.collection === 'news') return `/news/${r.entryId}`;
   return `/codex/${r.entryId}`;
 }
 

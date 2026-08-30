@@ -3,6 +3,7 @@ title: "Yakkamon (Project 2): открыт предрегистрационны�
 slug: "2026-07-31-yakkamon-project-2-otkryt"
 date: "2026-07-31"
 category: "Стримы"
+game: "yakkamon"
 description: "📅 Дата: 31 Июля 2026 Команда Sunflower Land провела специальный стрим, посвящённый запуску страницы предрегистрации новой игры — Yakkamon, ранее изве..."
 originalUrl: "https://teletype.in/@urg/rBlqg1ECvgn"
 ---

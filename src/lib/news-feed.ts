@@ -1,6 +1,8 @@
 import { getCollection } from 'astro:content';
 import { getTelegramPosts } from './db';
 
+export type NewsGame = 'sunflower' | 'yakkamon' | 'telegram';
+
 export type NewsItem = {
   title: string;
   date: Date;
@@ -11,6 +13,7 @@ export type NewsItem = {
   image: string;
   desc: string;
   source: 'news' | 'telegram' | 'fallback';
+  game: NewsGame;
   slug?: string;
   fullText?: string;
 };
@@ -21,6 +24,7 @@ const tagColors: Record<string, string> = {
   'Стримы':     'purple',
   'Обновление': 'blue',
   'Гайд':       'green',
+  'Гайды':      'green',
   'Экономика':  'amber',
   'Ивент':      'amber',
   'Контент':    'green',
@@ -28,7 +32,7 @@ const tagColors: Record<string, string> = {
   'Новость':    'green',
   'Телеграм':   'blue',
   'GitHub':     'blue',
-  'Yakkamon':   'amber',
+  'Другое':     'amber',
 };
 
 function formatDate(date: Date): string {
@@ -44,6 +48,15 @@ function truncate(text: string, max: number): string {
 // отдаём картинку через публичный image-proxy, чтобы браузер шёл не на них.
 function proxyTelegramImage(url: string): string {
   return `https://wsrv.nl/?url=${encodeURIComponent(url)}`;
+}
+
+// Постов без явного #yakkamon/#sunflowerLand-хэштега пока большинство (старые
+// посты канала публиковались без хэштегов вообще) — они попадают в отдельный
+// верхний тег "Телеграм", а не теряются и не привязываются наугад к игре.
+function detectTelegramGame(text: string): NewsGame {
+  if (/#yakkamon/i.test(text)) return 'yakkamon';
+  if (/#sunflowerland/i.test(text)) return 'sunflower';
+  return 'telegram';
 }
 
 async function fetchCollectionNews(): Promise<NewsItem[]> {
@@ -62,6 +75,7 @@ async function fetchCollectionNews(): Promise<NewsItem[]> {
         image: e.data.image ?? '',
         desc: e.data.description,
         source: 'news' as const,
+        game: e.data.game,
       };
     });
   } catch (e) {
@@ -86,6 +100,7 @@ async function fetchTelegramNews(limit: number): Promise<NewsItem[]> {
         desc: truncate(post.text, 120),
         fullText: post.text,
         source: 'telegram' as const,
+        game: detectTelegramGame(post.text),
       };
     });
   } catch (e) {
@@ -94,14 +109,21 @@ async function fetchTelegramNews(limit: number): Promise<NewsItem[]> {
   }
 }
 
-export async function fetchMergedNews(opts: { telegramLimit: number }): Promise<{ items: NewsItem[]; tags: string[] }> {
+export async function fetchMergedNews(opts: { telegramLimit: number }): Promise<{
+  items: NewsItem[];
+  tagsByGame: Record<NewsGame, string[]>;
+}> {
   const [collectionNews, telegramNews] = await Promise.all([
     fetchCollectionNews(),
     fetchTelegramNews(opts.telegramLimit),
   ]);
 
   const items = [...collectionNews, ...telegramNews].sort((a, b) => b.date.getTime() - a.date.getTime());
-  const tags = [...new Set(items.map(n => n.tag).filter(Boolean))];
 
-  return { items, tags };
+  const tagsByGame: Record<NewsGame, string[]> = { sunflower: [], yakkamon: [], telegram: [] };
+  for (const game of Object.keys(tagsByGame) as NewsGame[]) {
+    tagsByGame[game] = [...new Set(items.filter(n => n.game === game).map(n => n.tag).filter(Boolean))];
+  }
+
+  return { items, tagsByGame };
 }

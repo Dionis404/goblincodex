@@ -37,6 +37,10 @@ const news = defineCollection({
     slug:        z.string(),
     date:        z.string(),
     category:    z.string().default('Новость'),
+    // Только 'sunflower'/'yakkamon' — 'telegram' в NewsGame (src/lib/news-feed.ts)
+    // существует лишь для Telegram-постов из БД, статья коллекции не может
+    // быть "Телеграм"-игрой по смыслу.
+    game:        z.enum(['sunflower', 'yakkamon']).default('sunflower'),
     description: z.string(),
     originalUrl: z.string().optional(),
     image:       z.string().optional(),
