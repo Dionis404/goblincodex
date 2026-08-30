@@ -6,6 +6,11 @@ import ArticleReaderOverlay from '../components/ArticleReaderOverlay.astro';
 import TelegramPostModal from '../components/TelegramPostModal.astro';
 import { fetchMergedNews, type NewsItem } from '../lib/news-feed';
 import { getTelegramSubscriberCount } from '../lib/telegram-subscribers';
+import { blogHostFor } from '../lib/blog-domain';
+
+// Ссылки "на новости" с главной ведут на отдельный blog.<домен>,
+// см. Header.astro/middleware.ts.
+const newsHref = `https://${blogHostFor(Astro.request.headers.get('host'))}`;
 
 let news: NewsItem[] = [];
 
@@ -17,7 +22,7 @@ try {
   // клик по карточке не перехватывался gc:open-article/gc:open-tg-modal
   // (нет slug для оверлея) и вёл по обычной ссылке на /news
   news = [
-    { title: 'Загрузка новостей...', date: new Date(0), dateLabel: '', tag: '', tagColor: 'green', link: '/news', image: '', desc: '', source: 'fallback', game: 'sunflower' },
+    { title: 'Загрузка новостей...', date: new Date(0), dateLabel: '', tag: '', tagColor: 'green', link: newsHref, image: '', desc: '', source: 'fallback', game: 'sunflower' },
   ];
 }
 const telegramPosts = news.filter(n => n.source === 'telegram');
@@ -57,7 +62,7 @@ const subscriberCount = await getTelegramSubscriberCount();
       </p>
       <div class="gc-hero-actions">
         <a href="/codex" class="gc-btn-primary">📖 Быстрый старт</a>
-        <a href="/news" class="gc-btn-secondary">Что нового?</a>
+        <a href={newsHref} class="gc-btn-secondary">Что нового?</a>
       </div>
     </div>
     <div class="gc-hero-art">
@@ -111,7 +116,7 @@ const subscriberCount = await getTelegramSubscriberCount();
           <div class="gc-section-desc">Гайды и разборы механик для всех уровней</div>
         </div>
       </a>
-      <a href="/news" class="gc-card gc-card-hover gc-section-card">
+      <a href={newsHref} class="gc-card gc-card-hover gc-section-card">
         <div class="gc-section-icon">📰</div>
         <div>
           <div class="gc-section-title">Новости и обновления</div>
@@ -141,7 +146,7 @@ const subscriberCount = await getTelegramSubscriberCount();
       <div class="gc-card" style="padding: 24px;">
         <div class="gc-block-header">
           <span class="gc-block-title">🔥 Что нового в SFL</span>
-          <a href="/news" class="gc-block-link">Все новости →</a>
+          <a href={newsHref} class="gc-block-link">Все новости →</a>
         </div>
         <div class="gc-news-list" id="homeNewsList">
           {news.map(item => (

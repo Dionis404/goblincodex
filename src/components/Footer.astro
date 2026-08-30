@@ -1,7 +1,12 @@
 ---
+import { blogHostFor } from '../lib/blog-domain';
+
+// "Новости" ведёт на отдельный blog.<домен>, см. Header.astro/middleware.ts.
+const newsHref = `https://${blogHostFor(Astro.request.headers.get('host'))}`;
+
 const navLinks = [
   { href: '/codex',    label: 'Гайды'      },
-  { href: '/news',      label: 'Новости'    },
+  { href: newsHref,     label: 'Новости'    },
   { href: '/tools',     label: 'Инструменты'},
   { href: '/community', label: 'Сообщество' },
   { href: '/donate',    label: 'Поддержать' },

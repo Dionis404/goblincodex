@@ -1,15 +1,20 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import { blogHostFor } from '../lib/blog-domain';
 
 interface Props {
   currentPage?: string;
 }
 const { currentPage = 'home' } = Astro.props;
 
+// "Новости" ведёт на отдельный blog.<домен> (см. src/middleware.ts,
+// src/pages/news.astro), а не на /news этого же домена.
+const newsHref = `https://${blogHostFor(Astro.request.headers.get('host'))}`;
+
 const navLinks = [
   { slug: 'home',      href: '/',          label: 'Главная'     },
   { slug: 'codex',    href: '/codex',    label: 'Кодекс' },
-  { slug: 'news',      href: '/news',      label: 'Новости'     },
+  { slug: 'news',      href: newsHref,     label: 'Новости'     },
   { slug: 'community', href: '/community', label: 'Сообщество'  },
   { slug: 'tools',     href: '/tools',     label: 'Инструменты' },
   { slug: 'about',     href: '/about',     label: 'О проекте'   },
