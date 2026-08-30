@@ -1,0 +1,89 @@
+---
+// Минимальный layout для blog.goblincodex.fun/.ru — без шапки/футера
+// основного сайта, только контент новостей + переключатель темы.
+// Голова (SEO/шрифты/метрика) идентична BaseLayout.astro — это
+// SEO/трекинг-инфраструктура, не связанная с навигацией сайта.
+import '../styles/global.css';
+import SEO from '../components/SEO.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import CookieBanner from '../components/CookieBanner.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  shareUrl?: string;
+}
+
+const {
+  title = 'Новости Sunflower Land — GoblinCodex',
+  description = 'Последние новости и обновления игры Sunflower Land на русском языке.',
+  image,
+  type,
+  noindex,
+  shareUrl,
+} = Astro.props;
+---
+
+<html lang="ru">
+  <head>
+    <SEO title={title} description={description} image={image} type={type} noindex={noindex} shareUrl={shareUrl} />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Unbounded:wght@400;500;600;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet" />
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" is:inline>
+      (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109822268', 'ym');
+
+      ym(109822268, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/109822268" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+  </head>
+  <body>
+    <div class="gc-blog-topbar">
+      <a href="https://goblincodex.fun" class="gc-blog-topbar-logo">🧙 GoblinCodex</a>
+      <ThemeToggle />
+    </div>
+    <main>
+      <slot />
+    </main>
+    <CookieBanner />
+  </body>
+</html>
+
+<script>
+  import { initThemeToggle } from '../lib/theme';
+  initThemeToggle();
+</script>
+
+<style>
+.gc-blog-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.gc-blog-topbar-logo {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+</style>

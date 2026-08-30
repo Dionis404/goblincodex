@@ -37,7 +37,7 @@ originalUrl: "https://teletype.in/@urg/PoolFLOWERERC20"
 
 Далее проверяем(выбираем) Fee tier Основной пул лежит в 0.3% После выбора жмем "Continue"
 
-![](https://img4.teletype.media/files/ff/83/ff8365d7-596a-461b-b937-f15102779d61.png)
+![](/blog-images/ff/83/ff8365d7-596a-461b-b937-f15102779d61.png)
 
 На следующей странице выбираем сколько USDC или Flower сложить в пул. Указать достаточно одно из. И нажимаем "Review"
 

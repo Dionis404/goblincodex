@@ -50,4 +50,4 @@ Goblin's Treat приготовился и я взял 6 уровень, про�
 
 ![](/blog-images/b8/10/b810cfbe-cfc0-4043-8129-efa2d264bcbb.png)
 
-![](https://img4.teletype.media/files/7b/33/7b33369f-3fa7-4542-9e84-43be2e11052a.png)
+![](/blog-images/7b/33/7b33369f-3fa7-4542-9e84-43be2e11052a.png)

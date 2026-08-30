@@ -17,13 +17,21 @@ const {
   shareUrl,
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// Astro.url.origin у @astrojs/node в standalone-режиме отражает адрес, на
+// котором слушает сам сервер (localhost:4321), а НЕ заголовок Host запроса —
+// поэтому origin строим из заголовка Host вручную. Это важно для
+// blog.goblincodex.fun/.ru, которые отдают контент под собственным доменом
+// через тот же сервис (см. src/pages/news.astro + src/middleware.ts):
+// canonical/OG-ссылки должны указывать на blog.*, а не всегда на localhost/goblincodex.fun.
+const requestHost = Astro.request.headers.get('host');
+const requestOrigin = requestHost ? `${Astro.url.protocol}//${requestHost}` : Astro.url.origin;
+const canonicalURL = new URL(Astro.url.pathname, requestOrigin);
 // og:url обычно совпадает с canonical, но для страниц с "виртуальными"
 // query-параметрами (?article=slug на /news — отдельная сущность в глазах
 // шаринга, хоть и не отдельный маршрут) нужен явный shareUrl, иначе
 // Telegram/соцсети привяжут превью к общему URL страницы, а не к статье.
-const ogURL = shareUrl ? new URL(shareUrl, Astro.site) : canonicalURL;
-const imageURL = new URL(image, Astro.site);
+const ogURL = shareUrl ? new URL(shareUrl, requestOrigin) : canonicalURL;
+const imageURL = new URL(image, requestOrigin);
 const siteName = 'Goblin Codex';
 
 const jsonLd = {

@@ -1,0 +1,8 @@
+---
+// Кнопка переключения светлой/тёмной темы — общая для Header.astro и
+// BlogLayout.astro. Логика в src/lib/theme.ts, каждая страница вызывает
+// initThemeToggle() один раз сама (см. Header.astro/BlogLayout.astro).
+---
+<button class="gc-icon-btn" data-theme-toggle title="Сменить тему" aria-label="Сменить тему">
+  <span data-theme-icon>☀️</span>
+</button>

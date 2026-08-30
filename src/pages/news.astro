@@ -1,12 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BlogLayout from '../layouts/BlogLayout.astro';
 import ArticleReaderOverlay from '../components/ArticleReaderOverlay.astro';
 import TelegramPostModal from '../components/TelegramPostModal.astro';
 import { fetchMergedNews } from '../lib/news-feed';
 import { getEntry } from 'astro:content';
+import { isBlogHost } from '../lib/blog-domain';
 
 const { items: news, tags } = await fetchMergedNews({ telegramLimit: 100 });
 const telegramPosts = news.filter(n => n.source === 'telegram');
+
+// blog.goblincodex.fun/.ru — бывший Teletype-домен, теперь просто зеркало
+// /news под минимальным layout (без шапки/футера основного сайта). Middleware
+// переписывает "/" на "/news" для этих хостов, но выбор layout делается
+// здесь же, по тому же Host — так /news напрямую на blog.* тоже работает.
+const onBlogHost = isBlogHost(Astro.request.headers.get('host'));
+const Layout = onBlogHost ? BlogLayout : BaseLayout;
 
 // Если открыт диплинк на конкретную статью (?article=slug) — подменяем
 // SEO/OG-мету на данные статьи, чтобы шаринг ссылки в Telegram/соцсети
@@ -25,8 +34,8 @@ const seoImage = articleEntry && !articleEntry.data.draft ? articleEntry.data.im
 const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news?article=${articleEntry.id}` : undefined;
 ---
 
-<BaseLayout
-  currentPage="news"
+<Layout
+  {...(onBlogHost ? {} : { currentPage: 'news' })}
   title={seoTitle}
   description={seoDescription}
   image={seoImage}
@@ -82,7 +91,7 @@ const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news?article=${
 
   <ArticleReaderOverlay />
   <TelegramPostModal posts={telegramPosts} />
-</BaseLayout>
+</Layout>
 
 <script>
   const filterBtns = document.querySelectorAll<HTMLButtonElement>('.gc-tag-btn');

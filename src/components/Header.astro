@@ -1,4 +1,6 @@
 ---
+import ThemeToggle from './ThemeToggle.astro';
+
 interface Props {
   currentPage?: string;
 }
@@ -35,9 +37,7 @@ const navLinks = [
     </nav>
 
     <div class="gc-header-right">
-      <button class="gc-icon-btn" id="themeToggle" title="Сменить тему" aria-label="Сменить тему">
-        <span id="themeIcon">☀️</span>
-      </button>
+      <ThemeToggle />
       <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-telegram">
         Telegram
       </a>
@@ -48,9 +48,7 @@ const navLinks = [
 
     <!-- Мобильный хедер: кнопка темы + гамбургер -->
     <div class="gc-mobile-controls">
-      <button class="gc-icon-btn" id="themeToggleMobile" title="Сменить тему" aria-label="Сменить тему">
-        <span id="themeIconMobile">☀️</span>
-      </button>
+      <ThemeToggle />
       <button class="gc-hamburger" id="hamburger" aria-label="Меню">
         <span></span>
         <span></span>
@@ -80,31 +78,12 @@ const navLinks = [
 </header>
 
 <script>
-  const html             = document.documentElement;
+  import { initThemeToggle } from '../lib/theme';
+
   const hamburger        = document.getElementById('hamburger');
   const mobileMenu       = document.getElementById('mobileMenu');
-  const themeToggle      = document.getElementById('themeToggle');
-  const themeIcon        = document.getElementById('themeIcon');
-  const themeToggleMob   = document.getElementById('themeToggleMobile');
-  const themeIconMob     = document.getElementById('themeIconMobile');
 
-  // ── Тема ──
-  const saved = JSON.parse(localStorage.getItem('gcSettings') || '{}');
-  let isDark = saved.theme === 'dark';
-
-  const applyTheme = () => {
-    html.setAttribute('data-theme', isDark ? 'dark' : '');
-    const icon = isDark ? '🌙' : '☀️';
-    if (themeIcon)    themeIcon.textContent    = icon;
-    if (themeIconMob) themeIconMob.textContent = icon;
-    localStorage.setItem('gcSettings', JSON.stringify({ ...saved, theme: isDark ? 'dark' : 'light' }));
-  };
-
-  applyTheme();
-
-  const toggleTheme = () => { isDark = !isDark; applyTheme(); };
-  themeToggle?.addEventListener('click', toggleTheme);
-  themeToggleMob?.addEventListener('click', toggleTheme);
+  initThemeToggle();
 
   // ── Гамбургер ──
   let menuOpen = false;
