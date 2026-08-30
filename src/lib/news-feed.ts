@@ -44,12 +44,6 @@ function truncate(text: string, max: number): string {
   return clean.length > max ? clean.slice(0, max) + '...' : clean;
 }
 
-// Telegram-домены (t.me, telesco.pe) заблокированы у части посетителей без VPN —
-// отдаём картинку через публичный image-proxy, чтобы браузер шёл не на них.
-function proxyTelegramImage(url: string): string {
-  return `https://wsrv.nl/?url=${encodeURIComponent(url)}`;
-}
-
 // Постов без явного #yakkamon/#sunflowerLand-хэштега пока большинство (старые
 // посты канала публиковались без хэштегов вообще) — они попадают в отдельный
 // верхний тег "Телеграм", а не теряются и не привязываются наугад к игре.
@@ -96,7 +90,10 @@ async function fetchTelegramNews(limit: number): Promise<NewsItem[]> {
         tag: 'Телеграм',
         tagColor: tagColors['Телеграм'],
         link: `https://t.me/${TELEGRAM_CHANNEL}/${post.id}`,
-        image: post.imageUrl ? proxyTelegramImage(post.imageUrl) : '',
+        // goblin-bot пишет image_url уже сайтовым относительным путём
+        // (/api/community/posts/<id>/image, см. src/pages/api/community/
+        // posts/[id]/image.ts) — используем как есть, без прокси-обёртки.
+        image: post.imageUrl ?? '',
         desc: truncate(post.text, 120),
         fullText: post.text,
         source: 'telegram' as const,
