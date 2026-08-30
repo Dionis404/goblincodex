@@ -1,6 +1,6 @@
 /**
  * sync-news-images.ts
- * Downloads every img{1,2,3}.teletype.media image referenced in
+ * Downloads every img<N>.teletype.media image referenced in
  * src/content/news/*.md into public/blog-images/ (preserving the CDN's
  * files/xx/yy/ subpath, mirroring sync-sprites.ts's own approach of
  * mirroring source subdirectory structure), rewrites the markdown links to
@@ -50,7 +50,7 @@ function parseArgs(): { contentDir: string; targetDir: string } {
   return { contentDir: path.resolve(contentDir), targetDir: path.resolve(targetDir) };
 }
 
-const IMAGE_URL_RE = /https:\/\/img[123]\.teletype\.media\/files\/([0-9a-f]{2})\/([0-9a-f]{2})\/([^)\s"]+)/g;
+const IMAGE_URL_RE = /https:\/\/img\d+\.teletype\.media\/files\/([0-9a-f]{2})\/([0-9a-f]{2})\/([^)\s"]+)/g;
 const MAX_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 1500;
 const BETWEEN_REQUESTS_DELAY_MS = 250;

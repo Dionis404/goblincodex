@@ -28,4 +28,4 @@ originalUrl: "https://teletype.in/@urg/ZeroToHero_day3"
 - Block Buck - 3
 - Инвентарь:
 
-![](https://img4.teletype.media/files/30/e1/30e12dd4-df3b-4852-8750-39d5e4cb78dc.png)
+![](/blog-images/30/e1/30e12dd4-df3b-4852-8750-39d5e4cb78dc.png)

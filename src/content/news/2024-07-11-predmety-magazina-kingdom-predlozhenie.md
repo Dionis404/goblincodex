@@ -10,7 +10,7 @@ originalUrl: "https://teletype.in/@urg/KingdomShopItems"
 
 Дисклеймер - данная информация является предложением взятым с GitHub, статья несет исключительно информационный характер, конечная версия данной механики может быть сильно изменена. Оригинал: [https://github.com/sunflower-land/sunflower-land/discussions/4010](https://github.com/sunflower-land/sunflower-land/discussions/4010) Если вы ходите оставить свой отзыв, напишите об этом на GitHub.
 
-![](https://img4.teletype.media/files/bf/0b/bf0b7790-dab4-4506-82a3-3e9e08d2294c.png)
+![](/blog-images/bf/0b/bf0b7790-dab4-4506-82a3-3e9e08d2294c.png)
 
 ### Цель
 

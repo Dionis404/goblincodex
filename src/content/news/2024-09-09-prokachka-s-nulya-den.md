@@ -12,7 +12,7 @@ originalUrl: "https://teletype.in/@urg/ZeroToHero_day2"
 
 Сегодня собрал свой первый грибок, не забываем про грибы они дадут отличный бесплатный опыт.
 
-![](https://img4.teletype.media/files/7f/6b/7f6bce14-6531-4f52-9192-102dce680980.png)
+![](/blog-images/7f/6b/7f6bce14-6531-4f52-9192-102dce680980.png)
 
 Для прокачки 5 уровня, я буду снова готовить Cabbers n Mash и Bumpkin Broth.
 

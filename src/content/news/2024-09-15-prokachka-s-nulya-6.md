@@ -34,7 +34,7 @@ Goblin's Treat приготовился и я взял 6 уровень, про�
 
 Открыв сундук на 8 день мне дали наживку для рыбалки, теперь я могу потратить свои удочки которые сделал по ошибке.
 
-![](https://img4.teletype.media/files/b8/43/b843aa1b-84ae-4d0a-a3ed-ea6747c30a2b.png)
+![](/blog-images/b8/43/b843aa1b-84ae-4d0a-a3ed-ea6747c30a2b.png)
 
 В награду за доставки получил от Бетти 1 Block Buck
 
@@ -48,6 +48,6 @@ Goblin's Treat приготовился и я взял 6 уровень, про�
 - Block Buck - 4
 - Инвентарь:
 
-![](https://img4.teletype.media/files/b8/10/b810cfbe-cfc0-4043-8129-efa2d264bcbb.png)
+![](/blog-images/b8/10/b810cfbe-cfc0-4043-8129-efa2d264bcbb.png)
 
 ![](https://img4.teletype.media/files/7b/33/7b33369f-3fa7-4542-9e84-43be2e11052a.png)

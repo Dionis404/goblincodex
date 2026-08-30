@@ -100,7 +100,7 @@ npx tsx scripts/import-teletype-news.ts --source "<path to Teletype export folde
 
 ### `sync-news-images.ts`
 
-Downloads every `img{1,2,3}.teletype.media` image referenced in `src/content/news/*.md` into
+Downloads every `img<N>.teletype.media` image referenced in `src/content/news/*.md` into
 `public/blog-images/` (preserving the CDN's `xx/yy/` subpath, mirroring how `sync-sprites.ts`
 mirrors SFL's own subdirectory structure) and rewrites the markdown links to the local path — so
 article images are self-hosted instead of hotlinked. Also backfills each article's frontmatter

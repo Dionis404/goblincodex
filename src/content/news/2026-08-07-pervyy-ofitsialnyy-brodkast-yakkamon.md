@@ -1,4 +1,5 @@
 ---
+image: "/blog-images/77/08/7708b43c-970a-4c70-9dd7-6f8c1c3584da.png"
 title: "Первый официальный бродкаст Yakkamon: что рассказала команда"
 slug: "2026-08-07-pervyy-ofitsialnyy-brodkast-yakkamon"
 date: "2026-08-07"
@@ -138,7 +139,7 @@ Yakkamon — отдельный проект, но не оторванный о�
 
 ![](https://img4.teletype.media/files/7f/44/7f44274a-6c09-4a12-a78b-006b3a509362.png)
 
-![](https://img4.teletype.media/files/77/08/7708b43c-970a-4c70-9dd7-6f8c1c3584da.png)
+![](/blog-images/77/08/7708b43c-970a-4c70-9dd7-6f8c1c3584da.png)
 
 ---
 

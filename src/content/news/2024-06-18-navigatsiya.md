@@ -20,36 +20,36 @@ originalUrl: "https://teletype.in/@urg/ydF0vJ50kXx"
 
 ### Бродкасты
 
-[Бродкаст 11.06.2024](https://teletype.media/@urg/SFL11062024)
+[Бродкаст 11.06.2024](/news?article=2024-06-11-brodkast-11-06-2024)
 
-[Бродкаст 18.06.2024](https://teletype.media/@urg/SFL18062024)
+[Бродкаст 18.06.2024](/news?article=2024-06-18-brodkast-18-06-2024)
 
-[Бродкаст 25.06.2024](https://teletype.media/@urg/SFL25062024)
+[Бродкаст 25.06.2024](/news?article=2024-06-25-brodkast-25-06-2024)
 
-[Бродкаст 02.07.2024](https://teletype.media/@urg/SFL02072024)
+[Бродкаст 02.07.2024](/news?article=2024-07-02-brodkast-02-07-2024)
 
-[Бродкаст 09.07.2024](https://teletype.media/@urg/SFL09072024)
+[Бродкаст 09.07.2024](/news?article=2024-07-09-brodkast-09-07-2024)
 
 ### Еженедельный стрим разработчиков
 
-[Еженедельный стрим 14.06.24](https://teletype.media/@urg/SFL14062024)
+[Еженедельный стрим 14.06.24](/news?article=2024-06-14-ezhenedelnyy-strim-14-06)
 
-[Еженедельный стрим 21.06.24](https://teletype.media/@urg/SFL21062024)
+[Еженедельный стрим 21.06.24](/news?article=2024-06-21-ezhenedelnyy-strim-21-06)
 
-[Еженедельный стрим 28.06.2024](https://teletype.media/@urg/SFL28062024)
+[Еженедельный стрим 28.06.2024](/news?article=2024-07-03-ezhenedelnyy-strim-28-06)
 
-[Еженедельный стрим 05.07.2024](https://teletype.media/@urg/SFL05072024)
+[Еженедельный стрим 05.07.2024](/news?article=2024-07-05-ezhenedelnyy-strim-05-07)
 
 ### Полезности
 
-[Питомец фракции](https://teletype.media/@urg/Factionpet)
+[Питомец фракции](/news?article=2024-07-08-pitomets-fraktsii)
 
-[Фракционные Марки](https://teletype.media/@urg/FactionHouse)
+[Фракционные Марки](/news?article=2024-07-08-fraktsionnye-marki)
 
-[Rabby Wallet](https://teletype.media/@urg/RabbyWallet)
+[Rabby Wallet](/news?article=2024-07-06-rabby-wallet-obzor)
 
 ### GitHub
 
-[Археологические раскопки [Предложение]](https://teletype.media/@urg/ArchaeologicalDigging)
+[Археологические раскопки [Предложение]](/news?article=2024-07-11-arheologicheskie-raskopki-predlozhenie)
 
-[Предметы магазина Kingdom [Предложение]](https://teletype.media/@urg/KingdomShopItems)
+[Предметы магазина Kingdom [Предложение]](/news?article=2024-07-11-predmety-magazina-kingdom-predlozhenie)
