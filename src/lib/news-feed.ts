@@ -57,7 +57,7 @@ async function fetchCollectionNews(): Promise<NewsItem[]> {
         dateLabel: formatDate(date),
         tag: e.data.category,
         tagColor: tagColors[e.data.category] ?? 'green',
-        link: `/news?article=${e.id}`,
+        link: `/news/${e.id}`,
         slug: e.id,
         image: e.data.image ?? '',
         desc: e.data.description,

@@ -1,0 +1,83 @@
+---
+// Настоящая SSR-страница отдельной статьи — полный текст рендерится прямо
+// в HTML на сервере, без клиентского fetch (в отличие от оверлея на /news,
+// который тянет контент через /api/news/[slug].json уже после загрузки).
+// Обычные посетители по-прежнему кликают карточки на /news и открывают
+// оверлей — этот маршрут не рекламируется в UI. Он нужен как "чистая" цель
+// для шаринга/поисковиков и для регистрации Telegram Instant View через
+// @previews — краулеры не выполняют JS и должны видеть готовый текст сразу.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import { getEntry, render } from 'astro:content';
+import { isBlogHost } from '../../lib/blog-domain';
+
+const { slug } = Astro.params;
+const entry = slug ? await getEntry('news', slug) : undefined;
+
+if (!entry || entry.data.draft) {
+  return Astro.redirect('/news', 302);
+}
+
+const { Content } = await render(entry);
+
+const onBlogHost = isBlogHost(Astro.request.headers.get('host'));
+const Layout = onBlogHost ? BlogLayout : BaseLayout;
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+---
+
+<Layout
+  {...(onBlogHost ? {} : { currentPage: 'news' })}
+  title={`${entry.data.title} — GoblinCodex`}
+  description={entry.data.description}
+  image={entry.data.image}
+  type="article"
+>
+  <div class="gc-content gc-page-enter">
+    <div class="gc-news-article-inner">
+      <a href="/news" class="gc-btn-secondary gc-news-article-back">← Назад к новостям</a>
+
+      <div class="gc-news-article-meta">
+        {[entry.data.category, formatDate(entry.data.date)].filter(Boolean).join(' · ')}
+      </div>
+      <h1 class="gc-news-article-title">{entry.data.title}</h1>
+
+      <article class="gc-guide-article">
+        <Content />
+      </article>
+    </div>
+  </div>
+</Layout>
+
+<style>
+.gc-news-article-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 0 64px;
+}
+.gc-news-article-back {
+  display: inline-flex;
+  margin-bottom: 20px;
+}
+.gc-news-article-meta {
+  font-size: 13px;
+  color: var(--text-sec);
+  margin-bottom: 8px;
+}
+.gc-news-article-title {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+@media (max-width: 640px) {
+  .gc-news-article-title { font-size: 22px; }
+}
+</style>
