@@ -1,5 +1,6 @@
 ---
 title: "🧾 Обновления Sunflower Land — Weekly Stream"
+shortId: 143
 slug: "2026-04-11-obnovleniya-sunflower-land-weekly"
 date: "2026-04-11"
 category: "Стримы"

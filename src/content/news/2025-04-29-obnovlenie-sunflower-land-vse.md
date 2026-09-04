@@ -1,5 +1,6 @@
 ---
 title: "Обновление Sunflower Land: всё о новом сезоне, баунти и цветке Flower"
+shortId: 59
 slug: "2025-04-29-obnovlenie-sunflower-land-vse"
 date: "2025-04-29"
 category: "Бродкаст"

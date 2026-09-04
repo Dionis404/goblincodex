@@ -1,5 +1,6 @@
 ---
 title: "Sunflower Land — итоги еженедельного стрима"
+shortId: 133
 slug: "2026-02-06-sunflower-land-itogi-ezhenedelnogo"
 date: "2026-02-06"
 category: "Стримы"

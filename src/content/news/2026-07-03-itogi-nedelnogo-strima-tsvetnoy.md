@@ -1,5 +1,6 @@
 ---
 title: "Итоги недельного стрима: цветной ивент, новые гемы, переработка ускорений и Chapter Crop Week"
+shortId: 159
 slug: "2026-07-03-itogi-nedelnogo-strima-tsvetnoy"
 date: "2026-07-03"
 category: "Стримы"

@@ -1,5 +1,6 @@
 ---
 title: "Обновления Sunflower Land и новости разработки"
+shortId: 139
 slug: "2026-03-13-obnovleniya-sunflower-land-i"
 date: "2026-03-13"
 category: "Стримы"

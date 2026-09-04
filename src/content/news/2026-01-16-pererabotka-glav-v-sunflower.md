@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/ec/09/ec091f09-3848-4776-9b2a-4a58b979c9a0.png"
 title: "Переработка глав в Sunflower Land вызвала бурю эмоций в сообществе"
+shortId: 127
 slug: "2026-01-16-pererabotka-glav-v-sunflower"
 date: "2026-01-16"
 category: "GitHub"

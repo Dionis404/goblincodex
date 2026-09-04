@@ -1,5 +1,6 @@
 ---
 title: "Еженедельный эфир Sunflower Land"
+shortId: 97
 slug: "2025-10-17-ezhenedelnyy-efir-sunflower-land"
 date: "2025-10-17"
 category: "Стримы"

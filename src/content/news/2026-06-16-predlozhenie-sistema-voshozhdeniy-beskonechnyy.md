@@ -1,5 +1,6 @@
 ---
 title: "Предложение: Система Восхождений — бесконечный престиж без сброса прогресса"
+shortId: 154
 slug: "2026-06-16-predlozhenie-sistema-voshozhdeniy-beskonechnyy"
 date: "2026-06-16"
 category: "GitHub"

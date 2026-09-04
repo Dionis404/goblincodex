@@ -1,5 +1,6 @@
 ---
 title: "🔄 Обновление Chapter Store: Chapter Pass вместо привычного магазина"
+shortId: 125
 slug: "2026-01-15-obnovlenie-chapter-store-chapter"
 date: "2026-01-15"
 category: "GitHub"

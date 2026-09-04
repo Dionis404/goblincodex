@@ -1,5 +1,6 @@
 ---
 title: "Еженедельный стрим Sunflower Land: сообщество пишет игру, мини-игры в Королевстве и планы на свиней"
+shortId: 167
 slug: "2026-08-15-ezhenedelnyy-strim-sunflower-land"
 date: "2026-08-15"
 category: "Стримы"

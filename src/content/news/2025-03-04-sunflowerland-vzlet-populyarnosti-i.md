@@ -1,5 +1,6 @@
 ---
 title: "Sunflowerland: Взлёт популярности и новые горизонты"
+shortId: 49
 slug: "2025-03-04-sunflowerland-vzlet-populyarnosti-i"
 date: "2025-03-04"
 description: "Взрывной рост благодаря Ronin Недавний аирдроп от Ronin стал настоящим катализатором популярности Sunflowerland. Изначально команда ожидала привлечь л..."

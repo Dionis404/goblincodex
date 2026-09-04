@@ -1,5 +1,6 @@
 ---
 title: "Yakkamon: новая игра от создателей Sunflower Land — что нужно знать уже сейчас"
+shortId: 161
 slug: "2026-07-29-yakkamon-novaya-igra-ot"
 date: "2026-07-29"
 category: "Другое"

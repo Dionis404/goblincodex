@@ -1,5 +1,6 @@
 ---
 title: "🎣 Sunflower Land: Большое обновление рыбалки в новом Chapter"
+shortId: 123
 slug: "2026-01-09-sunflower-land-bolshoe-obnovlenie"
 date: "2026-01-09"
 category: "Стримы"

@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/ea/b0/eab096c9-01e6-45fd-8ea5-431d242aba4e.png"
 title: "🐾 Питомцы и Святилища в Sunflower Land"
+shortId: 86
 slug: "2025-08-24-pitomtsy-i-svyatilischa-v"
 date: "2025-08-24"
 description: "С обновлением Pets & Shrines в Sunflower Land появляются уникальные возможности: собирать питомцев, прокачивать их и создавать Святилища для дополните..."

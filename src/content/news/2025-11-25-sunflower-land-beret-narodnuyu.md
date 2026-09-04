@@ -1,5 +1,6 @@
 ---
 title: "🌻 Sunflower Land берёт народную любовь, победа на GAM3 Awards"
+shortId: 111
 slug: "2025-11-25-sunflower-land-beret-narodnuyu"
 date: "2025-11-25"
 category: "Бродкаст"

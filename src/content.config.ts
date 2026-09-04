@@ -34,6 +34,12 @@ const news = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/news' }),
   schema: z.object({
     title:       z.string(),
+    // Короткий числовой id для /news/{shortId} — независим от slug/имени
+    // файла, присваивается один раз по порядку даты публикации (см.
+    // scripts/assign-news-short-ids.ts) и никогда не переиспользуется.
+    // Для новой статьи: следующий номер после текущего максимума shortId
+    // среди всех .md в src/content/news/.
+    shortId:     z.number().int().positive(),
     slug:        z.string(),
     date:        z.string(),
     category:    z.string().default('Новость'),

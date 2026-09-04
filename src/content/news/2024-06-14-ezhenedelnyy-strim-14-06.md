@@ -1,5 +1,6 @@
 ---
 title: "Еженедельный стрим 14.06.24"
+shortId: 2
 slug: "2024-06-14-ezhenedelnyy-strim-14-06"
 date: "2024-06-14"
 category: "Стримы"

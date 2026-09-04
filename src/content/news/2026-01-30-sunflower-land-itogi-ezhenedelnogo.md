@@ -1,5 +1,6 @@
 ---
 title: "Sunflower Land — итоги еженедельного стрима перед стартом главы Crabs and Traps"
+shortId: 131
 slug: "2026-01-30-sunflower-land-itogi-ezhenedelnogo"
 date: "2026-01-30"
 category: "Стримы"

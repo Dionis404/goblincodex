@@ -1,5 +1,6 @@
 ---
 title: "Обзор Dev Weekly Chat от 06 мая 2025 года"
+shortId: 60
 slug: "2025-05-06-obzor-dev-weekly-chat"
 date: "2025-05-06"
 description: "В рамках еженедельного Dev Weekly чата, прошедшего 06 мая 2025 года, команда Sunflower Land поделилась важной информацией о текущих и будущих анонсах,..."

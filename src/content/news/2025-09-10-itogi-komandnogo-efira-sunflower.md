@@ -1,5 +1,6 @@
 ---
 title: "Итоги командного эфира Sunflower Land"
+shortId: 91
 slug: "2025-09-10-itogi-komandnogo-efira-sunflower"
 date: "2025-09-10"
 category: "Бродкаст"

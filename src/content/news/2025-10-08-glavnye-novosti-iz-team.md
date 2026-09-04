@@ -1,5 +1,6 @@
 ---
 title: "Главные новости из Team Broadcast 🌻"
+shortId: 95
 slug: "2025-10-08-glavnye-novosti-iz-team"
 date: "2025-10-08"
 category: "Бродкаст"

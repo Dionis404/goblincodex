@@ -1,5 +1,6 @@
 ---
 title: "Еженедельный стрим 05.07.2024"
+shortId: 10
 slug: "2024-07-05-ezhenedelnyy-strim-05-07"
 date: "2024-07-05"
 category: "Стримы"

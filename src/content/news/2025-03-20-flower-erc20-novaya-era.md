@@ -1,5 +1,6 @@
 ---
 title: "$FLOWER ERC20: Новая эра Sunflower Land и переход с $SFL"
+shortId: 51
 slug: "2025-03-20-flower-erc20-novaya-era"
 date: "2025-03-20"
 description: "Sunflower Land, популярная фермерская игра в экосистеме Web3, готовится к значительным изменениям в 2025 году. Одним из ключевых событий станет запуск..."

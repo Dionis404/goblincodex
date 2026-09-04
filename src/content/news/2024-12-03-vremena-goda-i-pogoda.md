@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/14/51/1451dc6f-28d8-48d0-b9d8-a1e7c949afbd.png"
 title: "Времена года и погода🍁"
+shortId: 42
 slug: "2024-12-03-vremena-goda-i-pogoda"
 date: "2024-12-03"
 description: "Оригинал: https://github.com/sunflowerland/sunflowerland/discussions/4852 Представляем \"Времена года\" систему, основанную на времени, которая влияет н..."

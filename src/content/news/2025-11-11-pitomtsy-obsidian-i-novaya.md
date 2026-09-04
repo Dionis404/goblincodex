@@ -1,5 +1,6 @@
 ---
 title: "🐾 Питомцы, Обсидиан и Новая Глава в Sunflower Land"
+shortId: 105
 slug: "2025-11-11-pitomtsy-obsidian-i-novaya"
 date: "2025-11-11"
 category: "Бродкаст"

@@ -1,5 +1,6 @@
 ---
 title: "🐾 Еженедельный стрим Sunflower Land — Питомцы, Rarecrows и горячие обновления"
+shortId: 107
 slug: "2025-11-14-ezhenedelnyy-strim-sunflower-land"
 date: "2025-11-14"
 category: "Стримы"

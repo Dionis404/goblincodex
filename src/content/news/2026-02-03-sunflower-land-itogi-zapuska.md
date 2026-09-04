@@ -1,5 +1,6 @@
 ---
 title: "🌻 Sunflower Land: итоги запуска новой главы и планы команды"
+shortId: 132
 slug: "2026-02-03-sunflower-land-itogi-zapuska"
 date: "2026-02-03"
 category: "Бродкаст"

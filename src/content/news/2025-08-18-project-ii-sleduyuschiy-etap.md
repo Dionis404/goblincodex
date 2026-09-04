@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/21/7d/217ddfd5-6d27-4a58-8d53-dd2a9fefcdad.png"
 title: "🌻 Project II: Следующий этап в экосистеме Sunflower Land"
+shortId: 84
 slug: "2025-08-18-project-ii-sleduyuschiy-etap"
 date: "2025-08-18"
 description: "✨ Вступление К четвёртой годовщине оригинального прототипа Sunflower Farmers (август 2021 г.) команда Sunflower Land объявила о запуске нового этапа —..."

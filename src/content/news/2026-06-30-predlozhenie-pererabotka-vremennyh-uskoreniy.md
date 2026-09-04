@@ -1,5 +1,6 @@
 ---
 title: "Предложение: переработка временных ускорений в «живую» скорость"
+shortId: 158
 slug: "2026-06-30-predlozhenie-pererabotka-vremennyh-uskoreniy"
 date: "2026-06-30"
 category: "GitHub"

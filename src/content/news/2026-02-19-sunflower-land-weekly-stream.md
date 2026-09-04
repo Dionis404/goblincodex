@@ -1,5 +1,6 @@
 ---
 title: "🧑‍🌾 Sunflower Land Weekly Stream — главное за неделю"
+shortId: 136
 slug: "2026-02-19-sunflower-land-weekly-stream"
 date: "2026-02-19"
 description: "Команда провела еженедельный стрим и поделилась важными обновлениями, планами и подробностями по Project 2. Собрали для вас всё самое интересное 👇 🎥..."

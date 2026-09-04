@@ -1,5 +1,6 @@
 ---
 title: "Sunflower Land — Итоги Еженедельного Стрима"
+shortId: 119
 slug: "2025-12-19-sunflower-land-itogi-ezhenedelnogo"
 date: "2025-12-19"
 category: "Стримы"

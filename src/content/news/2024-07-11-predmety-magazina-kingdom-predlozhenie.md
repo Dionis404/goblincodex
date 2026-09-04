@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/ef/ca/efcaf272-f119-40e0-9368-45ab60eac840.png"
 title: "Предметы магазина Kingdom [Предложение]"
+shortId: 16
 slug: "2024-07-11-predmety-magazina-kingdom-predlozhenie"
 date: "2024-07-11"
 category: "GitHub"

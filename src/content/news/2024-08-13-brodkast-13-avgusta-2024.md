@@ -1,5 +1,6 @@
 ---
 title: "Бродкаст 13 Августа 2024"
+shortId: 19
 slug: "2024-08-13-brodkast-13-avgusta-2024"
 date: "2024-08-13"
 category: "Бродкаст"

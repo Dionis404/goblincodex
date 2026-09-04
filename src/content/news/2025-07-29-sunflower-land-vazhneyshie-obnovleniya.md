@@ -1,5 +1,6 @@
 ---
 title: "🌻 Sunflower Land: важнейшие обновления и анонсы — Июль 2025"
+shortId: 78
 slug: "2025-07-29-sunflower-land-vazhneyshie-obnovleniya"
 date: "2025-07-29"
 description: "29 июля команда Sunflower Studios провела большой стрим, в котором рассказала о новых функциях, важных изменениях в механике и планах на ближайшие нед..."

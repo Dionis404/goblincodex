@@ -1,5 +1,6 @@
 ---
 title: "Перезапуск Flower, баги, мультичейн и планы на будущее"
+shortId: 64
 slug: "2025-05-13-perezapusk-flower-bagi-multicheyn"
 date: "2025-05-13"
 category: "Бродкаст"

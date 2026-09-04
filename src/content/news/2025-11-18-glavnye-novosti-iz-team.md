@@ -1,5 +1,6 @@
 ---
 title: "🌻 Главные новости из Team Broadcast 🌻"
+shortId: 108
 slug: "2025-11-18-glavnye-novosti-iz-team"
 date: "2025-11-18"
 description: "📅 Дата: 18 Ноября 2025 В свежем Devstream команда Sunflower Land поделилась тем, над чем работает сейчас, какие улучшения уже готовятся и что ждёт иг..."

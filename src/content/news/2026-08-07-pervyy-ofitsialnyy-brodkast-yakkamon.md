@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/77/08/7708b43c-970a-4c70-9dd7-6f8c1c3584da.png"
 title: "Первый официальный бродкаст Yakkamon: что рассказала команда"
+shortId: 164
 slug: "2026-08-07-pervyy-ofitsialnyy-brodkast-yakkamon"
 date: "2026-08-07"
 category: "Бродкаст"

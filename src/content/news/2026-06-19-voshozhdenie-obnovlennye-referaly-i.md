@@ -1,5 +1,6 @@
 ---
 title: "Восхождение, обновлённые рефералы и новые интерьеры"
+shortId: 156
 slug: "2026-06-19-voshozhdenie-obnovlennye-referaly-i"
 date: "2026-06-19"
 category: "Стримы"

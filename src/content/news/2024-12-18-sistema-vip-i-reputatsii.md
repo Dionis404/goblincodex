@@ -1,5 +1,6 @@
 ---
 title: "💪Система VIP и репутации"
+shortId: 44
 slug: "2024-12-18-sistema-vip-i-reputatsii"
 date: "2024-12-18"
 description: "Цель этого обсуждения изучить новую систему VIP и репутации в Sunflower Land. В связи с запуском нового сезонного формата, marketplace & freetoplay, п..."

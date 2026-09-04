@@ -1,5 +1,6 @@
 ---
 title: "Возможности Обсидиана: Расширяем потенциал ресурса эндгейма"
+shortId: 76
 slug: "2025-07-27-vozmozhnosti-obsidiana-rasshiryaem-potentsial"
 date: "2025-07-27"
 description: "Оригинал предложения от Адама https://github.com/sunflowerland/sunflowerland/discussions/5891 Обсидиан — редкий и ценный ресурс в Sunflower Land, дост..."

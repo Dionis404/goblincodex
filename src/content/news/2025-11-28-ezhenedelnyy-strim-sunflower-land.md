@@ -1,5 +1,6 @@
 ---
 title: "Еженедельный стрим Sunflower Land"
+shortId: 113
 slug: "2025-11-28-ezhenedelnyy-strim-sunflower-land"
 date: "2025-11-28"
 category: "Стримы"

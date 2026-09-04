@@ -1,9 +1,12 @@
 ---
 // Полноэкранный ридер для статей коллекции news (архив блога Teletype).
 // Открывается кликом по карточке с source==='news' на /news или главной —
-// контент подгружается лениво через /api/news/[slug].json (не рендерим
+// контент подгружается лениво через /api/news/[id].json (не рендерим
 // все статьи коллекции на каждый запрос /news, коллекция растёт).
-// Поддерживает диплинк через ?article=slug, как ?tab=/?mech= в /codex.
+// Адресную строку при открытии/закрытии переключаем на чистый /news/{id}
+// (тот же путь, что рендерит src/pages/news/[id].astro при прямом заходе/
+// перезагрузке) — так шаринг URL из адресной строки всегда даёт короткую
+// прямую ссылку на статью, а не /news?article=....
 ---
 
 <div class="gc-article-overlay" id="articleOverlay" style="display:none">
@@ -111,14 +114,13 @@
     return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  function setQueryParam(slug: string | null) {
-    const url = new URL(window.location.href);
-    if (slug) url.searchParams.set('article', slug);
-    else url.searchParams.delete('article');
-    history.replaceState(null, '', url);
+  function setArticleUrl(id: string | null) {
+    const path = id ? `/news/${id}` : '/news';
+    if (window.location.pathname === path && !window.location.search) return;
+    history.replaceState(null, '', path);
   }
 
-  async function openArticle(slug: string) {
+  async function openArticle(id: string) {
     if (!overlay) return;
     overlay.style.display = 'block';
     document.body.style.overflow = 'hidden';
@@ -129,7 +131,7 @@
     bodyEl?.style.setProperty('display', 'none');
 
     try {
-      const res = await fetch(`/api/news/${encodeURIComponent(slug)}.json`);
+      const res = await fetch(`/api/news/${encodeURIComponent(id)}.json`);
       if (!res.ok) throw new Error('not ok');
       const data = await res.json();
 
@@ -139,7 +141,7 @@
 
       loadingEl?.style.setProperty('display', 'none');
       bodyEl?.style.setProperty('display', 'block');
-      setQueryParam(slug);
+      setArticleUrl(id);
     } catch {
       loadingEl?.style.setProperty('display', 'none');
       errorEl?.style.setProperty('display', 'block');
@@ -149,12 +151,12 @@
   function closeArticle() {
     if (overlay) overlay.style.display = 'none';
     document.body.style.overflow = '';
-    setQueryParam(null);
+    setArticleUrl(null);
   }
 
   window.addEventListener('gc:open-article', (e) => {
-    const slug = (e as CustomEvent<string>).detail;
-    if (slug) openArticle(slug);
+    const id = (e as CustomEvent<string>).detail;
+    if (id) openArticle(id);
   });
 
   closeBtn?.addEventListener('click', closeArticle);
@@ -162,6 +164,9 @@
     if (e.key === 'Escape' && overlay?.style.display !== 'none') closeArticle();
   });
 
-  const initialSlug = new URLSearchParams(window.location.search).get('article');
-  if (initialSlug) openArticle(initialSlug);
+  // Легаси-диплинк ?article=<id> (старые расшаренные/закэшированные ссылки,
+  // ещё не пойманные редиректом в middleware) — открываем оверлей и сразу
+  // же чистим URL на канонический /news/{id}.
+  const legacyId = new URLSearchParams(window.location.search).get('article');
+  if (legacyId) openArticle(legacyId);
 </script>

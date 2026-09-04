@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/c8/9a/c89af119-3b4d-4960-9e33-bf26d27ae44f.png"
 title: "Merkl как вложить в Pool"
+shortId: 25
 slug: "2024-09-12-merkl-kak-vlozhit-v"
 date: "2024-09-12"
 category: "Гайды"

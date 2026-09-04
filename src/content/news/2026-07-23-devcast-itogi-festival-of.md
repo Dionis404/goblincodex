@@ -1,5 +1,6 @@
 ---
 title: "Devcast: итоги Festival of Colours, новая система интерьеров и первый взгляд на Project 2"
+shortId: 160
 slug: "2026-07-23-devcast-itogi-festival-of"
 date: "2026-07-23"
 category: "Бродкаст"

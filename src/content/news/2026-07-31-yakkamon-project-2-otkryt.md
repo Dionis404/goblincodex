@@ -1,5 +1,6 @@
 ---
 title: "Yakkamon (Project 2): открыт предрегистрационный лист — разбираем стрим"
+shortId: 162
 slug: "2026-07-31-yakkamon-project-2-otkryt"
 date: "2026-07-31"
 category: "Стримы"

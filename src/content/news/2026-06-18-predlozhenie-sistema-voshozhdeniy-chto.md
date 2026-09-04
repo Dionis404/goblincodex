@@ -1,5 +1,6 @@
 ---
 title: "Предложение: Система Восхождений — что думает сообщество"
+shortId: 155
 slug: "2026-06-18-predlozhenie-sistema-voshozhdeniy-chto"
 date: "2026-06-18"
 category: "GitHub"

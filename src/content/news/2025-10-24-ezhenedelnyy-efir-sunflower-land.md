@@ -1,5 +1,6 @@
 ---
 title: "Еженедельный эфир Sunflower Land"
+shortId: 99
 slug: "2025-10-24-ezhenedelnyy-efir-sunflower-land"
 date: "2025-10-24"
 description: "📅 Дата: 24 Октября 2025 Разработчики Sunflower Land провели очередной еженедельный стрим, в котором поделились новостями о запуске FLOWER на Ronin, п..."

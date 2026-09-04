@@ -4,8 +4,8 @@ import BlogLayout from '../layouts/BlogLayout.astro';
 import ArticleReaderOverlay from '../components/ArticleReaderOverlay.astro';
 import TelegramPostModal from '../components/TelegramPostModal.astro';
 import { fetchMergedNews } from '../lib/news-feed';
-import { getEntry } from 'astro:content';
 import { isBlogHost } from '../lib/blog-domain';
+import { getEntryByShortId } from '../lib/news-lookup';
 
 const { items: news, tagsByGame } = await fetchMergedNews({ telegramLimit: 100 });
 const telegramPosts = news.filter(n => n.source === 'telegram');
@@ -23,12 +23,13 @@ const GAME_LABELS: Record<string, string> = {
 const onBlogHost = isBlogHost(Astro.request.headers.get('host'));
 const Layout = onBlogHost ? BlogLayout : BaseLayout;
 
-// Если открыт диплинк на конкретную статью (?article=slug) — подменяем
-// SEO/OG-мету на данные статьи, чтобы шаринг ссылки в Telegram/соцсети
-// показывал превью с заголовком, описанием и картинкой статьи, а не общую
-// заглушку страницы /news.
-const articleSlug = Astro.url.searchParams.get('article');
-const articleEntry = articleSlug ? await getEntry('news', articleSlug) : undefined;
+// Легаси-диплинк ?article=<id> (старые расшаренные/закэшированные ссылки —
+// основной путь уже перехватывается 301-редиректом в middleware, это лишь
+// подстраховка) — подменяем SEO/OG-мету на данные статьи, чтобы шаринг
+// всё равно показывал превью с заголовком, описанием и картинкой статьи,
+// а не общую заглушку страницы /news.
+const articleId = Astro.url.searchParams.get('article');
+const articleEntry = articleId ? await getEntryByShortId(articleId) : undefined;
 
 const seoTitle = articleEntry && !articleEntry.data.draft
   ? `${articleEntry.data.title} — GoblinCodex`
@@ -37,11 +38,11 @@ const seoDescription = articleEntry && !articleEntry.data.draft
   ? articleEntry.data.description
   : 'Последние новости и обновления игры Sunflower Land на русском языке.';
 const seoImage = articleEntry && !articleEntry.data.draft ? articleEntry.data.image : undefined;
-// Canonical URL статьи — /news/slug (настоящий SSR-маршрут, см.
-// src/pages/news/[slug].astro), а не /news?article=slug — так шаринг
-// с любой из двух точек входа (оверлей на /news или прямая ссылка)
+// Canonical URL статьи — /news/{shortId} (настоящий SSR-маршрут, см.
+// src/pages/news/[id].astro), а не /news?article=id — так шаринг
+// с любой из точек входа (оверлей на /news, легаси-диплинк, прямая ссылка)
 // указывает на один и тот же URL.
-const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news/${articleEntry.id}` : undefined;
+const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news/${articleEntry.data.shortId}` : undefined;
 ---
 
 <Layout

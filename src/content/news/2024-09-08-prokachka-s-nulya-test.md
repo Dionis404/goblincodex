@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/52/a8/52a873cf-a1c3-4b9e-8764-b4981ab86f90.png"
 title: "Прокачка с нуля [Тест]"
+shortId: 22
 slug: "2024-09-08-prokachka-s-nulya-test"
 date: "2024-09-08"
 category: "ZeroToHero"

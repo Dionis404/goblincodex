@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/e1/25/e125d248-48c3-4f9c-95db-ecc64c6bccc3.png"
 title: "Season Revival"
+shortId: 32
 slug: "2024-10-23-season-revival"
 date: "2024-10-23"
 description: "Sunflower Land приближается к своему 8му сезону, и мы приготовили для игроков нечто особенное. В течение последнего месяца мы собирали отзывы о сезонн..."

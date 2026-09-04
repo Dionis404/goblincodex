@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/84/20/8420974c-609a-4dfc-9d9a-d8899e737b03.png"
 title: "Сезон Run Bull"
+shortId: 34
 slug: "2024-11-05-sezon-run-bull"
 date: "2024-11-05"
 description: "Приветствую всех игроков Sunflower Land! Рад сообщить, что у меня для вас есть пара новостей: Вопервых, на платформе Teletype я продолжу публиковать с..."

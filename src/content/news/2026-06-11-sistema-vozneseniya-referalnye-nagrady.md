@@ -1,5 +1,6 @@
 ---
 title: "Система Вознесения, реферальные награды и новый интерьер: что разработчики рассказали на Discord-трансляции"
+shortId: 153
 slug: "2026-06-11-sistema-vozneseniya-referalnye-nagrady"
 date: "2026-06-11"
 category: "Бродкаст"

@@ -1,5 +1,6 @@
 ---
 title: "🌻 Четыре года Sunflower Land: итоги и планы"
+shortId: 85
 slug: "2025-08-19-chetyre-goda-sunflower-land"
 date: "2025-08-19"
 description: "В августе 2020 года появилась простая игра Sunflower Farmers — всего шесть культур и один цикл «посади — собери». Сегодня это уже Sunflower Land с бол..."

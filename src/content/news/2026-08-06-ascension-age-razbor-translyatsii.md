@@ -1,5 +1,6 @@
 ---
 title: "Ascension Age: разбор трансляции команды Sunflower Land"
+shortId: 163
 slug: "2026-08-06-ascension-age-razbor-translyatsii"
 date: "2026-08-06"
 category: "Бродкаст"

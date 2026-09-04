@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/db/c1/dbc1cb05-17af-452a-8e46-ec80fe182a06.png"
 title: "🧑‍🌾 Sunflower Land — итоги еженедельного стрима разработчиков"
+shortId: 117
 slug: "2025-12-12-sunflower-land-itogi-ezhenedelnogo"
 date: "2025-12-12"
 category: "Стримы"

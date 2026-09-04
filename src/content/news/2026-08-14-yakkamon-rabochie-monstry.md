@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/11/aa/11aac94a-b1b9-454c-b78a-d0c6a1923c07.png"
 title: "🐾 Yakkamon: рабочие монстры"
+shortId: 166
 slug: "2026-08-14-yakkamon-rabochie-monstry"
 date: "2026-08-14"
 category: "Гайды"

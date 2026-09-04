@@ -1,5 +1,6 @@
 ---
 title: "🌻 Главные новости из Team Broadcast 🌻"
+shortId: 98
 slug: "2025-10-21-glavnye-novosti-iz-team"
 date: "2025-10-21"
 description: "📅 Дата: 21 Октября 2025 Команда Sunflower Land провела трансляцию, где рассказала о запуске FLOWER на Ronin, наградах для игроков и планах на ближайш..."

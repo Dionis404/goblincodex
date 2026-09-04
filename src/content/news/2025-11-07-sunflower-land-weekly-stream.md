@@ -1,5 +1,6 @@
 ---
 title: "🐾 Sunflower Land Weekly Stream — Аукционы, питомцы и новости недели"
+shortId: 104
 slug: "2025-11-07-sunflower-land-weekly-stream"
 date: "2025-11-07"
 category: "Стримы"

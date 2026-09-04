@@ -1,5 +1,6 @@
 ---
 title: "Еженедельный Team Broadcast Sunflower Land — главное за 14 мая 2026"
+shortId: 149
 slug: "2026-05-15-ezhenedelnyy-team-broadcast-sunflower"
 date: "2026-05-15"
 category: "Бродкаст"

@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/63/65/63654aa3-eb78-4ab2-9fe9-899ad7391acd.png"
 title: "Новый рынок, переработка навыков и полезные улучшения."
+shortId: 40
 slug: "2024-11-26-novyy-rynok-pererabotka-navykov"
 date: "2024-11-26"
 category: "Бродкаст"

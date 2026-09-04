@@ -1,5 +1,6 @@
 ---
 title: "Обновления Sunflower Land: стрим 20 мая"
+shortId: 66
 slug: "2025-05-20-obnovleniya-sunflower-land-strim"
 date: "2025-05-20"
 category: "Бродкаст"

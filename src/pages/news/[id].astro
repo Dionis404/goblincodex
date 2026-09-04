@@ -1,18 +1,31 @@
 ---
 // Настоящая SSR-страница отдельной статьи — полный текст рендерится прямо
 // в HTML на сервере, без клиентского fetch (в отличие от оверлея на /news,
-// который тянет контент через /api/news/[slug].json уже после загрузки).
-// Обычные посетители по-прежнему кликают карточки на /news и открывают
-// оверлей — этот маршрут не рекламируется в UI. Он нужен как "чистая" цель
-// для шаринга/поисковиков и для регистрации Telegram Instant View через
-// @previews — краулеры не выполняют JS и должны видеть готовый текст сразу.
+// который тянет контент через /api/news/[id].json уже после загрузки).
+// Основной публичный формат ссылок на статью: /news/{shortId}. Нужен также
+// как "чистая" цель для шаринга/поисковиков и для регистрации Telegram
+// Instant View через @previews — краулеры не выполняют JS и должны видеть
+// готовый текст сразу.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogLayout from '../../layouts/BlogLayout.astro';
 import { getEntry, render } from 'astro:content';
 import { isBlogHost } from '../../lib/blog-domain';
+import { getEntryByShortId } from '../../lib/news-lookup';
 
-const { slug } = Astro.params;
-const entry = slug ? await getEntry('news', slug) : undefined;
+const { id } = Astro.params;
+
+// Старые проиндексированные/расшаренные ссылки вида /news/<длинный-slug>
+// (до перехода на короткие числовые id) мягко переезжают на новый URL,
+// а не 404-ят.
+if (id && !/^\d+$/.test(id)) {
+  const legacyEntry = await getEntry('news', id);
+  if (legacyEntry && !legacyEntry.data.draft) {
+    return Astro.redirect(`/news/${legacyEntry.data.shortId}`, 301);
+  }
+  return Astro.redirect('/news', 302);
+}
+
+const entry = id ? await getEntryByShortId(id) : undefined;
 
 if (!entry || entry.data.draft) {
   return Astro.redirect('/news', 302);

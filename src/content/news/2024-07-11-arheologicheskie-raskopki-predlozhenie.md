@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/67/10/6710dce0-cfbe-4498-85bc-c4e5e9f5a812.png"
 title: "Археологические раскопки [Предложение]"
+shortId: 15
 slug: "2024-07-11-arheologicheskie-raskopki-predlozhenie"
 date: "2024-07-11"
 category: "GitHub"

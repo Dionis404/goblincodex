@@ -1,5 +1,6 @@
 ---
 title: "Sunflower Land: главное из дев-стрима 24 июня"
+shortId: 71
 slug: "2025-06-25-sunflower-land-glavnoe-iz"
 date: "2025-06-25"
 description: "24 июня разработчики Sunflower Land провели открытую встречу в Discord, где поделились свежими обновлениями, грядущими событиями и изменениями в механ..."

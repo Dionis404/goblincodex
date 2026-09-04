@@ -1,5 +1,6 @@
 ---
 title: "Главные новости из Team Broadcast 🌻"
+shortId: 93
 slug: "2025-09-16-glavnye-novosti-iz-team"
 date: "2025-09-16"
 description: "📅 Дата: 16 Сентября 2025 🌐 Запуск Flower на Ronin Поддержка второй сети для токена Flower . Игроки смогут вносить и выводить Flower на Ronin. Это ос..."

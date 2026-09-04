@@ -1,5 +1,6 @@
 ---
 title: "Sunflower Land: ключевые обновления перед стартом новой главы"
+shortId: 130
 slug: "2026-01-27-sunflower-land-klyuchevye-obnovleniya"
 date: "2026-01-27"
 category: "Бродкаст"

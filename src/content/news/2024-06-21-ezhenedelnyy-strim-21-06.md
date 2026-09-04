@@ -1,5 +1,6 @@
 ---
 title: "Еженедельный стрим 21.06.2024"
+shortId: 5
 slug: "2024-06-21-ezhenedelnyy-strim-21-06"
 date: "2024-06-21"
 category: "Стримы"

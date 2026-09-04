@@ -1,5 +1,6 @@
 ---
 title: "🌻 Еженедельный стрим Sunflower Land — главное за 22 Мая 2026"
+shortId: 150
 slug: "2026-05-22-ezhenedelnyy-strim-sunflower-land"
 date: "2026-05-22"
 category: "Стримы"

@@ -1,5 +1,6 @@
 ---
 title: "Маркетплейс чего ждать?"
+shortId: 39
 slug: "2024-11-22-marketpleys-chego-zhdat"
 date: "2024-11-22"
 category: "Стримы"

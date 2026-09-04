@@ -1,5 +1,6 @@
 ---
 title: "Обновления Sunflower Land: Глубокий разбор главы, треки, раффлы и Project 2"
+shortId: 135
 slug: "2026-02-13-obnovleniya-sunflower-land-glubokiy"
 date: "2026-02-13"
 category: "Бродкаст"

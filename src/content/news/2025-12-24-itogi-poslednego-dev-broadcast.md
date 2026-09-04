@@ -1,5 +1,6 @@
 ---
 title: "🎄 Итоги последнего Dev Broadcast Sunflower Land в 2025 году"
+shortId: 120
 slug: "2025-12-24-itogi-poslednego-dev-broadcast"
 date: "2025-12-24"
 category: "Бродкаст"

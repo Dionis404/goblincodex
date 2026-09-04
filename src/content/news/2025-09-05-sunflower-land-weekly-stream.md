@@ -1,5 +1,6 @@
 ---
 title: "Sunflower Land Weekly Stream"
+shortId: 90
 slug: "2025-09-05-sunflower-land-weekly-stream"
 date: "2025-09-05"
 description: "На очередном еженедельном стриме разработчики Sunflower Land поделились обновлениями и планами. В этот раз команда обсудила несколько крупных направле..."

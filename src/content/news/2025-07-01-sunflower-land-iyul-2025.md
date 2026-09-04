@@ -1,5 +1,6 @@
 ---
 title: "🌻 Sunflower Land - Июль 2025"
+shortId: 72
 slug: "2025-07-01-sunflower-land-iyul-2025"
 date: "2025-07-01"
 category: "Бродкаст"

@@ -1,5 +1,6 @@
 ---
 title: "Обновления Sunflower Land: 27 мая 2025"
+shortId: 67
 slug: "2025-05-27-obnovleniya-sunflower-land-27"
 date: "2025-05-27"
 category: "Бродкаст"

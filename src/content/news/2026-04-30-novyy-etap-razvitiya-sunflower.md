@@ -1,5 +1,6 @@
 ---
 title: "🧂 Новый этап развития Sunflower Land: соль, прогрессия и будущее игры"
+shortId: 148
 slug: "2026-04-30-novyy-etap-razvitiya-sunflower"
 date: "2026-04-30"
 category: "Бродкаст"

@@ -1,5 +1,6 @@
 ---
 title: "Еженедельный стрим Sunflower Land - обновления, Rarecrows и рыбалка будущего"
+shortId: 109
 slug: "2025-11-21-ezhenedelnyy-strim-sunflower-land"
 date: "2025-11-21"
 category: "Стримы"

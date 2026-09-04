@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/92/d0/92d0a446-bb34-4ea2-81ed-6c4b0085cd3c.png"
 title: "Новая эра с Flower, Love Rush и реферальной программой"
+shortId: 54
 slug: "2025-03-25-novaya-era-s-flower"
 date: "2025-03-25"
 category: "Бродкаст"

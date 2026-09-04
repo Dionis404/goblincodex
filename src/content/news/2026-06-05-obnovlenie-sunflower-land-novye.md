@@ -1,5 +1,6 @@
 ---
 title: "Обновление Sunflower Land: новые интерьеры, конец лимитов хранения и улучшение интерфейса"
+shortId: 152
 slug: "2026-06-05-obnovlenie-sunflower-land-novye"
 date: "2026-06-05"
 category: "Бродкаст"

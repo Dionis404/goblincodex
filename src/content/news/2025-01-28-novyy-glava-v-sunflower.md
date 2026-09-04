@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/29/07/2907e117-9fa9-4d4e-8c60-4dc1833d5c96.png"
 title: "Новый глава в Sunflower Land: что нас ждет?"
+shortId: 46
 slug: "2025-01-28-novyy-glava-v-sunflower"
 date: "2025-01-28"
 description: "В мире Sunflower Land грядут большие перемены с запуском новой главы, который состоится 3 февраля. Разработчики активно готовятся к этому событию, а о..."

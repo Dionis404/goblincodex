@@ -1,5 +1,6 @@
 ---
 title: "🌻 Sunflower Land — Главное из еженедельного Dev Chat"
+shortId: 116
 slug: "2025-12-09-sunflower-land-glavnoe-iz"
 date: "2025-12-09"
 category: "Бродкаст"

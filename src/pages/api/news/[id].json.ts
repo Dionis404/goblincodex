@@ -1,19 +1,19 @@
 import type { APIRoute } from 'astro';
-import { getEntry } from 'astro:content';
 import { createMarkdownProcessor } from '@astrojs/markdown-remark';
+import { getEntryByShortId } from '../../../lib/news-lookup';
 
 export const prerender = false;
 
 const jsonHeaders = { 'Content-Type': 'application/json; charset=utf-8' };
 
 export const GET: APIRoute = async ({ params }) => {
-  const slug = params.slug;
+  const id = params.id;
 
-  if (!slug) {
-    return new Response(JSON.stringify({ error: 'invalid slug' }), { status: 400, headers: jsonHeaders });
+  if (!id) {
+    return new Response(JSON.stringify({ error: 'invalid id' }), { status: 400, headers: jsonHeaders });
   }
 
-  const entry = await getEntry('news', slug);
+  const entry = await getEntryByShortId(id);
   if (!entry || entry.data.draft) {
     return new Response(JSON.stringify({ error: 'not found' }), { status: 404, headers: jsonHeaders });
   }

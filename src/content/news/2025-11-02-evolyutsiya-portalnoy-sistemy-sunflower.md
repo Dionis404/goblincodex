@@ -1,5 +1,6 @@
 ---
 title: "🚀 Эволюция Портальной Системы Sunflower Land"
+shortId: 102
 slug: "2025-11-02-evolyutsiya-portalnoy-sistemy-sunflower"
 date: "2025-11-02"
 category: "GitHub"

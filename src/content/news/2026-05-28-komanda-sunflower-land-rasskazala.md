@@ -1,5 +1,6 @@
 ---
 title: "Команда Sunflower Land рассказала о крупных улучшениях UX, Google-входе и будущем игры"
+shortId: 151
 slug: "2026-05-28-komanda-sunflower-land-rasskazala"
 date: "2026-05-28"
 category: "Бродкаст"

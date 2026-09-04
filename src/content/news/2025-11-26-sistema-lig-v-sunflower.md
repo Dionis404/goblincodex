@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/5f/cf/5fcfd600-8f58-4524-ae22-055ab960bbc8.png"
 title: "🏆 Система Лиг в Sunflower Land: новое измерение прогресса и соревнований"
+shortId: 112
 slug: "2025-11-26-sistema-lig-v-sunflower"
 date: "2025-11-26"
 category: "GitHub"

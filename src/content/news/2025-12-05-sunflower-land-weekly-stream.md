@@ -1,5 +1,6 @@
 ---
 title: "🌻 Sunflower Land Weekly Stream — главные новости недели"
+shortId: 115
 slug: "2025-12-05-sunflower-land-weekly-stream"
 date: "2025-12-05"
 category: "Стримы"

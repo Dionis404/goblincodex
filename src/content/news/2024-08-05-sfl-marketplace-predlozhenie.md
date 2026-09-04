@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/5f/2c/5f2c537e-9e19-467b-b8a0-1b6d4304096e.png"
 title: "SFL Marketplace [ПРЕДЛОЖЕНИЕ]"
+shortId: 18
 slug: "2024-08-05-sfl-marketplace-predlozhenie"
 date: "2024-08-05"
 description: "Дисклеймер данная информация является предложением взятым с GitHub, статья несет исключительно информационный характер, конечная версия данной механик..."

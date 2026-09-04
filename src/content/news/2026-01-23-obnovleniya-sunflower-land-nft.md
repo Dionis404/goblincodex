@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/9f/6a/9f6a63a1-980c-4aa1-b866-cdeb793e7dca.png"
 title: "Обновления Sunflower Land: NFT Rare Crows, Raffle-механика и Chapter Track"
+shortId: 129
 slug: "2026-01-23-obnovleniya-sunflower-land-nft"
 date: "2026-01-23"
 description: "📅 Дата: 23 Января 2026 На еженедельном стриме команды Sunflower Land разработчики подробно рассказали о крупных изменениях, которые затрагивают сразу..."

@@ -1,5 +1,6 @@
 ---
 title: "📊 Обновление Sunflower Land — разбор Dev Chat"
+shortId: 140
 slug: "2026-03-19-obnovlenie-sunflower-land-razbor"
 date: "2026-03-19"
 description: "📅 Дата: 19 Марта 2026 Свежий Discord Dev Chat принёс много важных деталей о будущем Sunflower Land. Разбираем ключевые изменения, новые механики и пл..."

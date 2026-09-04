@@ -1,5 +1,6 @@
 ---
 title: "🌻 Sunflower Land — Что ждёт нас дальше?"
+shortId: 103
 slug: "2025-11-02-sunflower-land-chto-zhdet"
 date: "2025-11-02"
 category: "GitHub"

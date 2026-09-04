@@ -1,5 +1,6 @@
 ---
 title: "🌻 Главные новости из Team Broadcast 🌻"
+shortId: 100
 slug: "2025-10-29-glavnye-novosti-iz-team"
 date: "2025-10-29"
 description: "📅 Дата: 28 Октября 2025 В свежем выпуске Team Broadcast разработчики Sunflower Land поделились последними новостями о крупных обновлениях, над которы..."

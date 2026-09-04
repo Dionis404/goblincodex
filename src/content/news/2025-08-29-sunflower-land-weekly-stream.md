@@ -1,5 +1,6 @@
 ---
 title: "Sunflower Land Weekly Stream — главные новости недели"
+shortId: 88
 slug: "2025-08-29-sunflower-land-weekly-stream"
 date: "2025-08-29"
 description: "На этой неделе команда Sunflower Land провела очередной стрим, где поделилась последними новостями и планами по развитию игры. Давайте разберём основн..."

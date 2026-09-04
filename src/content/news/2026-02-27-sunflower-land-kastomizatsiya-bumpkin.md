@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/53/39/53396b0e-4feb-49c2-8b78-cedb18027d79.png"
 title: "Sunflower Land: кастомизация Bumpkin, Project 2 и рекордная экономика"
+shortId: 137
 slug: "2026-02-27-sunflower-land-kastomizatsiya-bumpkin"
 date: "2026-02-27"
 description: "Прошлый стрим получился насыщенным: новые фичи, обновления лидерборда, свежие аукционы, рекорды по экономике и первые реальные наработки Project 2. Ни..."

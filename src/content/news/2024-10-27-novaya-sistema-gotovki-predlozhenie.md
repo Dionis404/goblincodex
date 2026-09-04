@@ -1,5 +1,6 @@
 ---
 title: "Новая система готовки [предложение]"
+shortId: 33
 slug: "2024-10-27-novaya-sistema-gotovki-predlozhenie"
 date: "2024-10-27"
 category: "GitHub"

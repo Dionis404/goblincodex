@@ -1,5 +1,6 @@
 ---
 title: "Грядущие обновления — рыбалка, питомцы, болота и социальные функции!"
+shortId: 65
 slug: "2025-05-16-gryaduschie-obnovleniya-rybalka-pitomtsy"
 date: "2025-05-16"
 category: "Стримы"

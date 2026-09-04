@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/c7/2a/c72ad833-8254-40b9-82ba-7f7143551c9d.png"
 title: "Rabby Wallet Обзор"
+shortId: 11
 slug: "2024-07-06-rabby-wallet-obzor"
 date: "2024-07-06"
 description: "Не так давно один из подписчиков посоветовал использовать кошелек Rabby Wallet вместо классического MetaMask. Посмотрим на плюсы и минусы. Минусы Не п..."

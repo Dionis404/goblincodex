@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/5f/07/5f0799f1-adc7-40fa-94c4-87273717b8d2.png"
 title: "Прокачка с нуля День 4"
+shortId: 27
 slug: "2024-09-12-prokachka-s-nulya-den"
 date: "2024-09-12"
 category: "ZeroToHero"

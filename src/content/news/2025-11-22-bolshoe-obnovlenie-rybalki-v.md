@@ -1,5 +1,6 @@
 ---
 title: "🎣 Большое обновление рыбалки в Sunflower Land"
+shortId: 110
 slug: "2025-11-22-bolshoe-obnovlenie-rybalki-v"
 date: "2025-11-22"
 category: "GitHub"

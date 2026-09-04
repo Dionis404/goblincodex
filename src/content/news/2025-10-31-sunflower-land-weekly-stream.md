@@ -1,5 +1,6 @@
 ---
 title: "🐾 Sunflower Land Weekly Stream — Главное из эфира"
+shortId: 101
 slug: "2025-10-31-sunflower-land-weekly-stream"
 date: "2025-10-31"
 category: "Стримы"

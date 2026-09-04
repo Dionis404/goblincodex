@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/c7/35/c73560f3-ef6a-4712-84ce-b22c5ac8cafc.png"
 title: "🌸 Love Island, тикеты и антиботы: что нового в Sunflower Land?"
+shortId: 56
 slug: "2025-04-15-love-island-tikety-i"
 date: "2025-04-15"
 description: "15 апреля прошёл масштабный девчат, на котором команда Sunflower Land рассказала, что ждёт игроков в ближайшее время. Делимся ключевыми новостями: от ..."

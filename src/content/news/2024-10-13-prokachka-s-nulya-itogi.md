@@ -1,5 +1,6 @@
 ---
 title: "Прокачка с нуля Итоги."
+shortId: 31
 slug: "2024-10-13-prokachka-s-nulya-itogi"
 date: "2024-10-13"
 description: "Для тех кто не знает о чем речь можете почитать тут: https://teletype.media/@urg/+zerotohero После 10 дней эксперимента я пришёл к нескольким важным в..."

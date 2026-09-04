@@ -1,5 +1,6 @@
 ---
 title: "📰 Большие изменения в главах Sunflower Land: треки, розыгрыши и коллекции"
+shortId: 126
 slug: "2026-01-16-bolshie-izmeneniya-v-glavah"
 date: "2026-01-16"
 category: "Стримы"

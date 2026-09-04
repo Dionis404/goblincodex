@@ -1,5 +1,6 @@
 ---
 title: "Эксклюзивное интервью с новым гейм-дизайнером Sunflower Land"
+shortId: 122
 slug: "2026-01-08-eksklyuzivnoe-intervyu-s-novym"
 date: "2026-01-08"
 description: "В команде Sunflower Land появился новый гейм‑дизайнер — Jammy (Bryn). За его плечами более 10 лет опыта в индустрии, работа с инди‑проектами, Web3‑игр..."

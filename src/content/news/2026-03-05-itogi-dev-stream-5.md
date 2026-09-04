@@ -1,5 +1,6 @@
 ---
 title: "📰 Итоги Dev Stream — 5 марта 2026"
+shortId: 138
 slug: "2026-03-05-itogi-dev-stream-5"
 date: "2026-03-05"
 category: "Бродкаст"

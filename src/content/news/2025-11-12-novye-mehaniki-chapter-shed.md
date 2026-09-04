@@ -1,5 +1,6 @@
 ---
 title: "Новые механики: Chapter Shed и Chapter Fragments"
+shortId: 106
 slug: "2025-11-12-novye-mehaniki-chapter-shed"
 date: "2025-11-12"
 category: "GitHub"

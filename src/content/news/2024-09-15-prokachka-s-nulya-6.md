@@ -1,6 +1,7 @@
 ---
 image: "/blog-images/cc/6f/cc6f2acd-cdef-47a0-9119-da0260e8e7c5.png"
 title: "Прокачка с нуля 6-8 день"
+shortId: 28
 slug: "2024-09-15-prokachka-s-nulya-6"
 date: "2024-09-15"
 category: "ZeroToHero"
