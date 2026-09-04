@@ -23,8 +23,11 @@ const {
 // blog.goblincodex.fun/.ru, которые отдают контент под собственным доменом
 // через тот же сервис (см. src/pages/news.astro + src/middleware.ts):
 // canonical/OG-ссылки должны указывать на blog.*, а не всегда на localhost/goblincodex.fun.
+// Протокол всегда https: за Cloudflare TLS-трафик до Node приходит plain
+// HTTP (Astro.url.protocol видит "http:"), а http:// в og:image/og:url
+// не по всем сайтам грузится в превью Telegram/соцсетей.
 const requestHost = Astro.request.headers.get('host');
-const requestOrigin = requestHost ? `${Astro.url.protocol}//${requestHost}` : Astro.url.origin;
+const requestOrigin = requestHost ? `https://${requestHost}` : Astro.url.origin;
 const canonicalURL = new URL(Astro.url.pathname, requestOrigin);
 // og:url обычно совпадает с canonical, но для страниц с "виртуальными"
 // query-параметрами (?article=slug на /news — отдельная сущность в глазах
