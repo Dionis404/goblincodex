@@ -46,6 +46,16 @@ function RankChange({ rank, prevRank }) {
   return <span className="gc-lp-rank-badge gc-lp-rank-same">—</span>;
 }
 
+function timezoneLabel() {
+  const offsetMin = -new Date().getTimezoneOffset();
+  const sign = offsetMin >= 0 ? '+' : '-';
+  const abs = Math.abs(offsetMin);
+  const hours = Math.floor(abs / 60);
+  const minutes = abs % 60;
+  const utc = minutes ? `UTC${sign}${hours}:${String(minutes).padStart(2, '0')}` : `UTC${sign}${hours}`;
+  return `по вашему местному времени (${utc})`;
+}
+
 export default function TicketsLeaderboardPage({ initialLeaderboard = [], initialUpdatedAt }) {
   const [leaderboard, setLeaderboard] = useState(initialLeaderboard);
   const [updatedAt, setUpdatedAt] = useState(initialUpdatedAt);
@@ -55,10 +65,10 @@ export default function TicketsLeaderboardPage({ initialLeaderboard = [], initia
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const prevRankByFarmId = useMemo(() => {
+  const prevEntryByFarmId = useMemo(() => {
     if (!compareLeaderboard) return null;
     const map = new Map();
-    for (const entry of compareLeaderboard) map.set(entry.farm_id, entry.rank);
+    for (const entry of compareLeaderboard) map.set(entry.farm_id, entry);
     return map;
   }, [compareLeaderboard]);
 
@@ -188,10 +198,11 @@ export default function TicketsLeaderboardPage({ initialLeaderboard = [], initia
             onChange={(e) => selectCustomDate(e.target.value)}
             disabled={loading}
           />
+          <span className="gc-tickets-tz-hint">{timezoneLabel()}</span>
         </div>
         {compareLeaderboard && updated && (
           <div className="gc-tickets-history-hint">
-            Изменения рангов показаны относительно снэпшота на {updated.absolute} по сравнению с выбранной датой.
+            Столбец «Было» показывает место и тикеты на выбранную дату, «Изменение» — разницу мест относительно текущего снэпшота от {updated.absolute}.
           </div>
         )}
       </div>
@@ -203,28 +214,37 @@ export default function TicketsLeaderboardPage({ initialLeaderboard = [], initia
       )}
 
       <div className="gc-lp-table gc-card" style={loading ? { opacity: 0.5, pointerEvents: 'none' } : undefined}>
-        <div className="gc-lp-row gc-lp-row-head">
+        <div className={`gc-lp-row gc-lp-row-head gc-tickets-row${compareLeaderboard ? ' gc-tickets-row--compare' : ''}`}>
           <span className="gc-lp-col-rank">#</span>
           <span className="gc-lp-col-owner">Игрок</span>
           <span className="gc-lp-col-value">Тикеты</span>
+          {compareLeaderboard && <span className="gc-lp-col-was">Было</span>}
           <span className="gc-lp-col-change">Изменение</span>
         </div>
-        {leaderboard.map((entry) => (
-          <div className="gc-lp-row gc-tickets-row" key={entry.farm_id}>
-            <span className="gc-lp-col-rank">{entry.rank}</span>
-            <span className="gc-lp-col-owner" title={entry.game_username ?? `Ферма #${entry.farm_id}`}>
-              {entry.game_username ?? `Ферма #${entry.farm_id}`}
-            </span>
-            <span className="gc-lp-col-value">{fmtNum(entry.tickets)}</span>
-            <span className="gc-lp-col-change">
-              {compareLeaderboard ? (
-                <RankChange rank={entry.rank} prevRank={prevRankByFarmId.get(entry.farm_id)} />
-              ) : (
-                <span className="gc-lp-rank-badge gc-lp-rank-same">—</span>
+        {leaderboard.map((entry) => {
+          const prevEntry = compareLeaderboard ? prevEntryByFarmId.get(entry.farm_id) : null;
+          return (
+            <div className={`gc-lp-row gc-tickets-row${compareLeaderboard ? ' gc-tickets-row--compare' : ''}`} key={entry.farm_id}>
+              <span className="gc-lp-col-rank">{entry.rank}</span>
+              <span className="gc-lp-col-owner" title={entry.game_username ?? `Ферма #${entry.farm_id}`}>
+                {entry.game_username ?? `Ферма #${entry.farm_id}`}
+              </span>
+              <span className="gc-lp-col-value">{fmtNum(entry.tickets)}</span>
+              {compareLeaderboard && (
+                <span className="gc-lp-col-was">
+                  {prevEntry ? `#${prevEntry.rank} • ${fmtNum(prevEntry.tickets)}` : '—'}
+                </span>
               )}
-            </span>
-          </div>
-        ))}
+              <span className="gc-lp-col-change">
+                {compareLeaderboard ? (
+                  <RankChange rank={entry.rank} prevRank={prevEntry?.rank} />
+                ) : (
+                  <span className="gc-lp-rank-badge gc-lp-rank-same">—</span>
+                )}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </>
   );
