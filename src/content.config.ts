@@ -19,6 +19,20 @@ const guides = defineCollection({
   }),
 });
 
+const yakkamon = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/yakkamon' }),
+  schema: z.object({
+    title:       z.string(),
+    description: z.string(),
+    category:    z.string().default('Основы'),
+    readTime:    z.number().default(5),
+    icon:        z.string().default('📄'),
+    publishDate: z.string().optional(),
+    updatedDate: z.string().optional(),
+    draft:       z.boolean().default(false),
+  }),
+});
+
 const mechanics = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/mechanics' }),
   schema: z.object({
@@ -54,4 +68,4 @@ const news = defineCollection({
   }),
 });
 
-export const collections = { guides, mechanics, news };
+export const collections = { guides, mechanics, news, yakkamon };

@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import YakkamonPointsCalculator from '../../components/tools/YakkamonPointsCalculator.tsx';
+import '../../styles/calculator.css';
+---
+
+<BaseLayout
+  currentPage="yakkamon"
+  title="Калькулятор очков за депозит — Yakkamon | GoblinCodex"
+  description="Неофициальный калькулятор очков за депозит $FLOWER в Yakkamon — считает бонус по community-формуле (тир по сумме депозита + текущий недельный множитель)."
+>
+  <div class="gc-content gc-page-enter">
+
+    <a href="/yakkamon" class="gc-btn-secondary gc-guide-back-top">← Назад к разделу</a>
+
+    <div class="gc-guide-layout">
+      <div class="gc-guide-main">
+
+        <nav class="gc-breadcrumb">
+          <a href="/yakkamon">Yakkamon</a>
+          <span>›</span>
+          <span>Калькулятор очков за депозит</span>
+        </nav>
+
+        <div class="gc-guide-page-meta">
+          <span class="gc-tag gc-tag--yk">Экономика</span>
+        </div>
+
+        <h1 class="gc-guide-page-title">🧮 Калькулятор очков за депозит</h1>
+
+        <p class="gc-yk-calc-intro">
+          Неофициальный инструмент сообщества — считает очки по community-формуле (тир по сумме
+          депозита + текущий недельный множитель). Официальную формулу Yakkamon не публикует.
+          Подробнее о самих депозитах — на странице <a href="/yakkamon/depozity-flower">Депозиты $FLOWER</a>.
+        </p>
+
+        <hr class="gc-guide-divider" />
+
+        <YakkamonPointsCalculator client:load />
+
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+.gc-content { --yk-accent: #2F7C8C; --yk-accent-pale: rgba(47,124,140,0.12); }
+[data-theme="dark"] .gc-content { --yk-accent: #5FA9BA; --yk-accent-pale: rgba(95,169,186,0.16); }
+
+.gc-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-sec);
+  padding: 24px 0 16px;
+}
+.gc-breadcrumb a { color: var(--yk-accent); text-decoration: none; }
+.gc-breadcrumb a:hover { text-decoration: underline; }
+
+.gc-guide-page-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+
+.gc-guide-page-title {
+  font-family: var(--font-head);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.gc-guide-back-top { display: inline-flex; margin: 20px 0 16px; }
+
+.gc-guide-layout { max-width: 760px; margin: 0 auto 40px; }
+.gc-guide-main { min-width: 0; }
+
+.gc-yk-calc-intro {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-sec);
+}
+.gc-yk-calc-intro a { color: var(--yk-accent); font-weight: 600; }
+
+.gc-guide-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0 24px;
+}
+
+:global(.gc-tag--yk) {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 99px;
+  background: var(--yk-accent-pale);
+  color: var(--yk-accent);
+}
+
+@media (max-width: 900px) {
+  .gc-guide-page-title { font-size: 24px; }
+}
+</style>
+
+<style is:global>
+/*
+ * Стили калькулятора очков — is:global, потому что модалка рендерится через
+ * React createPortal прямо в document.body, вне DOM-дерева этой страницы,
+ * и Astro-scoped стили (data-astro-cid-*) её не находят.
+ */
+.gc-yk-calc-card { background: var(--bg); }
+.gc-yk-calc-card .gc-calc-kpi-value { color: var(--yk-accent); }
+
+.gc-yk-calc-modal-box { max-width: 560px; }
+.gc-yk-calc-modal-card { padding: 28px 24px; }
+.gc-yk-calc-modal-card .gc-yk-h3 { color: var(--yk-accent); }
+.gc-yk-calc-modal-card .gc-calc-card { border: none; box-shadow: none; padding: 0; }
+.gc-yk-calc-modal-card .gc-calc-kpi-value { font-size: 17px; white-space: nowrap; }
+.gc-yk-calc-modal-card .gc-calc-kpi { padding: 12px 8px; }
+@media (max-width: 480px) {
+  .gc-yk-calc-modal-card .gc-calc-kpis { grid-template-columns: 1fr; }
+}
+</style>

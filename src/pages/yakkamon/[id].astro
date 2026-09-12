@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getEntry, render } from 'astro:content';
+
+const { id } = Astro.params;
+const guide = await getEntry('yakkamon', id!);
+
+if (!guide || guide.data.draft) {
+  return Astro.redirect('/yakkamon', 302);
+}
+
+const { Content } = await render(guide);
+---
+
+<BaseLayout
+  currentPage="yakkamon"
+  title={`${guide.data.title} — Yakkamon | GoblinCodex`}
+  description={guide.data.description}
+  type="article"
+>
+  <div class="gc-content gc-page-enter">
+
+    <a href="/yakkamon" class="gc-btn-secondary gc-guide-back-top">← Назад к разделу</a>
+
+    <div class="gc-guide-layout">
+      <div class="gc-guide-main">
+
+        <nav class="gc-breadcrumb">
+          <a href="/yakkamon">Yakkamon</a>
+          <span>›</span>
+          <span>{guide.data.title}</span>
+        </nav>
+
+        <div class="gc-guide-page-meta">
+          <span class="gc-tag gc-tag--yk">{guide.data.category}</span>
+          <span class="gc-guide-page-time">⏱ {guide.data.readTime} мин чтения</span>
+        </div>
+
+        <h1 class="gc-guide-page-title">{guide.data.icon} {guide.data.title}</h1>
+
+        <hr class="gc-guide-divider" />
+
+        <article class="gc-guide-article">
+          <Content />
+        </article>
+
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+.gc-content { --yk-accent: #2F7C8C; --yk-accent-pale: rgba(47,124,140,0.12); }
+[data-theme="dark"] .gc-content { --yk-accent: #5FA9BA; --yk-accent-pale: rgba(95,169,186,0.16); }
+
+.gc-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-sec);
+  padding: 24px 0 16px;
+}
+.gc-breadcrumb a { color: var(--yk-accent); text-decoration: none; }
+.gc-breadcrumb a:hover { text-decoration: underline; }
+
+.gc-guide-page-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.gc-guide-page-time { font-size: 13px; color: var(--text-sec); }
+
+.gc-guide-page-title {
+  font-family: var(--font-head);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.gc-guide-back-top { display: inline-flex; margin: 20px 0 16px; }
+
+.gc-guide-layout { max-width: 760px; margin: 0 auto 40px; }
+.gc-guide-main { min-width: 0; }
+
+.gc-guide-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0 24px;
+}
+
+:global(.gc-tag--yk) {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 99px;
+  background: var(--yk-accent-pale);
+  color: var(--yk-accent);
+}
+
+@media (max-width: 900px) {
+  .gc-guide-page-title { font-size: 24px; }
+}
+</style>

@@ -1,21 +1,32 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SearchWidget from '../components/SearchWidget.tsx';
+import { getCollection } from 'astro:content';
 
-// Контент-коллекции для Yakkamon пока нет — весь текущий материал (О игре,
-// команда, ранний доступ, free mint, airdrop, депозиты $FLOWER, FAQ) будет
-// разбит на отдельные материалы позже. Сейчас это только структурный шаблон
-// страницы по новому дизайну — сетка оставлена пустой намеренно.
 const CATEGORIES = ['Все', 'Основы', 'Существа', 'Механики', 'Экономика', 'Лайфхаки'];
 
-const guides: Array<{
-  id: string;
-  icon: string;
-  title: string;
-  category: string;
-  time: string;
-  desc: string;
-}> = [];
+const entries = await getCollection('yakkamon', ({ data }) => !data.draft);
+entries.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
+
+const guides = entries.map(g => ({
+  id: g.id,
+  icon: g.data.icon,
+  title: g.data.title,
+  category: g.data.category,
+  time: `${g.data.readTime} мин`,
+  desc: g.data.description,
+}));
+
+// Калькулятор — отдельная Astro-страница (React-остров), не markdown-гайд из
+// коллекции yakkamon, но карточкой в сетке показывается наравне с гайдами.
+guides.push({
+  id: 'kalkulyator-ochkov',
+  icon: '🧮',
+  title: 'Калькулятор очков за депозит',
+  category: 'Экономика',
+  time: '2 мин',
+  desc: 'Неофициальный калькулятор очков за депозит $FLOWER по community-формуле.',
+});
 ---
 
 <BaseLayout
