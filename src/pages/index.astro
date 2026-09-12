@@ -45,8 +45,7 @@ const updatedLabel = (newestDate.getTime() > 0 ? newestDate : new Date())
     <div class="gc-hub-tiles">
       <a href={codexHref} class="gc-hub-tile gc-hub-tile--sfl">
         <div class="gc-hub-tile-sfl-art">
-          <img src="/images/UsualGoblin.png" class="gc-hub-tile-sfl-img gc-hub-tile-sfl-img--light" alt="Sunflower Land" />
-          <img src="/images/UsualGoblinNight.png" class="gc-hub-tile-sfl-img gc-hub-tile-sfl-img--dark" alt="Sunflower Land" />
+          <img src="/images/sfl-hero.jpg" class="gc-hub-tile-sfl-img" alt="Sunflower Land" />
         </div>
         <div class="gc-hub-tile-sfl-body">
           <div class="gc-hub-tile-sfl-title">Sunflower Land</div>
@@ -176,9 +175,6 @@ const updatedLabel = (newestDate.getTime() > 0 ? newestDate : new Date())
   height: 100%;
   object-fit: cover;
 }
-.gc-hub-tile-sfl-img--dark { display: none; }
-[data-theme="dark"] .gc-hub-tile-sfl-img--light { display: none; }
-[data-theme="dark"] .gc-hub-tile-sfl-img--dark  { display: block; }
 .gc-hub-tile-sfl-body {
   padding: 26px 28px 28px;
   display: flex;

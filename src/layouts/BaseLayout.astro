@@ -24,9 +24,14 @@ const {
   currentPage = 'home',
   shareUrl,
 } = Astro.props;
+
+// Тема хранится в cookie gc_theme (см. src/lib/theme.ts) — читаем её здесь,
+// чтобы сразу отдать HTML с правильной темой и не мигать светлой перед
+// применением тёмной клиентским скриптом.
+const cookieTheme = Astro.request.headers.get('cookie')?.match(/(?:^|; )gc_theme=(dark|light)/)?.[1];
 ---
 
-<html lang="ru">
+<html lang="ru" data-theme={cookieTheme === 'dark' ? 'dark' : undefined}>
   <head>
     <SEO title={title} description={description} image={image} type={type} noindex={noindex} shareUrl={shareUrl} />
     <meta charset="utf-8" />
