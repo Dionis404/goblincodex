@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProfileCard from '../../components/ProfileCard.tsx';
 import { getCollection } from 'astro:content';
 import { sectionHref } from '../../lib/subdomains';
+import { fetchWithTimeout } from '../../lib/goblinApi';
 
 // sflBase — база без завершающего "/codex": ProfileCard сам добавляет
 // "/codex/{id}" к каждой ссылке на гайд.
@@ -15,7 +16,7 @@ const lowerUsername = username!.toLowerCase();
 // Fetch farmer list, find matching entry
 let farmer = null;
 try {
-  const res = await fetch('http://goblin-api:8000/community/farmers');
+  const res = await fetchWithTimeout('http://goblin-api:8000/community/farmers');
   if (res.ok) {
     const all: any[] = await res.json();
     farmer = all.find((f) => f.game_username?.toLowerCase() === lowerUsername) ?? null;

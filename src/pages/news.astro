@@ -1,11 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import BlogLayout from '../layouts/BlogLayout.astro';
 import ArticleReaderOverlay from '../components/ArticleReaderOverlay.astro';
 import TelegramPostModal from '../components/TelegramPostModal.astro';
 import SearchWidget from '../components/SearchWidget.tsx';
 import { fetchMergedNews } from '../lib/news-feed';
-import { isSectionHost } from '../lib/subdomains';
 import { getEntryByShortId } from '../lib/news-lookup';
 
 const { items: news, tagsByGame } = await fetchMergedNews({ telegramLimit: 100 });
@@ -17,12 +15,7 @@ const GAME_LABELS: Record<string, string> = {
   telegram: 'Телеграм',
 };
 
-// blog.goblincodex.fun/.ru — бывший Teletype-домен, теперь просто зеркало
-// /news под минимальным layout (без шапки/футера основного сайта). Middleware
-// переписывает "/" на "/news" для этих хостов, но выбор layout делается
-// здесь же, по тому же Host — так /news напрямую на blog.* тоже работает.
-const onBlogHost = isSectionHost(Astro.request.headers.get('host'), 'blog');
-const Layout = onBlogHost ? BlogLayout : BaseLayout;
+const Layout = BaseLayout;
 
 // Легаси-диплинк ?article=<id> (старые расшаренные/закэшированные ссылки —
 // основной путь уже перехватывается 301-редиректом в middleware, это лишь
@@ -47,7 +40,7 @@ const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news/${articleE
 ---
 
 <Layout
-  {...(onBlogHost ? {} : { currentPage: 'news' })}
+  currentPage="news"
   title={seoTitle}
   description={seoDescription}
   image={seoImage}

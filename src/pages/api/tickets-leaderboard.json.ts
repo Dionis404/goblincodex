@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { fetchWithTimeout } from '../../lib/goblinApi';
 
 export const prerender = false;
 
@@ -14,7 +15,7 @@ export const GET: APIRoute = async ({ url }) => {
   if (at) target.searchParams.set('at', at);
 
   try {
-    const res = await fetch(target);
+    const res = await fetchWithTimeout(target.toString());
     if (!res.ok) return json({ updated_at: null, leaderboard: [] }, 502);
     const data = await res.json();
     return json(data);

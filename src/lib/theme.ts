@@ -1,9 +1,7 @@
-// Логика переключения светлой/тёмной темы — общая для Header.astro (полная
-// шапка сайта) и BlogLayout.astro (минимальный layout blog.goblincodex.fun/.ru).
+// Логика переключения светлой/тёмной темы — используется в Header.astro.
 // Каждая страница вызывает initThemeToggle() один раз в своём <script> —
 // сама функция находит на странице все кнопки-переключатели (полная шапка
-// рендерит по одной на десктоп/мобилку, blog-layout — одну) и работает
-// с любым их набором.
+// рендерит по одной на десктоп/мобилку) и работает с любым их набором.
 export function initThemeToggle(): void {
   const html = document.documentElement;
   const saved = JSON.parse(localStorage.getItem('gcSettings') || '{}');

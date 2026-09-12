@@ -2,13 +2,14 @@
 export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LpLeaderboardPage from '../../components/LpLeaderboardPage.jsx';
+import { fetchWithTimeout } from '../../lib/goblinApi';
 
 let leaderboard: any[] = [];
 let meta: any = null;
 let apiError = false;
 
 try {
-  const res = await fetch('http://goblin-api:8000/lp/leaderboard');
+  const res = await fetchWithTimeout('http://goblin-api:8000/lp/leaderboard');
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const json = await res.json();
   leaderboard = json.leaderboard ?? [];

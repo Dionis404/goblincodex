@@ -3,12 +3,13 @@ export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CommunityPage from '../components/CommunityPage.jsx';
 import { getCollection } from 'astro:content';
+import { fetchWithTimeout } from '../lib/goblinApi';
 
 let farmers: any[] = [];
 let apiError = false;
 
 try {
-  const res = await fetch('http://goblin-api:8000/community/farmers');
+  const res = await fetchWithTimeout('http://goblin-api:8000/community/farmers');
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   farmers = await res.json();
 } catch (e) {

@@ -19,6 +19,7 @@ import {
   getCachedPetsCommon,
   getCachedPetMechanics,
 } from '../../lib/catalog-cache';
+import { fetchWithTimeout } from '../../lib/goblinApi';
 
 let catalogItems: Awaited<ReturnType<typeof getCatalogItems>> = [];
 try {
@@ -98,7 +99,7 @@ const shortAddr = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 
 let ticketsTop5: Array<{ farm_id: number; game_username?: string; tickets: number }> = [];
 try {
-  const res = await fetch('http://goblin-api:8000/api/tickets/top500');
+  const res = await fetchWithTimeout('http://goblin-api:8000/api/tickets/top500');
   if (res.ok) {
     const json = await res.json();
     ticketsTop5 = (json.leaderboard ?? []).slice(0, 5);
@@ -109,7 +110,7 @@ try {
 
 let lpTop5: Array<{ owner: string; value_usd: number }> = [];
 try {
-  const res = await fetch('http://goblin-api:8000/lp/leaderboard');
+  const res = await fetchWithTimeout('http://goblin-api:8000/lp/leaderboard');
   if (res.ok) {
     const json = await res.json();
     lpTop5 = (json.leaderboard ?? []).slice(0, 5);

@@ -66,7 +66,7 @@ const updatedLabel = (newestDate.getTime() > 0 ? newestDate : new Date())
         </a>
 
         <a href={newsHref} class="gc-hub-tile-compact gc-hub-tile--news">
-          <div class="gc-hub-tile-compact-img gc-hub-tile-news-icon">📰</div>
+          <img src="/images/news-scroll.png" class="gc-hub-tile-compact-img" alt="Новости и блог" />
           <div class="gc-hub-tile-compact-body">
             <div class="gc-hub-tile-compact-live"><span class="gc-hub-tile-live-dot"></span>Живая лента</div>
             <div class="gc-hub-tile-compact-title">Новости и блог</div>
@@ -252,13 +252,6 @@ const updatedLabel = (newestDate.getTime() > 0 ? newestDate : new Date())
   image-rendering: pixelated;
   background: var(--bg);
 }
-.gc-hub-tile-news-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  background: linear-gradient(135deg, var(--green-pale), var(--card-bg));
-}
 .gc-hub-tile-compact-body { flex: 1; min-width: 0; }
 .gc-hub-tile-compact-badge {
   display: inline-block;
@@ -351,7 +344,7 @@ const updatedLabel = (newestDate.getTime() > 0 ? newestDate : new Date())
   .gc-hub-hero-h1 { font-size: 26px; }
   .gc-hub-tiles-side { flex-direction: column; }
   .gc-hub-tile-sfl-art { height: 180px; }
-  .gc-hub-tile-compact { flex-direction: column; align-items: flex-start; text-align: left; }
+  .gc-hub-tile-compact { flex: none; flex-direction: row; align-items: center; text-align: left; }
   .gc-hub-tile-compact-img { width: 56px; height: 56px; }
 }
 </style>

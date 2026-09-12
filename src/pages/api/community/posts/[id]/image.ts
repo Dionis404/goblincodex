@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { GOBLIN_API_BASE, fetchWithTimeout } from '../../../../../lib/goblinApi';
 
 export const prerender = false;
 
@@ -12,7 +13,6 @@ export const prerender = false;
 // проксируем запрос на internal goblin-api (тот же паттерн, что и
 // src/pages/api/tickets-leaderboard.json.ts), только отдаём бинарные
 // данные картинки, а не JSON.
-const GOBLIN_API_BASE = 'http://goblin-api:8000';
 
 export const GET: APIRoute = async ({ params }) => {
   const { id } = params;
@@ -22,7 +22,7 @@ export const GET: APIRoute = async ({ params }) => {
   }
 
   try {
-    const upstream = await fetch(`${GOBLIN_API_BASE}/api/community/posts/${id}/image`);
+    const upstream = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/community/posts/${id}/image`);
     if (!upstream.ok || !upstream.body) {
       return new Response('not found', { status: upstream.status || 502 });
     }
