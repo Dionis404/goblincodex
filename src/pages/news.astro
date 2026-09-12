@@ -3,8 +3,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import BlogLayout from '../layouts/BlogLayout.astro';
 import ArticleReaderOverlay from '../components/ArticleReaderOverlay.astro';
 import TelegramPostModal from '../components/TelegramPostModal.astro';
+import SearchWidget from '../components/SearchWidget.tsx';
 import { fetchMergedNews } from '../lib/news-feed';
-import { isBlogHost } from '../lib/blog-domain';
+import { isSectionHost } from '../lib/subdomains';
 import { getEntryByShortId } from '../lib/news-lookup';
 
 const { items: news, tagsByGame } = await fetchMergedNews({ telegramLimit: 100 });
@@ -20,7 +21,7 @@ const GAME_LABELS: Record<string, string> = {
 // /news под минимальным layout (без шапки/футера основного сайта). Middleware
 // переписывает "/" на "/news" для этих хостов, но выбор layout делается
 // здесь же, по тому же Host — так /news напрямую на blog.* тоже работает.
-const onBlogHost = isBlogHost(Astro.request.headers.get('host'));
+const onBlogHost = isSectionHost(Astro.request.headers.get('host'), 'blog');
 const Layout = onBlogHost ? BlogLayout : BaseLayout;
 
 // Легаси-диплинк ?article=<id> (старые расшаренные/закэшированные ссылки —
@@ -33,10 +34,10 @@ const articleEntry = articleId ? await getEntryByShortId(articleId) : undefined;
 
 const seoTitle = articleEntry && !articleEntry.data.draft
   ? `${articleEntry.data.title} — GoblinCodex`
-  : 'Новости Sunflower Land — GoblinCodex';
+  : 'Новости и блог — GoblinCodex';
 const seoDescription = articleEntry && !articleEntry.data.draft
   ? articleEntry.data.description
-  : 'Последние новости и обновления игры Sunflower Land на русском языке.';
+  : 'Актуальные обновления, стримы и события из мира Sunflower Land и Yakkamon.';
 const seoImage = articleEntry && !articleEntry.data.draft ? articleEntry.data.image : undefined;
 // Canonical URL статьи — /news/{shortId} (настоящий SSR-маршрут, см.
 // src/pages/news/[id].astro), а не /news?article=id — так шаринг
@@ -56,9 +57,15 @@ const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news/${articleE
   <div class="gc-content gc-page-enter">
 
     <div class="gc-news-page-header">
-      <h1 class="gc-page-title">🔥 Новости Sunflower Land</h1>
-      <p class="gc-news-page-sub">Актуальные обновления, стримы и события из мира SFL</p>
+      <h1 class="gc-page-title">🔥 Новости и блог</h1>
+      <p class="gc-news-page-sub">Актуальные обновления, стримы и события из мира Sunflower Land и Yakkamon.</p>
+      <div class="gc-news-social-row">
+        <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-news-social-btn gc-news-social-btn--tg">✈ Telegram</a>
+        <a href="https://www.youtube.com/@usual.routine.goblin" target="_blank" rel="noopener" class="gc-news-social-btn gc-news-social-btn--yt">▶ YouTube</a>
+      </div>
     </div>
+
+    <SearchWidget client:load />
 
     <!-- Верхний фильтр: игра -->
     <div class="gc-tag-filter" id="gameFilter">
@@ -81,11 +88,11 @@ const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news/${articleE
     {news.length === 0 ? (
       <div class="gc-news-empty">Не удалось загрузить новости. Попробуйте позже.</div>
     ) : (
-      <div class="gc-news-grid" id="newsGrid">
+      <div class="gc-news-masonry" id="newsGrid">
         {news.map(item => (
           <a
             href={item.link}
-            class="gc-card gc-card-hover gc-news-card"
+            class="gc-news-card"
             data-tag={item.tag}
             data-game={item.game}
             data-source={item.source}
@@ -191,23 +198,45 @@ const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news/${articleE
   font-size: 15px;
   color: var(--text-sec);
   margin-top: 6px;
+  max-width: 620px;
 }
+.gc-news-social-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.gc-news-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 9px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  transition: filter 0.15s, transform 0.15s;
+}
+.gc-news-social-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.gc-news-social-btn--tg { background: #229ED9; }
+.gc-news-social-btn--yt { background: #FF0000; }
 
 /* ── Фильтр тегов ── */
 .gc-tag-filter {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 28px;
+  margin-bottom: 16px;
 }
+.gc-tag-filter:first-of-type { margin-top: 24px; }
 .gc-tag-btn {
-  padding: 7px 16px;
-  border-radius: 20px;
+  padding: 8px 16px;
+  border-radius: 9px;
   border: 1px solid var(--border);
   background: var(--card-bg);
   color: var(--text-sec);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12.5px;
+  font-weight: 600;
   cursor: pointer;
   font-family: var(--font-body);
   transition: all 0.15s;
@@ -219,39 +248,53 @@ const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news/${articleE
 }
 .gc-tag-btn.active {
   background: var(--green-dark);
-  color: var(--green-pale);
+  color: #fff;
   border-color: var(--green-dark);
 }
 .gc-subtag-filter {
-  margin-top: -16px;
+  margin-bottom: 24px;
 }
 .gc-tag-btn--sub {
-  padding: 5px 13px;
-  font-size: 12px;
-}
-.gc-tag-btn--sub.active {
-  background: var(--green-mid);
-  border-color: var(--green-mid);
+  padding: 6px 13px;
+  font-size: 11.5px;
 }
 
-/* ── Сетка ── */
+/* ── Сетка новостей ──
+   Раньше здесь была CSS multi-column masonry (column-width) — визуально
+   ближе к макету, но колонки заполняются по очереди сверху вниз, а не
+   строками, из-за чего хронологический порядок статей ломался между
+   колонками (старая статья из 3-й колонки оказывалась выше свежей из 2-й).
+   Вернулись на обычный grid — порядок важнее визуального разнообразия
+   высот карточек. */
 .gc-news-empty {
   padding: 48px;
   text-align: center;
   color: var(--text-sec);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
 }
-.gc-news-grid {
+.gc-news-masonry {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-bottom: 48px;
 }
 .gc-news-card {
-  text-decoration: none;
-  color: var(--text);
   display: flex;
   flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
   overflow: hidden;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+.gc-news-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--green-light);
 }
 .gc-news-card-img {
   width: 100%;
@@ -263,6 +306,7 @@ const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news/${articleE
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s;
+  display: block;
 }
 .gc-news-card:hover .gc-news-card-img img {
   transform: scale(1.04);
@@ -294,13 +338,17 @@ const seoShareUrl = articleEntry && !articleEntry.data.draft ? `/news/${articleE
   font-size: 12px;
   color: var(--text-sec);
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 @media (max-width: 900px) {
-  .gc-news-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .gc-news-masonry { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
-  .gc-news-grid { grid-template-columns: 1fr !important; }
+  .gc-news-masonry { grid-template-columns: 1fr; }
   .gc-news-page-header { padding: 24px 0 16px; }
 }
 </style>

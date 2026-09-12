@@ -8,8 +8,14 @@ import ChapterAuctions from './ChapterAuctions.tsx';
 import { fetchUpcomingAuctions } from '../lib/auctionsApi';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
+import { sectionHref } from '../lib/subdomains';
 
 const CURRENT_CHAPTER = 15;
+
+// Компонент подключается и на /chapter основного домена, и внутри /codex.
+// Когда поддомены включены (см. src/lib/subdomains.ts), ссылки на гайды
+// становятся абсолютными на sfl.* — иначе это просто /codex того же домена.
+const codexHref = sectionHref(Astro.request.headers.get('host'), 'sfl', '/codex');
 
 let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
 try {
@@ -46,18 +52,6 @@ const MECHANIC_CARDS = [
 ];
 ---
 
-<div class="gc-chapter-block">
-  <div class="gc-chapter-banner">
-    <img src="/images/chapter 15.png" alt="The Ascension Age — Chapter 15" class="gc-chapter-img gc-chapter-img--light" />
-    <img src="/images/chapter 15.png" alt="The Ascension Age — Chapter 15" class="gc-chapter-img gc-chapter-img--dark" />
-  </div>
-</div>
-
-<div class="gc-wip-note">
-  <span class="gc-wip-note-dot"></span>
-  🚧 Страница в разработке — часть данных пока заполняется вручную, скоро добавим больше
-</div>
-
 <!-- ── Основные механики ── -->
 <section class="gc-chapter-section">
   <h2 class="gc-block-title-lg">⚙️ Основные механики</h2>
@@ -77,7 +71,7 @@ const MECHANIC_CARDS = [
   {chapterGuides.length > 0 ? (
     <div class="gc-guides-grid">
       {chapterGuides.map(guide => (
-        <a href={`/codex/${guide.id}`} class="gc-card gc-card-hover gc-guide-card">
+        <a href={`${codexHref}/${guide.id}`} class="gc-card gc-card-hover gc-guide-card">
           <div class="gc-guide-card-top">
             <div class="gc-guide-card-icon">{guide.data.icon}</div>
             <div class="gc-guide-card-info">
@@ -94,7 +88,7 @@ const MECHANIC_CARDS = [
     </div>
   ) : (
     <div class="gc-guides-empty">
-      Гайдов по этой главе пока нет. Загляни в <a href="/codex">Кодекс</a> за общими гайдами.
+      Гайдов по этой главе пока нет. Загляни в <a href={codexHref}>Кодекс</a> за общими гайдами.
     </div>
   )}
 </section>
@@ -143,54 +137,6 @@ const MECHANIC_CARDS = [
 </section>
 
 <style>
-:global(.gc-chapter-img) {
-  width: 100%;
-  height: auto;
-  display: block;
-  image-rendering: pixelated;
-}
-:global(.gc-chapter-img--dark)  { display: none; }
-:global([data-theme="dark"]) :global(.gc-chapter-img--light) { display: none; }
-:global([data-theme="dark"]) :global(.gc-chapter-img--dark)  { display: block; }
-
-.gc-chapter-block {
-  position: relative;
-  margin-bottom: 32px;
-}
-.gc-chapter-banner {
-  width: 100%;
-  line-height: 0;
-  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.gc-wip-note {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--amber-pale);
-  border: 1px solid var(--amber);
-  border-radius: 10px;
-  padding: 12px 18px;
-  margin-bottom: 32px;
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.5;
-}
-.gc-wip-note-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--text-ter);
-  flex-shrink: 0;
-  animation: gc-wip-note-pulse 1.8s ease-in-out infinite;
-}
-@keyframes gc-wip-note-pulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.3; }
-}
-
 .gc-chapter-section { margin-bottom: 40px; }
 .gc-block-title-lg {
   font-family: var(--font-head);

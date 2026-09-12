@@ -26,7 +26,7 @@
   font-weight: 600;
   white-space: nowrap;
 }
-[data-theme="dark"] .ca-tz-badge { background: rgba(174, 109, 212, 0.18); color: var(--purple-dark); }
+[data-theme="dark"] .ca-tz-badge { background: rgba(156, 142, 219, 0.18); color: var(--green-dark); }
 
 /* ── Panel ── */
 .ca-panel {

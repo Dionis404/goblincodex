@@ -36,6 +36,7 @@ interface Props {
   chapterName?: string;
   itemCatalog?: Record<string, CatalogEntry>;
   initialNow?: number;
+  defaultStatusFilter?: Status | 'all';
 }
 
 interface AuctionResults {
@@ -215,7 +216,7 @@ function SpriteImg({ sprite, name, size = 40 }: { sprite: string | null; name: s
   );
 }
 
-export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awakening', itemCatalog, initialNow }: Props) {
+export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awakening', itemCatalog, initialNow, defaultStatusFilter = 'upcoming' }: Props) {
   // initialNow приходит с сервера и совпадает с тем, что отрендерил SSR — если
   // здесь заново вызвать Date.now(), время разъедется на пару секунд и React
   // словит hydration mismatch (текст вроде "Через N мин" не совпадёт).
@@ -224,7 +225,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
   // чтобы текст совпал с SSR. После монтирования переключаемся на локальную
   // зону браузера — это уже обычный клиентский ре-рендер, не хидратация.
   const [tz, setTz] = useState(DISPLAY_TZ);
-  const [statusFilter, setStatusFilter] = useState<Status | 'all'>('upcoming');
+  const [statusFilter, setStatusFilter] = useState<Status | 'all'>(defaultStatusFilter);
   const [costFilter, setCostFilter] = useState('all');
   const [kindFilter, setKindFilter] = useState<Kind | 'all'>('all');
   const [nameFilter, setNameFilter] = useState('all');

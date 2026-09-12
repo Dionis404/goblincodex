@@ -1,40 +1,68 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
-import { blogHostFor } from '../lib/blog-domain';
+import { sectionForHost, resolveNavHref, type NavLink } from '../lib/subdomains';
 
 interface Props {
   currentPage?: string;
 }
 const { currentPage = 'home' } = Astro.props;
 
-// "Новости" ведёт на отдельный blog.<домен> (см. src/middleware.ts,
-// src/pages/news.astro), а не на /news этого же домена.
-const newsHref = `https://${blogHostFor(Astro.request.headers.get('host'))}`;
+const host = Astro.request.headers.get('host');
+// На поддомене раздела (sfl./yakk./blog.) подсвечиваем активный пункт по
+// текущему хосту, а не по currentPage prop — на основном домене как раньше.
+const currentSection = sectionForHost(host);
 
-const navLinks = [
-  { slug: 'home',      href: '/',          label: 'Главная'     },
-  { slug: 'codex',    href: '/codex',    label: 'Кодекс' },
-  { slug: 'news',      href: newsHref,     label: 'Новости'     },
-  { slug: 'community', href: '/community', label: 'Сообщество'  },
-  { slug: 'tools',     href: '/tools',     label: 'Инструменты' },
-  { slug: 'about',     href: '/about',     label: 'О проекте'   },
-  { slug: 'donate',    href: '/donate',    label: 'Поддержать'  },
+// Pill-сегмент в шапке — только 3 раздела, как в макете. Остальные пункты
+// (Главная — через логотип, Сообщество/Инструменты) переехали на главную
+// и в футер, в шапке больше не дублируются.
+const pillLinkDefs: NavLink[] = [
+  { slug: 'codex',    targetSection: 'sfl', path: '/codex',    label: 'Sunflower Land' },
+  { slug: 'yakkamon', targetSection: 'yakk',path: '/yakkamon', label: 'Yakkamon'       },
+  { slug: 'news',     targetSection: 'blog',path: '/news',     label: 'Новости и блог' },
 ];
+
+const pillLinks = pillLinkDefs.map(link => ({
+  slug: link.slug,
+  label: link.label,
+  href: resolveNavHref(host, link),
+  active: currentSection?.id === link.targetSection,
+}));
+
+const logoHref = resolveNavHref(host, { slug: 'home', targetSection: null, path: '/', label: 'Главная' });
+
+// Мобильное меню — полный список, ширина экрана здесь не ограничивает
+// количество пунктов так, как в десктопном pill-сегменте.
+const mobileLinkDefs: NavLink[] = [
+  { slug: 'home',      targetSection: null,  path: '/',          label: 'Главная'        },
+  { slug: 'codex',     targetSection: 'sfl', path: '/codex',     label: 'Sunflower Land' },
+  { slug: 'yakkamon',  targetSection: 'yakk',path: '/yakkamon',  label: 'Yakkamon'       },
+  { slug: 'news',      targetSection: 'blog',path: '/news',      label: 'Новости и блог' },
+  { slug: 'community', targetSection: null,  path: '/community', label: 'Сообщество'     },
+  { slug: 'tools',     targetSection: null,  path: '/tools',     label: 'Инструменты'    },
+  { slug: 'about',     targetSection: null,  path: '/about',     label: 'О проекте'      },
+];
+
+const mobileLinks = mobileLinkDefs.map(link => ({
+  slug: link.slug,
+  label: link.label,
+  href: resolveNavHref(host, link),
+  active: currentSection ? link.targetSection === currentSection.id : currentPage === link.slug,
+}));
 ---
 
 <header class="gc-header">
   <div class="gc-header-inner">
 
-    <a href="/" class="gc-logo">
+    <a href={logoHref} class="gc-logo">
       <div class="gc-logo-icon">🧙</div>
       <span class="gc-logo-text">Goblin<span>Codex</span></span>
     </a>
 
-    <nav class="gc-nav">
-      {navLinks.filter(l => l.slug !== 'donate').map(link => (
+    <nav class="gc-nav-pill">
+      {pillLinks.map(link => (
         <a
           href={link.href}
-          class={`gc-nav-link${currentPage === link.slug ? ' active' : ''}`}
+          class={`gc-nav-pill-link gc-nav-pill-link--${link.slug}${link.active ? ' active' : ''}`}
         >
           {link.label}
         </a>
@@ -42,13 +70,13 @@ const navLinks = [
     </nav>
 
     <div class="gc-header-right">
-      <ThemeToggle />
-      <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-telegram">
-        Telegram
+      <a href="/about" class="gc-nav-ghost-link">
+        О проекте
       </a>
       <a href="/donate" class="gc-btn-donate">
         Поддержать
       </a>
+      <ThemeToggle />
     </div>
 
     <!-- Мобильный хедер: кнопка темы + гамбургер -->
@@ -65,17 +93,17 @@ const navLinks = [
 
   <!-- Мобильное меню -->
   <div class="gc-mobile-menu" id="mobileMenu" aria-hidden="true">
-    {navLinks.map(link => (
+    {mobileLinks.map(link => (
       <a
         href={link.href}
-        class={currentPage === link.slug ? 'active' : ''}
+        class={link.active ? 'active' : ''}
       >
         {link.label}
       </a>
     ))}
     <div class="gc-mobile-menu-footer">
-      <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-telegram gc-btn-telegram--full">
-        Telegram
+      <a href="/donate" class="gc-btn-donate gc-btn-donate--full">
+        Поддержать
       </a>
     </div>
   </div>

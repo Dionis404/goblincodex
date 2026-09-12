@@ -1,48 +1,27 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ChapterTimer from '../components/ChapterTimer.tsx';
-import SearchWidget from '../components/SearchWidget.tsx';
-import ArticleReaderOverlay from '../components/ArticleReaderOverlay.astro';
-import TelegramPostModal from '../components/TelegramPostModal.astro';
-import { fetchMergedNews, type NewsItem } from '../lib/news-feed';
-import { getTelegramSubscriberCount } from '../lib/telegram-subscribers';
-import { blogHostFor } from '../lib/blog-domain';
-
-// Ссылки "на новости" с главной ведут на отдельный blog.<домен>,
-// см. Header.astro/middleware.ts.
-const newsHref = `https://${blogHostFor(Astro.request.headers.get('host'))}`;
-
-let news: NewsItem[] = [];
-
-try {
-  const { items } = await fetchMergedNews({ telegramLimit: 4 });
-  news = items.slice(0, 4);
-} catch (e) {
-  // Fallback если новости недоступны — source не 'news'/'telegram', чтобы
-  // клик по карточке не перехватывался gc:open-article/gc:open-tg-modal
-  // (нет slug для оверлея) и вёл по обычной ссылке на /news
-  news = [
-    { title: 'Загрузка новостей...', date: new Date(0), dateLabel: '', tag: '', tagColor: 'green', link: newsHref, image: '', desc: '', source: 'fallback', game: 'sunflower' },
-  ];
-}
-const telegramPosts = news.filter(n => n.source === 'telegram');
-
+import { sectionHref } from '../lib/subdomains';
 import { getCollection } from 'astro:content';
+
+// Ссылки на разделы — абсолютные на поддомен, когда поддомены включены
+// (см. src/lib/subdomains.ts), иначе обычные относительные пути.
+const host = Astro.request.headers.get('host');
+const newsHref = sectionHref(host, 'blog', '/news');
+const codexHref = sectionHref(host, 'sfl', '/codex');
+const yakkamonHref = sectionHref(host, 'yakk', '/yakkamon');
 
 const latestGuides = await getCollection('guides', ({ data }) => !data.draft);
 latestGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
-const guides = latestGuides.slice(0, 5).map(g => ({
-  title: g.data.title,
-  time:  `${g.data.readTime} мин`,
-  link:  `/codex/${g.id}`,
-  icon:  g.data.icon,
-}));
 
 const allMechanics = await getCollection('mechanics', ({ data }) => !data.draft).catch(() => []);
 const articlesCount = latestGuides.length + allMechanics.length;
 
-// ── Telegram: кол-во подписчиков канала ──
-const subscriberCount = await getTelegramSubscriberCount();
+const newestDate = [...latestGuides, ...allMechanics].reduce((max, item) => {
+  const d = new Date(item.data.updatedDate ?? item.data.publishDate ?? 0);
+  return d > max ? d : max;
+}, new Date(0));
+const updatedLabel = (newestDate.getTime() > 0 ? newestDate : new Date())
+  .toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 ---
 
 <BaseLayout
@@ -51,396 +30,328 @@ const subscriberCount = await getTelegramSubscriberCount();
   description="Русскоязычный хаб для игроков Sunflower Land: гайды для новичков, разборы механик, каталог NFT предметов с бустами."
 >
 
-  <!-- ── Hero ── -->
-  <section class="gc-hero gc-page-enter">
-    <div class="gc-hero-text">
-      <h1 class="gc-h1">
-        Всё о <em>Sunflower<br/>Land</em> здесь
-      </h1>
-      <p class="gc-hero-desc">
-        Лаконичные гайды, актуальные новости, инструменты и база данных для фермеров SFL.
-      </p>
-      <div class="gc-hero-actions">
-        <a href="/codex" class="gc-btn-primary">📖 Быстрый старт</a>
-        <a href={newsHref} class="gc-btn-secondary">Что нового?</a>
-      </div>
-    </div>
-    <div class="gc-hero-art">
-      <div class="gc-farm-frame">
-        <img src="/images/UsualGoblin.png" alt="Гоблин фермер" class="gc-hero-img gc-hero-img--light" />
-        <img src="/images/UsualGoblinNight.png" alt="Гоблин фермер" class="gc-hero-img gc-hero-img--dark" />
-      </div>
-    </div>
-  </section>
-
   <div class="gc-content">
 
-    <!-- ── Тизер Yakkamon ── -->
-    <a href="/yakkamon" class="gc-yk-teaser gc-card gc-card-hover">
-      <img src="/images/yakkamon-egg.png" alt="Яйцо Yakkamon" class="gc-yk-teaser-icon" />
-      <div class="gc-yk-teaser-text">
-        <div class="gc-yk-teaser-badge">Новый проект от команды SFL</div>
-        <div class="gc-yk-teaser-title">Yakkamon — idle-фарминг встречает коллекционера существ</div>
-        <div class="gc-yk-teaser-desc">Обзор игры на русском: механики, ранний доступ, free mint и NFT-airdrop</div>
-      </div>
-      <div class="gc-yk-teaser-arrow">→</div>
-    </a>
+    <!-- ── Hero ── -->
+    <section class="gc-hub-hero gc-page-enter">
+      <div class="gc-hub-hero-icon">🧙</div>
+      <div class="gc-hub-hero-eyebrow">Usual.Routine.Goblin</div>
+      <h1 class="gc-hub-hero-h1">Независимые гайды и новости по любимым играм</h1>
+      <p class="gc-hub-hero-desc">Гайды по Sunflower Land и Yakkamon, новости обеих игр и блог сообщества.</p>
+      <div class="gc-hub-hero-meta">{articlesCount} гайдов, обновлено {updatedLabel}</div>
+    </section>
 
-    <!-- ── Блок главы + таймер ── -->
-    <div class="gc-chapter-block">
-      <a href="/chapter" class="gc-chapter-banner">
-        <img src="/images/chapter 15.png" alt="The Ascension Age — Chapter 15" class="gc-chapter-img gc-chapter-img--light" />
-        <img src="/images/chapter 15.png" alt="The Ascension Age — Chapter 15" class="gc-chapter-img gc-chapter-img--dark" />
+    <!-- ── Плитки разделов ── -->
+    <div class="gc-hub-tiles">
+      <a href={codexHref} class="gc-hub-tile gc-hub-tile--sfl">
+        <div class="gc-hub-tile-sfl-art">
+          <img src="/images/UsualGoblin.png" class="gc-hub-tile-sfl-img gc-hub-tile-sfl-img--light" alt="Sunflower Land" />
+          <img src="/images/UsualGoblinNight.png" class="gc-hub-tile-sfl-img gc-hub-tile-sfl-img--dark" alt="Sunflower Land" />
+        </div>
+        <div class="gc-hub-tile-sfl-body">
+          <div class="gc-hub-tile-sfl-title">Sunflower Land</div>
+          <p class="gc-hub-tile-sfl-desc">Гайды по механикам, кодекс предметов, инструменты и календарь ивентов.</p>
+          <div class="gc-hub-tile-sfl-cta">Открыть раздел →</div>
+        </div>
       </a>
-      <div class="gc-chapter-timer">
-        <ChapterTimer client:load />
-        <a href="/codex?tab=chapter" class="gc-btn-cta">Узнать больше</a>
+
+      <div class="gc-hub-tiles-side">
+        <a href={yakkamonHref} class="gc-hub-tile-compact gc-hub-tile--yk">
+          <img src="/images/yakkamon-egg.png" class="gc-hub-tile-compact-img" alt="Yakkamon" />
+          <div class="gc-hub-tile-compact-body">
+            <div class="gc-hub-tile-compact-badge gc-hub-tile-compact-badge--yk">Новый проект</div>
+            <div class="gc-hub-tile-compact-title gc-hub-tile-compact-title--yk">Yakkamon</div>
+            <p class="gc-hub-tile-compact-desc">Idle-фарминг и коллекционирование существ.</p>
+          </div>
+        </a>
+
+        <a href={newsHref} class="gc-hub-tile-compact gc-hub-tile--news">
+          <div class="gc-hub-tile-compact-img gc-hub-tile-news-icon">📰</div>
+          <div class="gc-hub-tile-compact-body">
+            <div class="gc-hub-tile-compact-live"><span class="gc-hub-tile-live-dot"></span>Живая лента</div>
+            <div class="gc-hub-tile-compact-title">Новости и блог</div>
+            <p class="gc-hub-tile-compact-desc">Общая лента обновлений по обеим играм и авторский блог о сообществе, с фильтром по проекту.</p>
+          </div>
+        </a>
       </div>
     </div>
 
-    <!-- ── Нейропоиск ── -->
-    <div class="gc-neuro-search gc-card">
-      <div class="gc-neuro-search-head">
-        <span class="gc-neuro-search-badge">✨ Новое: нейропоиск</span>
-        <span class="gc-neuro-search-title">Спроси справочник своими словами</span>
-      </div>
-      <SearchWidget client:load />
-    </div>
-
-    <!-- ── 4 карточки разделов ── -->
-    <div class="gc-grid-4" style="margin-bottom: 40px;">
-      <a href="/codex" class="gc-card gc-card-hover gc-section-card">
-        <div class="gc-section-icon">📚</div>
-        <div>
-          <div class="gc-section-title">Кодекс</div>
-          <div class="gc-section-desc">Гайды и разборы механик для всех уровней</div>
-        </div>
-      </a>
-      <a href={newsHref} class="gc-card gc-card-hover gc-section-card">
-        <div class="gc-section-icon">📰</div>
-        <div>
-          <div class="gc-section-title">Новости и обновления</div>
-          <div class="gc-section-desc">Будь в курсе последних изменений в SFL</div>
-        </div>
-      </a>
-      <a href="/tools" class="gc-card gc-card-hover gc-section-card">
-        <div class="gc-section-icon">🔧</div>
-        <div>
-          <div class="gc-section-title">Инструменты</div>
-          <div class="gc-section-desc">Калькуляторы и полезные утилиты</div>
-        </div>
-      </a>
-      <a href="/community" class="gc-card gc-card-hover gc-section-card">
-        <div class="gc-section-icon">👥</div>
-        <div>
-          <div class="gc-section-title">Сообщество</div>
-          <div class="gc-section-desc">База фермеров и чат нашей банды</div>
-        </div>
-      </a>
-    </div>
-
-    <!-- ── 3 колонки ── -->
-    <div class="gc-grid-3c" style="margin-bottom: 40px;">
-
-      <!-- Новости из RSS -->
-      <div class="gc-card" style="padding: 24px;">
-        <div class="gc-block-header">
-          <span class="gc-block-title">🔥 Что нового в SFL</span>
-          <a href={newsHref} class="gc-block-link">Все новости →</a>
-        </div>
-        <div class="gc-news-list" id="homeNewsList">
-          {news.map(item => (
-            <a
-              href={item.link}
-              class="gc-list-item gc-news-item"
-              data-source={item.source}
-              data-slug={item.slug ?? ''}
-            >
-              <div class="gc-news-dot"></div>
-              <div>
-                <div class="gc-news-title">{item.title}</div>
-                <div class="gc-news-meta">
-                  {item.dateLabel}
-                  {item.tag && <span class={`gc-tag gc-tag--${item.tagColor}`}>{item.tag}</span>}
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <!-- Гайды -->
-      <div class="gc-card" style="padding: 24px;">
-        <div class="gc-block-header">
-          <span class="gc-block-title">📗 Последние гайды</span>
-          <a href="/codex" class="gc-block-link">Все гайды →</a>
-        </div>
-        <div>
-          {guides.map(guide => (
-            <a href={guide.link} class="gc-guide-item">
-              <div class="gc-guide-icon">{guide.icon}</div>
-              <div>
-                <div class="gc-guide-title">{guide.title}</div>
-                <div class="gc-guide-time">{guide.time}</div>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <!-- Каналы -->
-      <div class="gc-card gc-channels-card" style="padding: 24px;">
-        <div class="gc-channels-header">
-          <span class="gc-channels-dot"></span>
-          <span class="gc-channels-title">Наши каналы</span>
-        </div>
-        <p class="gc-channels-sub">Подписывайся чтобы не пропускать обновления</p>
-
-        <div class="gc-channel-item gc-channel-item--tg">
-          <div class="gc-channel-logo gc-channel-logo--tg">✈</div>
-          <div class="gc-channel-info">
-            <div class="gc-channel-name">Telegram канал</div>
-            <div class="gc-channel-desc">Новости, обновления, гайды</div>
-          </div>
-          <a href="https://t.me/URGSFL" target="_blank" class="gc-channel-link gc-channel-link--tg">Подписаться →</a>
-        </div>
-
-        <div class="gc-channel-item gc-channel-item--yt">
-          <div class="gc-channel-logo gc-channel-logo--yt">▶</div>
-          <div class="gc-channel-info">
-            <div class="gc-channel-name">YouTube</div>
-            <div class="gc-channel-desc">Видеогайды и разборы</div>
-          </div>
-          <a href="https://www.youtube.com/@usual.routine.goblin" target="_blank" class="gc-channel-link gc-channel-link--yt">Подписаться →</a>
-        </div>
-
-        <div class="gc-channels-stats">
-          <div class="gc-stat-card">
-            <div class="gc-stat-icon">👥</div>
-            <div class="gc-stat-num">{subscriberCount !== null ? subscriberCount.toLocaleString('ru-RU') : '—'}</div>
-            <div class="gc-stat-label">подписчиков</div>
-          </div>
-          <div class="gc-stat-card">
-            <div class="gc-stat-icon">📝</div>
-            <div class="gc-stat-num">{articlesCount}</div>
-            <div class="gc-stat-label">статей</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ── CTA баннер ── -->
-    <div class="gc-cta-banner">
-      <div>
-        <div class="gc-cta-title">🌻 Присоединяйся к сообществу фермеров!</div>
-        <div class="gc-cta-desc">Общайся, делись опытом и развивай свою ферму вместе с нами</div>
-      </div>
-      <a href="https://t.me/URGSFL" target="_blank" class="gc-btn-cta">Открыть чат →</a>
+    <!-- ── Нижний ряд ссылок ── -->
+    <div class="gc-hub-links">
+      <a href="/about" class="gc-hub-link">О проекте</a>
+      <a href="/community" class="gc-hub-link">Сообщество</a>
+      <a href="/donate" class="gc-hub-link gc-hub-link--cta">Поддержать проект</a>
     </div>
 
   </div>
-
-  <ArticleReaderOverlay />
-  <TelegramPostModal posts={telegramPosts} />
 </BaseLayout>
 
-<script>
-  const homeNewsCards = document.querySelectorAll<HTMLElement>('#homeNewsList .gc-news-item');
-  homeNewsCards.forEach(card => {
-    card.addEventListener('click', (e) => {
-      const source = card.dataset.source;
-      if (source === 'news') {
-        e.preventDefault();
-        window.dispatchEvent(new CustomEvent('gc:open-article', { detail: card.dataset.slug }));
-      } else if (source === 'telegram') {
-        e.preventDefault();
-        window.dispatchEvent(new CustomEvent('gc:open-tg-modal', { detail: card.getAttribute('href') }));
-      }
-    });
-  });
-</script>
-
 <style>
-.gc-hero-desc {
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--text-sec);
-  margin-bottom: 28px;
-  max-width: 480px;
-}
-.gc-hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-/* ── Нейропоиск ── */
-.gc-neuro-search {
-  padding: 16px 24px;
-  margin-bottom: 24px;
-  border-top: 4px solid var(--green-dark, #2f7d3c);
-}
-.gc-neuro-search-head {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-.gc-neuro-search-badge {
-  display: inline-block;
-  background: var(--green-pale, rgba(47, 125, 60, 0.12));
-  color: var(--green-dark, #2f7d3c);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 4px 12px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-.gc-neuro-search-title {
-  font-family: var(--font-head);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-}
-.gc-neuro-search :global(.gc-search-widget) { margin: 0 auto; max-width: 100%; }
-@media (max-width: 600px) {
-  .gc-neuro-search { padding: 14px 18px; }
-  .gc-neuro-search-head { flex-direction: column; gap: 6px; }
-}
-
-/* ── Тизер Yakkamon ── */
-.gc-yk-teaser {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 22px 28px;
-  margin-bottom: 40px;
-  text-decoration: none;
-  border-left: 4px solid var(--amber, #f5a623);
-}
-.gc-yk-teaser-icon { width: 56px; height: 56px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
-.gc-yk-teaser-text { flex: 1; min-width: 0; }
-.gc-yk-teaser-badge {
-  display: inline-block;
-  background: var(--amber-soft, rgba(245, 166, 35, 0.15));
-  color: var(--amber, #f5a623);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 3px 10px;
-  border-radius: 999px;
-  margin-bottom: 6px;
-}
-.gc-yk-teaser-title {
-  font-family: var(--font-head);
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
-}
-.gc-yk-teaser-desc {
-  font-size: 13px;
-  color: var(--text-sec);
-  margin-top: 4px;
-}
-.gc-yk-teaser-arrow {
-  font-size: 22px;
-  color: var(--green-dark);
-  flex-shrink: 0;
-}
-@media (max-width: 600px) {
-  .gc-yk-teaser { padding: 18px 20px; gap: 14px; }
-  .gc-yk-teaser-icon { width: 34px; height: 34px; }
-}
-.gc-hero-img {
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-.gc-hero-img--dark { display: none; }
-:global([data-theme="dark"]) .gc-hero-img--light { display: none; }
-:global([data-theme="dark"]) .gc-hero-img--dark  { display: block; }
-
-:global(.gc-chapter-img) {
-  width: 100%;
-  height: auto;
-  display: block;
-  image-rendering: pixelated;
-}
-:global(.gc-chapter-img--dark)  { display: none; }
-:global([data-theme="dark"]) :global(.gc-chapter-img--light) { display: none; }
-:global([data-theme="dark"]) :global(.gc-chapter-img--dark)  { display: block; }
-
-.gc-chapter-block {
-  position: relative;
-  margin-bottom: 32px;
-}
-.gc-chapter-banner {
-  display: block;
-  width: 100%;
-  line-height: 0;
-  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
-  position: relative;
-  z-index: 2;
-}
-:global(.gc-chapter-timer) {
-  background: #5C3D1E;
-  border-radius: 14px;
-  padding: 20px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  max-width: 75%;
-  margin: -20px auto 0;
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-}
-:global(.gc-timer-row) {
+.gc-hub-hero {
+  max-width: 620px;
+  margin: 0 auto 44px;
+  padding: 40px 20px 0;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-  flex: 1;
-  padding-top: 10px;
 }
-:global(.gc-timer-label) {
-  font-size: 15px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.5);
-  text-align: center;
-  font-family: 'Press Start 2P', monospace;
-}
-:global(.gc-timer-digits) {
+.gc-hub-hero-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: var(--green-dark);
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
   justify-content: center;
+  font-size: 24px;
+  margin-bottom: 16px;
 }
-:global(.gc-timer-value) {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 28px;
-  color: #e8ece3;
-  letter-spacing: 3px;
+.gc-hub-hero-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--green-dark);
+  background: var(--green-pale);
+  padding: 4px 11px;
+  border-radius: 99px;
+  margin-bottom: 14px;
+}
+.gc-hub-hero-h1 {
+  font-family: var(--font-head);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin: 0 0 12px;
+  color: var(--text);
+}
+.gc-hub-hero-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-sec);
+  margin: 0 0 10px;
+}
+.gc-hub-hero-meta {
+  font-size: 12px;
+  color: var(--text-ter);
+  margin: 0;
 }
 
-/* Новости — ссылки */
-.gc-news-item {
-  text-decoration: none;
-  color: inherit;
+/* ── Плитки разделов ── */
+.gc-hub-tiles {
   display: flex;
-  transition: padding-left 0.15s;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-bottom: 48px;
+  align-items: stretch;
 }
-.gc-news-item:hover { padding-left: 4px; }
-.gc-news-item:hover .gc-news-title { color: var(--green-dark); }
+.gc-hub-tile--sfl {
+  flex: 2 1 380px;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+.gc-hub-tile--sfl:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.16);
+  border-color: var(--green-dark);
+}
+.gc-hub-tile-sfl-art {
+  position: relative;
+  width: 100%;
+  height: 230px;
+  overflow: hidden;
+}
+.gc-hub-tile-sfl-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gc-hub-tile-sfl-img--dark { display: none; }
+[data-theme="dark"] .gc-hub-tile-sfl-img--light { display: none; }
+[data-theme="dark"] .gc-hub-tile-sfl-img--dark  { display: block; }
+.gc-hub-tile-sfl-body {
+  padding: 26px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  flex: 1;
+}
+.gc-hub-tile-sfl-title {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+.gc-hub-tile-sfl-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-sec);
+  margin: 0;
+  flex: 1;
+}
+.gc-hub-tile-sfl-cta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--green-dark);
+  margin-top: 4px;
+}
+
+.gc-hub-tiles-side {
+  flex: 1 1 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.gc-hub-tile-compact {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+.gc-hub-tile-compact:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.14);
+}
+.gc-hub-tile--yk:hover { border-color: var(--yk-accent-mid); }
+.gc-hub-tile--news:hover { border-color: var(--text-sec); }
+.gc-hub-tile--yk {
+  --yk-accent-mid: #2F7C8C;
+  --yk-accent-pale: rgba(47,124,140,0.12);
+}
+[data-theme="dark"] .gc-hub-tile--yk {
+  --yk-accent-mid: #5FA9BA;
+  --yk-accent-pale: rgba(95,169,186,0.16);
+}
+
+.gc-hub-tile-compact-img {
+  width: 74px;
+  height: 74px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  background: var(--bg);
+}
+.gc-hub-tile-news-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: linear-gradient(135deg, var(--green-pale), var(--card-bg));
+}
+.gc-hub-tile-compact-body { flex: 1; min-width: 0; }
+.gc-hub-tile-compact-badge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 99px;
+  margin-bottom: 5px;
+}
+.gc-hub-tile-compact-badge--yk {
+  color: var(--yk-accent-mid);
+  background: var(--yk-accent-pale);
+}
+.gc-hub-tile-compact-title {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.gc-hub-tile-compact-title--yk { color: var(--yk-accent-mid); }
+.gc-hub-tile-compact-desc {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-sec);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.gc-hub-tile-compact-live {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-sec);
+}
+.gc-hub-tile-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-dark);
+  flex-shrink: 0;
+}
+
+/* ── Нижний ряд ссылок ── */
+.gc-hub-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+.gc-hub-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-sec);
+  border: 1.5px solid var(--border);
+  padding: 10px 20px;
+  border-radius: 9px;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.gc-hub-link:hover {
+  border-color: var(--green-mid);
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.gc-hub-link--cta {
+  font-weight: 700;
+  color: #2B1D0A;
+  background: var(--amber);
+  border-color: var(--amber);
+}
+.gc-hub-link--cta:hover { filter: brightness(1.06); }
+
+@media (max-width: 900px) {
+  .gc-hub-tiles { flex-direction: column; }
+  .gc-hub-tile--sfl { flex-basis: auto; }
+  .gc-hub-tiles-side { flex-basis: auto; flex-direction: row; }
+  .gc-hub-tile-compact { flex: 1 1 0; }
+}
+@media (max-width: 640px) {
+  .gc-hub-hero-h1 { font-size: 26px; }
+  .gc-hub-tiles-side { flex-direction: column; }
+  .gc-hub-tile-sfl-art { height: 180px; }
+  .gc-hub-tile-compact { flex-direction: column; align-items: flex-start; text-align: left; }
+  .gc-hub-tile-compact-img { width: 56px; height: 56px; }
+}
 </style>

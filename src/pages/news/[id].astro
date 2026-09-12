@@ -9,7 +9,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogLayout from '../../layouts/BlogLayout.astro';
 import { getEntry, render } from 'astro:content';
-import { isBlogHost } from '../../lib/blog-domain';
+import { isSectionHost } from '../../lib/subdomains';
 import { getEntryByShortId } from '../../lib/news-lookup';
 
 const { id } = Astro.params;
@@ -33,7 +33,7 @@ if (!entry || entry.data.draft) {
 
 const { Content } = await render(entry);
 
-const onBlogHost = isBlogHost(Astro.request.headers.get('host'));
+const onBlogHost = isSectionHost(Astro.request.headers.get('host'), 'blog');
 const Layout = onBlogHost ? BlogLayout : BaseLayout;
 
 function formatDate(iso: string): string {

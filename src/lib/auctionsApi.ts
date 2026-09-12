@@ -83,6 +83,26 @@ export async function fetchUpcomingAuctions(): Promise<UiAuction[]> {
   }
 }
 
+/**
+ * История завершённых аукционов для страницы прошлых глав (/chapter/past).
+ * upcoming=false ещё не подтверждён командой goblin-bot так же явно, как
+ * upcoming=true — пробуем оптимистично, деградируем в пустой список при
+ * ошибке/неожиданном ответе, чтобы страница не падала, а просто показывала
+ * "истории пока нет" вместо списка.
+ */
+export async function fetchPastAuctions(): Promise<UiAuction[]> {
+  try {
+    const res = await fetch(`${GOBLIN_API_BASE}/api/auctions?upcoming=false`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data: ApiAuction[] = await res.json();
+    if (!Array.isArray(data)) throw new Error('unexpected response shape');
+    return data.map(mapAuction);
+  } catch (e) {
+    console.error('[auctionsApi] fetchPastAuctions error:', e);
+    return [];
+  }
+}
+
 /** null означает "результатов пока нет" (404) — это не ошибка. */
 export async function fetchAuctionResults(auctionId: string): Promise<AuctionResults | null> {
   try {

@@ -8,6 +8,7 @@ import PetsCatalog from '../../components/PetsCatalog.tsx';
 import ReferenceCatalog from '../../components/ReferenceCatalog.tsx';
 import ChapterContent from '../../components/ChapterContent.astro';
 import ChapterMechanicModal from '../../components/ChapterMechanicModal.astro';
+import ChapterTimer from '../../components/ChapterTimer.tsx';
 import FishAgingTable from '../../components/tools/FishAgingTable.tsx';
 import SearchWidget from '../../components/SearchWidget.tsx';
 import type { getCatalogItems, getBudTraits, getBudFilterOptions, getPetNftBreeds, getPetNftTraits, getPetNftFilterOptions, getPetsCommon, getPetResources, getPetFetches } from '../../lib/db';
@@ -76,20 +77,46 @@ const sections = [
   { id: 'mechanics', label: 'Механики',      icon: '⚙️', sub: 'Глубокий разбор'  },
   { id: 'nft',       label: 'NFT Предметы',  icon: '💎', sub: 'Бонусы и буферы'  },
   { id: 'reference', label: 'Справочник',    icon: '📐', sub: 'Игровые таблицы'  },
-  { id: 'chapter',   label: 'Глава',         icon: '🗓️', sub: 'Текущий сезон'    },
+  { id: 'chapter',   label: 'Главы',         icon: '🗓️', sub: 'Текущая и прошлые' },
+  { id: 'community', label: 'Сообщество',    icon: '👥', sub: 'Рейтинги и чат'   },
 ];
 
-const tagColors: Record<string, string> = {
-  'Новичкам':   'green',
-  'Экономика':  'amber',
-  'Фермерство': 'green',
-  'Крафт':      'purple',
-  'Основы':     'blue',
-  'Квесты':     'amber',
-  'NPC':        'purple',
-  'Достижения': 'blue',
-  'Предметы':   'green',
+// Точные цвета категорий из дизайн-системы — см. gc-cat-tag--* в <style>
+// ниже. Не путать с общими .gc-tag--blue/green/amber/purple, которые
+// используются на /news для совсем других тегов (GitHub/Стримы/Бродкаст).
+const categoryTagClass: Record<string, string> = {
+  'Основы':     'gc-cat-tag--osnovy',
+  'Механики':   'gc-cat-tag--mehaniki',
+  'Экономика':  'gc-cat-tag--ekonomika',
+  'Фермерство': 'gc-cat-tag--fermerstvo',
+  'Лайфхаки':   'gc-cat-tag--layfhaki',
 };
+
+const CURRENT_CHAPTER_NAME = 'The Ascension Age';
+
+const shortAddr = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+
+let ticketsTop5: Array<{ farm_id: number; game_username?: string; tickets: number }> = [];
+try {
+  const res = await fetch('http://goblin-api:8000/api/tickets/top500');
+  if (res.ok) {
+    const json = await res.json();
+    ticketsTop5 = (json.leaderboard ?? []).slice(0, 5);
+  }
+} catch (err) {
+  console.error('[codex] Tickets top-5 fetch error:', err);
+}
+
+let lpTop5: Array<{ owner: string; value_usd: number }> = [];
+try {
+  const res = await fetch('http://goblin-api:8000/lp/leaderboard');
+  if (res.ok) {
+    const json = await res.json();
+    lpTop5 = (json.leaderboard ?? []).slice(0, 5);
+  }
+} catch (err) {
+  console.error('[codex] LP top-5 fetch error:', err);
+}
 ---
 
 <BaseLayout
@@ -98,6 +125,18 @@ const tagColors: Record<string, string> = {
   description="Актуальные гайды для новичков и продвинутых игроков: механики, ресурсы, животные, рыбалка."
 >
   <div class="gc-content gc-page-enter">
+
+    <!-- Баннер текущей главы -->
+    <div class="gc-codex-chapter-block">
+      <a href="/chapter" class="gc-codex-chapter-banner">
+        <img src="/images/chapter 15.png" alt={`${CURRENT_CHAPTER_NAME} — Chapter 15`} class="gc-codex-chapter-img gc-codex-chapter-img--light" />
+        <img src="/images/chapter 15.png" alt={`${CURRENT_CHAPTER_NAME} — Chapter 15`} class="gc-codex-chapter-img gc-codex-chapter-img--dark" />
+      </a>
+      <div class="gc-codex-chapter-timer">
+        <ChapterTimer client:load />
+        <a href="/chapter" class="gc-btn-cta">Перейти к главе →</a>
+      </div>
+    </div>
 
     <!-- Заголовок -->
     <div class="gc-guides-header">
@@ -158,7 +197,7 @@ const tagColors: Record<string, string> = {
             <div class="gc-guide-card-info">
               <div class="gc-guide-card-title">{guide.data.title}</div>
               <div class="gc-guide-card-meta">
-                <span class={`gc-tag gc-tag--${tagColors[guide.data.category] ?? 'green'}`}>
+                <span class={`gc-tag ${categoryTagClass[guide.data.category] ?? 'gc-tag--green'}`}>
                   {guide.data.category}
                 </span>
                 <span class="gc-guide-card-time">⏱ {guide.data.readTime} мин</span>
@@ -287,6 +326,53 @@ const tagColors: Record<string, string> = {
       <ChapterContent />
     </div>
 
+    <!-- ═══════════════════════════════════════════════
+         СООБЩЕСТВО
+         ═══════════════════════════════════════════════ -->
+    <div id="communityPanel" style="display:none">
+      <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-codex-community-cta">
+        <div>
+          <div class="gc-codex-community-cta-title">💬 Чат сообщества</div>
+          <div class="gc-codex-community-cta-sub">Общайся и делись опытом с другими фермерами</div>
+        </div>
+        <span class="gc-codex-community-cta-arrow">Открыть чат →</span>
+      </a>
+
+      <div class="gc-codex-leaderboards">
+        <div class="gc-card gc-codex-leaderboard-card">
+          <div class="gc-codex-leaderboard-title">🎟️ Лидерборд тикетов</div>
+          {ticketsTop5.length === 0 ? (
+            <div class="gc-guides-empty" style="padding:24px 0;">Данные временно недоступны</div>
+          ) : (
+            ticketsTop5.map((entry, i) => (
+              <div class="gc-codex-leaderboard-row">
+                <span class="gc-codex-leaderboard-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
+                <span class="gc-codex-leaderboard-name">{entry.game_username ?? `Ферма #${entry.farm_id}`}</span>
+                <span class="gc-codex-leaderboard-score">{entry.tickets.toLocaleString('ru-RU')}</span>
+              </div>
+            ))
+          )}
+          <a href="/community/tickets-leaderboard" class="gc-codex-leaderboard-more">Смотреть полный рейтинг →</a>
+        </div>
+
+        <div class="gc-card gc-codex-leaderboard-card">
+          <div class="gc-codex-leaderboard-title">💧 Лидерборд ликвидности</div>
+          {lpTop5.length === 0 ? (
+            <div class="gc-guides-empty" style="padding:24px 0;">Данные временно недоступны</div>
+          ) : (
+            lpTop5.map((entry, i) => (
+              <div class="gc-codex-leaderboard-row">
+                <span class="gc-codex-leaderboard-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
+                <span class="gc-codex-leaderboard-name">{shortAddr(entry.owner)}</span>
+                <span class="gc-codex-leaderboard-score">{entry.value_usd.toLocaleString('ru-RU', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</span>
+              </div>
+            ))
+          )}
+          <a href="/community/lp-leaderboard" class="gc-codex-leaderboard-more">Смотреть полный рейтинг →</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Вне .gc-content, чтобы position:fixed оверлея не зависел от вложенности -->
@@ -308,6 +394,7 @@ const tagColors: Record<string, string> = {
   const nftPanel       = document.getElementById('nftPanel');
   const referencePanel = document.getElementById('referencePanel');
   const chapterPanel   = document.getElementById('chapterPanel');
+  const communityPanel = document.getElementById('communityPanel');
 
   // Механики: навигация по левому меню
   const mechNavItems  = document.querySelectorAll<HTMLAnchorElement>('.gc-mech-nav-item');
@@ -388,6 +475,7 @@ const tagColors: Record<string, string> = {
     const isNft       = section === 'nft';
     const isReference = section === 'reference';
     const isChapter   = section === 'chapter';
+    const isCommunity = section === 'community';
 
     if (guidesGrid)     guidesGrid.style.display     = isGuides ? '' : 'none';
     if (searchWrap)     searchWrap.style.display      = isGuides ? '' : 'none';
@@ -399,6 +487,7 @@ const tagColors: Record<string, string> = {
     if (nftPanel)       nftPanel.style.display        = isNft ? '' : 'none';
     if (referencePanel) referencePanel.style.display  = isReference ? '' : 'none';
     if (chapterPanel)   chapterPanel.style.display    = isChapter ? '' : 'none';
+    if (communityPanel) communityPanel.style.display  = isCommunity ? '' : 'none';
   }
 
   function getCategories(section: string): string[] {
@@ -518,13 +607,85 @@ const tagColors: Record<string, string> = {
 </script>
 
 <style>
-.gc-guides-header { padding: 40px 0 24px; }
+.gc-guides-header { padding: 24px 0 24px; }
 .gc-guides-sub { font-size: 15px; color: var(--text-sec); margin-top: 6px; }
+
+/* ── Баннер главы ── */
+.gc-codex-chapter-block {
+  position: relative;
+  margin: 24px 0 40px;
+}
+.gc-codex-chapter-banner {
+  display: block;
+  width: 100%;
+  line-height: 0;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+  position: relative;
+  z-index: 2;
+  border-radius: 14px;
+  overflow: hidden;
+}
+:global(.gc-codex-chapter-img) {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+}
+:global(.gc-codex-chapter-img--dark) { display: none; }
+:global([data-theme="dark"]) :global(.gc-codex-chapter-img--light) { display: none; }
+:global([data-theme="dark"]) :global(.gc-codex-chapter-img--dark)  { display: block; }
+
+.gc-codex-chapter-timer {
+  background: #5C3D1E;
+  border-radius: 14px;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 75%;
+  margin: -20px auto 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+:global(.gc-timer-row) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  padding-top: 10px;
+}
+:global(.gc-timer-label) {
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+}
+:global(.gc-timer-digits) {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  justify-content: center;
+}
+:global(.gc-timer-value) {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 28px;
+  color: #e8ece3;
+  letter-spacing: 3px;
+}
+@media (max-width: 700px) {
+  .gc-codex-chapter-timer { max-width: 100%; flex-direction: column; padding: 18px 20px; }
+}
 
 /* ── Вкладки ── */
 .gc-section-tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
@@ -808,6 +969,112 @@ const tagColors: Record<string, string> = {
 }
 .gc-boosts-hint-icon { font-size: 20px; flex-shrink: 0; }
 
+/* ═══════════════════════════════════════════════
+   КАТЕГОРИИ ГАЙДОВ — точные цвета дизайн-системы
+   ═══════════════════════════════════════════════ */
+:global(.gc-cat-tag--osnovy)     { background: #DCEAF5; color: #2C5C86; }
+:global(.gc-cat-tag--mehaniki)   { background: #EAE3F7; color: #5A3E96; }
+:global(.gc-cat-tag--ekonomika)  { background: #F6EAD0; color: #8A5A16; }
+:global(.gc-cat-tag--fermerstvo) { background: #DFF0D6; color: #3E6B2F; }
+:global(.gc-cat-tag--layfhaki)   { background: #F7DEE9; color: #96355E; }
+:global([data-theme="dark"] .gc-cat-tag--osnovy)     { background: #1B3245; color: #8FC1EA; }
+:global([data-theme="dark"] .gc-cat-tag--mehaniki)   { background: #2A2140; color: #BBA6E8; }
+:global([data-theme="dark"] .gc-cat-tag--ekonomika)  { background: #3A2E14; color: #E3BC77; }
+:global([data-theme="dark"] .gc-cat-tag--fermerstvo) { background: #1E301A; color: #9DCB8C; }
+:global([data-theme="dark"] .gc-cat-tag--layfhaki)   { background: #3A1F2B; color: #E595B8; }
+
+/* Активный фильтр-чипс — solid по цвету категории (сам чипс — .gc-tag-btn,
+   определён глобально; здесь только переопределение цвета для активного
+   состояния конкретной категории по data-cat атрибуту). */
+:global(.gc-tag-btn.active[data-cat="Основы"])     { background: #3E7EA8; border-color: #3E7EA8; }
+:global(.gc-tag-btn.active[data-cat="Механики"])   { background: #7B5EC9; border-color: #7B5EC9; }
+:global(.gc-tag-btn.active[data-cat="Экономика"])  { background: #B8860B; border-color: #B8860B; }
+:global(.gc-tag-btn.active[data-cat="Фермерство"]) { background: #4C8C3B; border-color: #4C8C3B; }
+:global(.gc-tag-btn.active[data-cat="Лайфхаки"])   { background: #C1477A; border-color: #C1477A; }
+
+/* ═══════════════════════════════════════════════
+   СООБЩЕСТВО
+   ═══════════════════════════════════════════════ */
+.gc-codex-community-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 26px;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  background: var(--green-dark);
+  text-decoration: none;
+  flex-wrap: wrap;
+}
+.gc-codex-community-cta-title {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+.gc-codex-community-cta-sub {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.75);
+  margin-top: 2px;
+}
+.gc-codex-community-cta-arrow {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+.gc-codex-leaderboards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.gc-codex-leaderboard-card { padding: 22px; }
+.gc-codex-leaderboard-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+.gc-codex-leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.gc-codex-leaderboard-row:last-of-type { border-bottom: none; }
+.gc-codex-leaderboard-rank {
+  width: 22px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-sec);
+}
+.gc-codex-leaderboard-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gc-codex-leaderboard-score {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green-dark);
+}
+.gc-codex-leaderboard-more {
+  display: block;
+  margin-top: 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--green-dark);
+  text-decoration: none;
+}
+.gc-codex-leaderboard-more:hover { text-decoration: underline; }
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .gc-section-tabs { grid-template-columns: 1fr !important; }
@@ -819,5 +1086,6 @@ const tagColors: Record<string, string> = {
   .gc-guides-grid { grid-template-columns: 1fr !important; }
   .gc-guides-header { padding: 24px 0 16px; }
   .gc-mech-article :global(.gc-guide-article) { padding: 20px; }
+  .gc-codex-leaderboards { grid-template-columns: 1fr !important; }
 }
 </style>

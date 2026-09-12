@@ -26,9 +26,11 @@ interface ProfileCardProps {
   /** Farmer API data. undefined = loading, null = not found, Farmer = loaded */
   farmer?: Farmer | null;
   guidesByUser: GuidesByUser;
+  /** Абсолютный https://sfl.<домен> — /codex переехал на свой поддомен, ссылки на гайды должны быть кросс-доменными */
+  sflBase: string;
 }
 
-export default function ProfileCard({ username, farmer, guidesByUser }: ProfileCardProps) {
+export default function ProfileCard({ username, farmer, guidesByUser, sflBase }: ProfileCardProps) {
   const fmtXP    = (n: number) => Math.floor(n).toLocaleString('ru-RU');
   const fmtCoins = (n: number) => Math.floor(n).toLocaleString('ru-RU');
 
@@ -93,7 +95,7 @@ export default function ProfileCard({ username, farmer, guidesByUser }: ProfileC
               <ul className="gc-profile-guides-list">
                 {userGuides.authored.map((g) => (
                   <li key={g.id}>
-                    <a href={`/codex/${g.id}`} className="gc-profile-guide-link">
+                    <a href={`${sflBase}/codex/${g.id}`} className="gc-profile-guide-link">
                       <span className="gc-profile-guide-icon">{g.icon}</span>
                       {g.title}
                     </a>
@@ -114,7 +116,7 @@ export default function ProfileCard({ username, farmer, guidesByUser }: ProfileC
               <ul className="gc-profile-guides-list">
                 {userGuides.contributed.map((g) => (
                   <li key={g.id}>
-                    <a href={`/codex/${g.id}`} className="gc-profile-guide-link">
+                    <a href={`${sflBase}/codex/${g.id}`} className="gc-profile-guide-link">
                       <span className="gc-profile-guide-icon">{g.icon}</span>
                       {g.title}
                     </a>

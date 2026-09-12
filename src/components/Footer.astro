@@ -1,27 +1,28 @@
 ---
-import { blogHostFor } from '../lib/blog-domain';
+import { resolveNavHref, type NavLink } from '../lib/subdomains';
 
-// "Новости" ведёт на отдельный blog.<домен>, см. Header.astro/middleware.ts.
-const newsHref = `https://${blogHostFor(Astro.request.headers.get('host'))}`;
+const host = Astro.request.headers.get('host');
 
-const navLinks = [
-  { href: '/codex',    label: 'Гайды'      },
-  { href: newsHref,     label: 'Новости'    },
-  { href: '/tools',     label: 'Инструменты'},
-  { href: '/community', label: 'Сообщество' },
-  { href: '/donate',    label: 'Поддержать' },
+const navLinkDefs: NavLink[] = [
+  { slug: 'codex',     targetSection: 'sfl', path: '/codex',     label: 'Гайды'       },
+  { slug: 'yakkamon',  targetSection: 'yakk',path: '/yakkamon',  label: 'Yakkamon'    },
+  { slug: 'news',      targetSection: 'blog',path: '/news',      label: 'Новости'     },
+  { slug: 'donate',    targetSection: null,  path: '/donate',    label: 'Поддержать'  },
 ];
+
+const navLinks = navLinkDefs.map(link => ({ label: link.label, href: resolveNavHref(host, link) }));
+const logoHref = resolveNavHref(host, { slug: 'home', targetSection: null, path: '/', label: 'Главная' });
 ---
 
 <footer class="gc-footer">
   <div class="gc-footer-inner">
 
     <div class="gc-footer-brand">
-      <a href="/" class="gc-logo">
+      <a href={logoHref} class="gc-logo">
         <div class="gc-logo-icon">🧙</div>
         <div>
           <span class="gc-logo-text">Goblin<span>Codex</span></span>
-          <p class="gc-footer-tagline">фан-сайт по Sunflower Land</p>
+          <p class="gc-footer-tagline">независимый фан-хаб по играм</p>
         </div>
       </a>
     </div>
@@ -32,9 +33,14 @@ const navLinks = [
       ))}
     </nav>
 
+    <div class="gc-footer-social">
+      <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-footer-social-link" aria-label="Telegram">✈</a>
+      <a href="https://www.youtube.com/@usual.routine.goblin" target="_blank" rel="noopener" class="gc-footer-social-link" aria-label="YouTube">▶</a>
+    </div>
+
     <div class="gc-footer-copy">
       <p>© 2026 GoblinCodex</p>
-      <p>Не аффилирован с Sunflower Land</p>
+      <p>Не аффилирован с разработчиками игр</p>
       <p class="gc-footer-legal">
         <a href="/cookies" class="gc-footer-link" style="font-size:11px;">Политика cookie</a>
         &nbsp;·&nbsp;
