@@ -62,14 +62,7 @@ function mapAuction(a: ApiAuction): UiAuction {
   return base;
 }
 
-/**
- * Пока goblin-api подтверждённо поддерживает только upcoming=true (без параметра
- * эндпоинт либо не реализован, либо ведёт себя иначе — из-за этого 03.08.2026
- * список аукционов на проде пропал). Поэтому здесь запрашиваются только
- * предстоящие аукционы; вкладка "Завершены" временно пустая, пока API не
- * подтвердит другой режим. Пустой массив при ошибке сети/API — страница просто
- * покажет пустое расписание.
- */
+/** Пустой массив при ошибке сети/API — страница просто покажет пустое расписание. */
 export async function fetchUpcomingAuctions(): Promise<UiAuction[]> {
   try {
     const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?upcoming=true`);
@@ -82,15 +75,26 @@ export async function fetchUpcomingAuctions(): Promise<UiAuction[]> {
   }
 }
 
-/**
- * История завершённых аукционов для страницы прошлых глав (/chapter/past).
- * upcoming=false подтверждённо возвращает HTTP 400 — goblin-api пока не
- * поддерживает этот режим. Запрос временно отключён (не бьёт по сети
- * впустую на каждый заход на страницу), включить обратно, когда goblin-api
- * подтвердит рабочий способ получить прошлые аукционы.
- */
-export async function fetchPastAuctions(): Promise<UiAuction[]> {
-  return [];
+/** История завершённых аукционов главы — read-only витрина auctioneer-bot. */
+export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
+  try {
+    const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?history=true&limit=${limit}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data: ApiAuction[] = await res.json();
+    if (!Array.isArray(data)) throw new Error('unexpected response shape');
+    return data.map(mapAuction);
+  } catch (e) {
+    console.error('[auctionsApi] fetchPastAuctions error:', e);
+    return [];
+  }
+}
+
+/** Предстоящие и завершённые аукционы главы одним списком — для единого расписания. */
+export async function fetchAllAuctions(): Promise<UiAuction[]> {
+  const [upcoming, past] = await Promise.all([fetchUpcomingAuctions(), fetchPastAuctions()]);
+  const byId = new Map<string, UiAuction>();
+  [...upcoming, ...past].forEach(a => byId.set(a.auctionId, a));
+  return [...byId.values()];
 }
 
 /** null означает "результатов пока нет" (404) — это не ошибка. */

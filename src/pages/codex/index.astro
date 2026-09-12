@@ -129,13 +129,12 @@ try {
 
     <!-- Баннер текущей главы -->
     <div class="gc-codex-chapter-block">
-      <a href="/chapter" class="gc-codex-chapter-banner">
+      <a href="/codex?tab=chapter" class="gc-codex-chapter-banner">
         <img src="/images/chapter 15.png" alt={`${CURRENT_CHAPTER_NAME} — Chapter 15`} class="gc-codex-chapter-img gc-codex-chapter-img--light" />
         <img src="/images/chapter 15.png" alt={`${CURRENT_CHAPTER_NAME} — Chapter 15`} class="gc-codex-chapter-img gc-codex-chapter-img--dark" />
       </a>
       <div class="gc-codex-chapter-timer">
         <ChapterTimer client:load />
-        <a href="/chapter" class="gc-btn-cta">Перейти к главе →</a>
       </div>
     </div>
 
@@ -642,8 +641,7 @@ try {
   padding: 20px 28px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
   max-width: 75%;
   margin: -20px auto 0;
   position: relative;

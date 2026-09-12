@@ -241,6 +241,18 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
     return () => clearInterval(id);
   }, []);
 
+  // Внешнее управление фильтром — кнопка "История аукционов" рядом с виджетом
+  // (см. ChapterContent.astro) переключает сюда через CustomEvent, не пропсы,
+  // т.к. кнопка и виджет гидрируются как независимые Astro-острова.
+  useEffect(() => {
+    const onSetFilter = (e: Event) => {
+      const detail = (e as CustomEvent<Status | 'all'>).detail;
+      if (detail) setStatusFilter(detail);
+    };
+    window.addEventListener('gc:auctions-set-filter', onSetFilter);
+    return () => window.removeEventListener('gc:auctions-set-filter', onSetFilter);
+  }, []);
+
   useEffect(() => {
     if (!selected) return;
     let cancelled = false;
@@ -346,7 +358,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
   }, [filtered, tz]);
 
   return (
-    <div className="ca-root">
+    <div className="ca-root" id="chapterAuctionsWidget">
       <div className="ca-widget-header">
         <span className="ca-widget-icon">⏰</span>
         <div>

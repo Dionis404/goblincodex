@@ -5,7 +5,7 @@
 import { getCollection } from 'astro:content';
 import ChapterAuctions from './ChapterAuctions.tsx';
 // import auctionsData from '../data/chapter-auctions.json'; // fallback JSON — не удалять, пока goblin-api не стабилизируется
-import { fetchUpcomingAuctions } from '../lib/auctionsApi';
+import { fetchAllAuctions } from '../lib/auctionsApi';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
 import { sectionHref } from '../lib/subdomains';
@@ -31,7 +31,7 @@ const chapterGuides = await getCollection(
 );
 chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
 
-const auctions = await fetchUpcomingAuctions();
+const auctions = await fetchAllAuctions();
 const now = Date.now();
 
 const CHAPTER_TAG = 'chapter-ascension-age';
@@ -133,11 +133,23 @@ const MECHANIC_CARDS = [
 
 <!-- ── Расписание аукционов ── -->
 <section class="gc-chapter-section">
+  <div class="gc-chapter-auctions-header">
+    <h2 class="gc-block-title-lg" style="margin:0;">🔨 Аукционы</h2>
+    <button type="button" class="gc-btn-secondary" id="auctionsHistoryBtn">📜 История аукционов</button>
+  </div>
   <ChapterAuctions client:load auctions={auctions} chapterName="Ascension Age" itemCatalog={itemCatalog} initialNow={now} />
 </section>
 
 <style>
 .gc-chapter-section { margin-bottom: 40px; }
+.gc-chapter-auctions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
 .gc-block-title-lg {
   font-family: var(--font-head);
   font-size: 18px;
@@ -338,5 +350,12 @@ const MECHANIC_CARDS = [
       const id = btn.dataset.mechOpen;
       if (id) window.dispatchEvent(new CustomEvent('gc:open-mech-modal', { detail: id }));
     });
+  });
+
+  // "История аукционов" — переключает фильтр в ChapterAuctions на "Завершены"
+  // через CustomEvent (независимые React/Astro-острова) и скроллит к виджету.
+  document.getElementById('auctionsHistoryBtn')?.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('gc:auctions-set-filter', { detail: 'ended' }));
+    document.getElementById('chapterAuctionsWidget')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 </script>
