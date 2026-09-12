@@ -133,8 +133,8 @@ function CalculatorModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-export default function YakkamonPointsCalculator() {
-  const [open, setOpen] = useState(false);
+export default function YakkamonPointsCalculator({ defaultOpen = false }: { defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
 
   return (
     <>
