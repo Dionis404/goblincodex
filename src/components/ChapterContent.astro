@@ -1,11 +1,12 @@
 ---
 // Общий контент главы (баннер, механики, гайды, предметы, аукционы) —
-// подключается и на отдельной странице /chapter, и как 5-я панель
-// внутри /codex, чтобы не дублировать логику.
+// подключается как таб внутри /codex?tab=chapter. История аукционов
+// прошлых глав — отдельная страница /chapter/auctions-history, здесь
+// показываются только предстоящие/текущие аукционы этой главы.
 import { getCollection } from 'astro:content';
 import ChapterAuctions from './ChapterAuctions.tsx';
 // import auctionsData from '../data/chapter-auctions.json'; // fallback JSON — не удалять, пока goblin-api не стабилизируется
-import { fetchAllAuctions } from '../lib/auctionsApi';
+import { fetchUpcomingAuctions } from '../lib/auctionsApi';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
 import { sectionHref } from '../lib/subdomains';
@@ -31,7 +32,7 @@ const chapterGuides = await getCollection(
 );
 chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
 
-const auctions = await fetchAllAuctions();
+const auctions = await fetchUpcomingAuctions();
 const now = Date.now();
 
 const CHAPTER_TAG = 'chapter-ascension-age';
@@ -51,6 +52,12 @@ const MECHANIC_CARDS = [
   { id: 'chapter-pass', icon: '🎫', title: 'Чаптерпасс' },
 ];
 ---
+
+<!-- ── Ссылки на архивы прошлых глав ── -->
+<div class="gc-chapter-archive-links">
+  <a href="/chapter/past" class="gc-btn-secondary">📜 Прошлые главы</a>
+  <a href="/chapter/auctions-history" class="gc-btn-secondary">🔨 История аукционов</a>
+</div>
 
 <!-- ── Основные механики ── -->
 <section class="gc-chapter-section">
@@ -133,22 +140,17 @@ const MECHANIC_CARDS = [
 
 <!-- ── Расписание аукционов ── -->
 <section class="gc-chapter-section">
-  <div class="gc-chapter-auctions-header">
-    <h2 class="gc-block-title-lg" style="margin:0;">🔨 Аукционы</h2>
-    <button type="button" class="gc-btn-secondary" id="auctionsHistoryBtn">📜 История аукционов</button>
-  </div>
+  <h2 class="gc-block-title-lg">🔨 Аукционы</h2>
   <ChapterAuctions client:load auctions={auctions} chapterName="Ascension Age" itemCatalog={itemCatalog} initialNow={now} />
 </section>
 
 <style>
 .gc-chapter-section { margin-bottom: 40px; }
-.gc-chapter-auctions-header {
+.gc-chapter-archive-links {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 32px;
 }
 .gc-block-title-lg {
   font-family: var(--font-head);
@@ -350,12 +352,5 @@ const MECHANIC_CARDS = [
       const id = btn.dataset.mechOpen;
       if (id) window.dispatchEvent(new CustomEvent('gc:open-mech-modal', { detail: id }));
     });
-  });
-
-  // "История аукционов" — переключает фильтр в ChapterAuctions на "Завершены"
-  // через CustomEvent (независимые React/Astro-острова) и скроллит к виджету.
-  document.getElementById('auctionsHistoryBtn')?.addEventListener('click', () => {
-    window.dispatchEvent(new CustomEvent('gc:auctions-set-filter', { detail: 'ended' }));
-    document.getElementById('chapterAuctionsWidget')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 </script>
