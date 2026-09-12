@@ -36,7 +36,7 @@ import '../../styles/calculator.css';
 
         <hr class="gc-guide-divider" />
 
-        <YakkamonPointsCalculator client:load defaultOpen={true} />
+        <YakkamonPointsCalculator client:load inline />
 
       </div>
     </div>
@@ -107,20 +107,9 @@ import '../../styles/calculator.css';
 
 <style is:global>
 /*
- * Стили калькулятора очков — is:global, потому что модалка рендерится через
- * React createPortal прямо в document.body, вне DOM-дерева этой страницы,
- * и Astro-scoped стили (data-astro-cid-*) её не находят.
+ * Стили калькулятора очков — is:global, потому что React-остров рендерится
+ * через client:load и Astro-scoped стили (data-astro-cid-*) его не находят.
  */
 .gc-yk-calc-card { background: var(--bg); }
 .gc-yk-calc-card .gc-calc-kpi-value { color: var(--yk-accent); }
-
-.gc-yk-calc-modal-box { max-width: 560px; }
-.gc-yk-calc-modal-card { padding: 28px 24px; }
-.gc-yk-calc-modal-card .gc-yk-h3 { color: var(--yk-accent); }
-.gc-yk-calc-modal-card .gc-calc-card { border: none; box-shadow: none; padding: 0; }
-.gc-yk-calc-modal-card .gc-calc-kpi-value { font-size: 17px; white-space: nowrap; }
-.gc-yk-calc-modal-card .gc-calc-kpi { padding: 12px 8px; }
-@media (max-width: 480px) {
-  .gc-yk-calc-modal-card .gc-calc-kpis { grid-template-columns: 1fr; }
-}
 </style>
