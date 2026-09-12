@@ -51,7 +51,7 @@ guides.push({
 
     <div class="gc-guides-header">
       <h1 class="gc-page-title">📗 Полезная информация</h1>
-      <span class="gc-guides-count">{guides.length === 0 ? 'Пока пусто' : `Показано: ${guides.length}`}</span>
+      <span class="gc-guides-count" id="guidesCount">{guides.length === 0 ? 'Пока пусто' : `Показано: ${guides.length}`}</span>
     </div>
 
     <div class="gc-search-wrap">
@@ -77,7 +77,12 @@ guides.push({
     ) : (
       <div class="gc-guides-grid">
         {guides.map(guide => (
-          <a href={`/yakkamon/${guide.id}`} class="gc-card gc-card-hover gc-guide-card">
+          <a
+            href={`/yakkamon/${guide.id}`}
+            class="gc-card gc-card-hover gc-guide-card"
+            data-cat={guide.category}
+            data-title={guide.title.toLowerCase()}
+          >
             <div class="gc-guide-card-top">
               <div class="gc-guide-card-icon">{guide.icon}</div>
               <div class="gc-guide-card-info">
@@ -93,6 +98,10 @@ guides.push({
         ))}
       </div>
     )}
+
+    <div class="gc-guides-empty" id="noResults" style="display:none">
+      Ничего не нашлось. Попробуйте другой запрос или категорию.
+    </div>
 
   </div>
 </BaseLayout>
@@ -276,3 +285,41 @@ guides.push({
   .gc-yk-banner { padding: 18px 20px; }
 }
 </style>
+
+<script>
+  const filterBtns  = document.querySelectorAll<HTMLButtonElement>('#categoryFilter .gc-tag-btn');
+  const cards       = document.querySelectorAll<HTMLElement>('.gc-guide-card');
+  const searchInput = document.getElementById('guideSearch') as HTMLInputElement | null;
+  const countEl     = document.getElementById('guidesCount');
+  const noResults   = document.getElementById('noResults');
+
+  let activeCategory = 'Все';
+  let searchQuery = '';
+
+  function filterCards() {
+    let visible = 0;
+    cards.forEach(card => {
+      const cat   = card.dataset.cat ?? '';
+      const title = card.dataset.title ?? '';
+      const show  = (activeCategory === 'Все' || cat === activeCategory) && title.includes(searchQuery);
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (countEl) countEl.textContent = `Показано: ${visible}`;
+    if (noResults) (noResults as HTMLElement).style.display = visible === 0 ? '' : 'none';
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCategory = btn.dataset.cat ?? 'Все';
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterCards();
+    });
+  });
+
+  searchInput?.addEventListener('input', () => {
+    searchQuery = searchInput.value.trim().toLowerCase();
+    filterCards();
+  });
+</script>
