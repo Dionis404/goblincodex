@@ -35,3 +35,10 @@ backups/
 
 # graphify generated output (graph.json, HTML viz, cache, reports)
 graphify-out/
+
+# local-only context notes for Claude (endpoints, architecture, env quirks) —
+# never committed, lives only on this machine
+.local-context/
+
+# local-only helper scripts with hardcoded prod SSH/DB access — never committed
+local-scripts/

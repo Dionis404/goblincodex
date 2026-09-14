@@ -7,7 +7,7 @@ import * as path from 'node:path';
 // с тем, что реально проиндексировано.
 
 export interface ContentEntry {
-  collection: 'guides' | 'mechanics' | 'news';
+  collection: 'guides' | 'mechanics' | 'news' | 'yakkamon';
   id: string;
   title: string;
   description: string;
@@ -37,7 +37,7 @@ function parseFrontmatter(raw: string): { data: Record<string, string>; body: st
   return { data, body: match[2] };
 }
 
-export function loadCollection(collection: 'guides' | 'mechanics' | 'news'): ContentEntry[] {
+export function loadCollection(collection: 'guides' | 'mechanics' | 'news' | 'yakkamon'): ContentEntry[] {
   const dir = path.resolve(`./src/content/${collection}`);
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
 
@@ -59,7 +59,7 @@ export function loadCollection(collection: 'guides' | 'mechanics' | 'news'): Con
   });
 }
 
-export function findEntry(collection: 'guides' | 'mechanics' | 'news', id: string): ContentEntry | undefined {
+export function findEntry(collection: 'guides' | 'mechanics' | 'news' | 'yakkamon', id: string): ContentEntry | undefined {
   return loadCollection(collection).find(e => e.id === id);
 }
 

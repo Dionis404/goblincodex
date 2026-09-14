@@ -22,6 +22,7 @@ async function main() {
     ...loadCollection("guides"),
     ...loadCollection("mechanics"),
     ...loadCollection("news"),
+    ...loadCollection("yakkamon"),
   ].filter(e => !e.draft);
 
   console.log(`Найдено статей для индексации: ${entries.length}`);

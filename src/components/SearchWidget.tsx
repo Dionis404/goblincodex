@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './SearchWidget.css';
 
 interface SearchResult {
-  collection: 'guides' | 'mechanics' | 'reference' | 'news';
+  collection: 'guides' | 'mechanics' | 'reference' | 'news' | 'yakkamon';
   entryId: string;
   title: string;
   distance: number;
@@ -13,12 +13,14 @@ const COLLECTION_LABEL: Record<SearchResult['collection'], string> = {
   mechanics: 'Механика',
   reference: 'Справочник',
   news: 'Новость',
+  yakkamon: 'Yakkamon',
 };
 
 function resultHref(r: SearchResult): string {
   if (r.collection === 'mechanics') return `/codex?tab=mechanics&mech=${r.entryId}`;
   if (r.collection === 'reference') return `/codex?tab=reference&ref=${r.entryId}`;
   if (r.collection === 'news') return `/news/${r.entryId}`;
+  if (r.collection === 'yakkamon') return `/yakkamon/${r.entryId}`;
   return `/codex/${r.entryId}`;
 }
 
