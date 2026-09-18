@@ -58,7 +58,7 @@ const ROWS: Row[] = Object.entries(FISH_BASE_XP).map(([name, baseXP]) => {
     maxXP,
     saltCost,
     timeHours,
-    xpPerSalt: Math.round((xpGained / saltCost) * 100) / 100,
+    xpPerSalt: Math.round((maxXP / saltCost) * 100) / 100,
     xpPerHour: Math.round(xpGained / timeHours),
   };
 });
