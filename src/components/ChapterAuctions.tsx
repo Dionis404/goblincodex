@@ -212,22 +212,19 @@ function Dropdown({ value, options, onChange }: { value: string; options: Dropdo
 }
 
 // Иконки валют ставки — реальные спрайты игры (см. public/sprites/icons/).
-// Flower (SFL) — временно эмодзи, пока не нашли/не скачали официальный
-// спрайт токена. Остальные валюты аукциона по мере появления — сюда же.
+// flower_token.webp скачан из sunflower-land/sunflower-land
+// (src/assets/icons/flower_token.webp) — та же иконка, что рисует HUD игры
+// рядом с балансом SFL (см. src/components/Balances.tsx в исходниках игры).
 const COST_ICONS: Record<string, string> = {
   'Gem': '/sprites/icons/gem.webp',
   'Salt Rock': '/sprites/icons/salt_rock_ticket.webp',
-};
-const COST_EMOJI: Record<string, string> = {
-  'Flower': '🌻',
+  'Flower': '/sprites/icons/flower_token.webp',
 };
 
 function CostIcon({ name }: { name: string }) {
   const sprite = COST_ICONS[name];
-  if (sprite) return <img src={sprite} alt="" className="ca-cost-icon" />;
-  const emoji = COST_EMOJI[name];
-  if (emoji) return <span className="ca-cost-icon ca-cost-icon--emoji" aria-hidden="true">{emoji}</span>;
-  return null;
+  if (!sprite) return null;
+  return <img src={sprite} alt="" className="ca-cost-icon" />;
 }
 
 function SpriteImg({ sprite, name, size = 40 }: { sprite: string | null; name: string; size?: number }) {
