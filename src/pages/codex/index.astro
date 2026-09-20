@@ -6,6 +6,7 @@ import BoostsCatalog from '../../components/BoostsCatalog.tsx';
 import BudsCatalog from '../../components/BudsCatalog.tsx';
 import PetsCatalog from '../../components/PetsCatalog.tsx';
 import ReferenceCatalog from '../../components/ReferenceCatalog.tsx';
+import CommunityPage from '../../components/CommunityPage.jsx';
 import ChapterContent from '../../components/ChapterContent.astro';
 import ChapterMechanicModal from '../../components/ChapterMechanicModal.astro';
 import ChapterTimer from '../../components/ChapterTimer.tsx';
@@ -22,46 +23,92 @@ import {
 import { fetchWithTimeout } from '../../lib/goblinApi';
 
 let catalogItems: Awaited<ReturnType<typeof getCatalogItems>> = [];
-try {
-  ({ data: catalogItems } = await getCachedCatalogItems());
-} catch (err) {
-  console.error('[codex] DB fetch error:', err);
-}
-
 let budTraits: Awaited<ReturnType<typeof getBudTraits>> = [];
 let budFilterOptions: Awaited<ReturnType<typeof getBudFilterOptions>> = { types: [], colours: [], stems: [], auras: [], ears: [] };
-try {
-  ({ data: { traits: budTraits, filterOptions: budFilterOptions } } = await getCachedBuds());
-} catch (err) {
-  console.error('[codex] Bud fetch error:', err);
-}
-
 let petNftBreeds: Awaited<ReturnType<typeof getPetNftBreeds>> = [];
 let petNftTraits: Awaited<ReturnType<typeof getPetNftTraits>> = [];
 let petNftFilterOptions: Awaited<ReturnType<typeof getPetNftFilterOptions>> = { types: [], furs: [], accessories: [], bibs: [], auras: [] };
-try {
-  ({ data: { breeds: petNftBreeds, traits: petNftTraits, filterOptions: petNftFilterOptions } } = await getCachedPetsNft());
-} catch (err) {
-  console.error('[codex] Pet NFT fetch error:', err);
-}
-
 let petsCommon: Awaited<ReturnType<typeof getPetsCommon>> = [];
-try {
-  ({ data: petsCommon } = await getCachedPetsCommon());
-} catch (err) {
-  console.error('[codex] Common pets fetch error:', err);
-}
-
 let petResources: Awaited<ReturnType<typeof getPetResources>> = [];
 let petFetches: Awaited<ReturnType<typeof getPetFetches>> = [];
-try {
-  ({ data: { resources: petResources, fetches: petFetches } } = await getCachedPetMechanics());
-} catch (err) {
-  console.error('[codex] Pet mechanics fetch error:', err);
+
+// Пять независимых источников (каталог, буды, NFT-питомцы, обычные питомцы,
+// механики питомцев) — грузим параллельно вместо последовательных await,
+// иначе время ответа страницы складывается из времени ВСЕХ запросов подряд.
+const [catalogResult, budsResult, petsNftResult, petsCommonResult, petMechanicsResult] = await Promise.allSettled([
+  getCachedCatalogItems(),
+  getCachedBuds(),
+  getCachedPetsNft(),
+  getCachedPetsCommon(),
+  getCachedPetMechanics(),
+]);
+
+if (catalogResult.status === 'fulfilled') {
+  catalogItems = catalogResult.value.data;
+} else {
+  console.error('[codex] DB fetch error:', catalogResult.reason);
+}
+
+if (budsResult.status === 'fulfilled') {
+  budTraits = budsResult.value.data.traits;
+  budFilterOptions = budsResult.value.data.filterOptions;
+} else {
+  console.error('[codex] Bud fetch error:', budsResult.reason);
+}
+
+if (petsNftResult.status === 'fulfilled') {
+  petNftBreeds = petsNftResult.value.data.breeds;
+  petNftTraits = petsNftResult.value.data.traits;
+  petNftFilterOptions = petsNftResult.value.data.filterOptions;
+} else {
+  console.error('[codex] Pet NFT fetch error:', petsNftResult.reason);
+}
+
+if (petsCommonResult.status === 'fulfilled') {
+  petsCommon = petsCommonResult.value.data;
+} else {
+  console.error('[codex] Common pets fetch error:', petsCommonResult.reason);
+}
+
+if (petMechanicsResult.status === 'fulfilled') {
+  petResources = petMechanicsResult.value.data.resources;
+  petFetches = petMechanicsResult.value.data.fetches;
+} else {
+  console.error('[codex] Pet mechanics fetch error:', petMechanicsResult.reason);
 }
 
 const allGuides = await getCollection('guides', ({ data }) => !data.draft);
 allGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
+
+// Фермеры сообщества + карта автор/контрибьютор → его гайды — раньше жило
+// на отдельной странице /community (удалена, перенесено во вкладку
+// "Рейтинги" вместе с лидербордами тикетов/ликвидности).
+let communityFarmers: any[] = [];
+let communityApiError = false;
+try {
+  const res = await fetchWithTimeout('http://goblin-api:8000/community/farmers');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  communityFarmers = await res.json();
+} catch (e) {
+  communityApiError = true;
+  console.error('[codex] Community farmers fetch error:', e);
+}
+
+const guidesByUser: Record<string, { authored: any[]; contributed: any[] }> = {};
+for (const guide of allGuides) {
+  const { author, contributors, title, icon } = guide.data;
+  const info = { id: guide.id, title, icon };
+  if (author) {
+    const k = author.toLowerCase();
+    guidesByUser[k] ??= { authored: [], contributed: [] };
+    guidesByUser[k].authored.push(info);
+  }
+  for (const name of contributors ?? []) {
+    const k = name.toLowerCase();
+    guidesByUser[k] ??= { authored: [], contributed: [] };
+    guidesByUser[k].contributed.push(info);
+  }
+}
 
 const allMechanics = await getCollection('mechanics', ({ data }) => !data.draft);
 allMechanics.sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
@@ -73,13 +120,35 @@ const mechanicsRendered = await Promise.all(
   })
 );
 
+// "Справочник" (числовые таблицы) объединён с "Механики" в одну вкладку —
+// статьи-разборы (аукционы, доставки, рафлы и т.п.) переехали в Гайды,
+// здесь остались только числовые таблицы/формулы (навыки, расширения,
+// соление рыбы, апгрейд нод и т.д.) — раньше "Механики" и "Справочник"
+// было не отличить по названию, теперь это одна понятная вкладка.
+
+// Подписи для 8 табличных пунктов общего сайдбара механик — держим в
+// синхроне вручную с REF_SECTIONS в ReferenceCatalog.tsx (там же сами
+// компоненты таблиц; здесь нужны только id/icon/label для сайдбара).
+const REF_TABLE_SECTIONS = [
+  { id: 'skills',     icon: '🎓', label: 'Навыки' },
+  { id: 'expansions', icon: '🌋', label: 'Стоимость расширений' },
+  { id: 'levels',     icon: '⭐', label: 'Опыт и Возвышение' },
+  { id: 'bait',       icon: '🎣', label: 'Улов по наживке' },
+  { id: 'upgrades',   icon: '⛏️', label: 'Улучшение ресурсных нод' },
+  { id: 'obsidian',   icon: '🌋', label: 'Обсидиан (Lava Pit)' },
+  { id: 'marvels',    icon: '🐋', label: 'Морские марвелы' },
+  { id: 'food',       icon: '🍳', label: 'Еда и готовка' },
+];
+
+// Порядок и подписи вкладок: id остаются прежними (используются в URL
+// ?tab=... и в JS-логике переключения), меняются только label — "Механики"
+// → "Справочник" (данные/формулы), "Сообщество" → "Рейтинги" (соц. таблицы).
 const sections = [
   { id: 'guides',    label: 'Гайды',        icon: '📗', sub: 'Как играть'       },
-  { id: 'mechanics', label: 'Механики',      icon: '⚙️', sub: 'Глубокий разбор'  },
-  { id: 'nft',       label: 'NFT Предметы',  icon: '💎', sub: 'Бонусы и буферы'  },
-  { id: 'reference', label: 'Справочник',    icon: '📐', sub: 'Игровые таблицы'  },
+  { id: 'mechanics', label: 'Справочник',   icon: '⚙️', sub: 'Механики и рецепты' },
   { id: 'chapter',   label: 'Главы',         icon: '🗓️', sub: 'Текущая и прошлые' },
-  { id: 'community', label: 'Сообщество',    icon: '👥', sub: 'Рейтинги и чат'   },
+  { id: 'community', label: 'Рейтинги',     icon: '👥', sub: 'Фермеры и таблицы' },
+  { id: 'nft',       label: 'NFT Предметы',  icon: '💎', sub: 'Предметы, бады, питомцы' },
 ];
 
 // Точные цвета категорий из дизайн-системы — см. gc-cat-tag--* в <style>
@@ -98,25 +167,45 @@ const CURRENT_CHAPTER_NAME = 'The Ascension Age';
 const shortAddr = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 
 let ticketsTop5: Array<{ farm_id: number; game_username?: string; tickets: number }> = [];
+let ticketsUpdatedAt: string | null = null;
 try {
   const res = await fetchWithTimeout('http://goblin-api:8000/api/tickets/top500');
   if (res.ok) {
     const json = await res.json();
     ticketsTop5 = (json.leaderboard ?? []).slice(0, 5);
+    ticketsUpdatedAt = json.updated_at ?? null;
   }
 } catch (err) {
   console.error('[codex] Tickets top-5 fetch error:', err);
 }
 
 let lpTop5: Array<{ owner: string; value_usd: number }> = [];
+let lpUpdatedAt: string | null = null;
 try {
   const res = await fetchWithTimeout('http://goblin-api:8000/lp/leaderboard');
   if (res.ok) {
     const json = await res.json();
     lpTop5 = (json.leaderboard ?? []).slice(0, 5);
+    lpUpdatedAt = json.meta?.updated_at ?? null;
   }
 } catch (err) {
   console.error('[codex] LP top-5 fetch error:', err);
+}
+
+// "5 минут назад" / "2 часа назад" / "3 дня назад" — простое относительное
+// время без внешних зависимостей, достаточно грубой точности для подписи
+// под лидербордом (не нужна секундная точность).
+function formatUpdatedAgo(iso: string | null): string | null {
+  if (!iso) return null;
+  const diffMs = Date.now() - new Date(iso).getTime();
+  if (diffMs < 0 || Number.isNaN(diffMs)) return null;
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 1) return 'обновлено только что';
+  if (minutes < 60) return `обновлено ${minutes} мин назад`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `обновлено ${hours} ч назад`;
+  const days = Math.floor(hours / 24);
+  return `обновлено ${days} дн назад`;
 }
 ---
 
@@ -138,40 +227,40 @@ try {
       </div>
     </div>
 
-    <!-- Заголовок -->
-    <div class="gc-guides-header">
-      <h1 class="gc-page-title">📚 Кодекс</h1>
-      <p class="gc-guides-sub">Гайды для новичков и глубокие разборы механик</p>
-    </div>
+    <!-- Заголовок + поиск + вкладки-плитки — единый блок навигации по кодексу -->
+    <div class="gc-codex-nav-block">
+      <div class="gc-guides-header">
+        <h1 class="gc-page-title">📚 Кодекс</h1>
+        <p class="gc-codex-nav-tagline">Справочник по Sunflower Land</p>
+      </div>
 
-    <SearchWidget client:load />
+      <SearchWidget client:load />
 
-    <!-- Вкладки секций -->
-    <div class="gc-section-tabs" id="sectionTabs">
-      {sections.map((sec, i) => (
-        <a
-          href={`/codex?tab=${sec.id}`}
-          class={`gc-section-tab${i === 0 ? ' active' : ''}`}
-          data-section={sec.id}
-        >
-          <span class="gc-section-tab-icon">{sec.icon}</span>
-          <div>
-            <div class="gc-section-tab-label">{sec.label}</div>
-            <div class="gc-section-tab-sub">{sec.sub}</div>
-          </div>
-        </a>
-      ))}
-    </div>
+      <!-- Вкладки секций: квадратные плитки-иконки. На мобильном — горизонтальная
+           snap-карусель (см. media query ниже), на десктопе — обычная сетка. -->
+      <div class="gc-section-tabs" id="sectionTabs">
+        {sections.map((sec, i) => (
+          <a
+            href={`/codex?tab=${sec.id}`}
+            class={`gc-section-tab${i === 0 ? ' active' : ''}`}
+            data-section={sec.id}
+          >
+            <span class="gc-section-tab-icon">{sec.icon}</span>
+            <span class="gc-section-tab-text">
+              <span class="gc-section-tab-label">{sec.label}</span>
+              <span class="gc-section-tab-sub">{sec.sub}</span>
+            </span>
+          </a>
+        ))}
+      </div>
 
-    <!-- Поиск (только для гайдов) -->
-    <div class="gc-search-wrap" id="searchWrap">
-      <input
-        type="text"
-        id="guideSearch"
-        placeholder="Найти гайд..."
-        class="gc-search-input"
-        autocomplete="off"
-      />
+      <!-- Точки-индикаторы позиции карусели — только на мобильном, чисто
+           визуальные (не кликабельны), см. .gc-section-tabs-dots ниже -->
+      <div class="gc-section-tabs-dots" id="sectionTabsDots">
+        {sections.map((_, i) => (
+          <span class={`gc-section-tabs-dot${i === 0 ? ' active' : ''}`}></span>
+        ))}
+      </div>
     </div>
 
     <!-- Фильтр категорий (только для гайдов) -->
@@ -218,51 +307,59 @@ try {
     </div>
 
     <!-- ═══════════════════════════════════════════════
-         ДВУХПАНЕЛЬНЫЙ LAYOUT ДЛЯ МЕХАНИК
+         МЕХАНИКИ: один общий сайдбар на 10 пунктов — 8 табличных секций
+         (рендерятся React-компонентом ReferenceCatalog) + 2 markdown-статьи
+         с формулами (Соление рыбы, Улучшение нод), которым формат таблицы
+         не подходит. Сайдбар — чистый Astro/JS (см. .gc-ref-nav-item ниже),
+         переключение табличных пунктов долетает до ReferenceCatalog через
+         CustomEvent 'gc:ref-select' (см. его исходник).
          ═══════════════════════════════════════════════ -->
-    <div id="mechanicsPanel" class="gc-mechanics-layout" style="display:none">
+    <div id="mechanicsPanel" class="gc-ref-layout" style="display:none">
+      <aside class="ref-sidebar gc-ref-sidebar">
+        {REF_TABLE_SECTIONS.map((s, i) => (
+          <a
+            href={`/codex?tab=mechanics&ref=${s.id}`}
+            class={`ref-nav-item gc-ref-nav-item${i === 0 ? ' active' : ''}`}
+            data-ref-kind="table"
+            data-ref-id={s.id}
+          >
+            <span class="ref-nav-icon">{s.icon}</span>
+            <span class="ref-nav-label">{s.label}</span>
+          </a>
+        ))}
+        {mechanicsRendered.map((m) => (
+          <a
+            href={`/codex?tab=mechanics&mech=${m.entry.id}`}
+            class="ref-nav-item gc-ref-nav-item"
+            data-ref-kind="article"
+            data-ref-id={m.entry.id}
+          >
+            <span class="ref-nav-icon">{m.entry.data.icon}</span>
+            <span class="ref-nav-label">{m.entry.data.title}</span>
+          </a>
+        ))}
+      </aside>
 
-      {mechanicsRendered.length === 0 ? (
-        <div class="gc-guides-empty" style="display:block">
-          В этом разделе пока нет материалов. Скоро появятся!
+      <div class="gc-ref-content-wrap">
+        <div class="gc-boosts-hint">
+          <span class="gc-boosts-hint-icon">🚧</span>
+          <span><strong>Раздел в разработке:</strong> таблиц пока немного, но список будет пополняться.</span>
         </div>
-      ) : (
-        <>
-          <!-- Левое меню -->
-          <aside class="gc-mech-sidebar">
-            {mechanicsRendered.map((m, i) => (
-              <a
-                href={`/codex?tab=mechanics&mech=${m.entry.id}`}
-                class={`gc-mech-nav-item${i === 0 ? ' active' : ''}`}
-                data-mech-id={m.entry.id}
-              >
-                <span class="gc-mech-nav-icon">{m.entry.data.icon}</span>
-                <span class="gc-mech-nav-label">{m.entry.data.title}</span>
-              </a>
-            ))}
-          </aside>
 
-          <!-- Правая панель с контентом -->
-          <div class="gc-mech-content">
-            {mechanicsRendered.map((m, i) => {
-              const MechContent = m.Content;
-              return (
-                <div
-                  id={`mech-article-${m.entry.id}`}
-                  class="gc-mech-article"
-                  style={i > 0 ? 'display:none' : ''}
-                >
-                  <article class="gc-guide-article">
-                    <MechContent />
-                    {m.entry.id === 'fish-aging' && <FishAgingTable client:visible />}
-                  </article>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
+        <div id="gc-ref-tables-wrap">
+          <ReferenceCatalog client:visible initialRef={Astro.url.searchParams.get('ref')} />
+        </div>
 
+        {mechanicsRendered.map((m) => {
+          const MechContent = m.Content;
+          return (
+            <article id={`mech-article-${m.entry.id}`} class="gc-guide-article gc-mech-standalone-article" style="display:none">
+              <MechContent />
+              {m.entry.id === 'fish-aging' && <FishAgingTable client:visible />}
+            </article>
+          );
+        })}
+      </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════
@@ -309,17 +406,6 @@ try {
     </div>
 
     <!-- ═══════════════════════════════════════════════
-         СПРАВОЧНИК
-         ═══════════════════════════════════════════════ -->
-    <div id="referencePanel" style="display:none">
-      <div class="gc-boosts-hint">
-        <span class="gc-boosts-hint-icon">🚧</span>
-        <span><strong>Раздел в разработке:</strong> таблиц пока немного, но список будет пополняться.</span>
-      </div>
-      <ReferenceCatalog client:visible />
-    </div>
-
-    <!-- ═══════════════════════════════════════════════
          ГЛАВА
          ═══════════════════════════════════════════════ -->
     <div id="chapterPanel" style="display:none">
@@ -330,14 +416,6 @@ try {
          СООБЩЕСТВО
          ═══════════════════════════════════════════════ -->
     <div id="communityPanel" style="display:none">
-      <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-codex-community-cta">
-        <div>
-          <div class="gc-codex-community-cta-title">💬 Чат сообщества</div>
-          <div class="gc-codex-community-cta-sub">Общайся и делись опытом с другими фермерами</div>
-        </div>
-        <span class="gc-codex-community-cta-arrow">Открыть чат →</span>
-      </a>
-
       <div class="gc-codex-leaderboards">
         <div class="gc-card gc-codex-leaderboard-card">
           <div class="gc-codex-leaderboard-title">🎟️ Лидерборд тикетов</div>
@@ -352,7 +430,12 @@ try {
               </div>
             ))
           )}
-          <a href="/community/tickets-leaderboard" class="gc-codex-leaderboard-more">Смотреть полный рейтинг →</a>
+          <div class="gc-codex-leaderboard-footer">
+            <a href="/codex/community/tickets-leaderboard" class="gc-codex-leaderboard-more">Смотреть полный рейтинг →</a>
+            {formatUpdatedAgo(ticketsUpdatedAt) && (
+              <span class="gc-codex-leaderboard-updated">{formatUpdatedAgo(ticketsUpdatedAt)}</span>
+            )}
+          </div>
         </div>
 
         <div class="gc-card gc-codex-leaderboard-card">
@@ -368,9 +451,23 @@ try {
               </div>
             ))
           )}
-          <a href="/community/lp-leaderboard" class="gc-codex-leaderboard-more">Смотреть полный рейтинг →</a>
+          <div class="gc-codex-leaderboard-footer">
+            <a href="/codex/community/lp-leaderboard" class="gc-codex-leaderboard-more">Смотреть полный рейтинг →</a>
+            {formatUpdatedAgo(lpUpdatedAt) && (
+              <span class="gc-codex-leaderboard-updated">{formatUpdatedAgo(lpUpdatedAt)}</span>
+            )}
+          </div>
         </div>
       </div>
+
+      <h2 class="gc-block-title-lg">👥 Фермеры сообщества</h2>
+      {communityApiError ? (
+        <div class="gc-community-error gc-card">
+          ⚠️ Данные временно недоступны. Попробуйте позже.
+        </div>
+      ) : (
+        <CommunityPage client:load farmers={communityFarmers} guidesByUser={guidesByUser} />
+      )}
     </div>
 
   </div>
@@ -381,27 +478,22 @@ try {
 
 <script>
   const sectionBtns    = document.querySelectorAll<HTMLAnchorElement>('.gc-section-tab');
+  const sectionTabsEl  = document.getElementById('sectionTabs');
+  const sectionDots    = document.querySelectorAll<HTMLSpanElement>('.gc-section-tabs-dot');
   const filterBtns     = document.querySelectorAll<HTMLButtonElement>('.gc-tag-btn');
   const cards          = document.querySelectorAll<HTMLElement>('.gc-guide-card');
-  const searchInput    = document.getElementById('guideSearch') as HTMLInputElement;
   const countEl        = document.getElementById('guidesCount');
   const noResults      = document.getElementById('noResults');
   const emptySection   = document.getElementById('emptySection');
   const categoryFilter = document.getElementById('categoryFilter');
-  const searchWrap     = document.getElementById('searchWrap');
   const guidesGrid     = document.getElementById('guidesGrid');
   const mechanicsPanel = document.getElementById('mechanicsPanel');
   const nftPanel       = document.getElementById('nftPanel');
-  const referencePanel = document.getElementById('referencePanel');
   const chapterPanel   = document.getElementById('chapterPanel');
   const communityPanel = document.getElementById('communityPanel');
 
-  // Механики: навигация по левому меню
-  const mechNavItems  = document.querySelectorAll<HTMLAnchorElement>('.gc-mech-nav-item');
-  const mechArticles  = document.querySelectorAll<HTMLElement>('.gc-mech-article');
-
   // NFT: подвкладки Предметы / Бады / Питомцы
-  const nftSubtabs  = document.querySelectorAll<HTMLButtonElement>('.gc-nft-subtab');
+  const nftSubtabs  = document.querySelectorAll<HTMLButtonElement>('#nftSubtabs .gc-nft-subtab');
   const nftSubItems = document.getElementById('nftSubItems');
   const nftSubBuds  = document.getElementById('nftSubBuds');
   const nftSubPets  = document.getElementById('nftSubPets');
@@ -419,6 +511,49 @@ try {
       const url = new URL(window.location.href);
       url.searchParams.set('nftSub', sub ?? 'items');
       history.replaceState(null, '', url);
+    });
+  });
+
+  // Механики: единый сайдбар на 10 пунктов — 8 таблиц (рендерит React-остров
+  // ReferenceCatalog, ему просто передаём id через CustomEvent) + 2 markdown-
+  // статьи (обычные Astro <article>, просто show/hide).
+  const refNavItems  = document.querySelectorAll<HTMLAnchorElement>('.gc-ref-nav-item');
+  const refTablesWrap = document.getElementById('gc-ref-tables-wrap');
+  const refArticles   = document.querySelectorAll<HTMLElement>('[id^="mech-article-"]');
+
+  refNavItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+
+      const kind = item.dataset.refKind;
+      const id = item.dataset.refId;
+
+      refNavItems.forEach(b => b.classList.remove('active'));
+      item.classList.add('active');
+
+      if (kind === 'table') {
+        if (refTablesWrap) refTablesWrap.style.display = '';
+        refArticles.forEach(a => { a.style.display = 'none'; });
+        window.dispatchEvent(new CustomEvent('gc:ref-select', { detail: id }));
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', 'mechanics');
+        url.searchParams.set('ref', id ?? '');
+        url.searchParams.delete('mech');
+        history.replaceState(null, '', url);
+      } else {
+        if (refTablesWrap) refTablesWrap.style.display = 'none';
+        refArticles.forEach(a => {
+          a.style.display = a.id === `mech-article-${id}` ? '' : 'none';
+        });
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', 'mechanics');
+        url.searchParams.set('mech', id ?? '');
+        url.searchParams.delete('ref');
+        history.replaceState(null, '', url);
+      }
     });
   });
 
@@ -446,46 +581,23 @@ try {
     return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
   }
 
-  mechNavItems.forEach(item => {
-    item.addEventListener('click', (e) => {
-      if (!isPlainLeftClick(e)) return;
-      e.preventDefault();
-
-      const id = item.dataset.mechId;
-      mechNavItems.forEach(b => b.classList.remove('active'));
-      item.classList.add('active');
-      mechArticles.forEach(a => {
-        a.style.display = a.id === `mech-article-${id}` ? '' : 'none';
-      });
-
-      const url = new URL(window.location.href);
-      url.searchParams.set('tab', 'mechanics');
-      if (id) url.searchParams.set('mech', id);
-      history.replaceState(null, '', url);
-    });
-  });
-
   let activeSection  = 'guides';
   let activeCategory = 'all';
-  let searchQuery    = '';
 
   function showSection(section: string) {
     const isGuides    = section === 'guides';
     const isMechanics = section === 'mechanics';
     const isNft       = section === 'nft';
-    const isReference = section === 'reference';
     const isChapter   = section === 'chapter';
     const isCommunity = section === 'community';
 
     if (guidesGrid)     guidesGrid.style.display     = isGuides ? '' : 'none';
-    if (searchWrap)     searchWrap.style.display      = isGuides ? '' : 'none';
     if (categoryFilter) (categoryFilter as HTMLElement).style.display = isGuides ? '' : 'none';
     if (countEl)        countEl.style.display         = isGuides ? '' : 'none';
     if (noResults)      noResults.style.display       = 'none';
     if (emptySection)   emptySection.style.display    = 'none';
     if (mechanicsPanel) mechanicsPanel.style.display  = isMechanics ? 'flex' : 'none';
     if (nftPanel)       nftPanel.style.display        = isNft ? '' : 'none';
-    if (referencePanel) referencePanel.style.display  = isReference ? '' : 'none';
     if (chapterPanel)   chapterPanel.style.display    = isChapter ? '' : 'none';
     if (communityPanel) communityPanel.style.display  = isCommunity ? '' : 'none';
   }
@@ -521,12 +633,10 @@ try {
   function filterCards() {
     let visible = 0;
     cards.forEach(card => {
-      const sec   = card.dataset.section ?? 'guides';
-      const cat   = card.dataset.category ?? '';
-      const title = card.dataset.title ?? '';
-      const show  = sec === activeSection
-        && (activeCategory === 'all' || cat === activeCategory)
-        && title.includes(searchQuery);
+      const sec  = card.dataset.section ?? 'guides';
+      const cat  = card.dataset.category ?? '';
+      const show = sec === activeSection
+        && (activeCategory === 'all' || cat === activeCategory);
       card.style.display = show ? '' : 'none';
       if (show) visible++;
     });
@@ -536,7 +646,11 @@ try {
     if (emptySection) emptySection.style.display = totalInSection === 0 ? 'block' : 'none';
   }
 
-  sectionBtns.forEach(btn => {
+  function setActiveDot(index: number) {
+    sectionDots.forEach((d, i) => d.classList.toggle('active', i === index));
+  }
+
+  sectionBtns.forEach((btn, index) => {
     btn.addEventListener('click', (e) => {
       if (!isPlainLeftClick(e)) return;
       e.preventDefault();
@@ -544,6 +658,8 @@ try {
       activeSection = btn.dataset.section ?? 'guides';
       sectionBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      setActiveDot(index);
+      btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
 
       showSection(activeSection);
 
@@ -553,16 +669,33 @@ try {
       history.replaceState(null, '', url);
 
       if (activeSection === 'guides') {
-        if (searchInput) {
-          searchInput.value = '';
-          searchInput.placeholder = 'Найти гайд...';
-        }
-        searchQuery = '';
         updateCategoryButtons(activeSection);
         filterCards();
       }
     });
   });
+
+  // Мобильный горизонтальный скролл вкладок: полоски-индикаторы под ним —
+  // чисто визуальная подсказка позиции при свайпе, обновляются по ближайшей
+  // к центру видимой области плитке (не переключают саму вкладку — для
+  // этого нужен клик/тап по плитке).
+  if (sectionTabsEl) {
+    let scrollRaf = 0;
+    sectionTabsEl.addEventListener('scroll', () => {
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = requestAnimationFrame(() => {
+        const containerCenter = sectionTabsEl.getBoundingClientRect().left + sectionTabsEl.clientWidth / 2;
+        let closestIndex = 0;
+        let closestDist = Infinity;
+        sectionBtns.forEach((btn, i) => {
+          const btnCenter = btn.getBoundingClientRect().left + btn.clientWidth / 2;
+          const dist = Math.abs(btnCenter - containerCenter);
+          if (dist < closestDist) { closestDist = dist; closestIndex = i; }
+        });
+        setActiveDot(closestIndex);
+      });
+    }, { passive: true });
+  }
 
   categoryFilter?.querySelector('[data-cat="all"]')?.addEventListener('click', () => {
     activeCategory = 'all';
@@ -571,16 +704,18 @@ try {
     filterCards();
   });
 
-  searchInput?.addEventListener('input', () => {
-    searchQuery = searchInput.value.toLowerCase().trim();
-    filterCards();
-  });
-
-  // Инициализация: проверяем ?tab=, ?mech= и ?nftSub= параметры
+  // Инициализация: проверяем ?tab=, ?mech=, ?ref= и ?nftSub= параметры.
+  // ?tab=reference — старый путь (вкладка "Справочник" до объединения с
+  // "Механики"); маппим на "Механики".
   const initialParams = new URLSearchParams(window.location.search);
-  const urlTab    = initialParams.get('tab');
+  let urlTab      = initialParams.get('tab');
   const urlMech   = initialParams.get('mech');
+  const urlRef    = initialParams.get('ref');
   const urlNftSub = initialParams.get('nftSub');
+
+  if (urlTab === 'reference') {
+    urlTab = 'mechanics';
+  }
 
   if (urlTab) {
     const targetBtn = [...sectionBtns].find(b => b.dataset.section === urlTab);
@@ -600,20 +735,57 @@ try {
     targetSub?.click();
   }
 
-  if (urlTab === 'mechanics' && urlMech) {
-    const targetMech = [...mechNavItems].find(b => b.dataset.mechId === urlMech);
-    targetMech?.click();
+  // Общий сайдбар механик: ?mech= — открыть конкретную markdown-статью,
+  // ?ref= — конкретную таблицу (по умолчанию активен первый пункт — таблица
+  // "Навыки" — так что явный клик нужен только если параметр отличается).
+  // ?mech=update-nodes — старая ссылка на статью, смерджённую в таблицу
+  // "Улучшение ресурсных нод" (ref=upgrades), маппим на неё.
+  const effectiveRef = urlMech === 'update-nodes' ? 'upgrades' : urlRef;
+  if (urlTab === 'mechanics' && urlMech && urlMech !== 'update-nodes') {
+    const targetItem = [...refNavItems].find(b => b.dataset.refKind === 'article' && b.dataset.refId === urlMech);
+    targetItem?.click();
+  } else if (urlTab === 'mechanics' && effectiveRef) {
+    const targetItem = [...refNavItems].find(b => b.dataset.refKind === 'table' && b.dataset.refId === effectiveRef);
+    targetItem?.click();
   }
 </script>
 
 <style>
-.gc-guides-header { padding: 24px 0 24px; }
-.gc-guides-sub { font-size: 15px; color: var(--text-sec); margin-top: 6px; }
+.gc-block-title-lg {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 32px 0 16px;
+}
+
+/* ── Единый блок навигации по кодексу: заголовок + поиск + вкладки-плитки ── */
+.gc-codex-nav-block {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px 28px;
+  margin-bottom: 32px;
+}
+.gc-guides-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 0 16px;
+}
+.gc-codex-nav-tagline { font-size: 13px; color: var(--text-sec); }
+/* Поле нейро-поиска SearchWidget здесь тоже на тон темнее (--bg) — читается
+   как вложенный слой внутри .gc-codex-nav-block, как и плитки вкладок ниже. */
+.gc-codex-nav-block :global(.gc-search-widget) { margin-bottom: 20px; }
+.gc-codex-nav-block :global(.gc-search-input-wrap) { background: var(--bg); }
 
 /* ── Баннер главы ── */
 .gc-codex-chapter-block {
   position: relative;
-  margin: 24px 0 40px;
+  max-width: 640px;
+  margin: 24px auto 40px;
 }
 .gc-codex-chapter-banner {
   display: block;
@@ -638,12 +810,12 @@ try {
 .gc-codex-chapter-timer {
   background: #5C3D1E;
   border-radius: 14px;
-  padding: 20px 28px;
+  padding: 14px 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   max-width: 75%;
-  margin: -20px auto 0;
+  margin: -16px auto 0;
   position: relative;
   z-index: 1;
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
@@ -652,12 +824,11 @@ try {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   flex: 1;
-  padding-top: 10px;
 }
 :global(.gc-timer-label) {
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -673,72 +844,58 @@ try {
 }
 :global(.gc-timer-value) {
   font-family: 'Press Start 2P', monospace;
-  font-size: 28px;
+  font-size: 20px;
   color: #e8ece3;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
 }
 @media (max-width: 700px) {
   .gc-codex-chapter-timer { max-width: 100%; flex-direction: column; padding: 18px 20px; }
 }
 
-/* ── Вкладки ── */
+/* ── Вкладки: квадратные плитки-иконки с подписью снизу (не строки-полоски) —
+   активная плитка крупнее и подсвечена акцентным фоном ── */
 .gc-section-tabs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 24px;
-  background: var(--card-bg);
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 10px;
 }
 .gc-section-tab {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
-  background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
-  border-right: 1px solid var(--border);
+  justify-content: center;
+  gap: 6px;
+  padding: 16px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   text-decoration: none;
   color: var(--text);
   font-family: var(--font-body);
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
 }
-.gc-section-tab:last-child { border-right: none; }
-.gc-section-tab:hover { background: var(--green-pale); }
+.gc-section-tab:hover:not(.active) { background: var(--green-pale); border-color: var(--green-mid); }
 .gc-section-tab.active {
-  background: var(--green-pale);
-  border-bottom-color: var(--green-mid);
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: var(--green-pale);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  transform: scale(1.04);
 }
-.gc-section-tab-icon { font-size: 22px; flex-shrink: 0; }
-.gc-section-tab-label { font-size: 14px; font-weight: 600; line-height: 1.3; }
-.gc-section-tab-sub { font-size: 11px; color: var(--green-mid); margin-top: 2px; }
+.gc-section-tab.active .gc-section-tab-sub { color: var(--green-pale); opacity: 0.75; }
+/* display:contents — обёртка вокруг label/sub существует в DOM (нужна для
+   мобильной раскладки "иконка слева, текст справа" у активной плитки, см.
+   media query ниже), но на десктопе ведёт себя так, будто её нет. */
+.gc-section-tab-text { display: contents; }
+.gc-section-tab-icon { font-size: 24px; }
+.gc-section-tab-label { font-size: 13px; font-weight: 600; line-height: 1.3; }
+.gc-section-tab-sub { font-size: 10.5px; color: var(--text-sec); line-height: 1.3; }
 
-/* ── Поиск ── */
-.gc-search-wrap { margin-bottom: 16px; }
-.gc-search-input {
-  width: 100%;
-  padding: 12px 16px 12px 40px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--card-bg);
-  color: var(--text);
-  font-size: 14px;
-  font-family: var(--font-body);
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235A6468' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: 14px center;
-}
-.gc-search-input:focus {
-  border-color: var(--green-mid);
-  box-shadow: 0 0 0 3px var(--green-pale);
-}
-.gc-search-input::placeholder { color: var(--text-sec); }
+/* Точки-индикаторы карусели — видны только на мобильном (см. media query) */
+.gc-section-tabs-dots { display: none; }
 
 /* ── Фильтр категорий ── */
 .gc-tag-filter {
@@ -835,61 +992,25 @@ try {
 .gc-guide-card-desc { font-size: 12px; color: var(--text-sec); line-height: 1.5; }
 
 /* ═══════════════════════════════════════════════
-   МЕХАНИКИ: ДВУХПАНЕЛЬНЫЙ LAYOUT
+   МЕХАНИКИ: единый сайдбар (8 таблиц + 2 статьи) — .ref-sidebar/.ref-nav-item
+   уже стилизованы в ReferenceCatalog.css (импортирован тем же React-
+   островом, что рендерится внутри); здесь только layout-обёртка вкладки,
+   которой у ReferenceCatalog самого по себе больше нет.
    ═══════════════════════════════════════════════ */
-.gc-mechanics-layout {
+.gc-ref-layout {
   display: flex;
   gap: 20px;
   align-items: flex-start;
-  margin-bottom: 48px;
 }
-
-/* ── Левое меню ── */
-.gc-mech-sidebar {
-  width: 220px;
-  flex-shrink: 0;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  position: sticky;
-  top: 20px;
-}
-.gc-mech-nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px 16px;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  text-align: left;
-  text-decoration: none;
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.15s, color 0.15s;
-}
-.gc-mech-nav-item:last-child { border-bottom: none; }
-.gc-mech-nav-item:hover {
-  background: var(--green-pale);
-  color: var(--green-dark);
-}
-.gc-mech-nav-item.active {
-  background: var(--green-pale);
-  color: var(--green-dark);
-  font-weight: 600;
-  border-left: 3px solid var(--green-mid);
-}
-.gc-mech-nav-icon { font-size: 18px; flex-shrink: 0; }
-.gc-mech-nav-label { line-height: 1.3; }
-
-/* ── Правая панель ── */
-.gc-mech-content { flex: 1; min-width: 0; }
+.gc-ref-content-wrap { flex: 1; min-width: 0; }
+.gc-mech-standalone-article { margin-top: 8px; }
 /* Markdown-контент рендерится через .gc-guide-article — стили в src/styles/global.css */
+
+@media (max-width: 720px) {
+  .gc-ref-layout { flex-direction: column; }
+  .gc-ref-sidebar { width: 100%; position: static; }
+  .gc-ref-content-wrap { width: 100%; min-width: 0; max-width: 100%; }
+}
 
 /* ═══════════════════════════════════════════════
    NFT КАТАЛОГ — ПОДВКЛАДКИ Предметы/Бады/Питомцы
@@ -992,37 +1113,8 @@ try {
 :global(.gc-tag-btn.active[data-cat="Лайфхаки"])   { background: #C1477A; border-color: #C1477A; }
 
 /* ═══════════════════════════════════════════════
-   СООБЩЕСТВО
+   РЕЙТИНГИ
    ═══════════════════════════════════════════════ */
-.gc-codex-community-cta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 22px 26px;
-  margin-bottom: 24px;
-  border-radius: 14px;
-  background: var(--green-dark);
-  text-decoration: none;
-  flex-wrap: wrap;
-}
-.gc-codex-community-cta-title {
-  font-family: var(--font-head);
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-}
-.gc-codex-community-cta-sub {
-  font-size: 12.5px;
-  color: rgba(255,255,255,0.75);
-  margin-top: 2px;
-}
-.gc-codex-community-cta-arrow {
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-}
 .gc-codex-leaderboards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1064,27 +1156,87 @@ try {
   font-weight: 600;
   color: var(--green-dark);
 }
-.gc-codex-leaderboard-more {
-  display: block;
+.gc-codex-leaderboard-footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
   margin-top: 14px;
+}
+.gc-codex-leaderboard-more {
   font-size: 12.5px;
   font-weight: 600;
   color: var(--green-dark);
   text-decoration: none;
 }
 .gc-codex-leaderboard-more:hover { text-decoration: underline; }
+.gc-codex-leaderboard-updated {
+  font-size: 11px;
+  color: var(--text-sec);
+  white-space: nowrap;
+}
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
-  .gc-section-tabs { grid-template-columns: 1fr !important; }
   .gc-guides-grid  { grid-template-columns: repeat(2, 1fr) !important; }
-  .gc-mechanics-layout { flex-direction: column; }
-  .gc-mech-sidebar { width: 100%; position: static; }
 }
 @media (max-width: 640px) {
   .gc-guides-grid { grid-template-columns: 1fr !important; }
-  .gc-guides-header { padding: 24px 0 16px; }
-  .gc-mech-article :global(.gc-guide-article) { padding: 20px; }
+  .gc-codex-nav-block { padding: 20px 16px 16px; }
+  .gc-guides-header { padding: 0 0 16px; }
+
+  /* Вкладки на мобильном — узкий ряд плиток с горизонтальным скроллом
+     (overflow-x: auto, скроллбар скрыт). Все плитки одного размера и
+     формата (иконка сверху, текст снизу) — активная выделяется только
+     градиентным фоном, не размером; последняя видимая плитка обрезается
+     краем контейнера как визуальный намёк на скролл. */
+  .gc-section-tabs {
+    display: flex;
+    grid-template-columns: none;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .gc-section-tabs::-webkit-scrollbar { display: none; }
+  .gc-section-tab {
+    flex: 0 0 auto;
+    width: 84px;
+    padding: 12px 6px;
+    transform: none;
+  }
+  .gc-section-tab.active {
+    padding: 12px 6px;
+    background: linear-gradient(160deg, var(--green-light), var(--green-mid));
+    border-color: transparent;
+    color: var(--text);
+    transform: none;
+  }
+  /* Подпись (sub) скрыта — при ширине 84px длинные подписи ("Таблицы и
+     формулы") переносились на 2 строки и через flex stretch тянули весь
+     ряд плиток по высоте. На мобильном под иконкой только название вкладки. */
+  .gc-section-tab-sub { display: none; }
+  .gc-section-tab-icon { font-size: 18px; }
+
+  /* Индикатор прогресса скролла — полоски, активная шире. Чисто визуальная
+     подсказка (не кликабельны), обновляются по ближайшей к центру плитке. */
+  .gc-section-tabs-dots {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 14px;
+  }
+  .gc-section-tabs-dot {
+    width: 5px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background 0.15s, width 0.15s;
+  }
+  .gc-section-tabs-dot.active { width: 14px; background: var(--green-mid); }
+
+  .gc-mech-standalone-article :global(.gc-guide-article) { padding: 20px; }
   .gc-codex-leaderboards { grid-template-columns: 1fr !important; }
 }
 </style>
