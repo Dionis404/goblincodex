@@ -39,11 +39,29 @@ interface Props {
   defaultStatusFilter?: Status | 'all';
 }
 
+interface LeaderboardEntry {
+  rank: number;
+  username: string;
+  sfl: number;
+  tickets: number;
+  items: Record<string, number>;
+  farmId: number;
+  experience: number;
+}
+
 interface AuctionResults {
-  my_status: string;
   participant_count: number;
   supply: number;
-  leaderboard: { name: string; amount: number }[];
+  leaderboard: LeaderboardEntry[];
+}
+
+/** Ставка участника аукциона — SFL, если платили цветком, иначе тикеты/ингредиенты. */
+function bidLabel(entry: LeaderboardEntry): string {
+  if (entry.sfl > 0) return `${entry.sfl} Flower`;
+  const items = Object.entries(entry.items ?? {});
+  if (items.length > 0) return items.map(([name, amount]) => `${amount} ${name}`).join(', ');
+  if (entry.tickets > 0) return `${entry.tickets} тикетов`;
+  return '—';
 }
 
 type ResultsState =
@@ -451,13 +469,13 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                         <span className="ca-type-badge">{TYPE_LABEL[a.type]}</span>
                         <span className="ca-row-supply">Лимит {a.supply} на ставку</span>
                         {ingredients.length > 0 ? (
-                          ingredients.map(([name]) => (
-                            <span key={name} className={`ca-cost ${costBadgeClass(name)}`}>{name}</span>
+                          ingredients.map(([name, amount]) => (
+                            <span key={name} className={`ca-cost ${costBadgeClass(name)}`}>{amount} {name}</span>
                           ))
                         ) : a.sfl <= 0 ? (
                           <span className="ca-cost">Без ингредиентов</span>
                         ) : null}
-                        {a.sfl > 0 && <span className={`ca-cost ${costBadgeClass('Flower')}`}>Flower</span>}
+                        {a.sfl > 0 && <span className={`ca-cost ${costBadgeClass('Flower')}`}>{a.sfl} Flower</span>}
                       </div>
                     </div>
                     {isHot ? (
@@ -521,17 +539,21 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                     <div className="ca-results-summary">
                       <span>Участников: <strong>{results.data.participant_count}</strong></span>
                       <span>Лимит: <strong>{results.data.supply}</strong></span>
-                      <span>Мой статус: <strong>{results.data.my_status}</strong></span>
                     </div>
-                    {results.data.leaderboard.length > 0 && (
+                    {results.data.leaderboard.length > 0 ? (
                       <ol className="ca-leaderboard">
-                        {results.data.leaderboard.map((entry, i) => (
-                          <li key={`${entry.name}-${i}`} className="ca-leaderboard-row">
-                            <span className="ca-leaderboard-name">{entry.name}</span>
-                            <span className="ca-leaderboard-amount">{entry.amount}</span>
-                          </li>
-                        ))}
+                        {[...results.data.leaderboard]
+                          .sort((a, b) => a.rank - b.rank)
+                          .map(entry => (
+                            <li key={entry.farmId} className="ca-leaderboard-row">
+                              <span className="ca-leaderboard-rank">#{entry.rank}</span>
+                              <span className="ca-leaderboard-name">{entry.username}</span>
+                              <span className="ca-leaderboard-amount">{bidLabel(entry)}</span>
+                            </li>
+                          ))}
                       </ol>
+                    ) : (
+                      <span className="ca-modal-no-boosts">Топ ставок пока недоступен</span>
                     )}
                   </div>
                 )}
