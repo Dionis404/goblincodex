@@ -571,6 +571,10 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                       <ol className="ca-leaderboard">
                         {[...results.data.leaderboard]
                           .sort((a, b) => a.rank - b.rank)
+                          // Лимит (supply) — сколько экземпляров реально разыгрывается,
+                          // т.е. столько мест и должно быть в топе (при supply=1 — только
+                          // победитель, а не весь список, который может вернуть API).
+                          .slice(0, results.data.supply)
                           .map(entry => (
                             <li key={entry.farmId} className="ca-leaderboard-row">
                               <span className="ca-leaderboard-rank">#{entry.rank}</span>
