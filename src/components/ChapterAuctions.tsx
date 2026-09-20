@@ -46,7 +46,9 @@ interface Props {
 
 interface LeaderboardEntry {
   rank: number;
-  username: string;
+  // Не у всех участников есть username в ответе API (часть игроков ещё не
+  // синхронизировала ник, либо это старые данные) — тогда есть только farmId.
+  username?: string;
   sfl: number;
   tickets: number;
   items: Record<string, number>;
@@ -67,6 +69,11 @@ function bidLabel(entry: LeaderboardEntry): string {
   if (items.length > 0) return items.map(([name, amount]) => `${amount} ${name}`).join(', ');
   if (entry.tickets > 0) return `${entry.tickets} тикетов`;
   return '—';
+}
+
+/** Фолбэк, когда у записи нет username — показываем номер фермы. */
+function entryDisplayName(entry: LeaderboardEntry): string {
+  return entry.username || `Farm #${entry.farmId}`;
 }
 
 type ResultsState =
@@ -632,7 +639,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                           .map(entry => (
                             <li key={entry.farmId} className="ca-leaderboard-row">
                               <span className="ca-leaderboard-rank">#{entry.rank}</span>
-                              <span className="ca-leaderboard-name">{entry.username}</span>
+                              <span className="ca-leaderboard-name">{entryDisplayName(entry)}</span>
                               <span className="ca-leaderboard-amount">{bidLabel(entry)}</span>
                             </li>
                           ))}
