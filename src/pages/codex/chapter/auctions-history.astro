@@ -13,7 +13,9 @@ try {
   console.error('[codex/chapter/auctions-history] DB fetch error:', err);
 }
 
-const pastAuctions = await fetchPastAuctions();
+// limit=100 (дефолт) показывал только маленькое окно истории вместо всех
+// прошлых глав — см. fetchAuctionsInRange в auctionsApi.ts, та же причина.
+const pastAuctions = await fetchPastAuctions(5000);
 const now = Date.now();
 ---
 

@@ -4,6 +4,7 @@
  * ещё измениться, тогда донастроим mapAuction ниже.
  */
 import { GOBLIN_API_BASE, fetchWithTimeout } from './goblinApi';
+import { withTtlCache } from './cache';
 
 /** Форма, которую ожидает компонент ChapterAuctions (см. src/components/ChapterAuctions.tsx). */
 export interface UiAuction {
@@ -75,14 +76,30 @@ export async function fetchUpcomingAuctions(): Promise<UiAuction[]> {
   }
 }
 
-/** История завершённых аукционов главы — read-only витрина auctioneer-bot. */
+const AUCTIONS_TTL_MS = 10 * 60 * 1000; // 10 мин — та же политика, что у catalog-cache.ts
+
+/**
+ * История завершённых аукционов главы — read-only витрина auctioneer-bot.
+ * Большие лимиты (страницы глав/архива тянут тысячи записей разом) кэшируем
+ * на 10 мин: сами данные — уже прошедшие аукционы, они не меняются, а без
+ * кэша каждый рендер страницы главы заново гонял бы весь запрос в goblin-api
+ * и рисковал упереться в 5-секундный таймаут fetchWithTimeout. Маленькие
+ * разовые запросы (лимит по умолчанию) не кэшируем — не нагружают бэкенд.
+ */
 export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
-  try {
-    const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?history=true&limit=${limit}`);
+  const load = async () => {
+    const timeoutMs = limit > 100 ? 15000 : 5000;
+    const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?history=true&limit=${limit}`, timeoutMs);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data: ApiAuction[] = await res.json();
     if (!Array.isArray(data)) throw new Error('unexpected response shape');
     return data.map(mapAuction);
+  };
+
+  try {
+    if (limit <= 100) return await load();
+    const { data } = await withTtlCache(`past-auctions-${limit}`, AUCTIONS_TTL_MS, load);
+    return data;
   } catch (e) {
     console.error('[auctionsApi] fetchPastAuctions error:', e);
     return [];
@@ -93,16 +110,23 @@ export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
  * Аукционы, чей startAt попадает в [startMs, endMs) — для страницы конкретной
  * главы (src/lib/chapters.ts). API не умеет фильтровать по датам напрямую
  * (см. docs/goblin-api — только item_name/limit/history), поэтому тянем
- * достаточно большую историю и фильтруем на своей стороне. limit подобран
- * с запасом: аукционов пока заметно меньше некоторых сотен за всю историю
- * игры, но если игра проживёт значительно дольше — этот лимит стоит поднять.
+ * достаточно большую историю и фильтруем на своей стороне.
+ *
+ * limit=500 раньше обрезал старые главы: аукционов ~5/день, глава идёт
+ * ~90 дней — это уже ~450 записей на ОДНУ главу, а history=true отдаёт
+ * последние N по всей игре разом (не по главе), так что чем старше глава,
+ * тем быстрее её начало вытесняется более новыми записями других глав.
+ * Например Salt Awakening (04.05–03.08) на limit=500 показывал данные
+ * только с 10.05 по 10.07 — начало и конец главы обрезаны. Подняли лимит
+ * с большим запасом на всю прожитую историю игры; при дальнейшем росте
+ * числа глав стоит поднять ещё.
  *
  * Включает и завершённые (fetchPastAuctions), и предстоящие/активные
  * (fetchUpcomingAuctions) — нужно для текущей главы, где часть аукционов уже
  * прошла, а часть ещё впереди; для прошлых глав fetchUpcomingAuctions просто
  * вернёт пустой список (там всё уже в истории).
  */
-export async function fetchAuctionsInRange(startMs: number, endMs: number, limit = 500): Promise<UiAuction[]> {
+export async function fetchAuctionsInRange(startMs: number, endMs: number, limit = 5000): Promise<UiAuction[]> {
   const [past, upcoming] = await Promise.all([fetchPastAuctions(limit), fetchUpcomingAuctions()]);
   const byId = new Map<string, UiAuction>();
   [...past, ...upcoming].forEach(a => byId.set(a.auctionId, a));
