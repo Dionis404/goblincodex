@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { CHAPTERS } from '../lib/chapters';
 import './ChapterAuctions.css';
 
 interface Auction {
@@ -37,6 +38,10 @@ interface Props {
   itemCatalog?: Record<string, CatalogEntry>;
   initialNow?: number;
   defaultStatusFilter?: Status | 'all';
+  // Скрывает сегментный фильтр "Все/Скоро/Завершены" и включает выбор главы —
+  // для страницы общего архива (auctions-history), где все аукционы и так
+  // уже завершены (фильтр по статусу там бесполезен), а глав несколько.
+  showStatusFilter?: boolean;
 }
 
 interface LeaderboardEntry {
@@ -127,6 +132,13 @@ function getStatus(a: Auction, now: number): Status {
   if (now < a.startAt) return 'upcoming';
   if (now < a.endAt) return 'live';
   return 'ended';
+}
+
+// Даты глав идут непрерывной шкалой без пропусков (endDate одной = startDate
+// следующей, см. chapters.ts) — определяем главу аукциона по его startAt,
+// без отдельного поля "глава" в самих данных аукциона.
+function chapterNameAt(ms: number): string | undefined {
+  return CHAPTERS.find(c => ms >= new Date(c.startDate).getTime() && ms < new Date(c.endDate).getTime())?.name;
 }
 
 function costKey(a: Auction): string {
@@ -250,7 +262,7 @@ function SpriteImg({ sprite, name, size = 40 }: { sprite: string | null; name: s
   );
 }
 
-export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awakening', itemCatalog, initialNow, defaultStatusFilter = 'upcoming' }: Props) {
+export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awakening', itemCatalog, initialNow, defaultStatusFilter = 'upcoming', showStatusFilter = true }: Props) {
   // initialNow приходит с сервера и совпадает с тем, что отрендерил SSR — если
   // здесь заново вызвать Date.now(), время разъедется на пару секунд и React
   // словит hydration mismatch (текст вроде "Через N мин" не совпадёт).
@@ -263,6 +275,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
   const [costFilter, setCostFilter] = useState('all');
   const [kindFilter, setKindFilter] = useState<Kind | 'all'>('all');
   const [nameFilter, setNameFilter] = useState('all');
+  const [chapterFilter, setChapterFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Auction | null>(null);
   const [results, setResults] = useState<ResultsState>({ status: 'loading' });
@@ -336,6 +349,37 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
     return [{ value: 'all', label: 'Все предметы' }, ...[...names].sort().map(n => ({ value: n, label: n }))];
   }, [auctions]);
 
+  // Показываем фильтр по главе, только если в данных реально несколько глав
+  // (на странице одной главы он бесполезен — там и так всё одной главы).
+  // Сортируем по игровому порядку глав (CHAPTERS.order), не по алфавиту —
+  // иначе "Ascension Age" и "Bull Run" оказались бы раньше "Solar Flare".
+  const chapterOptions = useMemo<DropdownOption[]>(() => {
+    const names = new Set<string>();
+    auctions.forEach(a => {
+      const name = chapterNameAt(a.startAt);
+      if (name) names.add(name);
+    });
+    const ordered = CHAPTERS.filter(c => names.has(c.name)).sort((a, b) => b.order - a.order);
+    return [{ value: 'all', label: 'Все главы' }, ...ordered.map(c => ({ value: c.name, label: c.name }))];
+  }, [auctions]);
+  const showChapterFilter = chapterOptions.length > 2;
+
+  const isFiltered = statusFilter !== defaultStatusFilter
+    || costFilter !== 'all'
+    || kindFilter !== 'all'
+    || nameFilter !== 'all'
+    || chapterFilter !== 'all'
+    || search.trim() !== '';
+
+  const resetFilters = () => {
+    setStatusFilter(defaultStatusFilter);
+    setCostFilter('all');
+    setKindFilter('all');
+    setNameFilter('all');
+    setChapterFilter('all');
+    setSearch('');
+  };
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
     return auctions
@@ -348,9 +392,10 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
       .filter(a => (costFilter === 'all' || costKey(a) === costFilter))
       .filter(a => (kindFilter === 'all' || itemKind(a) === kindFilter))
       .filter(a => (nameFilter === 'all' || itemName(a) === nameFilter))
+      .filter(a => (chapterFilter === 'all' || chapterNameAt(a.startAt) === chapterFilter))
       .filter(a => !q || itemName(a).toLowerCase().includes(q))
       .sort((a, b) => a.startAt - b.startAt);
-  }, [auctions, statusFilter, costFilter, kindFilter, nameFilter, search, now]);
+  }, [auctions, statusFilter, costFilter, kindFilter, nameFilter, chapterFilter, search, now]);
 
   const summary = useMemo(() => {
     let totalSupply = 0;
@@ -405,29 +450,38 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
             />
           </div>
           <Dropdown value={nameFilter} options={nameOptions} onChange={setNameFilter} />
+          {showChapterFilter && <Dropdown value={chapterFilter} options={chapterOptions} onChange={setChapterFilter} />}
         </div>
 
         <div className="ca-toolbar">
-          <div className="ca-segmented" ref={segmentedRef}>
-            <div
-              className="ca-segment-indicator"
-              style={{ transform: `translateX(${indicatorStyle.left}px)`, width: `${indicatorStyle.width}px` }}
-            />
-            {STATUS_FILTERS.map(f => (
-              <button
-                key={f.id}
-                ref={el => { segRefs.current[f.id] = el; }}
-                className={`ca-segment${statusFilter === f.id ? ' active' : ''}`}
-                onClick={() => setStatusFilter(f.id)}
-                type="button"
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
+          {showStatusFilter && (
+            <div className="ca-segmented" ref={segmentedRef}>
+              <div
+                className="ca-segment-indicator"
+                style={{ transform: `translateX(${indicatorStyle.left}px)`, width: `${indicatorStyle.width}px` }}
+              />
+              {STATUS_FILTERS.map(f => (
+                <button
+                  key={f.id}
+                  ref={el => { segRefs.current[f.id] = el; }}
+                  className={`ca-segment${statusFilter === f.id ? ' active' : ''}`}
+                  onClick={() => setStatusFilter(f.id)}
+                  type="button"
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <Dropdown value={costFilter} options={costOptions} onChange={setCostFilter} />
           <Dropdown value={kindFilter} options={kindOptions} onChange={v => setKindFilter(v as Kind | 'all')} />
+
+          {isFiltered && (
+            <button type="button" className="ca-reset-btn" onClick={resetFilters}>
+              ✕ Сбросить фильтры
+            </button>
+          )}
         </div>
 
         <div className="ca-panel-divider" />

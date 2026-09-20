@@ -42,7 +42,7 @@ const now = Date.now();
         </p>
       </div>
     ) : (
-      <ChapterAuctions client:visible auctions={pastAuctions} chapterName="прошлых глав" itemCatalog={itemCatalog} initialNow={now} defaultStatusFilter="ended" />
+      <ChapterAuctions client:visible auctions={pastAuctions} chapterName="прошлых глав" itemCatalog={itemCatalog} initialNow={now} defaultStatusFilter="ended" showStatusFilter={false} />
     )}
 
   </div>

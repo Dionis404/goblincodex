@@ -98,6 +98,25 @@
 }
 .ca-dropdown.open .ca-dropdown-arrow { transform: rotate(-135deg) translateY(1px); }
 
+/* ── Reset filters button ── */
+.ca-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-sec);
+  font-size: 13px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.ca-reset-btn:hover { border-color: var(--green-mid); color: var(--green-dark); }
+
 .ca-dropdown-menu {
   position: absolute;
   top: calc(100% + 6px);
