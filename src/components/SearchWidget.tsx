@@ -17,8 +17,10 @@ const COLLECTION_LABEL: Record<SearchResult['collection'], string> = {
 };
 
 function resultHref(r: SearchResult): string {
+  // "mechanics" (Соление рыбы, Улучшение нод) и "reference" (8 таблиц) живут
+  // в общем сайдбаре вкладки "Механики" — см. codex/index.astro.
   if (r.collection === 'mechanics') return `/codex?tab=mechanics&mech=${r.entryId}`;
-  if (r.collection === 'reference') return `/codex?tab=reference&ref=${r.entryId}`;
+  if (r.collection === 'reference') return `/codex?tab=mechanics&ref=${r.entryId}`;
   if (r.collection === 'news') return `/news/${r.entryId}`;
   if (r.collection === 'yakkamon') return `/yakkamon/${r.entryId}`;
   return `/codex/${r.entryId}`;

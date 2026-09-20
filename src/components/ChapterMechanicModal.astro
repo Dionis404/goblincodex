@@ -18,7 +18,10 @@ const MECHANIC_CARDS = [
 
 const mechanicCards = await Promise.all(
   MECHANIC_CARDS.map(async (card) => {
-    const entry = await getEntry('mechanics', card.id);
+    // Статьи-разборы (аукционы, доставки, рафлы и т.п.) переехали из
+    // коллекции mechanics в guides — там теперь только числовые таблицы
+    // (см. src/pages/codex/index.astro, вкладка "Справочник").
+    const entry = await getEntry('guides', card.id);
     const Content = entry ? (await render(entry)).Content : null;
     return { ...card, Content };
   })
