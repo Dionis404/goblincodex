@@ -236,7 +236,11 @@
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
 }
+.ca-row:hover { border-color: var(--green-mid); background: var(--green-pale); }
+.ca-row:focus-visible { outline: 2px solid var(--green-mid); outline-offset: 2px; }
 .ca-row--ended { opacity: 0.55; }
 .ca-row--live { border-color: var(--green-mid); }
 .ca-row--hot {
@@ -321,6 +325,9 @@
 .ca-kind-badge--boost { background: var(--amber-pale); color: #92400E; }
 .ca-kind-badge--decor { background: #EDE9FE; color: #6D28D9; }
 .ca-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   background: var(--amber-pale);
   color: var(--text-ter);
   border-radius: 6px;
@@ -330,6 +337,13 @@
 .ca-cost--flower { background: #FCE1EE; color: #B4257B; }
 .ca-cost--gem    { background: #DBEAFE; color: #1D4ED8; }
 .ca-cost--salt   { background: var(--border); color: var(--text-sec); }
+.ca-cost-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.ca-cost-icon--emoji { font-size: 12px; line-height: 1; }
 
 .ca-status {
   font-size: 11px;

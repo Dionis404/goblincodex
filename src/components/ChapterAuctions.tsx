@@ -211,6 +211,25 @@ function Dropdown({ value, options, onChange }: { value: string; options: Dropdo
   );
 }
 
+// Иконки валют ставки — реальные спрайты игры (см. public/sprites/icons/).
+// Flower (SFL) — временно эмодзи, пока не нашли/не скачали официальный
+// спрайт токена. Остальные валюты аукциона по мере появления — сюда же.
+const COST_ICONS: Record<string, string> = {
+  'Gem': '/sprites/icons/gem.webp',
+  'Salt Rock': '/sprites/icons/salt_rock_ticket.webp',
+};
+const COST_EMOJI: Record<string, string> = {
+  'Flower': '🌻',
+};
+
+function CostIcon({ name }: { name: string }) {
+  const sprite = COST_ICONS[name];
+  if (sprite) return <img src={sprite} alt="" className="ca-cost-icon" />;
+  const emoji = COST_EMOJI[name];
+  if (emoji) return <span className="ca-cost-icon ca-cost-icon--emoji" aria-hidden="true">{emoji}</span>;
+  return null;
+}
+
 function SpriteImg({ sprite, name, size = 40 }: { sprite: string | null; name: string; size?: number }) {
   const [error, setError] = useState(false);
 
@@ -440,27 +459,30 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                 const isHot = status === 'live' || (status === 'upcoming' && a.startAt - now <= SOON_THRESHOLD_MS);
                 const ingredients = Object.entries(a.ingredients);
                 return (
-                  <div key={a.auctionId} className={`ca-row ca-row--${status}${isHot ? ' ca-row--hot' : ''}`}>
+                  <div
+                    key={a.auctionId}
+                    className={`ca-row ca-row--${status}${isHot ? ' ca-row--hot' : ''}`}
+                    onClick={() => setSelected(a)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(a); } }}
+                    aria-label={`Открыть результаты ставки: ${itemName(a)}`}
+                  >
                     <div className="ca-row-time">
                       {formatTime(a.startAt, tz)}–{formatTime(a.endAt, tz)}
                     </div>
-                    <button
-                      type="button"
-                      className={`ca-row-sprite-btn${itemCatalog?.[itemName(a)]?.sprite ? '' : ' ca-row-sprite-btn--emoji'}`}
-                      onClick={() => setSelected(a)}
-                      aria-label={`Открыть ${itemName(a)}`}
-                    >
+                    <div className={`ca-row-sprite-btn${itemCatalog?.[itemName(a)]?.sprite ? '' : ' ca-row-sprite-btn--emoji'}`}>
                       {itemCatalog?.[itemName(a)]?.sprite ? (
                         <SpriteImg sprite={itemCatalog[itemName(a)].sprite} name={itemName(a)} />
                       ) : (
                         <span className="ca-row-icon">{TYPE_ICON[a.type]}</span>
                       )}
-                    </button>
+                    </div>
                     <div className="ca-row-main">
                       <button
                         type="button"
                         className="ca-row-name ca-row-name--clickable"
-                        onClick={() => setNameFilter(itemName(a))}
+                        onClick={e => { e.stopPropagation(); setNameFilter(itemName(a)); }}
                       >
                         {itemName(a)}
                       </button>
@@ -470,12 +492,20 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                         <span className="ca-row-supply">Лимит {a.supply} на ставку</span>
                         {ingredients.length > 0 ? (
                           ingredients.map(([name, amount]) => (
-                            <span key={name} className={`ca-cost ${costBadgeClass(name)}`}>{amount} {name}</span>
+                            <span key={name} className={`ca-cost ${costBadgeClass(name)}`}>
+                              <CostIcon name={name} />
+                              {amount > 1 ? `${amount} ` : ''}{name}
+                            </span>
                           ))
                         ) : a.sfl <= 0 ? (
                           <span className="ca-cost">Без ингредиентов</span>
                         ) : null}
-                        {a.sfl > 0 && <span className={`ca-cost ${costBadgeClass('Flower')}`}>{a.sfl} Flower</span>}
+                        {a.sfl > 0 && (
+                          <span className={`ca-cost ${costBadgeClass('Flower')}`}>
+                            <CostIcon name="Flower" />
+                            {a.sfl > 1 ? `${a.sfl} ` : ''}Flower
+                          </span>
+                        )}
                       </div>
                     </div>
                     {isHot ? (
