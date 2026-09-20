@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ChapterAuctions from '../../../components/ChapterAuctions.tsx';
+import { fetchPastAuctions } from '../../../lib/auctionsApi';
+import type { getCatalogItems } from '../../../lib/db';
+import { getCachedCatalogItems } from '../../../lib/catalog-cache';
+
+let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
+try {
+  const { data: items } = await getCachedCatalogItems();
+  itemCatalog = Object.fromEntries(items.map((i) => [i.name, i]));
+} catch (err) {
+  console.error('[codex/chapter/auctions-history] DB fetch error:', err);
+}
+
+const pastAuctions = await fetchPastAuctions();
+const now = Date.now();
+---
+
+<BaseLayout
+  currentPage="codex"
+  title="История аукционов прошлых глав | GoblinCodex"
+  description="Архив завершённых аукционов прошлых глав Sunflower Land."
+>
+  <div class="gc-content gc-page-enter">
+
+    <a href="/codex?tab=chapter" class="gc-btn-secondary gc-past-back">← Текущая глава</a>
+
+    <div class="gc-past-header">
+      <h1 class="gc-page-title">🔨 История аукционов</h1>
+      <p class="gc-past-sub">Завершённые аукционы прошлых глав Sunflower Land</p>
+    </div>
+
+    {pastAuctions.length === 0 ? (
+      <div class="gc-past-empty">
+        <div class="gc-past-empty-icon">🚧</div>
+        <div class="gc-past-empty-title">Скоро здесь появится история</div>
+        <p class="gc-past-empty-desc">
+          Архив завершённых аукционов прошлых глав ещё собирается — загляните позже.
+        </p>
+      </div>
+    ) : (
+      <ChapterAuctions client:visible auctions={pastAuctions} chapterName="прошлых глав" itemCatalog={itemCatalog} initialNow={now} defaultStatusFilter="ended" />
+    )}
+
+  </div>
+</BaseLayout>
+
+<style>
+.gc-past-back {
+  display: inline-flex;
+  margin: 20px 0 0;
+}
+.gc-past-header { padding: 24px 0; }
+.gc-past-sub { font-size: 15px; color: var(--text-sec); margin-top: 6px; }
+
+.gc-past-empty {
+  padding: 64px 32px;
+  text-align: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 48px;
+}
+.gc-past-empty-icon { font-size: 32px; margin-bottom: 12px; }
+.gc-past-empty-title {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.gc-past-empty-desc {
+  font-size: 13.5px;
+  color: var(--text-sec);
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+</style>

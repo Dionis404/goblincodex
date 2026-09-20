@@ -89,6 +89,26 @@ export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
   }
 }
 
+/**
+ * Аукционы, чей startAt попадает в [startMs, endMs) — для страницы конкретной
+ * главы (src/lib/chapters.ts). API не умеет фильтровать по датам напрямую
+ * (см. docs/goblin-api — только item_name/limit/history), поэтому тянем
+ * достаточно большую историю и фильтруем на своей стороне. limit подобран
+ * с запасом: аукционов пока заметно меньше некоторых сотен за всю историю
+ * игры, но если игра проживёт значительно дольше — этот лимит стоит поднять.
+ *
+ * Включает и завершённые (fetchPastAuctions), и предстоящие/активные
+ * (fetchUpcomingAuctions) — нужно для текущей главы, где часть аукционов уже
+ * прошла, а часть ещё впереди; для прошлых глав fetchUpcomingAuctions просто
+ * вернёт пустой список (там всё уже в истории).
+ */
+export async function fetchAuctionsInRange(startMs: number, endMs: number, limit = 500): Promise<UiAuction[]> {
+  const [past, upcoming] = await Promise.all([fetchPastAuctions(limit), fetchUpcomingAuctions()]);
+  const byId = new Map<string, UiAuction>();
+  [...past, ...upcoming].forEach(a => byId.set(a.auctionId, a));
+  return [...byId.values()].filter(a => a.startAt >= startMs && a.startAt < endMs);
+}
+
 /** Предстоящие и завершённые аукционы главы одним списком — для единого расписания. */
 export async function fetchAllAuctions(): Promise<UiAuction[]> {
   const [upcoming, past] = await Promise.all([fetchUpcomingAuctions(), fetchPastAuctions()]);

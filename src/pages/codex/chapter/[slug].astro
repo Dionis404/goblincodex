@@ -1,0 +1,280 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ChapterAuctions from '../../../components/ChapterAuctions.tsx';
+import { getChapterBySlug, CHAPTERS } from '../../../lib/chapters';
+import { fetchAuctionsInRange } from '../../../lib/auctionsApi';
+import type { getCatalogItems } from '../../../lib/db';
+import { getCachedCatalogItems } from '../../../lib/catalog-cache';
+
+const { slug } = Astro.params;
+const chapter = getChapterBySlug(slug!);
+
+if (!chapter) {
+  return Astro.redirect('/codex/chapter/past', 302);
+}
+
+const startMs = new Date(chapter.startDate).getTime();
+const endMs = new Date(chapter.endDate).getTime();
+
+// Эта страница — архив прошлых глав; у текущей главы уже есть полноценная
+// живая версия на /codex?tab=chapter (баннер, таймер, актуальные аукционы) —
+// не дублируем её здесь, просто уводим туда.
+if (Date.now() < endMs) {
+  return Astro.redirect('/codex?tab=chapter', 302);
+}
+
+const prevChapter = CHAPTERS.find(c => c.order === chapter.order - 1);
+const nextChapter = CHAPTERS.find(c => c.order === chapter.order + 1);
+
+const chapterAuctions = await fetchAuctionsInRange(startMs, endMs);
+
+let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
+try {
+  const { data: items } = await getCachedCatalogItems();
+  itemCatalog = Object.fromEntries(items.map((i) => [i.name, i]));
+} catch (err) {
+  console.error('[codex/chapter/[slug]] DB fetch error:', err);
+}
+
+// Только предметы с явным тегом chapter-<slug> — заведён вручную в
+// scripts/lib/item-tags.ts и есть только для Bull Run (гл. 8) и новее;
+// у более старых глав список предметов в исходниках игры уже не сохранился
+// (см. комментарий в item-tags.ts), поэтому для них секция будет пустой.
+const chapterItems = Object.values(itemCatalog)
+  .filter((i) => i.tags?.includes(`chapter-${chapter.slug}`))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+}
+
+const now = Date.now();
+---
+
+<BaseLayout
+  currentPage="codex"
+  title={`Глава ${chapter.order}: ${chapter.name} | GoblinCodex`}
+  description={`${chapter.name} — глава ${chapter.order} Sunflower Land: даты, тикет, артефакт и история аукционов.`}
+>
+  <div class="gc-content gc-page-enter">
+
+    <a href="/codex/chapter/past" class="gc-btn-secondary gc-past-back">← Все главы</a>
+
+    <div class="gc-past-header">
+      <h1 class="gc-page-title">📜 Глава {chapter.order}: {chapter.name}</h1>
+      <p class="gc-past-sub">{formatDate(chapter.startDate)} — {formatDate(chapter.endDate)}</p>
+    </div>
+
+    <div class="gc-chapter-meta-grid">
+      <div class="gc-card gc-chapter-meta-card">
+        <div class="gc-chapter-meta-label">🎟️ Тикет главы</div>
+        <div class="gc-chapter-meta-value">{chapter.ticket}</div>
+      </div>
+      <div class="gc-card gc-chapter-meta-card">
+        <div class="gc-chapter-meta-label">🏺 Артефакт главы</div>
+        <div class="gc-chapter-meta-value">{chapter.artifact}</div>
+      </div>
+    </div>
+
+    <div class="gc-chapter-nav">
+      {prevChapter ? (
+        <a href={`/codex/chapter/${prevChapter.slug}`} class="gc-btn-secondary">← Глава {prevChapter.order}: {prevChapter.name}</a>
+      ) : <span />}
+      {nextChapter ? (
+        <a href={`/codex/chapter/${nextChapter.slug}`} class="gc-btn-secondary">Глава {nextChapter.order}: {nextChapter.name} →</a>
+      ) : <span />}
+    </div>
+
+    <h2 class="gc-chapter-section-title">💎 Предметы главы</h2>
+
+    {chapterItems.length > 0 ? (
+      <div class="gc-chapter-items-grid">
+        {chapterItems.map((item) => (
+          <div class="gc-chapter-item-card">
+            <div class="gc-chapter-item-sprite">
+              {item.sprite ? (
+                <img src={`/sprites/${item.sprite}`} alt={item.name} loading="lazy" />
+              ) : (
+                <span class="gc-chapter-item-sprite-placeholder">?</span>
+              )}
+            </div>
+            <div class="gc-chapter-item-info">
+              <div class="gc-chapter-item-name">{item.name}</div>
+              {item.boosts.length > 0 ? (
+                <div class="gc-chapter-item-boosts">
+                  {item.boosts.map((b) => (
+                    <span class={`gc-chapter-item-boost gc-chapter-item-boost--${b.labelType}`}>
+                      {b.shortDescriptionRu || b.shortDescription}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span class="gc-chapter-item-no-boost">Без бонусов</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="gc-past-empty">
+        <div class="gc-past-empty-icon">🚧</div>
+        <div class="gc-past-empty-title">Список предметов недоступен</div>
+        <p class="gc-past-empty-desc">
+          У глав до Bull Run (глава 8) исходники игры уже не хранят список предметов главы — сохранился только баннер и артефакт выше.
+        </p>
+      </div>
+    )}
+
+    <h2 class="gc-chapter-section-title">🔨 Аукционы главы</h2>
+
+    {chapterAuctions.length === 0 ? (
+      <div class="gc-past-empty">
+        <div class="gc-past-empty-icon">🚧</div>
+        <div class="gc-past-empty-title">Аукционов не найдено</div>
+        <p class="gc-past-empty-desc">
+          Либо в этой главе их не было, либо архив API не сохранил данные так далеко назад.
+        </p>
+      </div>
+    ) : (
+      <ChapterAuctions client:visible auctions={chapterAuctions} chapterName={chapter.name} itemCatalog={itemCatalog} initialNow={now} defaultStatusFilter="ended" />
+    )}
+
+  </div>
+</BaseLayout>
+
+<style>
+.gc-past-back {
+  display: inline-flex;
+  margin: 20px 0 0;
+}
+.gc-past-header { padding: 24px 0; }
+.gc-past-sub { font-size: 15px; color: var(--text-sec); margin-top: 6px; }
+
+.gc-chapter-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.gc-chapter-meta-card { padding: 16px 18px; }
+.gc-chapter-meta-label { font-size: 12px; color: var(--text-sec); margin-bottom: 4px; }
+.gc-chapter-meta-value { font-family: var(--font-head); font-size: 15px; font-weight: 700; }
+
+.gc-chapter-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.gc-chapter-section-title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  margin-top: 40px;
+}
+.gc-chapter-section-title:first-of-type { margin-top: 0; }
+
+/* ── Предметы главы — те же карточки, что и на живой /codex?tab=chapter ── */
+.gc-chapter-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.gc-chapter-item-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.gc-chapter-item-sprite {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: 8px;
+}
+.gc-chapter-item-sprite img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.gc-chapter-item-sprite-placeholder {
+  color: var(--text-ter);
+  font-size: 16px;
+}
+.gc-chapter-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.gc-chapter-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.gc-chapter-item-boosts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.gc-chapter-item-boost {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.gc-chapter-item-boost--danger {
+  background: color-mix(in srgb, var(--red, #c94b3d) 14%, transparent);
+  color: var(--red, #c94b3d);
+}
+.gc-chapter-item-boost--vibrant {
+  background: var(--amber-pale);
+  color: var(--amber);
+}
+.gc-chapter-item-no-boost {
+  font-size: 11px;
+  color: var(--text-ter);
+}
+
+.gc-past-empty {
+  padding: 64px 32px;
+  text-align: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 48px;
+}
+.gc-past-empty-icon { font-size: 32px; margin-bottom: 12px; }
+.gc-past-empty-title {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.gc-past-empty-desc {
+  font-size: 13.5px;
+  color: var(--text-sec);
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .gc-chapter-nav { flex-direction: column; align-items: stretch; }
+}
+</style>

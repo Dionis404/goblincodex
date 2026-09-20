@@ -1,17 +1,17 @@
 ---
 // Общий контент главы (баннер, механики, гайды, предметы, аукционы) —
-// подключается как таб внутри /codex?tab=chapter. История аукционов
-// прошлых глав — отдельная страница /chapter/auctions-history, здесь
-// показываются только предстоящие/текущие аукционы этой главы.
+// подключается как таб внутри /codex?tab=chapter. Показывает ВСЕ аукционы
+// текущей главы (и уже прошедшие, и предстоящие/активные) — архив всех
+// остальных глав целиком живёт на /codex/chapter/[slug].
 import { getCollection } from 'astro:content';
 import ChapterAuctions from './ChapterAuctions.tsx';
-// import auctionsData from '../data/chapter-auctions.json'; // fallback JSON — не удалять, пока goblin-api не стабилизируется
-import { fetchUpcomingAuctions } from '../lib/auctionsApi';
+import { fetchAuctionsInRange } from '../lib/auctionsApi';
+import { getCurrentChapter } from '../lib/chapters';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
 import { sectionHref } from '../lib/subdomains';
 
-const CURRENT_CHAPTER = 15;
+const currentChapter = getCurrentChapter();
 
 // Компонент подключается и на /chapter основного домена, и внутри /codex.
 // Когда поддомены включены (см. src/lib/subdomains.ts), ссылки на гайды
@@ -28,17 +28,20 @@ try {
 
 const chapterGuides = await getCollection(
   'guides',
-  ({ data }) => !data.draft && data.chapter === CURRENT_CHAPTER
+  ({ data }) => !data.draft && data.chapter === currentChapter?.order
 );
 chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
 
-const auctions = await fetchUpcomingAuctions();
+const auctions = currentChapter
+  ? await fetchAuctionsInRange(new Date(currentChapter.startDate).getTime(), new Date(currentChapter.endDate).getTime())
+  : [];
 const now = Date.now();
 
-const CHAPTER_TAG = 'chapter-ascension-age';
-const chapterItems = Object.values(itemCatalog)
-  .filter((i) => i.tags?.includes(CHAPTER_TAG))
-  .sort((a, b) => a.name.localeCompare(b.name));
+const chapterItems = currentChapter
+  ? Object.values(itemCatalog)
+      .filter((i) => i.tags?.includes(`chapter-${currentChapter.slug}`))
+      .sort((a, b) => a.name.localeCompare(b.name))
+  : [];
 
 // Карточки-кнопки, открывающие гайд по механике в модалке —
 // сама модалка вынесена в отдельный ChapterMechanicModal.astro
@@ -55,8 +58,8 @@ const MECHANIC_CARDS = [
 
 <!-- ── Ссылки на архивы прошлых глав ── -->
 <div class="gc-chapter-archive-links">
-  <a href="/chapter/past" class="gc-btn-secondary">📜 Прошлые главы</a>
-  <a href="/chapter/auctions-history" class="gc-btn-secondary">🔨 История аукционов</a>
+  <a href="/codex/chapter/past" class="gc-btn-secondary">📜 Прошлые главы</a>
+  <a href="/codex/chapter/auctions-history" class="gc-btn-secondary">🔨 История аукционов</a>
 </div>
 
 <!-- ── Основные механики ── -->
@@ -141,7 +144,7 @@ const MECHANIC_CARDS = [
 <!-- ── Расписание аукционов ── -->
 <section class="gc-chapter-section">
   <h2 class="gc-block-title-lg">🔨 Аукционы</h2>
-  <ChapterAuctions client:load auctions={auctions} chapterName="Ascension Age" itemCatalog={itemCatalog} initialNow={now} />
+  <ChapterAuctions client:load auctions={auctions} chapterName={currentChapter?.name ?? 'текущей главы'} itemCatalog={itemCatalog} initialNow={now} />
 </section>
 
 <style>
