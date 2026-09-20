@@ -55,20 +55,20 @@ const pageDescription = notFound
 <BaseLayout
   title={pageTitle}
   description={pageDescription}
-  currentPage="community"
+  currentPage="codex"
   noindex={notFound}
 >
   <div class="gc-content gc-page-enter">
 
-    <a href="/community" class="gc-btn-secondary gc-profile-back">← Сообщество</a>
+    <a href={`${sflBase}/codex?tab=community`} class="gc-btn-secondary gc-profile-back">← Рейтинги</a>
 
     {notFound ? (
       <div class="gc-card gc-profile-not-found">
         <div class="gc-profile-not-found-icon">🔍</div>
         <h2>Профиль не найден</h2>
         <p>Игрок <strong>@{username}</strong> не привязал ферму и не упоминается в гайдах.</p>
-        <a href="/community" class="gc-btn-primary" style="margin-top:16px;display:inline-flex;">
-          Вернуться в сообщество
+        <a href={`${sflBase}/codex?tab=community`} class="gc-btn-primary" style="margin-top:16px;display:inline-flex;">
+          Вернуться к рейтингам
         </a>
       </div>
     ) : (

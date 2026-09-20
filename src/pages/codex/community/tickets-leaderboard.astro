@@ -1,8 +1,8 @@
 ---
 export const prerender = false;
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import TicketsLeaderboardPage from '../../components/TicketsLeaderboardPage.jsx';
-import { fetchWithTimeout } from '../../lib/goblinApi';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TicketsLeaderboardPage from '../../../components/TicketsLeaderboardPage.jsx';
+import { fetchWithTimeout } from '../../../lib/goblinApi';
 
 let leaderboard: any[] = [];
 let updatedAt: string | null = null;
@@ -23,11 +23,11 @@ try {
 <BaseLayout
   title="Лидерборд тикетов — GoblinCodex"
   description="Топ-500 глобального лидерборда тикетов Sunflower Land с историей по датам."
-  currentPage="community"
+  currentPage="codex"
 >
   <div class="gc-content gc-page-enter">
 
-    <a href="/community" class="gc-btn-secondary gc-lp-back">← Сообщество</a>
+    <a href="/codex?tab=community" class="gc-btn-secondary gc-lp-back">← Рейтинги</a>
 
     <div class="gc-community-header">
       <h1 class="gc-page-title gc-page-title-icon">

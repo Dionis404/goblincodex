@@ -32,12 +32,13 @@ const logoHref = resolveNavHref(host, { slug: 'home', targetSection: null, path:
 
 // Мобильное меню — полный список, ширина экрана здесь не ограничивает
 // количество пунктов так, как в десктопном pill-сегменте.
+// "Сообщество" как самостоятельная страница удалена — фермеры и лидерборды
+// переехали во вкладку "Рейтинги" внутри /codex (см. src/pages/codex/index.astro).
 const mobileLinkDefs: NavLink[] = [
   { slug: 'home',      targetSection: null,  path: '/',          label: 'Главная'        },
   { slug: 'codex',     targetSection: 'sfl', path: '/codex',     label: 'Sunflower Land' },
   { slug: 'yakkamon',  targetSection: 'yakk',path: '/yakkamon',  label: 'Yakkamon'       },
   { slug: 'news',      targetSection: 'blog',path: '/news',      label: 'Новости и блог' },
-  { slug: 'community', targetSection: null,  path: '/community', label: 'Сообщество'     },
   { slug: 'tools',     targetSection: null,  path: '/tools',     label: 'Инструменты'    },
   { slug: 'about',     targetSection: null,  path: '/about',     label: 'О проекте'      },
 ];

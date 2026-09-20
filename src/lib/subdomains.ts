@@ -57,7 +57,7 @@ export function subdomainFor(host: string | null, id: SectionId): string {
 
 // Абсолютный URL на главный домен (без поддоменного префикса) — нужен,
 // когда мы уже находимся на поддомене раздела и должны сослаться на что-то,
-// что живёт только на основном домене (главная, /community, /tools и т.д.).
+// что живёт только на основном домене (главная, /tools и т.д.).
 export function mainDomainFor(host: string | null): string {
   return `goblincodex.${tldOf(host)}`;
 }
@@ -75,7 +75,7 @@ export function sectionHref(host: string | null, id: SectionId, path: string): s
 export interface NavLink {
   slug: string;
   // Раздел, на чей поддомен указывает ссылка; null — ссылка внутри "сайта"
-  // основного домена (главная, сообщество, инструменты, о проекте, поддержать).
+  // основного домена (главная, инструменты, о проекте, поддержать).
   targetSection: SectionId | null;
   path: string;
   label: string;
@@ -84,8 +84,8 @@ export interface NavLink {
 // Резолвит абсолютный или относительный href для nav-ссылки в зависимости
 // от текущего хоста: на каком бы поддомене/домене мы ни находились, ссылка
 // должна вести на правильный публичный URL, а не резолвиться относительно
-// текущего документа (что увело бы, например, "Сообщество" на sfl.*/community
-// вместо goblincodex.fun/community).
+// текущего документа (что увело бы, например, ссылку на /tools с sfl.*
+// на sfl.*/tools вместо goblincodex.fun/tools).
 export function resolveNavHref(host: string | null, link: NavLink): string {
   if (!SUBDOMAINS_ENABLED) return link.path;
   if (link.targetSection) {

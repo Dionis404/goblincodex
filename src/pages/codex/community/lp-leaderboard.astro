@@ -1,8 +1,8 @@
 ---
 export const prerender = false;
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import LpLeaderboardPage from '../../components/LpLeaderboardPage.jsx';
-import { fetchWithTimeout } from '../../lib/goblinApi';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import LpLeaderboardPage from '../../../components/LpLeaderboardPage.jsx';
+import { fetchWithTimeout } from '../../../lib/goblinApi';
 
 let leaderboard: any[] = [];
 let meta: any = null;
@@ -23,11 +23,11 @@ try {
 <BaseLayout
   title="Лидерборд ликвидности — GoblinCodex"
   description="Топ-500 поставщиков ликвидности пула FLOWER/USDC (Uniswap v3, Base)."
-  currentPage="community"
+  currentPage="codex"
 >
   <div class="gc-content gc-page-enter">
 
-    <a href="/community" class="gc-btn-secondary gc-lp-back">← Сообщество</a>
+    <a href="/codex?tab=community" class="gc-btn-secondary gc-lp-back">← Рейтинги</a>
 
     <div class="gc-community-header">
       <h1 class="gc-page-title gc-page-title-icon">
