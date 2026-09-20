@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './ReferenceCatalog.css';
 import FoodCatalogTable from './tools/FoodCatalogTable';
 import NumberStepper from './NumberStepper';
-import ResourceIcon, { CoinsIcon } from './ResourceIcon';
+import ResourceIcon, { CoinsIcon, NodeIcon } from './ResourceIcon';
 import {
   stagesForIsland,
   stagesForAscensionLevel,
@@ -106,6 +106,7 @@ const BAIT_FISH: BaitFishGroup[] = [
 
 interface ResourceUpgradeRow {
   resource: string;
+  node: NodeKeyForIcon;
   tier: 2 | 3;
   requiresName: string;
   requiresAmount: number;
@@ -113,15 +114,40 @@ interface ResourceUpgradeRow {
   price: number;
 }
 
+// Только 4 из 12 NodeKey участвуют в апгрейде через Forge — сузили тип
+// локально, чтобы не путать с полным списком нод в expansions.ts.
+type NodeKeyForIcon = 'Tree' | 'Stone' | 'Iron' | 'Gold';
+
 const RESOURCE_UPGRADES: ResourceUpgradeRow[] = [
-  { resource: 'Ancient Tree',        tier: 2, requiresName: 'Tree',                requiresAmount: 4, obsidian: 3,  price: 25_000 },
-  { resource: 'Sacred Tree',         tier: 3, requiresName: 'Ancient Tree',        requiresAmount: 4, obsidian: 5,  price: 50_000 },
-  { resource: 'Fused Stone Rock',    tier: 2, requiresName: 'Stone Rock',          requiresAmount: 4, obsidian: 5,  price: 50_000 },
-  { resource: 'Reinforced Stone Rock', tier: 3, requiresName: 'Fused Stone Rock',  requiresAmount: 4, obsidian: 10, price: 100_000 },
-  { resource: 'Refined Iron Rock',   tier: 2, requiresName: 'Iron Rock',           requiresAmount: 4, obsidian: 10, price: 100_000 },
-  { resource: 'Tempered Iron Rock',  tier: 3, requiresName: 'Refined Iron Rock',   requiresAmount: 4, obsidian: 15, price: 200_000 },
-  { resource: 'Pure Gold Rock',      tier: 2, requiresName: 'Gold Rock',           requiresAmount: 4, obsidian: 15, price: 200_000 },
-  { resource: 'Prime Gold Rock',     tier: 3, requiresName: 'Pure Gold Rock',      requiresAmount: 4, obsidian: 20, price: 350_000 },
+  { resource: 'Ancient Tree',        node: 'Tree',  tier: 2, requiresName: 'Tree',                requiresAmount: 4, obsidian: 3,  price: 25_000 },
+  { resource: 'Sacred Tree',         node: 'Tree',  tier: 3, requiresName: 'Ancient Tree',        requiresAmount: 4, obsidian: 5,  price: 50_000 },
+  { resource: 'Fused Stone Rock',    node: 'Stone', tier: 2, requiresName: 'Stone Rock',          requiresAmount: 4, obsidian: 5,  price: 50_000 },
+  { resource: 'Reinforced Stone Rock', node: 'Stone', tier: 3, requiresName: 'Fused Stone Rock',  requiresAmount: 4, obsidian: 10, price: 100_000 },
+  { resource: 'Refined Iron Rock',   node: 'Iron',  tier: 2, requiresName: 'Iron Rock',           requiresAmount: 4, obsidian: 10, price: 100_000 },
+  { resource: 'Tempered Iron Rock',  node: 'Iron',  tier: 3, requiresName: 'Refined Iron Rock',   requiresAmount: 4, obsidian: 15, price: 200_000 },
+  { resource: 'Pure Gold Rock',      node: 'Gold',  tier: 2, requiresName: 'Gold Rock',           requiresAmount: 4, obsidian: 15, price: 200_000 },
+  { resource: 'Prime Gold Rock',     node: 'Gold',  tier: 3, requiresName: 'Pure Gold Rock',      requiresAmount: 4, obsidian: 20, price: 350_000 },
+];
+
+interface UpgradeExample {
+  label: string;
+  formula: string;
+  total: string;
+}
+
+const TREE_TIER2_EXAMPLES: UpgradeExample[] = [
+  { label: 'Базовая добыча',                   formula: '1 × 4 + 0.5',         total: '4.5' },
+  { label: '+ Woody Beaver (×1.2)',            formula: '1.2 × 4 + 0.5',       total: '5.3' },
+  { label: '+ Native (+1, 20% шанс)',          formula: '(1 + 1) × 4 + 0.5',   total: '8.5' },
+  { label: '+ Tough Tree (×3, 10% шанс)',      formula: '3 × 4 + 0.5',         total: '12.5' },
+];
+
+const TREE_TIER3_EXAMPLES: UpgradeExample[] = [
+  { label: 'Базовая добыча',                   formula: '1 × 16 + 2.5',        total: '18.5' },
+  { label: '+ Woody Beaver (×1.2)',            formula: '1.2 × 16 + 2.5',      total: '21.7' },
+  { label: '+ Native (+1, 20% шанс)',          formula: '(1 + 1) × 16 + 2.5',  total: '34.5' },
+  { label: '+ Tough Tree (×3, 10% шанс)',      formula: '3 × 16 + 2.5',        total: '50.5' },
+  { label: '+ Tough Tree + Native',            formula: '(3 + 1) × 16 + 2.5',  total: '66.5' },
 ];
 
 interface LavaPitIngredient {
@@ -313,34 +339,149 @@ function BaitFishSection() {
 }
 
 function ResourceUpgradeSection() {
-  return (
-    <section className="ref-section">
-      <p className="ref-section-desc">
-        Обсидиан крафтится на Lava Pit. Нужен для улучшения ресурсных нод до следующего тира.
-      </p>
+  const treeRows = RESOURCE_UPGRADES.filter(r => r.node === 'Tree');
+  const stoneRows = RESOURCE_UPGRADES.filter(r => r.node === 'Stone');
+  const ironRows = RESOURCE_UPGRADES.filter(r => r.node === 'Iron');
+  const goldRows = RESOURCE_UPGRADES.filter(r => r.node === 'Gold');
+
+  function UpgradeTable({ rows }: { rows: ResourceUpgradeRow[] }) {
+    return (
       <div className="ref-table-wrap">
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Улучшение</th>
-              <th>Тир</th>
-              <th>Требуется</th>
+              <th>Апгрейд</th>
               <th><ResourceIcon resource="Obsidian" /> Obsidian</th>
-              <th><CoinsIcon /> Цена</th>
+              <th>Предметы</th>
+              <th><CoinsIcon /> Монеты</th>
             </tr>
           </thead>
           <tbody>
-            {RESOURCE_UPGRADES.map(row => (
+            {rows.map(row => (
               <tr key={row.resource}>
-                <td className="ref-table-name">{row.resource}</td>
-                <td>{row.tier}</td>
-                <td>{row.requiresAmount}× {row.requiresName}</td>
+                <td className="ref-table-name">
+                  <NodeIcon node={row.node} /> {row.requiresName} → {row.resource}
+                </td>
                 <td>{row.obsidian}</td>
-                <td>{row.price.toLocaleString('ru-RU')} монет</td>
+                <td>{row.requiresAmount}× {row.requiresName}</td>
+                <td>{row.price.toLocaleString('ru-RU')}</td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+    );
+  }
+
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Прежде чем апгрейдить ноду через <strong>Forge</strong>, её нужно где-то взять — новые
+        ресурсные ноды (дерево, камень, железо, золото) покупаются в <strong>Infernos</strong> у
+        гоблина <strong>Гантера (Gunter)</strong> за особый ресурс — <NodeIcon node="Sunstone" /> <strong>Sunstone</strong>.
+        Цена растёт с каждой следующей купленной нодой того же типа.
+      </p>
+
+      <div className="ref-note">
+        <strong>Sunstone — конечный ресурс.</strong> Не восстанавливается: нода выдерживает 10
+        добыч, после чего исчезает с острова навсегда. Добывать можно только Золотой киркой (Gold
+        Pickaxe). Если майнить не хочется — Sunstone можно выменять у другого инфернального
+        гоблина, Горги (Gorga), по курсу <strong>3 Обсидиана → 1 Sunstone</strong>. Обсидиан для
+        обмена добывается в Лавовых карьерах (Lava Pits, см. вкладку «Обсидиан»), которые
+        открываются после апгрейда до Volcano Island. Infernos открывается на уровне 30.
+      </div>
+
+      <h4 className="ref-subsection-title">Дерево апгрейдов</h4>
+      <p className="ref-section-desc">
+        Все ресурсные ноды имеют 3 тира, апгрейд называется <strong>Forge</strong> и доступен в
+        Infernos. 4 ноды предыдущего тира сливаются в 1 ноду следующего — место освобождается,
+        добыча растёт.
+      </p>
+
+      <h5 className="ref-subsection-title--sm"><NodeIcon node="Tree" /> Дерево</h5>
+      <UpgradeTable rows={treeRows} />
+      <h5 className="ref-subsection-title--sm"><NodeIcon node="Stone" /> Камень</h5>
+      <UpgradeTable rows={stoneRows} />
+      <h5 className="ref-subsection-title--sm"><NodeIcon node="Iron" /> Железо</h5>
+      <UpgradeTable rows={ironRows} />
+      <h5 className="ref-subsection-title--sm"><NodeIcon node="Gold" /> Золото</h5>
+      <UpgradeTable rows={goldRows} />
+
+      <h4 className="ref-subsection-title">Мультипликатор добычи</h4>
+      <div className="ref-table-wrap">
+        <table className="ref-table">
+          <thead>
+            <tr>
+              <th>Тир</th>
+              <th>Множитель</th>
+              <th>Плоский бонус (после ×)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td className="ref-table-name">Тир 1</td><td>×1</td><td>—</td></tr>
+            <tr><td className="ref-table-name">Тир 2</td><td>×4</td><td>+0.5</td></tr>
+            <tr><td className="ref-table-name">Тир 3</td><td>×16</td><td>+2.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 className="ref-subsection-title">Формула расчёта</h4>
+      <p className="ref-section-desc">
+        <code className="ref-formula">итог = (база + все_бонусы) × multiplier + tier_flat_bonus</code>
+      </p>
+      <p className="ref-section-desc">
+        Сначала к базовому значению 1 прибавляются все бонусы (навыки, коллекции, предметы), затем
+        результат умножается на множитель тира, и только потом прибавляется плоский тир-бонус. Все
+        процентные бонусы усиливаются тиром — например, Woody the Beaver (×1.2) на Sacred Tree:{' '}
+        <code className="ref-formula">1 × 1.2 × 16 + 2.5 = 21.7</code> древесины за рубку.
+      </p>
+
+      <details className="ref-accordion">
+        <summary className="ref-accordion-summary">
+          <span className="ref-accordion-title--center">Примеры расчётов — Дерево</span>
+        </summary>
+        <div className="ref-accordion-body">
+          <h5 className="ref-subsection-title--sm">Ancient Tree (тир 2, ×4 + 0.5)</h5>
+          <div className="ref-table-wrap">
+            <table className="ref-table">
+              <thead><tr><th>Условие</th><th>Расчёт</th><th>Итог</th></tr></thead>
+              <tbody>
+                {TREE_TIER2_EXAMPLES.map(ex => (
+                  <tr key={ex.label}>
+                    <td className="ref-table-name">{ex.label}</td>
+                    <td><code className="ref-formula">{ex.formula}</code></td>
+                    <td><strong>{ex.total}</strong></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <h5 className="ref-subsection-title--sm">Sacred Tree (тир 3, ×16 + 2.5)</h5>
+          <div className="ref-table-wrap">
+            <table className="ref-table">
+              <thead><tr><th>Условие</th><th>Расчёт</th><th>Итог</th></tr></thead>
+              <tbody>
+                {TREE_TIER3_EXAMPLES.map(ex => (
+                  <tr key={ex.label}>
+                    <td className="ref-table-name">{ex.label}</td>
+                    <td><code className="ref-formula">{ex.formula}</code></td>
+                    <td><strong>{ex.total}</strong></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="ref-section-desc">
+            Навык Tough Tree работает на весь «пакет» — Sacred Tree содержит 4 дерева внутри, и
+            множитель применяется ко всем сразу.
+          </p>
+        </div>
+      </details>
+
+      <div className="ref-note">
+        <strong>Ключевые наблюдения:</strong> Emerald Turtle работает через AOE — нода должна
+        физически стоять в радиусе черепахи. Money Tree (скилл, 1% шанс) даёт 200 монет ×
+        multiplier тира — на Sacred Tree это 3 200 монет при срабатывании.
       </div>
     </section>
   );
@@ -1126,53 +1267,52 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'expansions', icon: '🌋', label: 'Стоимость расширений', Content: ExpansionTablesSection },
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
   { id: 'bait', icon: '🎣', label: 'Улов по наживке', Content: BaitFishSection },
-  { id: 'upgrades', icon: '⛏️', label: 'Апгрейд ресурсов', Content: ResourceUpgradeSection },
+  { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },
   { id: 'obsidian', icon: '🌋', label: 'Обсидиан (Lava Pit)', Content: ObsidianSection },
   { id: 'marvels', icon: '🐋', label: 'Морские марвелы', Content: MarvelsSection },
   { id: 'food', icon: '🍳', label: 'Еда и готовка', Content: FoodSection },
 ];
 
-function getInitialId(): string {
-  if (typeof window === 'undefined') return REF_SECTIONS[0].id;
-  const ref = new URLSearchParams(window.location.search).get('ref');
+function resolveInitialId(ref: string | null | undefined): string {
   return REF_SECTIONS.some((s) => s.id === ref) ? ref! : REF_SECTIONS[0].id;
 }
 
-export default function ReferenceCatalog() {
-  const [activeId, setActiveId] = useState(getInitialId);
+interface ReferenceCatalogProps {
+  // Передаётся с сервера (Astro.url.searchParams.get('ref')) — без этого
+  // SSR всегда рендерил первую секцию (Навыки), а клиент после гидратации
+  // читал ?ref= из window.location и мог тут же переключиться на другую,
+  // что React считает hydration mismatch (расхождение SSR/клиент разметки).
+  initialRef?: string | null;
+}
+
+// Единый список навигации живёт теперь на уровне страницы (codex/index.astro,
+// класс .gc-ref-nav-item) — он вперемешку показывает и эти 8 React-таблиц, и
+// 2 markdown-статьи (Соление рыбы, Улучшение нод), поэтому переключение между
+// ВСЕМИ десятью пунктами идёт через общий show/hide в <script> той страницы,
+// а не через стейт этого компонента. Здесь остаётся только сам стейт "какая
+// из 8 таблиц активна" — используется, когда общий сайдбар кликает по одной
+// из ref-таблиц; для markdown-пунктов этот компонент просто продолжает
+// показывать последнюю выбранную таблицу под капотом, невидимо (родитель
+// прячет весь ref-content целиком через CSS).
+export default function ReferenceCatalog({ initialRef }: ReferenceCatalogProps) {
+  const [activeId, setActiveId] = useState(() => resolveInitialId(initialRef));
   const active = REF_SECTIONS.find((s) => s.id === activeId) ?? REF_SECTIONS[0];
   const ActiveContent = active.Content;
 
-  function selectSection(id: string) {
-    setActiveId(id);
-    const url = new URL(window.location.href);
-    url.searchParams.set('tab', 'reference');
-    url.searchParams.set('ref', id);
-    history.replaceState(null, '', url);
-  }
+  // Слушаем клики по общему сайдбару страницы (data-ref-id) — так внешняя
+  // Astro-навигация может переключать таблицу без прямого доступа к стейту.
+  useEffect(() => {
+    function onRefSelect(e: Event) {
+      const id = (e as CustomEvent<string>).detail;
+      if (REF_SECTIONS.some((s) => s.id === id)) setActiveId(id);
+    }
+    window.addEventListener('gc:ref-select', onRefSelect);
+    return () => window.removeEventListener('gc:ref-select', onRefSelect);
+  }, []);
 
   return (
-    <div className="ref-layout">
-      <aside className="ref-sidebar">
-        {REF_SECTIONS.map((s) => (
-          <a
-            key={s.id}
-            href={`/codex?tab=reference&ref=${s.id}`}
-            className={`ref-nav-item${s.id === activeId ? ' active' : ''}`}
-            onClick={(e) => {
-              if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-              e.preventDefault();
-              selectSection(s.id);
-            }}
-          >
-            <span className="ref-nav-icon">{s.icon}</span>
-            <span className="ref-nav-label">{s.label}</span>
-          </a>
-        ))}
-      </aside>
-      <div className="ref-content">
-        <ActiveContent />
-      </div>
+    <div className="ref-content">
+      <ActiveContent />
     </div>
   );
 }

@@ -71,6 +71,47 @@
   margin-top: 20px;
 }
 
+/* Тот же стиль, что и у blockquote в статьях гайдов (.gc-guide-article
+   blockquote в global.css) — используется для "важно"/"ключевые наблюдения"
+   вставок внутри React-секций справочника, где нет настоящего markdown. */
+.ref-note {
+  border-left: 3px solid var(--green-mid);
+  background: var(--green-pale);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+.ref-subsection-title {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 24px 0 8px;
+}
+.ref-subsection-title--sm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 16px 0 8px;
+}
+
+.ref-formula {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 6px;
+  color: var(--text);
+}
+
 .ref-calc-link {
   display: inline-flex;
   margin-bottom: 16px;
