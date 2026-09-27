@@ -113,22 +113,38 @@ export default function PriceHistory() {
     }
     const id = ++resourcesRequestId.current;
     setResourcesState({ status: 'loading' });
-    fetch(`/api/prices/resources.json?category=${category}`)
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<{ resources: PriceResource[] }>;
-      })
-      .then(data => {
-        if (resourcesRequestId.current !== id) return;
-        const sorted = [...data.resources].sort((a, b) => a.item_name.localeCompare(b.item_name, 'ru'));
+
+    // Полный список одним ответом обрывается где-то между сайтом и браузером
+    // на больших категориях (тысячи collectibles) — эндпоинт отдаёт страницами
+    // (next_offset), дособираем всё здесь перед тем как показать список.
+    let cancelled = false;
+    const acc: PriceResource[] = [];
+    const loadPage = (offset: number): Promise<void> =>
+      fetch(`/api/prices/resources.json?category=${category}&offset=${offset}`)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json() as Promise<{ resources: PriceResource[]; next_offset: number | null }>;
+        })
+        .then(data => {
+          if (cancelled) return;
+          acc.push(...data.resources);
+          if (data.next_offset != null) return loadPage(data.next_offset);
+        });
+
+    loadPage(0)
+      .then(() => {
+        if (cancelled || resourcesRequestId.current !== id) return;
+        const sorted = [...acc].sort((a, b) => a.item_name.localeCompare(b.item_name, 'ru'));
         resourcesCache.current[category] = sorted;
         setResourcesState({ status: 'ready', resources: sorted });
         setItemKey(sorted[0]?.item_key ?? '');
       })
       .catch(() => {
-        if (resourcesRequestId.current !== id) return;
+        if (cancelled || resourcesRequestId.current !== id) return;
         setResourcesState({ status: 'error' });
       });
+
+    return () => { cancelled = true; };
   }, [category]);
 
   // При смене категории список предметов другой — сбрасываем выбор и поиск,
