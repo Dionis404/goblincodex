@@ -43,6 +43,8 @@
   min-width: 220px;
   cursor: pointer;
 }
+.ph-select-status { font-size: 13px; color: var(--text-sec); padding: 11px 4px; }
+.ph-select-status--error { color: #B91C1C; }
 
 .ph-segmented {
   display: flex;

@@ -2,23 +2,21 @@
 export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PriceHistory from '../../components/PriceHistory.tsx';
-import { fetchPriceResources } from '../../lib/priceApi';
 
+// Списки предметов (тысячи collectibles + 581 wearables) больше НЕ грузятся
+// через SSR-пропсы — сериализация обоих массивов разом в HTML-атрибут рвала
+// стриминг ответа на середине рендера (страница обрывалась примерно на
+// границе между collectibles и wearables, отдавая неполный HTML с кодом 200).
+// Вместо этого PriceHistory сам подтягивает список при монтировании/смене
+// категории через /api/prices/resources.json — так же, как уже устроена
+// подгрузка истории цены конкретного предмета.
+//
 // Пока только collectibles и wearables — у них есть человекочитаемые имена
 // (у collectibles — прямо от sfl-price-service, у wearables — из локального
 // wearableNames.ts). У buds/pets/economies item_name совпадает с item_key
 // (просто номер), выбирать там пока нечего — добавим, когда будут имена.
 // Страница временная, без финального места в навигации — просто отдельный
 // URL, пока не решили, куда и как её встраивать (см. обсуждение с пользователем).
-const [collectibles, wearables] = await Promise.all([
-  fetchPriceResources('collectibles'),
-  fetchPriceResources('wearables'),
-]);
-const sortByName = (a: { item_name: string }, b: { item_name: string }) => a.item_name.localeCompare(b.item_name, 'ru');
-const resourcesByCategory = {
-  collectibles: collectibles.slice().sort(sortByName),
-  wearables: wearables.slice().sort(sortByName),
-};
 ---
 
 <BaseLayout
@@ -36,15 +34,7 @@ const resourcesByCategory = {
       <p class="gc-prices-sub">Рыночные цены Sunflower Land по данным sfl-price-service — floor, диапазон, объём и число сделок.</p>
     </div>
 
-    {resourcesByCategory.collectibles.length === 0 && resourcesByCategory.wearables.length === 0 ? (
-      <div class="gc-prices-empty">
-        <div class="gc-prices-empty-icon">🚧</div>
-        <div class="gc-prices-empty-title">Данные временно недоступны</div>
-        <p class="gc-prices-empty-desc">Не удалось получить список предметов — попробуйте обновить страницу позже.</p>
-      </div>
-    ) : (
-      <PriceHistory client:load resourcesByCategory={resourcesByCategory} />
-    )}
+    <PriceHistory client:load />
 
   </div>
 </BaseLayout>
@@ -56,28 +46,4 @@ const resourcesByCategory = {
 }
 .gc-prices-header { padding: 24px 0; }
 .gc-prices-sub { font-size: 15px; color: var(--text-sec); margin-top: 6px; max-width: 640px; }
-
-.gc-prices-empty {
-  padding: 64px 32px;
-  text-align: center;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  margin-bottom: 48px;
-}
-.gc-prices-empty-icon { font-size: 32px; margin-bottom: 12px; }
-.gc-prices-empty-title {
-  font-family: var(--font-head);
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 8px;
-}
-.gc-prices-empty-desc {
-  font-size: 13.5px;
-  color: var(--text-sec);
-  max-width: 420px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
 </style>

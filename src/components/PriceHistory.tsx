@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { PriceResource, PriceCategory, PricePoint } from '../lib/priceApi';
+import type { PriceCategory, PricePoint, PriceResource } from '../lib/priceApi';
 import './PriceHistory.css';
 
 type NamedCategory = Extract<PriceCategory, 'collectibles' | 'wearables'>;
-
-interface Props {
-  resourcesByCategory: Record<NamedCategory, PriceResource[]>;
-}
 
 const CATEGORY_OPTIONS: { id: NamedCategory; label: string }[] = [
   { id: 'collectibles', label: 'Коллекционки' },
@@ -25,6 +21,15 @@ type FetchState =
   | { status: 'loading' }
   | { status: 'error' }
   | { status: 'ready'; points: PricePoint[] };
+
+// Список предметов на категорию — тысячи collectibles, тянуть их через SSR-
+// пропсы разом с wearables рвало стриминг ответа (см. prices.astro), поэтому
+// каждая категория подгружается сама на клиенте через отдельный запрос,
+// один раз, и дальше кэшируется здесь на время жизни компонента.
+type ResourcesState =
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'ready'; resources: PriceResource[] };
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('ru-RU', {
@@ -85,22 +90,56 @@ function PriceChart({ points }: { points: PricePoint[] }) {
   );
 }
 
-export default function PriceHistory({ resourcesByCategory }: Props) {
+export default function PriceHistory() {
   const [category, setCategory] = useState<NamedCategory>('collectibles');
-  const resources = resourcesByCategory[category];
-  const [itemKey, setItemKey] = useState(resources[0]?.item_key ?? '');
   const [hours, setHours] = useState(RANGE_OPTIONS[2].hours);
   const [search, setSearch] = useState('');
+  const [itemKey, setItemKey] = useState('');
   const [state, setState] = useState<FetchState>({ status: 'idle' });
   const requestId = useRef(0);
 
-  // При смене категории список предметов другой — переключаемся на первый
-  // в новом списке, иначе itemKey остался бы от прежней категории.
+  // Кэш списков по категории — переключаясь между вкладками туда-обратно,
+  // не долбим сеть заново.
+  const resourcesCache = useRef<Partial<Record<NamedCategory, PriceResource[]>>>({});
+  const [resourcesState, setResourcesState] = useState<ResourcesState>({ status: 'loading' });
+  const resourcesRequestId = useRef(0);
+
+  useEffect(() => {
+    const cached = resourcesCache.current[category];
+    if (cached) {
+      setResourcesState({ status: 'ready', resources: cached });
+      setItemKey(prev => prev || cached[0]?.item_key || '');
+      return;
+    }
+    const id = ++resourcesRequestId.current;
+    setResourcesState({ status: 'loading' });
+    fetch(`/api/prices/resources.json?category=${category}`)
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<{ resources: PriceResource[] }>;
+      })
+      .then(data => {
+        if (resourcesRequestId.current !== id) return;
+        const sorted = [...data.resources].sort((a, b) => a.item_name.localeCompare(b.item_name, 'ru'));
+        resourcesCache.current[category] = sorted;
+        setResourcesState({ status: 'ready', resources: sorted });
+        setItemKey(sorted[0]?.item_key ?? '');
+      })
+      .catch(() => {
+        if (resourcesRequestId.current !== id) return;
+        setResourcesState({ status: 'error' });
+      });
+  }, [category]);
+
+  // При смене категории список предметов другой — сбрасываем выбор и поиск,
+  // itemKey подставится сам, когда (или если уже) список этой категории готов.
   const changeCategory = (next: NamedCategory) => {
     setCategory(next);
     setSearch('');
-    setItemKey(resourcesByCategory[next][0]?.item_key ?? '');
+    setItemKey('');
   };
+
+  const resources = resourcesState.status === 'ready' ? resourcesState.resources : [];
 
   const filteredResources = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -141,13 +180,18 @@ export default function PriceHistory({ resourcesByCategory }: Props) {
               value={search}
               onChange={e => setSearch(e.target.value)}
               autoComplete="off"
+              disabled={resourcesState.status !== 'ready'}
             />
           </div>
-          <select className="ph-select" value={itemKey} onChange={e => setItemKey(e.target.value)}>
-            {filteredResources.map(r => (
-              <option key={r.item_key} value={r.item_key}>{r.item_name}</option>
-            ))}
-          </select>
+          {resourcesState.status === 'ready' && (
+            <select className="ph-select" value={itemKey} onChange={e => setItemKey(e.target.value)}>
+              {filteredResources.map(r => (
+                <option key={r.item_key} value={r.item_key}>{r.item_name}</option>
+              ))}
+            </select>
+          )}
+          {resourcesState.status === 'loading' && <span className="ph-select-status">Загрузка списка...</span>}
+          {resourcesState.status === 'error' && <span className="ph-select-status ph-select-status--error">Не удалось загрузить список предметов</span>}
         </div>
 
         <div className="ph-toolbar">
@@ -180,8 +224,11 @@ export default function PriceHistory({ resourcesByCategory }: Props) {
       </div>
 
       <div className="ph-card">
-        <div className="ph-card-title">{selectedName}</div>
+        <div className="ph-card-title">{selectedName || '—'}</div>
 
+        {resourcesState.status === 'ready' && resources.length === 0 && (
+          <div className="ph-status">Список предметов пуст.</div>
+        )}
         {state.status === 'loading' && <div className="ph-status">Загрузка истории...</div>}
         {state.status === 'error' && <div className="ph-status ph-status--error">Не удалось загрузить историю цены.</div>}
         {state.status === 'ready' && state.points.length === 0 && (
