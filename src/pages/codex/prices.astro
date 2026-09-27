@@ -1,0 +1,77 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PriceHistory from '../../components/PriceHistory.tsx';
+import { fetchPriceResources } from '../../lib/priceApi';
+
+// Пока только collectibles — у них есть человекочитаемые имена (item_name),
+// у wearables/buds/pets/economies item_name совпадает с item_key. Страница
+// временная, без финального места в навигации — просто отдельный URL,
+// пока не решили, куда и как её встраивать (см. обсуждение с пользователем).
+const resources = (await fetchPriceResources('collectibles'))
+  .slice()
+  .sort((a, b) => a.item_name.localeCompare(b.item_name, 'ru'));
+
+const initialItemKey = resources[0]?.item_key;
+---
+
+<BaseLayout
+  currentPage="codex"
+  title="История цен | GoblinCodex"
+  description="История рыночных цен ресурсов и предметов Sunflower Land: floor, объём торгов, число сделок."
+  noindex={true}
+>
+  <div class="gc-content gc-page-enter">
+
+    <a href="/codex" class="gc-btn-secondary gc-prices-back">← Кодекс</a>
+
+    <div class="gc-prices-header">
+      <h1 class="gc-page-title">📈 История цен</h1>
+      <p class="gc-prices-sub">Рыночные цены Sunflower Land по данным sfl-price-service — floor, диапазон, объём и число сделок.</p>
+    </div>
+
+    {resources.length === 0 ? (
+      <div class="gc-prices-empty">
+        <div class="gc-prices-empty-icon">🚧</div>
+        <div class="gc-prices-empty-title">Данные временно недоступны</div>
+        <p class="gc-prices-empty-desc">Не удалось получить список предметов — попробуйте обновить страницу позже.</p>
+      </div>
+    ) : (
+      <PriceHistory client:load resources={resources} initialItemKey={initialItemKey} />
+    )}
+
+  </div>
+</BaseLayout>
+
+<style>
+.gc-prices-back {
+  display: inline-flex;
+  margin: 20px 0 0;
+}
+.gc-prices-header { padding: 24px 0; }
+.gc-prices-sub { font-size: 15px; color: var(--text-sec); margin-top: 6px; max-width: 640px; }
+
+.gc-prices-empty {
+  padding: 64px 32px;
+  text-align: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 48px;
+}
+.gc-prices-empty-icon { font-size: 32px; margin-bottom: 12px; }
+.gc-prices-empty-title {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.gc-prices-empty-desc {
+  font-size: 13.5px;
+  color: var(--text-sec);
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+</style>
