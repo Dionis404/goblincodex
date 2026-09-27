@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { PriceResource, PricePoint } from '../lib/priceApi';
+import type { PriceResource, PriceCategory, PricePoint } from '../lib/priceApi';
 import './PriceHistory.css';
 
+type NamedCategory = Extract<PriceCategory, 'collectibles' | 'wearables'>;
+
 interface Props {
-  resources: PriceResource[];
-  initialItemKey?: string;
+  resourcesByCategory: Record<NamedCategory, PriceResource[]>;
 }
+
+const CATEGORY_OPTIONS: { id: NamedCategory; label: string }[] = [
+  { id: 'collectibles', label: 'Коллекционки' },
+  { id: 'wearables', label: 'Одежда' },
+];
 
 const RANGE_OPTIONS = [
   { hours: 24, label: '24 часа' },
@@ -79,12 +85,22 @@ function PriceChart({ points }: { points: PricePoint[] }) {
   );
 }
 
-export default function PriceHistory({ resources, initialItemKey }: Props) {
-  const [itemKey, setItemKey] = useState(initialItemKey ?? resources[0]?.item_key ?? '');
+export default function PriceHistory({ resourcesByCategory }: Props) {
+  const [category, setCategory] = useState<NamedCategory>('collectibles');
+  const resources = resourcesByCategory[category];
+  const [itemKey, setItemKey] = useState(resources[0]?.item_key ?? '');
   const [hours, setHours] = useState(RANGE_OPTIONS[2].hours);
   const [search, setSearch] = useState('');
   const [state, setState] = useState<FetchState>({ status: 'idle' });
   const requestId = useRef(0);
+
+  // При смене категории список предметов другой — переключаемся на первый
+  // в новом списке, иначе itemKey остался бы от прежней категории.
+  const changeCategory = (next: NamedCategory) => {
+    setCategory(next);
+    setSearch('');
+    setItemKey(resourcesByCategory[next][0]?.item_key ?? '');
+  };
 
   const filteredResources = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -135,6 +151,19 @@ export default function PriceHistory({ resources, initialItemKey }: Props) {
         </div>
 
         <div className="ph-toolbar">
+          <div className="ph-segmented">
+            {CATEGORY_OPTIONS.map(opt => (
+              <button
+                key={opt.id}
+                type="button"
+                className={`ph-segment${category === opt.id ? ' active' : ''}`}
+                onClick={() => changeCategory(opt.id)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
           <div className="ph-segmented">
             {RANGE_OPTIONS.map(opt => (
               <button

@@ -4,15 +4,21 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PriceHistory from '../../components/PriceHistory.tsx';
 import { fetchPriceResources } from '../../lib/priceApi';
 
-// Пока только collectibles — у них есть человекочитаемые имена (item_name),
-// у wearables/buds/pets/economies item_name совпадает с item_key. Страница
-// временная, без финального места в навигации — просто отдельный URL,
-// пока не решили, куда и как её встраивать (см. обсуждение с пользователем).
-const resources = (await fetchPriceResources('collectibles'))
-  .slice()
-  .sort((a, b) => a.item_name.localeCompare(b.item_name, 'ru'));
-
-const initialItemKey = resources[0]?.item_key;
+// Пока только collectibles и wearables — у них есть человекочитаемые имена
+// (у collectibles — прямо от sfl-price-service, у wearables — из локального
+// wearableNames.ts). У buds/pets/economies item_name совпадает с item_key
+// (просто номер), выбирать там пока нечего — добавим, когда будут имена.
+// Страница временная, без финального места в навигации — просто отдельный
+// URL, пока не решили, куда и как её встраивать (см. обсуждение с пользователем).
+const [collectibles, wearables] = await Promise.all([
+  fetchPriceResources('collectibles'),
+  fetchPriceResources('wearables'),
+]);
+const sortByName = (a: { item_name: string }, b: { item_name: string }) => a.item_name.localeCompare(b.item_name, 'ru');
+const resourcesByCategory = {
+  collectibles: collectibles.slice().sort(sortByName),
+  wearables: wearables.slice().sort(sortByName),
+};
 ---
 
 <BaseLayout
@@ -30,14 +36,14 @@ const initialItemKey = resources[0]?.item_key;
       <p class="gc-prices-sub">Рыночные цены Sunflower Land по данным sfl-price-service — floor, диапазон, объём и число сделок.</p>
     </div>
 
-    {resources.length === 0 ? (
+    {resourcesByCategory.collectibles.length === 0 && resourcesByCategory.wearables.length === 0 ? (
       <div class="gc-prices-empty">
         <div class="gc-prices-empty-icon">🚧</div>
         <div class="gc-prices-empty-title">Данные временно недоступны</div>
         <p class="gc-prices-empty-desc">Не удалось получить список предметов — попробуйте обновить страницу позже.</p>
       </div>
     ) : (
-      <PriceHistory client:load resources={resources} initialItemKey={initialItemKey} />
+      <PriceHistory client:load resourcesByCategory={resourcesByCategory} />
     )}
 
   </div>

@@ -6,6 +6,7 @@
  * этот адрес недостижим.
  */
 import { fetchWithTimeout } from './goblinApi';
+import { WEARABLE_NAMES } from './wearableNames';
 
 export const PRICE_API_BASE = 'http://sfl-price-service-api-1:8000';
 
@@ -36,8 +37,21 @@ export interface PricePoint {
   latest_sale_usd: number | null;
 }
 
-/** Список отслеживаемых предметов — по умолчанию только collectibles (у них есть человекочитаемые имена). */
+/**
+ * Список отслеживаемых предметов. Для collectibles берём имена прямо у
+ * sfl-price-service — там они человекочитаемые. Для wearables API отдаёт
+ * item_name === item_key (просто "wearables-N" без имени), поэтому список
+ * строим локально из wearableNames.ts (ITEM_IDS игры) — надёжнее и не
+ * зависит от того, что уже попало в БД цен на этот момент.
+ */
 export async function fetchPriceResources(category: PriceCategory = 'collectibles'): Promise<PriceResource[]> {
+  if (category === 'wearables') {
+    return Object.entries(WEARABLE_NAMES).map(([id, name]) => ({
+      item_key: `wearables-${id}`,
+      item_name: name,
+    }));
+  }
+
   try {
     const url = new URL(`${PRICE_API_BASE}/resources`);
     url.searchParams.set('category', category);
