@@ -680,6 +680,25 @@ export interface RangeTotal {
   transitionCoins: number;
 }
 
+// Ресурсы расширений, у которых нет рыночной цены: Oil не продаётся, гемы —
+// премиум-валюта. Остальные ищутся в collectibles по тому же имени.
+export const EXPANSION_UNPRICED: ExpansionResource[] = ['Oil', 'Gem'];
+export const EXPANSION_PRICE_NAMES = RESOURCE_ORDER.filter((r) => !EXPANSION_UNPRICED.includes(r));
+
+/** Цена одного ресурса × количество по floor-ценам; ресурсы без цены пропускаются. */
+export function resourcePrice(resource: ExpansionResource, amount: number, prices: Record<string, number | null>): number {
+  const price = prices[resource];
+  return price != null ? price * amount : 0;
+}
+
+/** Суммарная цена набора ресурсов по floor-ценам (Oil и гемы не учитываются). */
+export function resourcesPrice(
+  resources: Partial<Record<ExpansionResource, number>>,
+  prices: Record<string, number | null>,
+): number {
+  return EXPANSION_PRICE_NAMES.reduce((sum, r) => sum + resourcePrice(r, resources[r] ?? 0, prices), 0);
+}
+
 /** Суммирует стоимость этапов строго после `fromIndex` (эксклюзивно) и до `toIndex` (инклюзивно). */
 export function sumRange(stages: Stage[], fromIndex: number, toIndex: number): RangeTotal {
   const total: RangeTotal = {

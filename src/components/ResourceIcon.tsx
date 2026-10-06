@@ -26,6 +26,18 @@ export function NodeIcon({ node }: { node: NodeKey }) {
   );
 }
 
+function formatFlower(n: number): string {
+  return n.toLocaleString('ru-RU', { maximumFractionDigits: n < 10 ? 2 : 0 });
+}
+
+/** Сумма в Flower с иконкой токена; compact — без жирного шрифта и «≈» (для ячеек таблиц). */
+export function FlowerAmount({ value, compact }: { value: number; compact?: boolean }) {
+  const icon = <img className="ref-recipe-icon" src="/sprites/icons/flower_token.webp" alt="Flower" />;
+  return compact
+    ? <span className="ref-flower-compact">{formatFlower(value)} {icon}</span>
+    : <strong>≈ {formatFlower(value)} {icon}</strong>;
+}
+
 /** Иконка монет (Coins) — отдельно от ExpansionResource, т.к. это не ресурс, а игровая валюта. */
 export function CoinsIcon() {
   if (COINS_ICON.startsWith('/')) {

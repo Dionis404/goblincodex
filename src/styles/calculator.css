@@ -378,3 +378,13 @@
   flex-shrink: 0;
 }
 
+
+/* Цена в Flower (общий FlowerAmount из ResourceIcon.tsx) */
+.gc-calc .ref-recipe-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  vertical-align: middle;
+}
+.gc-calc .ref-flower-compact { display: inline-flex; align-items: center; gap: 4px; }

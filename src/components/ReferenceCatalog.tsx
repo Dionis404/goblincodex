@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import './ReferenceCatalog.css';
 import FoodCatalogTable from './tools/FoodCatalogTable';
 import NumberStepper from './NumberStepper';
-import ResourceIcon, { CoinsIcon, NodeIcon } from './ResourceIcon';
+import ResourceIcon, { CoinsIcon, NodeIcon, FlowerAmount } from './ResourceIcon';
+import { useItemPrices } from '../lib/useItemPrices';
 import {
   stagesForIsland,
   stagesForAscensionLevel,
@@ -10,6 +11,8 @@ import {
   formatDuration,
   ISLAND_GROUP_LABELS,
   RESOURCE_ORDER,
+  EXPANSION_PRICE_NAMES,
+  resourcesPrice,
   nodeGainsForStage,
   landImageCountForStage,
   landLevelImageIslandName,
@@ -490,31 +493,8 @@ function ResourceUpgradeSection() {
 // Oil в базе цен отсутствует — его стоимость в итоге цикла не учитывается.
 const LAVA_PIT_UNPRICED = new Set(['Oil']);
 
-function useLavaPitPrices(): Record<string, number | null> | null {
-  const [prices, setPrices] = useState<Record<string, number | null> | null>(null);
-  useEffect(() => {
-    const names = [...new Set(['Obsidian', ...LAVA_PIT_RECIPES.flatMap((r) => r.items.map((i) => i.name))])]
-      .filter((n) => !LAVA_PIT_UNPRICED.has(n));
-    let cancelled = false;
-    fetch(`/api/prices/latest.json?names=${encodeURIComponent(names.join(','))}`)
-      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
-      .then((data) => { if (!cancelled) setPrices(data.prices ?? {}); })
-      .catch(() => { if (!cancelled) setPrices({}); });
-    return () => { cancelled = true; };
-  }, []);
-  return prices;
-}
-
-function formatFlower(n: number): string {
-  return n.toLocaleString('ru-RU', { maximumFractionDigits: n < 10 ? 2 : 0 });
-}
-
-function FlowerAmount({ value, compact }: { value: number; compact?: boolean }) {
-  const icon = <img className="ref-recipe-icon" src="/sprites/icons/flower_token.webp" alt="Flower" />;
-  return compact
-    ? <span className="ref-flower-compact">{formatFlower(value)} {icon}</span>
-    : <strong>≈ {formatFlower(value)} {icon}</strong>;
-}
+const LAVA_PIT_PRICE_NAMES = [...new Set(['Obsidian', ...LAVA_PIT_RECIPES.flatMap((r) => r.items.map((i) => i.name))])]
+  .filter((n) => !LAVA_PIT_UNPRICED.has(n));
 
 // Бусты Lava Pit: cost — множитель к ресурсам цикла, time — к времени,
 // yield — прибавка к выходу обсидиана за цикл (см. текст «Бусты» ниже).
@@ -526,7 +506,7 @@ const LAVA_PIT_BOOSTS = [
 ] as const;
 
 function ObsidianSection() {
-  const prices = useLavaPitPrices();
+  const prices = useItemPrices(LAVA_PIT_PRICE_NAMES);
   const [boostsOn, setBoostsOn] = useState<Record<string, boolean>>({});
   const active = LAVA_PIT_BOOSTS.filter((b) => boostsOn[b.id]);
   const costMult = active.reduce((m, b) => m * b.cost, 1);
@@ -706,6 +686,7 @@ function StagePreview({ stage, ascensionLevel }: { stage: Stage; ascensionLevel?
 
 function StageTable({ stages, ascensionLevel }: { stages: Stage[]; ascensionLevel?: number }) {
   const total = sumStages(stages);
+  const prices = useItemPrices(EXPANSION_PRICE_NAMES);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedStage = stages.find((s) => s.id === selectedId) ?? null;
 
@@ -717,6 +698,7 @@ function StageTable({ stages, ascensionLevel }: { stages: Stage[]; ascensionLeve
             <th>№</th>
             <th>Ресурсы</th>
             <th><CoinsIcon /> Монеты</th>
+            {prices && <th>Цена ресурсов</th>}
             <th>Время</th>
             <th>Ур. бампкина</th>
           </tr>
@@ -735,6 +717,7 @@ function StageTable({ stages, ascensionLevel }: { stages: Stage[]; ascensionLeve
                 <ResourceChips resources={s.cost.resources} />
               </td>
               <td>{s.cost.coins.toLocaleString('ru-RU')}</td>
+              {prices && <td><FlowerAmount compact value={resourcesPrice(s.cost.resources, prices)} /></td>}
               <td>{formatDuration(s.cost.seconds)}</td>
               <td>{s.cost.level}</td>
             </tr>
@@ -745,11 +728,18 @@ function StageTable({ stages, ascensionLevel }: { stages: Stage[]; ascensionLeve
             <td className="ref-table-name">Итого</td>
             <td className="ref-table-resources"><ResourceChips resources={total.resources} /></td>
             <td>{total.coins.toLocaleString('ru-RU')}</td>
+            {prices && <td><FlowerAmount value={resourcesPrice(total.resources, prices)} /></td>}
             <td>{formatDuration(total.seconds)}</td>
             <td>{stages[stages.length - 1]?.cost.level ?? '—'}</td>
           </tr>
         </tfoot>
       </table>
+      {prices && (
+        <p className="ref-section-desc ref-section-desc--spaced">
+          Цена ресурсов — по текущему floor на маркете. Oil и гемы не учтены: Oil не продаётся,
+          у гемов нет рыночной цены.
+        </p>
+      )}
       {selectedStage && <StagePreview stage={selectedStage} ascensionLevel={ascensionLevel} />}
     </div>
   );
