@@ -8,7 +8,9 @@ export const prerender = false;
 // Цена = floor последней точки, если его нет — latest_sale. Кэш в памяти,
 // чтобы страница справочника не дёргала sfl-price-service на каждый визит.
 const CACHE_TTL_MS = 5 * 60 * 1000;
-const MAX_NAMES = 40;
+const MAX_NAMES = 200;
+// Не больше стольких одновременных запросов истории к sfl-price-service.
+const CONCURRENCY = 10;
 const cache = new Map<string, { at: number; price: number | null }>();
 
 async function priceForName(name: string, keyByName: Map<string, string>): Promise<number | null> {
@@ -37,9 +39,11 @@ export const GET: APIRoute = async ({ url }) => {
   const resources = await fetchPriceResources('collectibles');
   const keyByName = new Map(resources.map((r) => [r.item_name.toLowerCase(), r.item_key]));
 
-  const entries = await Promise.all(
-    names.map(async (n) => [n, await priceForName(n, keyByName)] as const),
-  );
+  const entries: (readonly [string, number | null])[] = [];
+  for (let i = 0; i < names.length; i += CONCURRENCY) {
+    const batch = names.slice(i, i + CONCURRENCY);
+    entries.push(...(await Promise.all(batch.map(async (n) => [n, await priceForName(n, keyByName)] as const))));
+  }
 
   return new Response(JSON.stringify({ prices: Object.fromEntries(entries) }), {
     headers: { 'Content-Type': 'application/json; charset=utf-8' },

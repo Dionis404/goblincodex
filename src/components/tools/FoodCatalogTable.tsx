@@ -3,6 +3,8 @@ import '../SortableTable.css';
 import FOOD_ICONS from '../../lib/foodIcons.json';
 import BOOST_ICONS from '../../lib/boostIcons.json';
 import { SKILL_ICONS } from '../../lib/skills';
+import { FlowerAmount } from '../ResourceIcon';
+import { useItemPrices } from '../../lib/useItemPrices';
 
 /**
  * Рецепты и формулы сверены с исходниками sunflower-land (см. scripts/README.md):
@@ -191,6 +193,33 @@ const BUILDINGS: { key: Building; label: string; icon: string; recipes: Recipe[]
   { key: 'Deli', label: 'Deli', icon: '\u{1F9C0}', recipes: DELI },
   { key: 'Smoothie Shack', label: 'Smoothie Shack', icon: '\u{1F964}', recipes: SMOOTHIE_SHACK },
 ];
+
+// ── Цены блюд ────────────────────────────────────────────────────────────
+// Цена блюда = сумма floor-цен ингредиентов. Промежуточные блюда (Mashed Potato
+// и т.п.) раскрываются рекурсивно до сырых ингредиентов — на маркете их цены
+// нет. Если цены хоть одного сырого ингредиента нет — цена блюда неизвестна
+// (null), чтобы не показывать заниженную сумму.
+const RECIPE_BY_NAME = new Map<string, Recipe>(BUILDINGS.flatMap((b) => b.recipes).map((r) => [r.name, r]));
+
+const FOOD_PRICE_NAMES: string[] = (() => {
+  const raw = new Set<string>();
+  for (const recipe of RECIPE_BY_NAME.values()) {
+    for (const [name] of recipe.ingredients) if (!RECIPE_BY_NAME.has(name)) raw.add(name);
+  }
+  return [...raw];
+})();
+
+function recipeCost(name: string, prices: Record<string, number | null>, seen: string[] = []): number | null {
+  const recipe = RECIPE_BY_NAME.get(name);
+  if (!recipe || seen.includes(name)) return null;
+  let sum = 0;
+  for (const [ing, amount] of recipe.ingredients) {
+    const unit = RECIPE_BY_NAME.has(ing) ? recipeCost(ing, prices, [...seen, name]) : prices[ing] ?? null;
+    if (unit == null) return null;
+    sum += unit * amount;
+  }
+  return sum;
+}
 
 /**
  * Рыба — не рецепт готовки: её можно съесть сырой сразу (без здания/ингредиентов)
@@ -445,23 +474,28 @@ function Check({
   );
 }
 
-type SortKey = 'name' | 'experience' | 'cookingSeconds' | 'xpPerHour';
+type SortKey = 'name' | 'experience' | 'cookingSeconds' | 'xpPerHour' | 'cost' | 'xpPerFlower';
 
 const COLUMNS: { key: SortKey; label: string }[] = [
   { key: 'name', label: 'Блюдо' },
   { key: 'experience', label: 'Опыт' },
   { key: 'cookingSeconds', label: 'Время' },
   { key: 'xpPerHour', label: 'XP/час' },
+  { key: 'cost', label: 'Цена' },
+  { key: 'xpPerFlower', label: 'XP за 1 Flower' },
 ];
 
 function BuildingTable({
   recipes,
   timeBoosts,
   xpBoosts,
+  prices,
 }: {
   recipes: Recipe[];
   timeBoosts: TimeBoosts;
   xpBoosts: XpBoosts;
+  /** null — цены ещё грузятся. */
+  prices: Record<string, number | null> | null;
 }) {
   const [sortKey, setSortKey] = useState<SortKey>('experience');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -481,13 +515,22 @@ function BuildingTable({
       const boostedSeconds = r.cookingSeconds * tMult;
       const boostedXp = r.experience * xMult;
       const xpPerHour = boostedSeconds > 0 ? (boostedXp / boostedSeconds) * 3600 : Infinity;
-      return { ...r, boostedSeconds, boostedXp, xpPerHour, boosted: tMult < 1 || xMult > 1 };
+      const cost = prices ? recipeCost(r.name, prices) : null;
+      const xpPerFlower = cost != null && cost > 0 ? boostedXp / cost : null;
+      return { ...r, boostedSeconds, boostedXp, xpPerHour, cost, xpPerFlower, boosted: tMult < 1 || xMult > 1 };
     });
-  }, [recipes, timeBoosts, xpBoosts]);
+  }, [recipes, timeBoosts, xpBoosts, prices]);
 
   const sortedRows = useMemo(() => {
     const copy = [...rows];
     copy.sort((a, b) => {
+      // Блюда без цены всегда внизу, в любом направлении сортировки.
+      if (sortKey === 'cost' || sortKey === 'xpPerFlower') {
+        const an = a[sortKey];
+        const bn = b[sortKey];
+        if (an == null || bn == null) return an == null ? (bn == null ? 0 : 1) : -1;
+        return sortDir === 'asc' ? an - bn : bn - an;
+      }
       let av: number | string;
       let bv: number | string;
       if (sortKey === 'name') {
@@ -559,6 +602,14 @@ function BuildingTable({
                 {r.boostedSeconds !== r.cookingSeconds && <BoostBadge />}
               </td>
               <td data-label="XP/час">{r.xpPerHour === Infinity ? '—' : Math.round(r.xpPerHour).toLocaleString('ru-RU')}</td>
+              <td data-label="Цена">
+                {prices == null ? '…' : r.cost != null ? <FlowerAmount compact value={r.cost} /> : '—'}
+              </td>
+              <td data-label="XP за 1 Flower">
+                {prices == null ? '…' : r.xpPerFlower != null
+                  ? Math.round(r.xpPerFlower).toLocaleString('ru-RU')
+                  : '—'}
+              </td>
               <td className="ref-table-resources" data-label="Ингредиенты">
                 <span className="ref-resource-chips">
                   {r.ingredients.map(([name, amount]) => (
@@ -761,6 +812,7 @@ function FishTable({ xpBoosts }: { xpBoosts: XpBoosts }) {
 }
 
 export default function FoodCatalogTable() {
+  const prices = useItemPrices(FOOD_PRICE_NAMES);
   const [activeTab, setActiveTab] = useState<Building | 'Fish'>('Fire Pit');
 
   const [timeBoosts, setTimeBoosts] = useState<TimeBoosts>({
@@ -986,7 +1038,14 @@ export default function FoodCatalogTable() {
       </div>
 
       {activeGroup ? (
-        <BuildingTable recipes={activeGroup.recipes} timeBoosts={timeBoosts} xpBoosts={xpBoosts} />
+        <>
+          <BuildingTable recipes={activeGroup.recipes} timeBoosts={timeBoosts} xpBoosts={xpBoosts} prices={prices} />
+          <p className="ref-section-desc ref-section-desc--spaced">
+            Цена — сумма ингредиентов по текущему floor на маркете (промежуточные блюда раскрыты до
+            сырых ингредиентов). «XP за 1 Flower» — опыт с учётом включённых бустов, делённый на цену.
+            Если хотя бы у одного ингредиента цены нет, у блюда стоит «—».
+          </p>
+        </>
       ) : (
         <FishTable xpBoosts={xpBoosts} />
       )}
