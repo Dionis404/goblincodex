@@ -27,6 +27,9 @@ export function NodeIcon({ node }: { node: NodeKey }) {
 }
 
 function formatFlower(n: number): string {
+  // Дешёвые предметы стоят доли Flower (0,004 и меньше) — для них держим две
+  // значащие цифры, иначе округление до 2 знаков превращает цену в 0.
+  if (n > 0 && n < 1) return n.toLocaleString('ru-RU', { maximumSignificantDigits: 2 });
   return n.toLocaleString('ru-RU', { maximumFractionDigits: n < 10 ? 2 : 0 });
 }
 

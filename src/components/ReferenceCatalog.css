@@ -951,3 +951,55 @@
 }
 .ref-flower-compact { display: inline-flex; align-items: center; gap: 4px; }
 .ref-price-hint { color: var(--text-sec); font-size: 12px; }
+
+/* Значок «i» с тултипом: цена указана не за все ингредиенты */
+.ref-info-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  border: 1px solid var(--text-sec);
+  border-radius: 50%;
+  color: var(--text-sec);
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  cursor: help;
+  vertical-align: middle;
+}
+.ref-info-badge:hover,
+.ref-info-badge:focus {
+  color: var(--text);
+  border-color: var(--text);
+  outline: none;
+}
+.ref-info-badge::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 240px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg, #1c1f26);
+  color: var(--text);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  display: none;
+  pointer-events: none;
+  z-index: 20;
+}
+.ref-info-badge:hover::after,
+.ref-info-badge:focus::after { display: block; }
