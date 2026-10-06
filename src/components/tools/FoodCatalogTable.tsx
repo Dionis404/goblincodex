@@ -521,7 +521,7 @@ const COLUMNS: { key: SortKey; label: string }[] = [
   { key: 'cookingSeconds', label: 'Время' },
   { key: 'xpPerHour', label: 'XP/час' },
   { key: 'cost', label: 'Цена' },
-  { key: 'xpPerFlower', label: 'XP за 1 Flower' },
+  { key: 'xpPerFlower', label: 'XP/Flower' },
 ];
 
 function BuildingTable({
@@ -645,7 +645,7 @@ function BuildingTable({
                 {prices == null ? '…' : r.cost != null ? <FlowerAmount compact value={r.cost} /> : '—'}
                 {r.cost != null && <PartialPriceInfo missing={r.missing} />}
               </td>
-              <td data-label="XP за 1 Flower">
+              <td data-label="XP/Flower">
                 {prices == null ? '…' : r.xpPerFlower != null
                   ? Math.round(r.xpPerFlower).toLocaleString('ru-RU')
                   : '—'}
@@ -683,7 +683,7 @@ const FISH_COLUMNS: { key: FishSortKey; label: string }[] = [
   { key: 'primeAgedXp', label: 'Prime Aged (XP)' },
   { key: 'agingXpPerHour', label: 'XP/час (соление)' },
   { key: 'saltPrice', label: 'Цена соли' },
-  { key: 'agedXpPerFlower', label: 'Доп. XP за 1 Flower' },
+  { key: 'agedXpPerFlower', label: 'Доп. XP/Flower' },
 ];
 
 // Рыба не продаётся — в цене участвует только соль (предмет маркета, ищется
@@ -820,7 +820,7 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
       {prices && (
         <p className="ref-section-desc">
           Рыба не продаётся, поэтому в цене учитывается только соль: «Цена соли» — стоимость всей
-          соли на засолку этой рыбы по текущему floor. «Доп. XP за 1 Flower» — на сколько XP
+          соли на засолку этой рыбы по текущему floor. «Доп. XP/Flower» (опыт за 1 Flower) — на сколько XP
           засолка (средний XP выдержанной рыбы с шансом Prime Aged минус XP сырой) увеличивает
           опыт на каждый потраченный на соль Flower. Нет цены соли — «—».
         </p>
@@ -877,7 +877,7 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
                 <td data-label="Цена соли">
                   {prices == null ? '…' : r.saltPrice != null ? <FlowerAmount compact value={r.saltPrice} /> : '—'}
                 </td>
-                <td data-label="Доп. XP за 1 Flower">
+                <td data-label="Доп. XP/Flower">
                   {prices == null ? '…' : r.agedXpPerFlower != null ? Math.round(r.agedXpPerFlower).toLocaleString('ru-RU') : '—'}
                 </td>
               </tr>
@@ -1120,7 +1120,7 @@ export default function FoodCatalogTable() {
           <BuildingTable recipes={activeGroup.recipes} timeBoosts={timeBoosts} xpBoosts={xpBoosts} prices={prices} />
           <p className="ref-section-desc ref-section-desc--spaced">
             Цена — сумма ингредиентов по текущему floor на маркете (промежуточные блюда раскрыты до
-            сырых ингредиентов). «XP за 1 Flower» — опыт с учётом включённых бустов, делённый на цену.
+            сырых ингредиентов). «XP/Flower» — опыт за 1 Flower с учётом включённых бустов, делённый на цену.
             Если часть ингредиентов не продаётся (например, Magic Mushroom), цена считается только
             по продаваемым — у такого блюда значок «i» с перечнем ингредиентов без цены. «—» — когда
             цены нет ни у одного ингредиента.

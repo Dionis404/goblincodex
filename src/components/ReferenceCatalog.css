@@ -335,6 +335,9 @@
   white-space: normal !important;
   min-width: 260px;
 }
+/* В таблицах еды колонка ингредиентов уже перенесена на несколько строк —
+   даём ей сжиматься, чтобы таблица не вылезала в ширину. */
+.gc-sortable-table .ref-table-resources { min-width: 180px; }
 .ref-resource-chips {
   display: inline-flex;
   flex-wrap: wrap;

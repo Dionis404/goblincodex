@@ -2,6 +2,13 @@
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  /* Тень у края, пока есть что листать (background-attachment: local —
+     «заглушка» скрывает тень, когда прокрутка дошла до края). */
+  background:
+    linear-gradient(to right, var(--card-bg, #fff) 30%, transparent) left center / 24px 100% no-repeat local,
+    linear-gradient(to left, var(--card-bg, #fff) 30%, transparent) right center / 24px 100% no-repeat local,
+    linear-gradient(to right, rgba(0, 0, 0, 0.28), transparent) left center / 12px 100% no-repeat scroll,
+    linear-gradient(to left, rgba(0, 0, 0, 0.28), transparent) right center / 12px 100% no-repeat scroll;
 }
 .gc-sortable-table {
   width: 100%;
@@ -10,16 +17,18 @@
 }
 .gc-sortable-table th {
   text-align: left;
-  padding: 10px 14px;
+  padding: 8px 10px;
   background: var(--green-pale);
   color: var(--green-dark);
   font-weight: 700;
   font-size: 12px;
-  white-space: nowrap;
+  line-height: 1.25;
+  vertical-align: bottom;
 }
 .gc-sortable-th-btn {
   display: inline-flex;
   align-items: center;
+  text-align: left;
   gap: 4px;
   background: none;
   border: none;
@@ -42,7 +51,7 @@
   opacity: 1;
 }
 .gc-sortable-table td {
-  padding: 10px 14px;
+  padding: 8px 10px;
   border-top: 1px solid var(--border);
   color: var(--text);
   white-space: nowrap;
