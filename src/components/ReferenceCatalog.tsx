@@ -509,13 +509,21 @@ function formatFlower(n: number): string {
   return n.toLocaleString('ru-RU', { maximumFractionDigits: n < 10 ? 2 : 0 });
 }
 
+function FlowerAmount({ value }: { value: number }) {
+  return (
+    <strong>
+      ≈ {formatFlower(value)} <img className="ref-recipe-icon" src="/sprites/icons/flower_token.webp" alt="Flower" />
+    </strong>
+  );
+}
+
 // Бусты Lava Pit: cost — множитель к ресурсам цикла, time — к времени,
 // yield — прибавка к выходу обсидиана за цикл (см. текст «Бусты» ниже).
 const LAVA_PIT_BOOSTS = [
-  { id: 'swimwear', label: 'Lava Swimwear', hint: '−50% ресурсов', cost: 0.5, time: 1, yield: 0 },
-  { id: 'necklace', label: 'Obsidian Necklace', hint: '−50% времени', cost: 1, time: 0.5, yield: 0 },
-  { id: 'magma', label: 'Magma Stone', hint: '−15% времени, +0.15 выхода', cost: 1, time: 0.85, yield: 0.15 },
-  { id: 'turtle', label: 'Obsidian Turtle', hint: '+0.5 выхода', cost: 1, time: 1, yield: 0.5 },
+  { id: 'swimwear', label: 'Lava Swimwear', icon: '/sprites/wearables/481.webp', hint: '−50% ресурсов', cost: 0.5, time: 1, yield: 0 },
+  { id: 'necklace', label: 'Obsidian Necklace', icon: '/sprites/wearables/457.webp', hint: '−50% времени', cost: 1, time: 0.5, yield: 0 },
+  { id: 'magma', label: 'Magma Stone', icon: '/sprites/sfts/magma_stone.webp', hint: '−15% времени, +0.15 выхода', cost: 1, time: 0.85, yield: 0.15 },
+  { id: 'turtle', label: 'Obsidian Turtle', icon: '/sprites/sfts/obsidian_turtle.webp', hint: '+0.5 выхода', cost: 1, time: 1, yield: 0.5 },
 ] as const;
 
 function ObsidianSection() {
@@ -580,6 +588,7 @@ function ObsidianSection() {
               checked={!!boostsOn[b.id]}
               onChange={(e) => setBoostsOn((prev) => ({ ...prev, [b.id]: e.target.checked }))}
             />
+            <img className="ref-recipe-icon" src={b.icon} alt="" />
             <strong>{b.label}</strong> <span>{b.hint}</span>
           </label>
         ))}
@@ -609,10 +618,11 @@ function ObsidianSection() {
               </ul>
               {prices && (
                 <p className="ref-section-desc ref-section-desc--spaced">
-                  <strong>≈ {formatFlower(total * costMult)} Flower</strong> за цикл (floor)
-                  {missing > 0 && ` — без учёта ${missing} поз. без цены`}
+                  <FlowerAmount value={total * costMult} /> за цикл (floor)
+                  {r.items.some((i) => LAVA_PIT_UNPRICED.has(i.name)) && ' — без учёта Oil: он не продаётся, цены нет'}
+                  {missing > r.items.filter((i) => LAVA_PIT_UNPRICED.has(i.name)).length && ' — у части ингредиентов цена не найдена'}
                   <br />
-                  <strong>≈ {formatFlower((total * costMult) / obsidianPerCycle)} Flower</strong> за 1 Obsidian
+                  <FlowerAmount value={(total * costMult) / obsidianPerCycle} /> за 1 Obsidian
                   {' '}({obsidianPerCycle.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} за цикл, {cycleHours.toLocaleString('ru-RU', { maximumFractionDigits: 1 })} ч)
                 </p>
               )}
