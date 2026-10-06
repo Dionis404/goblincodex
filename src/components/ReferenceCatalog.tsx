@@ -493,7 +493,7 @@ const LAVA_PIT_UNPRICED = new Set(['Oil']);
 function useLavaPitPrices(): Record<string, number | null> | null {
   const [prices, setPrices] = useState<Record<string, number | null> | null>(null);
   useEffect(() => {
-    const names = [...new Set(LAVA_PIT_RECIPES.flatMap((r) => r.items.map((i) => i.name)))]
+    const names = [...new Set(['Obsidian', ...LAVA_PIT_RECIPES.flatMap((r) => r.items.map((i) => i.name))])]
       .filter((n) => !LAVA_PIT_UNPRICED.has(n));
     let cancelled = false;
     fetch(`/api/prices/latest.json?names=${encodeURIComponent(names.join(','))}`)
@@ -509,12 +509,11 @@ function formatFlower(n: number): string {
   return n.toLocaleString('ru-RU', { maximumFractionDigits: n < 10 ? 2 : 0 });
 }
 
-function FlowerAmount({ value }: { value: number }) {
-  return (
-    <strong>
-      ≈ {formatFlower(value)} <img className="ref-recipe-icon" src="/sprites/icons/flower_token.webp" alt="Flower" />
-    </strong>
-  );
+function FlowerAmount({ value, compact }: { value: number; compact?: boolean }) {
+  const icon = <img className="ref-recipe-icon" src="/sprites/icons/flower_token.webp" alt="Flower" />;
+  return compact
+    ? <span className="ref-flower-compact">{formatFlower(value)} {icon}</span>
+    : <strong>≈ {formatFlower(value)} {icon}</strong>;
 }
 
 // Бусты Lava Pit: cost — множитель к ресурсам цикла, time — к времени,
@@ -537,9 +536,8 @@ function ObsidianSection() {
   return (
     <section className="ref-section">
       <p className="ref-section-desc">
-        Обсидиан крафтится на постройке <strong>Lava Pit</strong>, доступной с острова Volcano.
-        Сама постройка не крафтится за ресурсы — покупается за <strong>Sunstone</strong> и просто
-        ставится на карту; на каждый следующий экземпляр цена растёт.
+        Обсидиан производится в <strong>Lava Pit</strong> на острове Volcano: каждый цикл
+        забирает набор ресурсов и через 72 часа выдаёт Obsidian.
       </p>
       <div className="ref-table-wrap">
         <table className="ref-table">
@@ -551,10 +549,11 @@ function ObsidianSection() {
           </thead>
           <tbody>
             <tr>
-              <td className="ref-table-name">Покупка постройки</td>
+              <td className="ref-table-name">Текущая цена Obsidian</td>
               <td>
-                <img className="ref-recipe-icon" src="/sprites/resources/sunstone/sunstone.png" alt="" /> 
-                 40 Sunstone за первую, +40 Sunstone за каждую следующую
+                {prices == null ? '…' : prices.Obsidian != null
+                  ? <><FlowerAmount value={prices.Obsidian} /> <span className="ref-price-hint">(floor)</span></>
+                  : 'нет данных'}
               </td>
             </tr>
             <tr>
@@ -588,7 +587,7 @@ function ObsidianSection() {
               checked={!!boostsOn[b.id]}
               onChange={(e) => setBoostsOn((prev) => ({ ...prev, [b.id]: e.target.checked }))}
             />
-            <img className="ref-recipe-icon" src={b.icon} alt="" />
+            <img className="ref-boost-icon" src={b.icon} alt="" />
             <strong>{b.label}</strong> <span>{b.hint}</span>
           </label>
         ))}
@@ -613,6 +612,13 @@ function ObsidianSection() {
                     <img className="ref-recipe-icon" src={item.icon} alt="" />
                     <span className="ref-recipe-amount">{item.amount.toLocaleString('ru-RU')}×</span>
                     <span className="ref-recipe-name">{item.name}</span>
+                    {prices && (
+                      <span className="ref-recipe-price">
+                        {prices[item.name] != null
+                          ? <FlowerAmount compact value={prices[item.name]! * item.amount * costMult} />
+                          : '—'}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

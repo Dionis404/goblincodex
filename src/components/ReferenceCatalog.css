@@ -934,3 +934,20 @@
   cursor: pointer;
 }
 .ref-boost-toggle span { color: var(--text-sec); }
+.ref-boost-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+.ref-boost-toggle { gap: 8px; }
+.ref-recipe-price {
+  margin-left: auto;
+  padding-left: 8px;
+  color: var(--text-sec);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ref-flower-compact { display: inline-flex; align-items: center; gap: 4px; }
+.ref-price-hint { color: var(--text-sec); font-size: 12px; }
