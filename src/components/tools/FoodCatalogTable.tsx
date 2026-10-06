@@ -211,6 +211,10 @@ const FOOD_PRICE_NAMES: string[] = (() => {
   return [...raw];
 })();
 
+// Блюда, у которых цену не показываем: в БД цен для их ингредиентов неверные
+// данные — лучше «—», чем вводящее в заблуждение число.
+const NO_PRICE_RECIPES = new Set(['Mushroom Jacket Potatoes', 'Creamy Crab Bite']);
+
 interface RecipeCost {
   /** Сумма по ингредиентам с ценой; null — не оценён ни один ингредиент. */
   cost: number | null;
@@ -220,7 +224,7 @@ interface RecipeCost {
 
 function recipeCost(name: string, prices: Record<string, number | null>, seen: string[] = []): RecipeCost {
   const recipe = RECIPE_BY_NAME.get(name);
-  if (!recipe || seen.includes(name)) return { cost: null, missing: [] };
+  if (!recipe || seen.includes(name) || NO_PRICE_RECIPES.has(name)) return { cost: null, missing: [] };
   let sum = 0;
   let priced = false;
   const missing: string[] = [];
@@ -668,7 +672,7 @@ function BuildingTable({
 
 type FishSortKey =
   | 'name' | 'rawXp' | 'agedXp' | 'primeAgedXp' | 'saltCost' | 'agingHours' | 'agingXpPerHour'
-  | 'fishPrice' | 'saltPrice' | 'rawXpPerFlower' | 'agedXpPerFlower';
+  | 'saltPrice' | 'agedXpPerFlower';
 
 const FISH_COLUMNS: { key: FishSortKey; label: string }[] = [
   { key: 'name', label: 'Рыба' },
@@ -678,15 +682,14 @@ const FISH_COLUMNS: { key: FishSortKey; label: string }[] = [
   { key: 'agedXp', label: 'Aged (XP)' },
   { key: 'primeAgedXp', label: 'Prime Aged (XP)' },
   { key: 'agingXpPerHour', label: 'XP/час (соление)' },
-  { key: 'fishPrice', label: 'Цена рыбы' },
   { key: 'saltPrice', label: 'Цена соли' },
-  { key: 'rawXpPerFlower', label: 'XP за 1 Flower (сырая)' },
-  { key: 'agedXpPerFlower', label: 'XP за 1 Flower (соление)' },
+  { key: 'agedXpPerFlower', label: 'Доп. XP за 1 Flower' },
 ];
 
-// Рыба и соль — тоже предметы маркета, ищутся в collectibles по имени.
-const FISH_PRICE_NAMES = [...Object.keys(FISH_BASE_XP), 'Salt'];
-const PRICE_SORT_KEYS: FishSortKey[] = ['fishPrice', 'saltPrice', 'rawXpPerFlower', 'agedXpPerFlower'];
+// Рыба не продаётся — в цене участвует только соль (предмет маркета, ищется
+// в collectibles по имени).
+const FISH_PRICE_NAMES = ['Salt'];
+const PRICE_SORT_KEYS: FishSortKey[] = ['saltPrice', 'agedXpPerFlower'];
 
 // ── Шанс на Prime Aged Fish (features/game/types/agingFormulas.ts getPrimeAgedChance) ──
 const PRIME_AGED_BASE_CHANCE = 10; // %
@@ -735,23 +738,18 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
       // Средневзвешенный XP выдержанной рыбы с учётом шанса на Prime Aged.
       const avgAgedXp = boostedAgedXp * (1 - chanceRatio) + boostedPrimeAgedXp * chanceRatio;
       const agingXpPerHour = f.agingHours > 0 ? (avgAgedXp - boostedRawXp) / f.agingHours : Infinity;
-      // Цены: рыба расходуется при засолке, поэтому выдержанная рыба стоит
-      // рыба + соль. Нет цены рыбы или соли — стоимость неизвестна (null).
-      const fishPrice = prices?.[f.name] ?? null;
+      // Рыба не продаётся (её ловят), поэтому стоит только соль. Засолка даёт
+      // прибавку к XP сырой рыбы — считаем её на 1 Flower потраченной соли.
       const saltUnit = prices?.Salt ?? null;
       const saltPrice = saltUnit != null ? saltUnit * f.saltCost : null;
-      const agedCost = fishPrice != null && saltPrice != null ? fishPrice + saltPrice : null;
-      const rawXpPerFlower = fishPrice != null && fishPrice > 0 ? boostedRawXp / fishPrice : null;
-      const agedXpPerFlower = agedCost != null && agedCost > 0 ? avgAgedXp / agedCost : null;
+      const agedXpPerFlower = saltPrice != null && saltPrice > 0 ? (avgAgedXp - boostedRawXp) / saltPrice : null;
       return {
         ...f,
         boostedRawXp,
         boostedAgedXp,
         boostedPrimeAgedXp,
         agingXpPerHour,
-        fishPrice,
         saltPrice,
-        rawXpPerFlower,
         agedXpPerFlower,
       };
     });
@@ -762,8 +760,8 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
     copy.sort((a, b) => {
       // Строки без цены всегда внизу, в любом направлении сортировки.
       if (PRICE_SORT_KEYS.includes(sortKey)) {
-        const an = a[sortKey as 'fishPrice'];
-        const bn = b[sortKey as 'fishPrice'];
+        const an = a[sortKey as 'saltPrice'];
+        const bn = b[sortKey as 'saltPrice'];
         if (an == null || bn == null) return an == null ? (bn == null ? 0 : 1) : -1;
         return sortDir === 'asc' ? an - bn : bn - an;
       }
@@ -821,9 +819,10 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
       />
       {prices && (
         <p className="ref-section-desc">
-          «Цена соли» — стоимость всей соли на засолку этой рыбы по текущему floor. «XP за 1 Flower
-          (соление)» — средний XP выдержанной рыбы (с шансом Prime Aged), делённый на цену рыбы
-          плюс цену соли; у сырой — XP, делённый на цену рыбы. Нет цены у рыбы или соли — «—».
+          Рыба не продаётся, поэтому в цене учитывается только соль: «Цена соли» — стоимость всей
+          соли на засолку этой рыбы по текущему floor. «Доп. XP за 1 Flower» — на сколько XP
+          засолка (средний XP выдержанной рыбы с шансом Prime Aged минус XP сырой) увеличивает
+          опыт на каждый потраченный на соль Flower. Нет цены соли — «—».
         </p>
       )}
       <div className="gc-sortable-wrap">
@@ -875,16 +874,10 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
                 <td data-label="XP/час (соление)">
                   {r.agingXpPerHour === Infinity ? '—' : Math.round(r.agingXpPerHour).toLocaleString('ru-RU')}
                 </td>
-                <td data-label="Цена рыбы">
-                  {prices == null ? '…' : r.fishPrice != null ? <FlowerAmount compact value={r.fishPrice} /> : '—'}
-                </td>
                 <td data-label="Цена соли">
                   {prices == null ? '…' : r.saltPrice != null ? <FlowerAmount compact value={r.saltPrice} /> : '—'}
                 </td>
-                <td data-label="XP за 1 Flower (сырая)">
-                  {prices == null ? '…' : r.rawXpPerFlower != null ? Math.round(r.rawXpPerFlower).toLocaleString('ru-RU') : '—'}
-                </td>
-                <td data-label="XP за 1 Flower (соление)">
+                <td data-label="Доп. XP за 1 Flower">
                   {prices == null ? '…' : r.agedXpPerFlower != null ? Math.round(r.agedXpPerFlower).toLocaleString('ru-RU') : '—'}
                 </td>
               </tr>
