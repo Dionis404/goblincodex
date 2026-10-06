@@ -918,3 +918,19 @@
     padding: 10px 8px;
   }
 }
+
+/* ── Lava Pit boost toggles ── */
+.ref-boost-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 12px 0;
+}
+.ref-boost-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.ref-boost-toggle span { color: var(--text-sec); }

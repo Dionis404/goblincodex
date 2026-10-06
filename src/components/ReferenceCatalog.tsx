@@ -487,7 +487,45 @@ function ResourceUpgradeSection() {
   );
 }
 
+// Oil в базе цен отсутствует — его стоимость в итоге цикла не учитывается.
+const LAVA_PIT_UNPRICED = new Set(['Oil']);
+
+function useLavaPitPrices(): Record<string, number | null> | null {
+  const [prices, setPrices] = useState<Record<string, number | null> | null>(null);
+  useEffect(() => {
+    const names = [...new Set(LAVA_PIT_RECIPES.flatMap((r) => r.items.map((i) => i.name)))]
+      .filter((n) => !LAVA_PIT_UNPRICED.has(n));
+    let cancelled = false;
+    fetch(`/api/prices/latest.json?names=${encodeURIComponent(names.join(','))}`)
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then((data) => { if (!cancelled) setPrices(data.prices ?? {}); })
+      .catch(() => { if (!cancelled) setPrices({}); });
+    return () => { cancelled = true; };
+  }, []);
+  return prices;
+}
+
+function formatFlower(n: number): string {
+  return n.toLocaleString('ru-RU', { maximumFractionDigits: n < 10 ? 2 : 0 });
+}
+
+// Бусты Lava Pit: cost — множитель к ресурсам цикла, time — к времени,
+// yield — прибавка к выходу обсидиана за цикл (см. текст «Бусты» ниже).
+const LAVA_PIT_BOOSTS = [
+  { id: 'swimwear', label: 'Lava Swimwear', hint: '−50% ресурсов', cost: 0.5, time: 1, yield: 0 },
+  { id: 'necklace', label: 'Obsidian Necklace', hint: '−50% времени', cost: 1, time: 0.5, yield: 0 },
+  { id: 'magma', label: 'Magma Stone', hint: '−15% времени, +0.15 выхода', cost: 1, time: 0.85, yield: 0.15 },
+  { id: 'turtle', label: 'Obsidian Turtle', hint: '+0.5 выхода', cost: 1, time: 1, yield: 0.5 },
+] as const;
+
 function ObsidianSection() {
+  const prices = useLavaPitPrices();
+  const [boostsOn, setBoostsOn] = useState<Record<string, boolean>>({});
+  const active = LAVA_PIT_BOOSTS.filter((b) => boostsOn[b.id]);
+  const costMult = active.reduce((m, b) => m * b.cost, 1);
+  const timeMult = active.reduce((m, b) => m * b.time, 1);
+  const obsidianPerCycle = 1 + active.reduce((s, b) => s + b.yield, 0);
+  const cycleHours = 72 * timeMult;
   return (
     <section className="ref-section">
       <p className="ref-section-desc">
@@ -534,23 +572,53 @@ function ObsidianSection() {
         Запуск цикла требует набор ресурсов, который зависит от текущего игрового сезона (не
         путать с сюжетными главами) — набор действует на момент старта плавки, а не сбора.
       </p>
-      <div className="ref-recipe-grid">
-        {LAVA_PIT_RECIPES.map((r) => (
-          <div className="ref-bait-card" key={r.season}>
-            <div className="ref-bait-header">
-              <span className="ref-bait-name">{r.season}</span>
-            </div>
-            <ul className="ref-recipe-list">
-              {r.items.map((item) => (
-                <li className="ref-recipe-row" key={item.name}>
-                  <img className="ref-recipe-icon" src={item.icon} alt="" />
-                  <span className="ref-recipe-amount">{item.amount.toLocaleString('ru-RU')}×</span>
-                  <span className="ref-recipe-name">{item.name}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+      <div className="ref-boost-toggles">
+        {LAVA_PIT_BOOSTS.map((b) => (
+          <label className="ref-boost-toggle" key={b.id}>
+            <input
+              type="checkbox"
+              checked={!!boostsOn[b.id]}
+              onChange={(e) => setBoostsOn((prev) => ({ ...prev, [b.id]: e.target.checked }))}
+            />
+            <strong>{b.label}</strong> <span>{b.hint}</span>
+          </label>
         ))}
+      </div>
+      <div className="ref-recipe-grid">
+        {LAVA_PIT_RECIPES.map((r) => {
+          let total = 0;
+          let missing = 0;
+          for (const item of r.items) {
+            const p = prices?.[item.name];
+            if (p == null) missing++;
+            else total += p * item.amount;
+          }
+          return (
+            <div className="ref-bait-card" key={r.season}>
+              <div className="ref-bait-header">
+                <span className="ref-bait-name">{r.season}</span>
+              </div>
+              <ul className="ref-recipe-list">
+                {r.items.map((item) => (
+                  <li className="ref-recipe-row" key={item.name}>
+                    <img className="ref-recipe-icon" src={item.icon} alt="" />
+                    <span className="ref-recipe-amount">{item.amount.toLocaleString('ru-RU')}×</span>
+                    <span className="ref-recipe-name">{item.name}</span>
+                  </li>
+                ))}
+              </ul>
+              {prices && (
+                <p className="ref-section-desc ref-section-desc--spaced">
+                  <strong>≈ {formatFlower(total * costMult)} Flower</strong> за цикл (floor)
+                  {missing > 0 && ` — без учёта ${missing} поз. без цены`}
+                  <br />
+                  <strong>≈ {formatFlower((total * costMult) / obsidianPerCycle)} Flower</strong> за 1 Obsidian
+                  {' '}({obsidianPerCycle.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} за цикл, {cycleHours.toLocaleString('ru-RU', { maximumFractionDigits: 1 })} ч)
+                </p>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <p className="ref-section-desc ref-section-desc--spaced">
