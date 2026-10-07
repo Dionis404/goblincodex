@@ -1006,3 +1006,17 @@
 }
 .ref-info-badge:hover::after,
 .ref-info-badge:focus::after { display: block; }
+
+/* Пометка блюд, которых ещё нет в игре (из предложения Главы) */
+.ref-upcoming-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border: 1px solid var(--amber);
+  border-radius: 999px;
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  vertical-align: middle;
+}

@@ -93,6 +93,8 @@ interface Recipe {
   ingredients: [string, number][];
   isCake?: boolean;
   isHoney?: boolean;
+  /** Блюдо из предложения Главы 16 — ещё не в игре (см. новость 175), числа могут измениться. */
+  upcoming?: boolean;
   /** Входит в FISH_CONSUMABLES игры — получает бусты типа Luminous Anglerfish Topper. */
   isFish?: boolean;
 }
@@ -115,6 +117,8 @@ const FIRE_PIT: Recipe[] = [
   { name: 'Antipasto', building: 'Fire Pit', experience: 3000, cookingSeconds: 10800, ingredients: [['Olive', 2], ['Grape', 2]] },
   { name: 'Pizza Margherita', building: 'Fire Pit', experience: 25000, cookingSeconds: 72000, ingredients: [['Tomato', 30], ['Cheese', 5], ['Wheat', 20]] },
   { name: 'Furikake Sprinkle', building: 'Fire Pit', experience: 1000, cookingSeconds: 0, ingredients: [['Fish Flake', 1], ['Seaweed', 1]], isFish: true },
+  // Из балансного обновления предложения Главы 16 — ещё не в игре. Названия — из таблицы рецептов предложения.
+  { name: 'Ember-Roasted Truffle Potatoes', building: 'Fire Pit', experience: 15000, cookingSeconds: 8 * 3600, ingredients: [['Truffle', 10], ['Potato', 50], ['Wild Mushroom', 10]], upcoming: true },
 ];
 
 const KITCHEN: Recipe[] = [
@@ -138,6 +142,7 @@ const KITCHEN: Recipe[] = [
   { name: 'Surimi Rice Bowl', building: 'Kitchen', experience: 3000, cookingSeconds: 0, ingredients: [['Fish Stick', 1], ['Rice', 1], ['Onion', 1]], isFish: true },
   { name: 'Creamy Crab Bite', building: 'Kitchen', experience: 10000, cookingSeconds: 0, ingredients: [['Crab Stick', 1], ['Cheese', 3]], isFish: true },
   { name: 'Crimstone Infused Fish Oil', building: 'Kitchen', experience: 18000, cookingSeconds: 0, ingredients: [['Fish Oil', 1], ['Crimstone', 1]], isFish: true },
+  { name: 'Creamy Truffle Risotto', building: 'Kitchen', experience: 35000, cookingSeconds: 16 * 3600, ingredients: [['Truffle', 20], ['Rice', 10], ['Milk', 10], ['Wild Mushroom', 10]], upcoming: true },
 ];
 
 const BAKERY: Recipe[] = [
@@ -158,6 +163,7 @@ const BAKERY: Recipe[] = [
   { name: 'Wheat Cake', building: 'Bakery', experience: 1100, cookingSeconds: 86400, ingredients: [['Wheat', 35], ['Egg', 30]], isCake: true },
   { name: 'Honey Cake', building: 'Bakery', experience: 4000, cookingSeconds: 28800, ingredients: [['Honey', 10], ['Wheat', 10], ['Egg', 20]], isCake: true, isHoney: true },
   { name: 'Lemon Cheesecake', building: 'Bakery', experience: 30000, cookingSeconds: 108000, ingredients: [['Lemon', 20], ['Cheese', 5], ['Egg', 40]], isCake: true },
+  { name: 'Truffle & Honey Cake', building: 'Bakery', experience: 25000, cookingSeconds: 12 * 3600, ingredients: [['Truffle', 15], ['Wheat', 30], ['Egg', 30], ['Honey', 5]], isCake: true, isHoney: true, upcoming: true },
 ];
 
 const DELI: Recipe[] = [
@@ -625,6 +631,11 @@ function BuildingTable({
               <td className="gc-sortable-name" data-label="Блюдо">
                 <FoodIcon name={r.name} />
                 {r.name}
+                {r.upcoming && (
+                  <span className="ref-upcoming-badge" title="Блюдо из предложения Главы 16 — ещё не добавлено в игру">
+                    Ещё не в игре
+                  </span>
+                )}
               </td>
               <td
                 data-label="Опыт"
@@ -1118,6 +1129,15 @@ export default function FoodCatalogTable() {
       {activeGroup ? (
         <>
           <BuildingTable recipes={activeGroup.recipes} timeBoosts={timeBoosts} xpBoosts={xpBoosts} prices={prices} />
+          {activeGroup.recipes.some((r) => r.upcoming) && (
+            <p className="ref-section-desc ref-section-desc--spaced">
+              <strong>Ещё не в игре:</strong> блюда с этой пометкой взяты из{' '}
+              <a href="/news/175">балансного обновления предложения Главы 16</a> — это стартовая
+              конфигурация для тестирования, числа могут измениться. Трюфелей на маркете нет, поэтому
+              цена таких блюд считается без них (значок «i»). Бусты к ним применены по типу блюда
+              (торт, мёд) — как у существующих блюд, в игре это пока не подтверждено.
+            </p>
+          )}
           <p className="ref-section-desc ref-section-desc--spaced">
             Цена — сумма ингредиентов по текущему floor на маркете (промежуточные блюда раскрыты до
             сырых ингредиентов). «XP/Flower» — опыт за 1 Flower с учётом включённых бустов, делённый на цену.
