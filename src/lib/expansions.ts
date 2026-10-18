@@ -737,6 +737,71 @@ export function sumRange(stages: Stage[], fromIndex: number, toIndex: number): R
   return total;
 }
 
+// ── Бусты стоимости расширений ───────────────────────────────────────────
+// Сверено с features/game/events/landExpansion/expandLand.ts (expansionRequirements)
+// и features/game/lib/vipAccess.ts. Действуют только на покупку расширения
+// (expandLand) — на единоразовый переход на следующий остров (upgradeFarm.ts)
+// они не распространяются.
+
+export interface ExpansionBoosts {
+  /** VIP: скидка на монеты и (в окне главы Ascension Age) −10% ко времени. */
+  vip: boolean;
+  /** Grinx's Hammer: ресурсы ×0.5, кроме гемов. */
+  hammer: boolean;
+  /** Ascension Monument (построен и «заряжен» возгласами): время ×0.8. */
+  monument: boolean;
+}
+
+export const NO_EXPANSION_BOOSTS: ExpansionBoosts = { vip: false, hammer: false, monument: false };
+
+/** Ascension Monument: расширения на 20% быстрее. */
+export const MONUMENT_EXPANSION_TIME_MULTIPLIER = 0.8;
+
+/** VIP: скидка на монеты — 500 или 20%, что больше. */
+export const VIP_EXPANSION_FIXED_DISCOUNT = 500;
+export const VIP_EXPANSION_PERCENT_DISCOUNT = 0.2;
+/** VIP: ускорение расширений на 10% — перк главы Ascension Age (flags.ts, ASCENSION_AGE_VIP_EXPANSION). */
+export const VIP_EXPANSION_TIME_MULTIPLIER = 0.9;
+/** Конец окна ускорения для VIP (на момент сверки — 2 ноября 2026, 00:00 UTC). */
+export const VIP_EXPANSION_TIME_BOOST_END = Date.UTC(2026, 10, 2);
+
+/** Стоимость одного расширения с учётом включённых бустов. Переходные этапы не меняются. */
+export function boostedStageCost(stage: Stage, boosts: ExpansionBoosts, now = Date.now()): StageCost {
+  const cost = stage.cost;
+  if (stage.isTransition || (!boosts.vip && !boosts.hammer && !boosts.monument)) return cost;
+
+  let resources = cost.resources;
+  if (boosts.hammer) {
+    resources = {};
+    for (const r of RESOURCE_ORDER) {
+      const amount = cost.resources[r];
+      if (amount) resources[r] = r === 'Gem' ? amount : amount / 2;
+    }
+  }
+
+  let coins = cost.coins;
+  let seconds = cost.seconds;
+  // Порядок как в expansionRequirements: сначала монумент (без округления),
+  // затем VIP (с округлением до секунды).
+  if (boosts.monument) seconds *= MONUMENT_EXPANSION_TIME_MULTIPLIER;
+  if (boosts.vip) {
+    if (coins > 0) {
+      const discount = Math.max(VIP_EXPANSION_FIXED_DISCOUNT, Math.floor(coins * VIP_EXPANSION_PERCENT_DISCOUNT));
+      coins = Math.max(0, coins - discount);
+    }
+    if (now < VIP_EXPANSION_TIME_BOOST_END) seconds = Math.round(seconds * VIP_EXPANSION_TIME_MULTIPLIER);
+  }
+
+  return { ...cost, resources, coins, seconds };
+}
+
+/** Копия списка этапов со стоимостью, пересчитанной под бусты (суммы sumStages/sumRange считаются уже по ним). */
+export function applyExpansionBoosts(stages: Stage[], boosts: ExpansionBoosts): Stage[] {
+  if (!boosts.vip && !boosts.hammer && !boosts.monument) return stages;
+  const now = Date.now();
+  return stages.map((s) => ({ ...s, cost: boostedStageCost(s, boosts, now) }));
+}
+
 /** Суммирует стоимость всех переданных этапов (например, всей таблицы одного острова). */
 export function sumStages(stages: Stage[]): RangeTotal {
   return sumRange(stages, -1, stages.length - 1);

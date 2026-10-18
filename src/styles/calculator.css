@@ -388,3 +388,10 @@
   vertical-align: middle;
 }
 .gc-calc .ref-flower-compact { display: inline-flex; align-items: center; gap: 4px; }
+
+/* Чекбоксы бустов расширений (общий компонент ExpansionBoostToggles) */
+.gc-calc .ref-boost-toggles { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 12px 0; }
+.gc-calc .ref-boost-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+.gc-calc .ref-boost-toggle span { color: var(--text-sec); }
+.gc-calc .ref-boost-icon { width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
+.gc-calc .ref-boost-icon--emoji { display: inline-flex; align-items: center; justify-content: center; font-size: 26px; line-height: 1; width: 36px; height: 36px; }

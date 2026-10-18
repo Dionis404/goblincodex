@@ -2,8 +2,12 @@ import { useMemo, useState } from 'react';
 import NumberStepper from '../NumberStepper';
 import ResourceIcon, { CoinsIcon, NodeIcon, FlowerAmount } from '../ResourceIcon';
 import { useItemPrices } from '../../lib/useItemPrices';
+import ExpansionBoostToggles from '../ExpansionBoostToggles';
 import {
   buildStages,
+  applyExpansionBoosts,
+  NO_EXPANSION_BOOSTS,
+  type ExpansionBoosts,
   sumRange,
   sumNodeGains,
   formatDuration,
@@ -186,6 +190,7 @@ function StagePicker({
 export default function ExpansionCalculator() {
   const [from, setFrom] = useState<Selection>({ kind: 'start' });
   const [to, setTo] = useState<Selection>({ kind: 'island', island: 'volcano', number: 30 });
+  const [boosts, setBoosts] = useState<ExpansionBoosts>(NO_EXPANSION_BOOSTS);
 
   // Из Возвышения нельзя вернуться на остров — если "У меня есть" переключают
   // на Возвышение, "Хочу дойти до" следует за ним на следующий шаг того же уровня.
@@ -210,7 +215,9 @@ export default function ExpansionCalculator() {
   const fromIndex = resolveIndex(from, stages);
   const toIndex = resolveIndex(to, stages);
 
-  const total = sumRange(stages, fromIndex, toIndex);
+  // Стоимость считаем по этапам с учётом бустов; индексы и ноды — по исходным.
+  const boostedStages = useMemo(() => applyExpansionBoosts(stages, boosts), [stages, boosts]);
+  const total = sumRange(boostedStages, fromIndex, toIndex);
   const prices = useItemPrices(EXPANSION_PRICE_NAMES);
   const invalidRange = toIndex <= fromIndex;
   const requiredLevel = invalidRange ? 0 : stages[toIndex].cost.level;
@@ -225,6 +232,11 @@ export default function ExpansionCalculator() {
           <StagePicker label="У меня сейчас есть" value={from} onChange={handleFromChange} allowStart />
           <StagePicker label="Хочу дойти до" value={to} onChange={setTo} />
         </div>
+        <ExpansionBoostToggles boosts={boosts} onChange={setBoosts} />
+        <p className="gc-calc-note">
+          Бусты уменьшают стоимость самих расширений. На единоразовый переход между островами и
+          уровнями Возвышения (действие «Апгрейд фермы») они не действуют.
+        </p>
         <p className="gc-calc-note">
           Расширения №1–3 не в списке — стартовые участки, выдаются бесплатно при создании фермы.
           При переходе на новый остров несколько первых расширений уже открыты бесплатно

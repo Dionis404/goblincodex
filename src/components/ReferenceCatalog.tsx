@@ -4,6 +4,7 @@ import FoodCatalogTable from './tools/FoodCatalogTable';
 import NumberStepper from './NumberStepper';
 import ResourceIcon, { CoinsIcon, NodeIcon, FlowerAmount } from './ResourceIcon';
 import { useItemPrices } from '../lib/useItemPrices';
+import ExpansionBoostToggles from './ExpansionBoostToggles';
 import {
   stagesForIsland,
   stagesForAscensionLevel,
@@ -13,6 +14,9 @@ import {
   RESOURCE_ORDER,
   EXPANSION_PRICE_NAMES,
   resourcesPrice,
+  applyExpansionBoosts,
+  NO_EXPANSION_BOOSTS,
+  type ExpansionBoosts,
   nodeGainsForStage,
   landImageCountForStage,
   landLevelImageIslandName,
@@ -684,7 +688,16 @@ function StagePreview({ stage, ascensionLevel }: { stage: Stage; ascensionLevel?
   );
 }
 
-function StageTable({ stages, ascensionLevel }: { stages: Stage[]; ascensionLevel?: number }) {
+function StageTable({
+  stages: baseStages,
+  ascensionLevel,
+  boosts,
+}: {
+  stages: Stage[];
+  ascensionLevel?: number;
+  boosts: ExpansionBoosts;
+}) {
+  const stages = applyExpansionBoosts(baseStages, boosts);
   const total = sumStages(stages);
   const prices = useItemPrices(EXPANSION_PRICE_NAMES);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -747,7 +760,15 @@ function StageTable({ stages, ascensionLevel }: { stages: Stage[]; ascensionLeve
 
 const ISLAND_GROUPS: Exclude<IslandGroup, 'ascension'>[] = ['basic', 'spring', 'desert', 'volcano'];
 
-function IslandAccordion({ group, defaultOpen }: { group: Exclude<IslandGroup, 'ascension'>; defaultOpen?: boolean }) {
+function IslandAccordion({
+  group,
+  defaultOpen,
+  boosts,
+}: {
+  group: Exclude<IslandGroup, 'ascension'>;
+  defaultOpen?: boolean;
+  boosts: ExpansionBoosts;
+}) {
   const stages = stagesForIsland(group);
   const expansionsCount = stages.filter((s) => !s.isTransition).length;
   return (
@@ -757,13 +778,13 @@ function IslandAccordion({ group, defaultOpen }: { group: Exclude<IslandGroup, '
         <span className="ref-accordion-count">{expansionsCount} расширений + переход</span>
       </summary>
       <div className="ref-accordion-body">
-        <StageTable stages={stages} />
+        <StageTable stages={stages} boosts={boosts} />
       </div>
     </details>
   );
 }
 
-function AscensionAccordion() {
+function AscensionAccordion({ boosts }: { boosts: ExpansionBoosts }) {
   const [level, setLevel] = useState(1);
   const stages = stagesForAscensionLevel(Math.max(1, level));
 
@@ -783,13 +804,14 @@ function AscensionAccordion() {
           <span>Уровень Возвышения</span>
           <NumberStepper value={level} onChange={setLevel} min={1} max={50} />
         </label>
-        <StageTable stages={stages} ascensionLevel={Math.max(1, level)} />
+        <StageTable stages={stages} ascensionLevel={Math.max(1, level)} boosts={boosts} />
       </div>
     </details>
   );
 }
 
 function ExpansionTablesSection() {
+  const [boosts, setBoosts] = useState<ExpansionBoosts>(NO_EXPANSION_BOOSTS);
   return (
     <section className="ref-section">
       <p className="ref-section-desc">
@@ -801,11 +823,16 @@ function ExpansionTablesSection() {
       <a href="/tools/expansion-calculator" className="gc-btn-secondary ref-calc-link">
         🧮 Открыть калькулятор расширений
       </a>
+      <ExpansionBoostToggles boosts={boosts} onChange={setBoosts} />
+      <p className="ref-section-desc">
+        Бусты пересчитывают стоимость самих расширений во всех таблицах ниже. На единоразовый
+        переход между островами и уровнями Возвышения они не действуют.
+      </p>
       <div className="ref-accordion-list">
         {ISLAND_GROUPS.map((group, i) => (
-          <IslandAccordion key={group} group={group} defaultOpen={i === 0} />
+          <IslandAccordion key={group} group={group} defaultOpen={i === 0} boosts={boosts} />
         ))}
-        <AscensionAccordion />
+        <AscensionAccordion boosts={boosts} />
       </div>
     </section>
   );

@@ -1020,3 +1020,10 @@
   white-space: nowrap;
   vertical-align: middle;
 }
+.ref-boost-icon--emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  line-height: 1;
+}
