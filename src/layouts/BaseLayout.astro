@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import SEO from '../components/SEO.astro';
 import CookieBanner from '../components/CookieBanner.astro';
+import ImageLightbox from '../components/ImageLightbox.astro';
 
 interface Props {
   title?: string;
@@ -64,5 +65,6 @@ const cookieTheme = Astro.request.headers.get('cookie')?.match(/(?:^|; )gc_theme
     </main>
     <Footer />
     <CookieBanner />
+    <ImageLightbox />
   </body>
 </html>

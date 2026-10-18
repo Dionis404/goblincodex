@@ -1,0 +1,122 @@
+---
+// Увеличение картинок в статьях по клику. Подключён в BaseLayout и работает
+// для любого .gc-guide-article (новости, гайды, Yakkamon, оверлей ленты
+// новостей) — клики ловятся делегированием на document, поэтому подходят и
+// статьи, подгруженные позже. Картинки внутри ссылок не перехватываются.
+// Маленький пиксель-арт увеличивается кратно и без размытия.
+---
+
+<div class="gc-lightbox" id="gcLightbox" hidden>
+  <button type="button" class="gc-lightbox-close" aria-label="Закрыть">✕</button>
+  <figure class="gc-lightbox-figure">
+    <img class="gc-lightbox-img" id="gcLightboxImg" alt="" />
+    <figcaption class="gc-lightbox-caption" id="gcLightboxCaption"></figcaption>
+  </figure>
+</div>
+
+<script>
+  const box = document.getElementById('gcLightbox') as HTMLDivElement | null;
+  const big = document.getElementById('gcLightboxImg') as HTMLImageElement | null;
+  const caption = document.getElementById('gcLightboxCaption') as HTMLElement | null;
+
+  function close() {
+    if (!box || box.hidden) return;
+    box.hidden = true;
+    document.documentElement.classList.remove('gc-lightbox-open');
+  }
+
+  function open(src: HTMLImageElement) {
+    if (!box || !big || !caption) return;
+    const natW = src.naturalWidth || src.width;
+    const natH = src.naturalHeight || src.height;
+    // Целевой размер: как можно крупнее в пределах экрана, но маленькие
+    // картинки — кратно (×2, ×3…), чтобы пиксели оставались ровными.
+    const maxW = window.innerWidth * 0.92;
+    const maxH = window.innerHeight * 0.8;
+    const fit = Math.min(maxW / natW, maxH / natH);
+    const scale = fit >= 2 ? Math.floor(fit) : Math.min(fit, 1);
+    big.src = src.currentSrc || src.src;
+    big.alt = src.alt;
+    big.style.width = `${Math.round(natW * scale)}px`;
+    big.style.height = `${Math.round(natH * scale)}px`;
+    big.classList.toggle('gc-lightbox-img--pixel', scale > 1);
+    caption.textContent = src.alt || '';
+    caption.hidden = !src.alt;
+    box.hidden = false;
+    document.documentElement.classList.add('gc-lightbox-open');
+  }
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    if (box && !box.hidden) {
+      close();
+      return;
+    }
+    const img = target.closest('.gc-guide-article img') as HTMLImageElement | null;
+    if (!img || img.closest('a')) return;
+    e.preventDefault();
+    open(img);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+</script>
+
+<style is:global>
+  .gc-guide-article img { cursor: zoom-in; }
+  .gc-guide-article a img { cursor: pointer; }
+  html.gc-lightbox-open { overflow: hidden; }
+
+  .gc-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(10, 8, 16, 0.86);
+    cursor: zoom-out;
+  }
+  .gc-lightbox[hidden] { display: none; }
+  .gc-lightbox-figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 100%;
+  }
+  .gc-lightbox-img {
+    display: block;
+    max-width: 92vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 8px;
+    background: transparent;
+  }
+  .gc-lightbox-img--pixel { image-rendering: pixelated; }
+  .gc-lightbox-caption {
+    color: #f3ecdf;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+    max-width: 640px;
+  }
+  .gc-lightbox-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .gc-lightbox-close:hover { background: rgba(255, 255, 255, 0.22); }
+</style>
