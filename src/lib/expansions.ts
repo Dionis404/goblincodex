@@ -106,12 +106,12 @@ export const ISLAND_GROUP_LABELS: Record<IslandGroup, string> = {
 // LAND_GEM_RATIO из исходников игры — множитель для гемов.
 const LAND_GEM_RATIO = 15;
 
-/** EXPANSION_REQUIREMENTS.basic[4..9]. */
+/** EXPANSION_REQUIREMENTS.basic[4..9]. Расширения 5 и 7 — по новому обучению (sunflower-land PR 7730, 8 окт 2026). */
 const BASIC_REQUIREMENTS: Record<number, StageCost> = {
   4: { resources: { Wood: 3 }, coins: 0, seconds: 5, level: 1 },
-  5: { resources: { Wood: 5 }, coins: 0.25, seconds: 5, level: 1 },
+  5: { resources: { Wood: 5 }, coins: 60, seconds: 5, level: 1 },
   6: { resources: { Stone: 1 }, coins: 60, seconds: 60, level: 2 },
-  7: { resources: { Stone: 5, Iron: 1 }, coins: 100, seconds: 30 * 60, level: 5 },
+  7: { resources: { Stone: 3 }, coins: 100, seconds: 5 * 60, level: 3 },
   8: { resources: { Iron: 3, Gold: 1 }, coins: 200, seconds: 4 * 60 * 60, level: 8 },
   9: { resources: { Wood: 100, Stone: 40, Iron: 5 }, coins: 300, seconds: 12 * 60 * 60, level: 11 },
 };
