@@ -1,0 +1,150 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Скрытая страница: правила чата. Нигде не линкуется, не попадает в sitemap
+// (см. filter в astro.config.mjs) и закрыта от индексации (noindex) — открывается
+// только по прямой ссылке, которой делятся в закрепе чата.
+const BOT_URL = 'https://t.me/SFL_Goblin_Bot';
+const BOT_HANDLE = '@SFL_Goblin_Bot';
+
+const rules = [
+  {
+    icon: '💼',
+    title: 'Уважение',
+    text: 'Общаемся вежливо. Без оскорблений, угроз и перехода на личности.',
+  },
+  {
+    icon: '🪓',
+    title: 'Споры',
+    text: 'Спорить можно, но вежливо и с доказательствами: ссылка, скриншот, патч-ноты. Без доказательств это мнение, а не факт. Доказывает тот, кто утверждает. Админы не ищут информацию за вас.',
+  },
+  {
+    icon: '🌻',
+    title: 'Оффтопик и флуд',
+    text: 'Мемы, стикеры, болтовня и политика разрешены, но в меру и без разжигания конфликтов. Главное, чтобы не тонули вопросы по игре.',
+  },
+  {
+    icon: '🪙',
+    title: 'Другие проекты',
+    text: 'Обсуждать можно, но коротко и без агитации. Мы освещаем только Sunflower Land (SFL) и Yakkamon и не ручаемся за другие проекты. Проверяйте всё сами.',
+  },
+  {
+    icon: '🚫',
+    title: 'Реклама',
+    text: 'Реклама и реферальные ссылки только с согласия админов.',
+  },
+  {
+    icon: '⚠️',
+    title: 'Безопасность',
+    text: 'Админы никогда не просят seed-фразы, ключи и данные от аккаунтов, ни в чате, ни через бота. Мошенничество и фишинг = бан сразу.',
+  },
+  {
+    icon: '🏴‍☠️',
+    title: 'Читы',
+    text: 'Читы, боты и эксплойты в игре не обсуждаем и не продвигаем. О багах сообщайте разработчикам.',
+  },
+  {
+    icon: '☠️',
+    title: 'Личные данные',
+    text: 'Не публикуйте чужие личные данные и скриншоты личных переписок без согласия. Скриншоты из открытых чатов можно. При цитировании указывайте источник.',
+  },
+  {
+    icon: '🧭',
+    title: 'Новичкам',
+    text: 'Сначала загляните в закреп и поиск по чату. Отвечаем новичкам спокойно, без насмешек.',
+  },
+  {
+    icon: '⚖️',
+    title: 'Наказания',
+    text: 'Предупреждение → мут → бан. За тяжёлые нарушения бан сразу. Не согласны с решением? Пишите в бота, не в чат. Укажите, что оспариваете, и приложите доказательства.',
+    bot: true,
+  },
+  {
+    icon: '🗿',
+    title: 'Правила могут меняться',
+    text: 'Об изменениях сообщим. Вступая в чат, вы соглашаетесь с правилами.',
+  },
+];
+---
+
+<BaseLayout
+  title="Правила чата — GoblinCodex"
+  description="Правила нашего чата."
+  noindex={true}
+>
+  <div class="gc-content gc-page-enter" style="padding-top: 40px; padding-bottom: 64px;">
+    <h1 class="gc-page-title" style="margin-bottom: 8px;">Правила нашего чата! 🤑</h1>
+    <p class="gc-rules-sub">Полная версия (для закрепа)</p>
+
+    <ol class="gc-rules-list">
+      {rules.map((r) => (
+        <li class="gc-rules-item">
+          <span class="gc-rules-icon" aria-hidden="true">{r.icon}</span>
+          <div class="gc-rules-body">
+            <h2>{r.title}</h2>
+            <p>
+              {r.text}
+              {r.bot && (
+                <>
+                  {' '}Бот: <a href={BOT_URL} target="_blank" rel="noopener noreferrer">{BOT_HANDLE}</a>.
+                </>
+              )}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</BaseLayout>
+
+<style>
+  .gc-rules-sub {
+    font-size: 14px;
+    color: var(--text-sec);
+    margin-bottom: 28px;
+  }
+  .gc-rules-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gc-rules-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .gc-rules-icon {
+    font-size: 26px;
+    line-height: 1.2;
+    flex-shrink: 0;
+    width: 36px;
+    text-align: center;
+  }
+  .gc-rules-body h2 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: var(--text);
+  }
+  .gc-rules-body p {
+    font-size: 14px;
+    color: var(--text-sec);
+    line-height: 1.65;
+    margin: 0;
+  }
+  .gc-rules-body a {
+    color: var(--green-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .gc-rules-body a:hover { color: var(--green-mid); }
+</style>

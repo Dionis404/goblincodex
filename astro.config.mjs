@@ -24,7 +24,9 @@ export default defineConfig({
         !page.endsWith('/cookies') &&
         !page.endsWith('/cookies/') &&
         !page.endsWith('/terms') &&
-        !page.endsWith('/terms/'),
+        !page.endsWith('/terms/') &&
+        !page.endsWith('/chat-rules') &&
+        !page.endsWith('/chat-rules/'),
     }),
   ],
 });
