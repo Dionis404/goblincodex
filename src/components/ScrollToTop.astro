@@ -1,0 +1,66 @@
+---
+// Кнопка «наверх»: появляется, когда страницу прокрутили дальше примерно
+// полутора экранов, и плавно возвращает к началу. Подключена в BaseLayout.
+// z-index ниже оверлеев статей/модалок (1000) и баннера cookie (9000) —
+// они просто перекрывают кнопку, пока открыты.
+---
+
+<button type="button" class="gc-scroll-top" id="gcScrollTop" aria-label="Наверх" title="Наверх" hidden>
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    <path d="M12 5l-7 7 1.4 1.4L11 8.8V20h2V8.8l4.6 4.6L19 12z" fill="currentColor" />
+  </svg>
+</button>
+
+<script>
+  const btn = document.getElementById('gcScrollTop') as HTMLButtonElement | null;
+  if (btn) {
+    // Пока виден баннер cookie (он во всю ширину внизу экрана), поднимаем
+    // кнопку над ним — иначе на телефоне её не нажать до принятия cookie.
+    const banner = document.getElementById('gc-cookie-banner');
+    const placeAboveBanner = () => {
+      const visible = !!banner && !banner.classList.contains('hidden') && banner.offsetHeight > 0;
+      btn.style.bottom = visible ? `${banner!.offsetHeight + 16}px` : '';
+    };
+    const update = () => {
+      btn.hidden = window.scrollY < window.innerHeight * 1.5;
+      placeAboveBanner();
+    };
+    if (banner) {
+      new MutationObserver(placeAboveBanner).observe(banner, { attributes: true, attributeFilter: ['class', 'style'] });
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+    btn.addEventListener('click', () => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+</script>
+
+<style>
+  .gc-scroll-top {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 400;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--card-bg);
+    color: var(--green-dark);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .gc-scroll-top[hidden] { display: none; }
+  .gc-scroll-top:hover { transform: translateY(-2px); background: var(--green-pale); }
+  .gc-scroll-top:focus-visible { outline: 2px solid var(--green-mid); outline-offset: 2px; }
+  @media (max-width: 640px) {
+    .gc-scroll-top { right: 16px; bottom: 16px; }
+  }
+</style>
