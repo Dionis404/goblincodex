@@ -35,28 +35,35 @@ const cookieTheme = Astro.request.headers.get('cookie')?.match(/(?:^|; )gc_theme
 
 <html lang="ru" data-theme={cookieTheme === 'dark' ? 'dark' : undefined}>
   <head>
-    <SEO title={title} description={description} image={image} type={type} noindex={noindex} shareUrl={shareUrl} />
+    <!-- charset обязан быть в первых 1024 байтах: Astro отдаёт text/html без charset в заголовке -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <SEO title={title} description={description} image={image} type={type} noindex={noindex} shareUrl={shareUrl} />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Unbounded:wght@400;500;600;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet" />
-    <!-- Yandex.Metrika counter -->
+    <!-- Yandex.Metrika counter — грузится только после согласия в CookieBanner
+         (gc_cookie_consent=1 в localStorage). <noscript>-пиксель убран: без JS
+         согласие дать нельзя, значит и считать такого посетителя нельзя. -->
     <script type="text/javascript" is:inline>
-      (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109822268', 'ym');
+      window.gcLoadMetrika = function () {
+        if (window.ym) return;
+        (function(m,e,t,r,i,k,a){
+          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();
+          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109822268', 'ym');
 
-      ym(109822268, 'init', {ssr:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+        ym(109822268, 'init', {ssr:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+      };
+      try {
+        if (localStorage.getItem('gc_cookie_consent') === '1') window.gcLoadMetrika();
+      } catch (e) { /* localStorage недоступен — без согласия Метрику не грузим */ }
     </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/109822268" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
   </head>
   <body>

@@ -5,7 +5,7 @@
   <div class="gc-cookie-inner">
     <p class="gc-cookie-text">
       Мы используем cookie для улучшения работы сайта и аналитики (Яндекс.Метрика).
-      Продолжая пользоваться сайтом, вы соглашаетесь с
+      Аналитика включается только после нажатия «Принять» — так вы соглашаетесь с
       <a href="/cookies" class="gc-cookie-link">политикой cookie</a>
       и
       <a href="/terms" class="gc-cookie-link">пользовательским соглашением</a>.
@@ -74,14 +74,18 @@
     var banner = document.getElementById('gc-cookie-banner');
     if (!banner) return;
 
-    if (localStorage.getItem('gc_cookie_consent') === '1') {
+    var consented = false;
+    try { consented = localStorage.getItem('gc_cookie_consent') === '1'; } catch (e) {}
+    if (consented) {
       banner.classList.add('hidden');
       return;
     }
 
     document.getElementById('gc-cookie-accept').addEventListener('click', function () {
-      localStorage.setItem('gc_cookie_consent', '1');
+      try { localStorage.setItem('gc_cookie_consent', '1'); } catch (e) {}
       banner.classList.add('hidden');
+      // Метрика (BaseLayout.astro) до этого момента не загружалась.
+      if (window.gcLoadMetrika) window.gcLoadMetrika();
     });
   })();
 </script>
