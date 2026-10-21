@@ -20,13 +20,14 @@ if (id && !/^\d+$/.test(id)) {
   if (legacyEntry && !legacyEntry.data.draft) {
     return Astro.redirect(`/news/${legacyEntry.data.shortId}`, 301);
   }
-  return Astro.redirect('/news', 302);
+  return new Response(null, { status: 404 });
 }
 
 const entry = id ? await getEntryByShortId(id) : undefined;
 
+// Пустой 404-ответ — Astro сам отрендерит src/pages/404.astro с этим статусом.
 if (!entry || entry.data.draft) {
-  return Astro.redirect('/news', 302);
+  return new Response(null, { status: 404 });
 }
 
 const { Content } = await render(entry);

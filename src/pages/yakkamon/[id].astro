@@ -5,8 +5,9 @@ import { getEntry, render } from 'astro:content';
 const { id } = Astro.params;
 const guide = await getEntry('yakkamon', id!);
 
+// Пустой 404-ответ — Astro сам отрендерит src/pages/404.astro с этим статусом.
 if (!guide || guide.data.draft) {
-  return Astro.redirect('/yakkamon', 302);
+  return new Response(null, { status: 404 });
 }
 
 const { Content } = await render(guide);

@@ -6,8 +6,9 @@ import GuideAuthorBlock from '../../components/GuideAuthorBlock.tsx';
 const { id } = Astro.params;
 const guide = await getEntry('guides', id!);
 
+// Пустой 404-ответ — Astro сам отрендерит src/pages/404.astro с этим статусом.
 if (!guide || guide.data.draft) {
-  return Astro.redirect('/codex', 302);
+  return new Response(null, { status: 404 });
 }
 
 const { Content, headings } = await render(guide);

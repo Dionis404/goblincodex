@@ -9,8 +9,10 @@ import { getCachedCatalogItems } from '../../../lib/catalog-cache';
 const { slug } = Astro.params;
 const chapter = getChapterBySlug(slug!);
 
+// Пустой 404-ответ — Astro сам отрендерит src/pages/404.astro с этим статусом
+// (раньше был 302 на архив — "мягкий 404" для поисковиков).
 if (!chapter) {
-  return Astro.redirect('/codex/chapter/past', 302);
+  return new Response(null, { status: 404 });
 }
 
 const startMs = new Date(chapter.startDate).getTime();
