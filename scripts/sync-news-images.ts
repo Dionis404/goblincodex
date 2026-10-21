@@ -50,7 +50,8 @@ function parseArgs(): { contentDir: string; targetDir: string } {
   return { contentDir: path.resolve(contentDir), targetDir: path.resolve(targetDir) };
 }
 
-const IMAGE_URL_RE = /https:\/\/img\d+\.teletype\.media\/files\/([0-9a-f]{2})\/([0-9a-f]{2})\/([^)\s"]+)/g;
+// CDN переехал с img*.teletype.media на img*.teletype.in (старый отвечает 301) — ловим оба.
+const IMAGE_URL_RE = /https:\/\/img\d+\.teletype\.(?:media|in)\/files\/([0-9a-f]{2})\/([0-9a-f]{2})\/([^)\s"]+)/g;
 const MAX_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 1500;
 const BETWEEN_REQUESTS_DELAY_MS = 250;
