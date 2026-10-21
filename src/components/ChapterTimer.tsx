@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-
-// Дата окончания сезона — меняй здесь
-const SEASON_END = new Date('2026-11-02T00:00:00Z');
+import { getCurrentChapter } from '../lib/chapters';
 
 function pad(n: number) {
   return String(n).padStart(2, '0');
@@ -11,8 +9,11 @@ export default function ChapterTimer() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
+    // Конец главы берём из src/lib/chapters.ts на каждом тике — при переходе
+    // через границу таймер сам переключается на следующую главу.
     const tick = () => {
-      const diff = SEASON_END.getTime() - Date.now();
+      const chapter = getCurrentChapter();
+      const diff = chapter ? new Date(chapter.endDate).getTime() - Date.now() : 0;
       if (diff <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;

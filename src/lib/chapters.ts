@@ -10,7 +10,7 @@
  * расхождение — глава 1, где сам docs-сайт противоречит себе; код игры
  * остаётся источником истины, т.к. именно из него игра берёт даты в рантайме).
  *
- * У последних глав (13–15) в исходнике есть ещё tasksBegin — визуальная
+ * У последних глав (13–16) в исходнике есть ещё tasksBegin — визуальная
  * дата открытия квестов главы (обычно на ~неделю позже startDate), это не
  * дата начала самой главы, здесь не хранится.
  */
@@ -23,6 +23,8 @@ export interface ChapterInfo {
   endDate: string;   // ISO UTC
   ticket: string;
   artifact: string;
+  /** Арт баннера главы в /public для шапки /codex; без него показывается текстовый баннер. */
+  banner?: string;
 }
 
 export const CHAPTERS: ChapterInfo[] = [
@@ -40,7 +42,9 @@ export const CHAPTERS: ChapterInfo[] = [
   { order: 12, name: 'Paw Prints',          slug: 'paw-prints',          startDate: '2025-11-03T00:00:00.000Z', endDate: '2026-02-02T00:00:00.000Z', ticket: 'Pet Cookie', artifact: 'Moon Crystal' },
   { order: 13, name: 'Crabs and Traps',     slug: 'crabs-and-traps',     startDate: '2026-02-02T00:00:00.000Z', endDate: '2026-05-04T00:00:00.000Z', ticket: 'Floater', artifact: 'Ammonite Shell' },
   { order: 14, name: 'Salt Awakening',      slug: 'salt-awakening',      startDate: '2026-05-04T00:00:00.000Z', endDate: '2026-08-03T00:00:00.000Z', ticket: 'Salt Rock', artifact: 'Salt Dino Egg' },
-  { order: 15, name: 'Ascension Age',       slug: 'ascension-age',       startDate: '2026-08-03T00:00:00.000Z', endDate: '2026-11-02T00:00:00.000Z', ticket: 'Shiny Feather', artifact: 'Otter Pebble' },
+  { order: 15, name: 'Ascension Age',       slug: 'ascension-age',       startDate: '2026-08-03T00:00:00.000Z', endDate: '2026-11-02T00:00:00.000Z', ticket: 'Shiny Feather', artifact: 'Otter Pebble', banner: '/images/chapter 15.png' },
+  // Артефакт в исходнике игры пока заглушка ("Cave Dwellers Artefact") — обновить, когда появится реальное имя.
+  { order: 16, name: 'Cave Dwellers',       slug: 'cave-dwellers',       startDate: '2026-11-02T00:00:00.000Z', endDate: '2027-02-01T00:00:00.000Z', ticket: 'Beetle Wing', artifact: 'Cave Dwellers Artefact' },
 ];
 
 export function getCurrentChapter(now: Date = new Date()): ChapterInfo | undefined {
