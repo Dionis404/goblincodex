@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { fetchWithTimeout } from '../../lib/goblinApi';
+import { GOBLIN_API_BASE, fetchWithTimeout } from '../../lib/goblinApi';
 
 export const prerender = false;
 
@@ -11,7 +11,8 @@ export const GET: APIRoute = async ({ url }) => {
     });
 
   const at = url.searchParams.get('at');
-  const target = new URL('http://goblin-api:8000/api/tickets/top500');
+  // Без кэша: ?at=<дата> — произвольный пользовательский ввод, не для ключа кэша.
+  const target = new URL(`${GOBLIN_API_BASE}/api/tickets/top500`);
   if (at) target.searchParams.set('at', at);
 
   try {

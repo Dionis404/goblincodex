@@ -14,7 +14,20 @@ function getPool(): InstanceType<typeof Pool> {
     // Explicit cap (matches the pg driver default) so the limit is visible
     // here rather than implicit — this is the whole site's concurrency
     // budget against Postgres, shared across every page/route.
-    pool = new Pool({ connectionString: url, max: 10 });
+    pool = new Pool({
+      connectionString: url,
+      max: 10,
+      // По умолчанию pg ждёт соединения бесконечно — при недоступной БД
+      // (пакеты дропаются) SSR-страницы просто висели бы.
+      connectionTimeoutMillis: 5000,
+      statement_timeout: 15000,
+    });
+    // Ошибка простаивающего клиента (рестарт Postgres, обрыв сети)
+    // эмитится на пуле; без обработчика это uncaught 'error' и падение
+    // всего Node-процесса. Сам пул выбросит битый клиент и создаст новый.
+    pool.on('error', (err) => {
+      console.error('[db] idle client error:', err);
+    });
   }
   return pool;
 }

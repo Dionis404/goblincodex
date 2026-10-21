@@ -20,7 +20,8 @@ import {
   getCachedPetsCommon,
   getCachedPetMechanics,
 } from '../../lib/catalog-cache';
-import { fetchWithTimeout } from '../../lib/goblinApi';
+import { fetchGoblinJsonCached } from '../../lib/goblinApi';
+import { getCurrentChapter } from '../../lib/chapters';
 
 let catalogItems: Awaited<ReturnType<typeof getCatalogItems>> = [];
 let budTraits: Awaited<ReturnType<typeof getBudTraits>> = [];
@@ -83,15 +84,22 @@ allGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date
 // Фермеры сообщества + карта автор/контрибьютор → его гайды — раньше жило
 // на отдельной странице /community (удалена, перенесено во вкладку
 // "Рейтинги" вместе с лидербордами тикетов/ликвидности).
+// Три независимых запроса к goblin-api (фермеры, тикеты, ликвидность) —
+// параллельно и с кэшем: раньше шли подряд с таймаутом 5 с каждый, и при
+// лежащем бэкенде страница рендерилась 15+ секунд на каждый просмотр.
+const [farmersResult, ticketsResult, lpResult] = await Promise.allSettled([
+  fetchGoblinJsonCached('/community/farmers'),
+  fetchGoblinJsonCached('/api/tickets/top500'),
+  fetchGoblinJsonCached('/lp/leaderboard'),
+]);
+
 let communityFarmers: any[] = [];
 let communityApiError = false;
-try {
-  const res = await fetchWithTimeout('http://goblin-api:8000/community/farmers');
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  communityFarmers = await res.json();
-} catch (e) {
+if (farmersResult.status === 'fulfilled') {
+  communityFarmers = farmersResult.value;
+} else {
   communityApiError = true;
-  console.error('[codex] Community farmers fetch error:', e);
+  console.error('[codex] Community farmers fetch error:', farmersResult.reason);
 }
 
 const guidesByUser: Record<string, { authored: any[]; contributed: any[] }> = {};
@@ -162,34 +170,26 @@ const categoryTagClass: Record<string, string> = {
   'Лайфхаки':   'gc-cat-tag--layfhaki',
 };
 
-const CURRENT_CHAPTER_NAME = 'The Ascension Age';
+const currentChapter = getCurrentChapter();
 
 const shortAddr = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 
 let ticketsTop5: Array<{ farm_id: number; game_username?: string; tickets: number }> = [];
 let ticketsUpdatedAt: string | null = null;
-try {
-  const res = await fetchWithTimeout('http://goblin-api:8000/api/tickets/top500');
-  if (res.ok) {
-    const json = await res.json();
-    ticketsTop5 = (json.leaderboard ?? []).slice(0, 5);
-    ticketsUpdatedAt = json.updated_at ?? null;
-  }
-} catch (err) {
-  console.error('[codex] Tickets top-5 fetch error:', err);
+if (ticketsResult.status === 'fulfilled') {
+  ticketsTop5 = (ticketsResult.value.leaderboard ?? []).slice(0, 5);
+  ticketsUpdatedAt = ticketsResult.value.updated_at ?? null;
+} else {
+  console.error('[codex] Tickets top-5 fetch error:', ticketsResult.reason);
 }
 
 let lpTop5: Array<{ owner: string; value_usd: number }> = [];
 let lpUpdatedAt: string | null = null;
-try {
-  const res = await fetchWithTimeout('http://goblin-api:8000/lp/leaderboard');
-  if (res.ok) {
-    const json = await res.json();
-    lpTop5 = (json.leaderboard ?? []).slice(0, 5);
-    lpUpdatedAt = json.meta?.updated_at ?? null;
-  }
-} catch (err) {
-  console.error('[codex] LP top-5 fetch error:', err);
+if (lpResult.status === 'fulfilled') {
+  lpTop5 = (lpResult.value.leaderboard ?? []).slice(0, 5);
+  lpUpdatedAt = lpResult.value.meta?.updated_at ?? null;
+} else {
+  console.error('[codex] LP top-5 fetch error:', lpResult.reason);
 }
 
 // "5 минут назад" / "2 часа назад" / "3 дня назад" — простое относительное
@@ -219,8 +219,14 @@ function formatUpdatedAgo(iso: string | null): string | null {
     <!-- Баннер текущей главы -->
     <div class="gc-codex-chapter-block">
       <a href="/codex?tab=chapter" class="gc-codex-chapter-banner">
-        <img src="/images/chapter 15.png" alt={`${CURRENT_CHAPTER_NAME} — Chapter 15`} class="gc-codex-chapter-img gc-codex-chapter-img--light" />
-        <img src="/images/chapter 15.png" alt={`${CURRENT_CHAPTER_NAME} — Chapter 15`} class="gc-codex-chapter-img gc-codex-chapter-img--dark" />
+        {currentChapter?.banner ? (
+          <img src={currentChapter.banner} alt={`${currentChapter.name} — Chapter ${currentChapter.order}`} class="gc-codex-chapter-img" />
+        ) : (
+          <span class="gc-codex-chapter-text">
+            <span class="gc-codex-chapter-text-num">{currentChapter ? `Глава ${currentChapter.order}` : 'Межсезонье'}</span>
+            <span class="gc-codex-chapter-text-name">{currentChapter?.name ?? 'Новая глава скоро'}</span>
+          </span>
+        )}
       </a>
       <div class="gc-codex-chapter-timer">
         <ChapterTimer client:load />
@@ -803,9 +809,29 @@ function formatUpdatedAgo(iso: string | null): string | null {
   display: block;
   image-rendering: pixelated;
 }
-:global(.gc-codex-chapter-img--dark) { display: none; }
-:global([data-theme="dark"]) :global(.gc-codex-chapter-img--light) { display: none; }
-:global([data-theme="dark"]) :global(.gc-codex-chapter-img--dark)  { display: block; }
+/* Текстовый баннер для главы, у которой ещё нет арта (см. banner в src/lib/chapters.ts) */
+.gc-codex-chapter-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 24px 56px;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #3B2A1A, #6B4A2B);
+  color: #FFF4E0;
+  text-align: center;
+}
+.gc-codex-chapter-text-num {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.gc-codex-chapter-text-name {
+  font-family: var(--font-head);
+  font-size: 30px;
+  font-weight: 700;
+}
 
 .gc-codex-chapter-timer {
   background: #5C3D1E;

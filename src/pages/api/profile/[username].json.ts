@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { fetchWithTimeout } from '../../../lib/goblinApi';
+import { fetchGoblinJsonCached } from '../../../lib/goblinApi';
 
 export const prerender = false;
 
@@ -12,9 +12,7 @@ export const GET: APIRoute = async ({ params }) => {
     });
 
   try {
-    const res = await fetchWithTimeout('http://goblin-api:8000/community/farmers');
-    if (!res.ok) return json(null);
-    const farmers: any[] = await res.json();
+    const farmers: any[] = await fetchGoblinJsonCached('/community/farmers');
     const farmer = farmers.find(f => f.game_username?.toLowerCase() === username) ?? null;
     return json(farmer);
   } catch {

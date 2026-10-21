@@ -66,10 +66,15 @@ function mapAuction(a: ApiAuction): UiAuction {
 /** Пустой массив при ошибке сети/API — страница просто покажет пустое расписание. */
 export async function fetchUpcomingAuctions(): Promise<UiAuction[]> {
   try {
-    const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?upcoming=true`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data: ApiAuction[] = await res.json();
-    return data.map(mapAuction);
+    // Короткий TTL: расписание меняется редко, а без кэша этот запрос шёл на
+    // каждый рендер вкладки главы.
+    const { data } = await withTtlCache('upcoming-auctions', 60 * 1000, async () => {
+      const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?upcoming=true`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json: ApiAuction[] = await res.json();
+      return json.map(mapAuction);
+    });
+    return data;
   } catch (e) {
     console.error('[auctionsApi] fetchUpcomingAuctions error:', e);
     return [];

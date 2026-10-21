@@ -6,6 +6,14 @@ export const prerender = false;
 
 const jsonHeaders = { 'Content-Type': 'application/json; charset=utf-8' };
 
+// Создание процессора (unified + плагины + shiki) дорогое — один на процесс,
+// а не новый на каждое открытие статьи в оверлее.
+let processorPromise: ReturnType<typeof createMarkdownProcessor> | null = null;
+function getProcessor() {
+  processorPromise ??= createMarkdownProcessor();
+  return processorPromise;
+}
+
 export const GET: APIRoute = async ({ params }) => {
   const id = params.id;
 
@@ -18,7 +26,7 @@ export const GET: APIRoute = async ({ params }) => {
     return new Response(JSON.stringify({ error: 'not found' }), { status: 404, headers: jsonHeaders });
   }
 
-  const processor = await createMarkdownProcessor();
+  const processor = await getProcessor();
   const { code: html } = await processor.render(entry.body ?? '');
 
   return new Response(JSON.stringify({
