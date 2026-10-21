@@ -28,6 +28,8 @@ function resultHref(r: SearchResult): string {
 
 const DEBOUNCE_MS = 600;
 const MIN_QUERY_LENGTH = 3;
+// Совпадает с MAX_QUERY_LENGTH в /api/search.json и /api/search-answer.json.
+const MAX_QUERY_LENGTH = 200;
 
 export default function SearchWidget() {
   const [query, setQuery] = useState('');
@@ -135,6 +137,7 @@ export default function SearchWidget() {
           className="gc-search-input"
           placeholder="Спросите справочник своими словами…"
           value={query}
+          maxLength={MAX_QUERY_LENGTH}
           onChange={e => setQuery(e.target.value)}
         />
         {loading && <span className="gc-search-spinner" aria-hidden="true" />}

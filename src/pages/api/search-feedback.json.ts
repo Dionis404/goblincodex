@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { recordSearchFeedback } from '../../lib/db';
+import { recordSearchFeedback, type SearchResult } from '../../lib/db';
+import { errorJsonResponse } from '../../lib/cache';
 import { notifyAdminTelegram } from '../../lib/telegram-notify';
 
 export const prerender = false;
@@ -23,10 +24,15 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const { query, collection, entryId, title, rating } = body;
-  if (!query || !collection || !entryId || (rating !== 1 && rating !== -1)) {
+  const { query, collection, entryId, title, rating } = (body && typeof body === 'object' ? body : {}) as FeedbackBody;
+  if (
+    !isShortString(query) || !isShortString(entryId) ||
+    (title !== undefined && !isShortString(title)) ||
+    !isValidCollection(collection) ||
+    (rating !== 1 && rating !== -1)
+  ) {
     return new Response(
-      JSON.stringify({ error: 'query, collection, entryId and rating (1 | -1) are required' }),
+      JSON.stringify({ error: `query, collection, entryId and rating (1 | -1) are required; strings up to ${MAX_FIELD_LENGTH} chars` }),
       { status: 400, headers: { 'Content-Type': 'application/json; charset=utf-8' } },
     );
   }
@@ -39,7 +45,7 @@ export const POST: APIRoute = async ({ request }) => {
       void notifyAdminTelegram(
         `⚠️ <b>Негативная оценка поиска</b>\n\n` +
           `Запрос: <i>${escapeHtml(query)}</i>\n` +
-          `Статья: ${escapeHtml(title ?? entryId)} (${collection})`,
+          `Статья: ${escapeHtml(title ?? entryId)} (${escapeHtml(collection)})`,
       );
     }
 
@@ -48,13 +54,22 @@ export const POST: APIRoute = async ({ request }) => {
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
     });
   } catch (err) {
-    console.error('[api/search-feedback] error:', err);
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    });
+    return errorJsonResponse(err, '[api/search-feedback]');
   }
 };
+
+// Поля приходят от анонимного клиента, уходят в БД и в Telegram админу
+// (лимит сообщения 4096 символов) — режем длину и проверяем коллекцию.
+const MAX_FIELD_LENGTH = 200;
+const VALID_COLLECTIONS: SearchResult['collection'][] = ['guides', 'mechanics', 'reference', 'news', 'yakkamon'];
+
+function isValidCollection(v: unknown): v is SearchResult['collection'] {
+  return VALID_COLLECTIONS.includes(v as SearchResult['collection']);
+}
+
+function isShortString(v: unknown): v is string {
+  return typeof v === 'string' && v.trim().length > 0 && v.length <= MAX_FIELD_LENGTH;
+}
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

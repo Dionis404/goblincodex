@@ -1,6 +1,7 @@
 import { defineMiddleware } from 'astro:middleware';
 import { getEntry } from 'astro:content';
 import { SECTIONS, sectionForHost, subdomainFor } from './lib/subdomains';
+import { checkRateLimit, clientIp } from './lib/rate-limit';
 
 // Каждый раздел (blog/sfl/yakk) живёт на своём поддомене и отдаёт туда
 // содержимое своего path (/news, /codex, /yakkamon) напрямую по корню, без
@@ -9,6 +10,13 @@ import { SECTIONS, sectionForHost, subdomainFor } from './lib/subdomains';
 // поддомен тем же путём.
 export const onRequest = defineMiddleware(async (context, next) => {
   const host = context.request.headers.get('host');
+
+  if (context.url.pathname.startsWith('/api/')) {
+    let socketIp: string | undefined;
+    try { socketIp = context.clientAddress; } catch { /* недоступен вне SSR */ }
+    const limited = checkRateLimit(context.url.pathname, clientIp(context.request, socketIp));
+    if (limited) return limited;
+  }
 
   // Старый формат диплинка /news?article=<длинный-slug-или-shortId> — уводим
   // сразу на канонический /news/{shortId} до того, как запрос вообще дойдёт

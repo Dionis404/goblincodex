@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getEmbedding, getChatCompletion } from '../../lib/routerai';
 import { searchByEmbedding, type SearchResult } from '../../lib/db';
 import { findEntry, stripMarkdown, REFERENCE_ENTRIES } from '../../lib/search-content';
+import { errorJsonResponse } from '../../lib/cache';
 
 export const prerender = false;
 
@@ -26,14 +27,37 @@ function buildContext(result: SearchResult): string | null {
   return `### ${entry.title}\n${entry.description}\n${body}`;
 }
 
+// Тот же лимит, что в /api/search.json.
+const MAX_QUERY_LENGTH = 200;
+
+// Готовые ответы LLM по нормализованному запросу: популярные вопросы
+// повторяются, а каждая генерация — платный вызов. Ограниченный размер +
+// TTL, чтобы ответ обновлялся после переиндексации справочника.
+const ANSWER_CACHE_MAX = 300;
+const ANSWER_TTL_MS = 60 * 60 * 1000;
+const answerCache = new Map<string, { answer: string; at: number }>();
+
+function answerResponse(query: string, answer: string): Response {
+  return new Response(JSON.stringify({ query, answer }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+  });
+}
+
 export const GET: APIRoute = async ({ url }) => {
   const query = (url.searchParams.get('q') ?? '').trim();
 
-  if (!query) {
-    return new Response(JSON.stringify({ error: 'query param "q" is required' }), {
+  if (!query || query.length > MAX_QUERY_LENGTH) {
+    return new Response(JSON.stringify({ error: `query param "q" is required (max ${MAX_QUERY_LENGTH} chars)` }), {
       status: 400,
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
     });
+  }
+
+  const cacheKey = query.toLowerCase();
+  const cached = answerCache.get(cacheKey);
+  if (cached && Date.now() - cached.at < ANSWER_TTL_MS) {
+    return answerResponse(query, cached.answer);
   }
 
   try {
@@ -52,15 +76,14 @@ export const GET: APIRoute = async ({ url }) => {
     const userPrompt = `Вопрос: ${query}\n\nОтрывки из справочника:\n\n${contexts.join('\n\n')}`;
     const answer = await getChatCompletion(SYSTEM_PROMPT, userPrompt);
 
-    return new Response(JSON.stringify({ query, answer }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    });
+    answerCache.delete(cacheKey);
+    answerCache.set(cacheKey, { answer, at: Date.now() });
+    if (answerCache.size > ANSWER_CACHE_MAX) {
+      answerCache.delete(answerCache.keys().next().value!);
+    }
+
+    return answerResponse(query, answer);
   } catch (err) {
-    console.error('[api/search-answer] error:', err);
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    });
+    return errorJsonResponse(err, '[api/search-answer]');
   }
 };

@@ -8,11 +8,40 @@ const CHAT_MODEL = 'google/gemma-3-27b-it';
 const MAX_RETRIES = 4;
 const RETRY_DELAY_MS = 3000;
 
+// Без таймаута зависший ответ routerai держал бы запрос пользователя
+// бесконечно (а с ретраями — тем более).
+const REQUEST_TIMEOUT_MS = 20_000;
+
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Один поиск на клиенте — это два вызова подряд (/api/search.json и
+// /api/search-answer.json) с одним и тем же запросом; без кэша эмбеддинг
+// считался дважды. Map хранит порядок вставки → самый старый ключ первый,
+// размер ограничен, чтобы произвольные запросы не раздували память.
+const EMBEDDING_CACHE_MAX = 500;
+const embeddingCache = new Map<string, number[]>();
+
 export async function getEmbedding(text: string): Promise<number[]> {
+  const key = text.trim().toLowerCase();
+  const hit = embeddingCache.get(key);
+  if (hit) {
+    // Обновляем позицию — недавно использованные вытесняются последними.
+    embeddingCache.delete(key);
+    embeddingCache.set(key, hit);
+    return hit;
+  }
+
+  const embedding = await fetchEmbedding(text);
+  embeddingCache.set(key, embedding);
+  if (embeddingCache.size > EMBEDDING_CACHE_MAX) {
+    embeddingCache.delete(embeddingCache.keys().next().value!);
+  }
+  return embedding;
+}
+
+async function fetchEmbedding(text: string): Promise<number[]> {
   const apiKey = process.env.ROUTERAI_API_KEY;
   if (!apiKey) throw new Error('ROUTERAI_API_KEY is not set');
 
@@ -27,6 +56,7 @@ export async function getEmbedding(text: string): Promise<number[]> {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       body: JSON.stringify({ model: EMBEDDING_MODEL, input: text }),
     });
 
@@ -64,6 +94,7 @@ export async function getChatCompletion(systemPrompt: string, userPrompt: string
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       body: JSON.stringify({
         model: CHAT_MODEL,
         messages: [

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { errorJsonResponse } from '../../../../lib/cache';
 import { getPetNftInstance } from '../../../../lib/db';
 
 export const prerender = false;
@@ -29,9 +30,6 @@ export const GET: APIRoute = async ({ params }) => {
       },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    });
+    return errorJsonResponse(err, '[api/pets/nft/[id]]');
   }
 };
