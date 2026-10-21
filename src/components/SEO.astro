@@ -1,4 +1,6 @@
 ---
+import { sectionForHost, mainDomainFor } from '../lib/subdomains';
+
 interface Props {
   title: string;
   description: string;
@@ -27,7 +29,19 @@ const {
 // HTTP (Astro.url.protocol видит "http:"), а http:// в og:image/og:url
 // не по всем сайтам грузится в превью Telegram/соцсетей.
 const requestHost = Astro.request.headers.get('host');
-const requestOrigin = requestHost ? `https://${requestHost}` : Astro.url.origin;
+// Страницы основного домена (/tools, /about, …) открываются и на любом
+// поддомене раздела — без этого у каждой было бы 4 разных canonical
+// (дубли для поисковиков). Свой поддомен оставляем только путям раздела.
+const hostSection = sectionForHost(requestHost);
+const isOwnSectionPath = hostSection
+  && (Astro.url.pathname === hostSection.path || Astro.url.pathname.startsWith(`${hostSection.path}/`));
+const canonicalHost = hostSection && !isOwnSectionPath ? mainDomainFor(requestHost) : requestHost;
+// goblincodex.ru (и его поддомены) — запасное зеркало: сайт там полностью
+// работает и ссылки остаются на .ru, но для поисковиков главный адрес
+// всегда на .fun, иначе .ru и .fun конкурируют в выдаче как дубли.
+const requestOrigin = canonicalHost
+  ? `https://${canonicalHost.replace(/goblincodex\.ru(:\d+)?$/, 'goblincodex.fun')}`
+  : Astro.url.origin;
 const canonicalURL = new URL(Astro.url.pathname, requestOrigin);
 // og:url обычно совпадает с canonical, но для страниц с "виртуальными"
 // query-параметрами (?article=slug на /news — отдельная сущность в глазах
