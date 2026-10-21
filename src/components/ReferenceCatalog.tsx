@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type JSX } from 'react';
 import './ReferenceCatalog.css';
 import FoodCatalogTable from './tools/FoodCatalogTable';
 import NumberStepper from './NumberStepper';

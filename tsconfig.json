@@ -5,7 +5,12 @@
     "**/*"
   ],
   "exclude": [
-    "dist"
+    "dist",
+    "node_modules",
+    "_sfl_temp",
+    "graphify-out",
+    "backups",
+    "local-scripts"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",

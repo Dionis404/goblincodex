@@ -200,6 +200,7 @@ function DateTimePicker({ value, onChange, disabled }) {
   );
 }
 
+/** @param {{ initialLeaderboard?: any[]; initialUpdatedAt?: string | null }} props */
 export default function TicketsLeaderboardPage({ initialLeaderboard = [], initialUpdatedAt }) {
   const [leaderboard, setLeaderboard] = useState(initialLeaderboard);
   const [updatedAt, setUpdatedAt] = useState(initialUpdatedAt);

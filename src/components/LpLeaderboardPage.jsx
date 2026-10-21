@@ -47,6 +47,7 @@ function RankChange({ rank, prevRank }) {
   return <span className="gc-lp-rank-badge gc-lp-rank-same">—</span>;
 }
 
+/** @param {{ leaderboard?: any[]; meta?: any }} props */
 export default function LpLeaderboardPage({ leaderboard = [], meta }) {
   if (!leaderboard.length) {
     return (

@@ -38,7 +38,10 @@ export default function ProfileModal({ username, farmer, guidesByUser, onClose }
     <div className="gc-modal-overlay" onClick={onClose}>
       <div className="gc-modal-box" onClick={(e) => e.stopPropagation()}>
         <button className="gc-modal-close" onClick={onClose} aria-label="Закрыть">✕</button>
-        <ProfileCard username={username} farmer={farmer} guidesByUser={guidesByUser} />
+        {/* Модалка открывается только со страниц /codex (вкладка «Рейтинги»,
+            блок автора гайда) — уже внутри раздела, поэтому ссылки на гайды
+            относительные. Без sflBase они рендерились как "undefined/codex/…". */}
+        <ProfileCard username={username} farmer={farmer} guidesByUser={guidesByUser} sflBase="" />
       </div>
     </div>,
     document.body

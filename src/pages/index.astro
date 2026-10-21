@@ -16,7 +16,8 @@ latestGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new D
 const allMechanics = await getCollection('mechanics', ({ data }) => !data.draft).catch(() => []);
 const articlesCount = latestGuides.length + allMechanics.length;
 
-const newestDate = [...latestGuides, ...allMechanics].reduce((max, item) => {
+// У механик нет publishDate/updatedDate в схеме — дата обновления только по гайдам.
+const newestDate = latestGuides.reduce((max, item) => {
   const d = new Date(item.data.updatedDate ?? item.data.publishDate ?? 0);
   return d > max ? d : max;
 }, new Date(0));
