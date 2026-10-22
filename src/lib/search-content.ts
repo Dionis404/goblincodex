@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { TOOLS } from './toolCosts';
 import { SELLABLES } from './coinRate';
+import { FISH_RECORDS, GUARANTEED_CATCH } from './fishData.generated';
 
 // Общая логика чтения контента для индексации (scripts/index-search.ts) и для
 // сборки контекста ответа нейропоиска (api/search-answer.json.ts) — оба места
@@ -150,17 +151,19 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
   },
   {
     id: 'bait',
-    title: 'Улов по наживке',
+    title: 'Рыбалка: что и на что ловить',
     summary:
-      'какая рыба ловится на какую наживку, гарантированный улов, Fish Flake, Fish Stick, Fish Oil, Crab Stick, обычная продвинутая редкая рыба, на что ловить рыбу',
+      'рыбалка, какая рыба ловится на какую наживку, гарантированный улов, Fish Flake, Fish Stick, Fish Oil, Crab Stick, Earthworm, Grub, Red Wiggler, Fishing Lure, сезоны рыбы, приманка chum, марвелы и куски карты, на что ловить рыбу',
     context:
-      'Таблица гарантированного улова по типу наживки: Fish Flake ловит обычную рыбу ' +
-      '(Anchovy, Butterflyfish, Halibut, Blowfish, Porgy, Clownfish, Sea Bass, Sea Horse, Muskellunge, ' +
-      'Horse Mackerel, Squid, Moray Eel, Olive Flounder, Tilapia, Napoleanfish, Surgeonfish, Zebra Turkeyfish, ' +
-      'Walleye, Angelfish, Ray). Fish Stick ловит продвинутую рыбу (Rock Blackfish, Hammerhead shark, Tuna, ' +
-      'Mahi Mahi, Blue Marlin, Weakfish, Oarfish, Football fish, Sunfish, Cobia). Fish Oil и Crab Stick ловят ' +
-      'редкую рыбу (Barred Knifejaw, Trout, Coelacanth, Saw Shark для Fish Oil; Barred Knifejaw, Whale Shark, ' +
-      'White Shark, Parrotfish для Crab Stick).',
+      'Справочник рыбалки. Гарантированная наживка (выбираешь рыбу из списка, она клюёт наверняка, chum с ней ' +
+      'использовать нельзя): ' +
+      Object.entries(GUARANTEED_CATCH).map(([bait, fish]) => `${bait} — ${fish.join(', ')}`).join('; ') +
+      '. Обычная рыба и постоянные марвелы (ранг; наживка; сезоны; любимая приманка chum): ' +
+      FISH_RECORDS.filter((f) => f.type !== 'chapter').map((f) =>
+        `${f.name} (${f.type}; ${f.baits.join('/')}; ${f.seasons.length === 4 ? 'круглый год' : f.seasons.join('/')}; ${f.likes.join('/') || 'нет'})`,
+      ).join('; ') +
+      '. Гарантия — это наживка, приманка (chum) лишь повышает шанс. Куски карт марвелов — в разделе «Морские марвелы». ' +
+      'Точные шансы улова знает только сервер игры.',
   },
   {
     id: 'upgrades',

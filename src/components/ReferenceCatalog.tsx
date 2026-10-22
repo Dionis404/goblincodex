@@ -2,6 +2,7 @@ import { useState, useEffect, type JSX } from 'react';
 import './ReferenceCatalog.css';
 import FoodCatalogTable from './tools/FoodCatalogTable';
 import ToolCostCalculator from './tools/ToolCostCalculator';
+import FishCatalog from './tools/FishCatalog';
 import CoinRateTable from './tools/CoinRateTable';
 import CoinRateNote from './CoinRateNote';
 import { useCoinRate } from '../lib/useCoinRate';
@@ -79,43 +80,6 @@ import {
  * tab). To add a new reference table: add a data array + a small render
  * section below, then register it in REF_SECTIONS at the bottom.
  */
-
-interface BaitFishGroup {
-  bait: string;
-  tier: string;
-  fish: string[];
-}
-
-const BAIT_FISH: BaitFishGroup[] = [
-  {
-    bait: 'Fish Flake',
-    tier: 'Обычная рыба',
-    fish: [
-      'Anchovy', 'Butterflyfish', 'Halibut', 'Blowfish', 'Porgy', 'Clownfish',
-      'Sea Bass', 'Sea Horse', 'Muskellunge', 'Horse Mackerel', 'Squid',
-      'Moray Eel', 'Olive Flounder', 'Tilapia', 'Napoleanfish', 'Surgeonfish',
-      'Zebra Turkeyfish', 'Walleye', 'Angelfish', 'Ray',
-    ],
-  },
-  {
-    bait: 'Fish Stick',
-    tier: 'Продвинутая рыба',
-    fish: [
-      'Rock Blackfish', 'Hammerhead shark', 'Tuna', 'Mahi Mahi', 'Blue Marlin',
-      'Weakfish', 'Oarfish', 'Football fish', 'Sunfish', 'Cobia',
-    ],
-  },
-  {
-    bait: 'Fish Oil',
-    tier: 'Редкая рыба',
-    fish: ['Barred Knifejaw', 'Trout', 'Coelacanth', 'Saw Shark'],
-  },
-  {
-    bait: 'Crab Stick',
-    tier: 'Редкая рыба',
-    fish: ['Barred Knifejaw', 'Whale Shark', 'White Shark', 'Parrotfish'],
-  },
-];
 
 interface ResourceUpgradeRow {
   resource: string;
@@ -332,21 +296,10 @@ function BaitFishSection() {
   return (
     <section className="ref-section">
       <p className="ref-section-desc">
-        Эти наживки не ловят случайную рыбу — они гарантированно приносят одну из рыб своего списка.
+        Всё про рыбалку в одном месте: какую рыбу гарантирует наживка, что и на что ловить, в какие
+        сезоны клюёт и как получить марвелов. Данные — из исходников игры.
       </p>
-      <div className="ref-bait-list">
-        {BAIT_FISH.map(group => (
-          <div className="ref-bait-card" key={group.bait}>
-            <div className="ref-bait-header">
-              <span className="ref-bait-name">{group.bait}</span>
-              <span className="ref-bait-tier">{group.tier}</span>
-            </div>
-            <div className="ref-bait-fish">
-              {group.fish.map(f => <span className="ref-fish-chip" key={f}>{f}</span>)}
-            </div>
-          </div>
-        ))}
-      </div>
+      <FishCatalog />
     </section>
   );
 }
@@ -1436,7 +1389,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'tools', icon: '🪓', label: 'Стоимость инструментов', Content: ToolsSection },
   { id: 'coins', icon: '🪙', label: 'Курс монет', Content: CoinRateSection },
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
-  { id: 'bait', icon: '🎣', label: 'Улов по наживке', Content: BaitFishSection },
+  { id: 'bait', icon: '🎣', label: 'Рыбалка: что и на что ловить', Content: BaitFishSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },
   { id: 'obsidian', icon: '🌋', label: 'Обсидиан (Lava Pit)', Content: ObsidianSection },
   { id: 'marvels', icon: '🐋', label: 'Морские марвелы', Content: MarvelsSection },

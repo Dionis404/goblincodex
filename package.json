@@ -13,6 +13,7 @@
     "astro": "astro",
     "sfl:populate": "tsx scripts/populate-buffs-db.ts",
     "sfl:sync-sprites": "tsx scripts/sync-sprites.ts",
+    "sfl:sync-fish": "tsx scripts/sync-fish-data.ts",
     "sfl:sync-skill-icons": "tsx scripts/sync-skill-icons.ts",
     "sfl:backup": "tsx scripts/backup-db.ts",
     "telegram:backfill": "tsx scripts/backfill-telegram-posts.ts",
