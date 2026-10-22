@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CoinsIcon, FlowerAmount } from '../ResourceIcon';
+import { CoinsIcon } from '../ResourceIcon';
 import { useItemPrices } from '../../lib/useItemPrices';
 import { SKILL_ICONS } from '../../lib/skills';
 import type { SkillRank } from '../../lib/toolCosts';
@@ -26,7 +26,6 @@ function formatFloor(n: number): string {
 export default function CoinRateTable() {
   const prices = useItemPrices(SELLABLE_PRICE_NAMES);
   const [boosts, setBoosts] = useState<CoinSellBoosts>(NO_COIN_SELL_BOOSTS);
-  const [coins, setCoins] = useState(1000);
 
   const rows = prices ? coinRateRows(prices, boosts) : null;
   const summary = rows ? coinRateSummary(rows) : null;
@@ -79,54 +78,39 @@ export default function CoinRateTable() {
       <div className="ref-marvel-boost-widget ref-coin-summary">
         {summary == null ? (
           <p className="ref-section-desc">Загружаем цены маркетплейса…</p>
-        ) : summary.median == null ? (
+        ) : summary.rate == null ? (
           <p className="ref-section-desc">Цены маркетплейса сейчас недоступны — курс посчитать не из чего.</p>
         ) : (
           <>
             <p className="ref-coin-rate-main">
-              <span className="ref-coin-rate-label">Курс (медиана по {summary.priced} предметам):</span>
+              <span className="ref-coin-rate-label">Курс (среднее по {summary.top.length} самым выгодным из {summary.priced}):</span>
               <span className="ref-coin-rate-value">
                 <strong>1</strong>
                 <img className="ref-recipe-icon" src="/sprites/icons/flower_token.webp" alt="Flower" />
                 <span>≈</span>
                 <span className="ref-resource-chip">
                   <CoinsIcon />
-                  <strong>{formatCoins(summary.median)}</strong>
+                  <strong>{formatCoins(summary.rate)}</strong>
                 </span>
               </span>
             </p>
-            {summary.best && (
-              <p className="ref-tool-summary-line">
-                <span>Выгоднее всего через</span>
-                <img src={summary.best.item.icon} alt="" className="gc-res-icon" />
-                <strong>{summary.best.item.name}</strong>
-                <span>
-                  — {formatCoins(summary.best.coinsPerFlower!)} монет за 1 Flower (купить на рынке, продать Бетти)
+            <p className="ref-tool-summary-line">
+              <span>Курс по:</span>
+              {summary.top.map((r) => (
+                <span key={r.item.name} className="ref-resource-chip">
+                  <img src={r.item.icon} alt="" className="gc-res-icon" />
+                  <strong>{r.item.name}</strong> {formatCoins(r.coinsPerFlower!)}
                 </span>
-              </p>
-            )}
+              ))}
+              <span className="ref-price-hint">— монет за 1 Flower: купить на рынке, продать Бетти</span>
+            </p>
             <p className="ref-tool-summary-line ref-price-hint">
               Обмен в игре (Flower → монеты):{' '}
               {OFFICIAL_COIN_PACKAGES.map((p) => `${p.flower} → ${p.coins.toLocaleString('ru-RU')}`).join(', ')} —
               не больше {bestOfficialRate.toLocaleString('ru-RU')} монет за 1 Flower.
-              {summary.median > bestOfficialRate &&
-                ` Через урожай выходит в ${(summary.median / bestOfficialRate).toLocaleString('ru-RU', { maximumFractionDigits: 1 })} раза выгоднее.`}
+              {summary.rate > bestOfficialRate &&
+                ` Через урожай выходит в ${(summary.rate / bestOfficialRate).toLocaleString('ru-RU', { maximumFractionDigits: 1 })} раза выгоднее.`}
             </p>
-            <div className="ref-coin-converter">
-              <label className="ref-coin-converter-input">
-                <input
-                  type="number"
-                  min={0}
-                  step={100}
-                  value={coins}
-                  onChange={(e) => setCoins(Math.max(0, Number(e.target.value) || 0))}
-                  aria-label="Количество монет"
-                />
-                <CoinsIcon />
-              </label>
-              <FlowerAmount value={coins / summary.median} />
-              <span className="ref-price-hint">по медианному курсу</span>
-            </div>
           </>
         )}
       </div>
@@ -148,10 +132,10 @@ export default function CoinRateTable() {
               </tr>
             ) : (
               sorted.map((r) => {
-                const aboveMedian =
-                  summary?.median != null && r.coinsPerFlower != null && r.coinsPerFlower >= summary.median;
+                // Подсвечиваем предметы, из которых посчитан курс.
+                const inRate = summary?.top.includes(r) ?? false;
                 return (
-                  <tr key={r.item.name} className={r === summary?.best ? 'ref-coin-row--best' : undefined}>
+                  <tr key={r.item.name} className={inRate ? 'ref-coin-row--best' : undefined}>
                     <td className="ref-table-name">
                       <span className="ref-tool-name">
                         <img src={r.item.icon} alt="" className="ref-tool-icon" />
@@ -177,7 +161,7 @@ export default function CoinRateTable() {
                         </span>
                       )}
                     </td>
-                    <td className={`ref-coin-cell--rate${aboveMedian ? ' ref-coin-rate--good' : ''}`}>
+                    <td className={`ref-coin-cell--rate${inRate ? ' ref-coin-rate--good' : ''}`}>
                       {r.coinsPerFlower == null ? '—' : formatCoins(r.coinsPerFlower)}
                     </td>
                   </tr>

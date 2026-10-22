@@ -1231,27 +1231,6 @@
   width: 22px;
   height: 22px;
 }
-.ref-coin-converter {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 10px;
-  font-size: 15px;
-}
-.ref-coin-converter-input {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.ref-coin-converter-input input {
-  width: 120px;
-  font: inherit;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text);
-}
 .ref-coin-table td {
   padding: 10px 12px;
 }

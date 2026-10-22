@@ -24,9 +24,8 @@ export default function CoinRateTop3() {
   const prices = useItemPrices(SELLABLE_PRICE_NAMES);
   const rows = prices ? coinRateRows(prices, NO_COIN_SELL_BOOSTS) : null;
   const summary = rows ? coinRateSummary(rows) : null;
-  const top = rows
-    ? rows.filter((r) => r.coinsPerFlower != null).sort((a, b) => b.coinsPerFlower! - a.coinsPerFlower!).slice(0, 3)
-    : [];
+  // Те же 3 предмета, из которых считается курс.
+  const top = summary?.top ?? [];
   const officialRate = Math.max(...OFFICIAL_COIN_PACKAGES.map((p) => p.coins / p.flower));
 
   return (
@@ -39,14 +38,14 @@ export default function CoinRateTop3() {
 
       {summary == null ? (
         <p className="gc-coin-top3-muted">Загружаем цены…</p>
-      ) : summary.median == null ? (
+      ) : summary.rate == null ? (
         <p className="gc-coin-top3-muted">Цены маркетплейса сейчас недоступны.</p>
       ) : (
         <>
           <p className="gc-coin-top3-rate">
             1 <img src={FLOWER_ICON} alt="Flower" className="gc-coin-top3-icon" /> ≈{' '}
-            <strong>{fmt(summary.median)}</strong> <img src={COINS_ICON} alt="монет" className="gc-coin-top3-icon" />
-            <span className="gc-coin-top3-muted"> через урожай у Бетти · обмен в игре — до {fmt(officialRate)}</span>
+            <strong>{fmt(summary.rate)}</strong> <img src={COINS_ICON} alt="монет" className="gc-coin-top3-icon" />
+            <span className="gc-coin-top3-muted"> по 3 самым выгодным предметам · обмен в игре — до {fmt(officialRate)}</span>
           </p>
           <p className="gc-coin-top3-subtitle">Выгоднее всего продавать Бетти:</p>
           <ol className="gc-coin-top3-list">
@@ -64,7 +63,7 @@ export default function CoinRateTop3() {
       )}
 
       <a className="gc-coin-top3-link" href="/codex?tab=mechanics&amp;ref=coins">
-        Вся таблица, бусты и конвертер монет →
+        Вся таблица и бусты →
       </a>
     </aside>
   );

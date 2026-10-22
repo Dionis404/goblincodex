@@ -48,7 +48,7 @@ draft: false
 
 <div data-coin-rate-top3></div>
 
-Полная таблица по всему урожаю и фруктам, бусты (Coin Swindler) и конвертер монет — в разделе [Курс монет](/codex?tab=mechanics&ref=coins). Ещё актуальные цены можно смотреть в Telegram-боте **@betty_market_bot**.
+Полная таблица по всему урожаю и фруктам и бусты (Coin Swindler) — в разделе [Курс монет](/codex?tab=mechanics&ref=coins). Ещё актуальные цены можно смотреть в Telegram-боте **@betty_market_bot**.
 
 ## Доставки (Deliveries)
 

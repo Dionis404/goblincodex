@@ -5,6 +5,7 @@ import ToolCostCalculator from './tools/ToolCostCalculator';
 import CoinRateTable from './tools/CoinRateTable';
 import CoinRateNote from './CoinRateNote';
 import { useCoinRate } from '../lib/useCoinRate';
+import { useOilPrice } from '../lib/useOilPrice';
 import { coinsToFlower } from '../lib/coinRate';
 import NumberStepper from './NumberStepper';
 import ResourceIcon, { CoinsIcon, NodeIcon, FlowerAmount } from './ResourceIcon';
@@ -499,7 +500,8 @@ function ResourceUpgradeSection() {
   );
 }
 
-// Oil в базе цен отсутствует — его стоимость в итоге цикла не учитывается.
+// Oil на маркетплейсе не торгуется — его цену подставляет useOilPrice
+// (себестоимость добычи без бустов); пока её нет, Oil в итог не входит.
 const LAVA_PIT_UNPRICED = new Set(['Oil']);
 
 const LAVA_PIT_PRICE_NAMES = [...new Set(['Obsidian', ...LAVA_PIT_RECIPES.flatMap((r) => r.items.map((i) => i.name))])]
@@ -515,7 +517,12 @@ const LAVA_PIT_BOOSTS = [
 ] as const;
 
 function ObsidianSection() {
-  const prices = useItemPrices(LAVA_PIT_PRICE_NAMES);
+  const marketPrices = useItemPrices(LAVA_PIT_PRICE_NAMES);
+  const oilPrice = useOilPrice();
+  const prices: Record<string, number | null> | null = marketPrices ? { ...marketPrices, Oil: oilPrice ?? null } : null;
+  // Сколько ингредиентов рецепта без цены «по определению» (Oil, пока нет себестоимости).
+  const unpricedCount = (items: LavaPitIngredient[]) =>
+    oilPrice != null ? 0 : items.filter((i) => LAVA_PIT_UNPRICED.has(i.name)).length;
   const [boostsOn, setBoostsOn] = useState<Record<string, boolean>>({});
   const active = LAVA_PIT_BOOSTS.filter((b) => boostsOn[b.id]);
   const costMult = active.reduce((m, b) => m * b.cost, 1);
@@ -614,8 +621,11 @@ function ObsidianSection() {
               {prices && (
                 <p className="ref-section-desc ref-section-desc--spaced">
                   <FlowerAmount value={total * costMult} /> за цикл (floor)
-                  {r.items.some((i) => LAVA_PIT_UNPRICED.has(i.name)) && ' — без учёта Oil: он не продаётся, цены нет'}
-                  {missing > r.items.filter((i) => LAVA_PIT_UNPRICED.has(i.name)).length && ' — у части ингредиентов цена не найдена'}
+                  {r.items.some((i) => LAVA_PIT_UNPRICED.has(i.name)) &&
+                    (oilPrice != null
+                      ? ' — Oil по себестоимости добычи (без бустов)'
+                      : ' — без учёта Oil: он не продаётся, цены нет')}
+                  {missing > unpricedCount(r.items) && ' — у части ингредиентов цена не найдена'}
                   <br />
                   <FlowerAmount value={(total * costMult) / obsidianPerCycle} /> за 1 Obsidian
                   {' '}({obsidianPerCycle.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} за цикл, {cycleHours.toLocaleString('ru-RU', { maximumFractionDigits: 1 })} ч)
@@ -707,8 +717,12 @@ function StageTable({
   const prices = useItemPrices(EXPANSION_PRICE_NAMES);
   // Полная цена этапа во Flower: ресурсы по floor + монеты по рыночному курсу.
   const { rate: coinRate } = useCoinRate();
+  const oilPrice = useOilPrice();
+  // Oil — по себестоимости добычи (useOilPrice), его нет в floor-ценах.
   const stageFlower = (cost: { resources: Parameters<typeof resourcesPrice>[0]; coins: number }) =>
-    resourcesPrice(cost.resources, prices!) + (coinRate ? coinsToFlower(cost.coins, coinRate) : 0);
+    resourcesPrice(cost.resources, prices!) +
+    (coinRate ? coinsToFlower(cost.coins, coinRate) : 0) +
+    (oilPrice ? (cost.resources.Oil ?? 0) * oilPrice : 0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedStage = stages.find((s) => s.id === selectedId) ?? null;
 
@@ -759,8 +773,8 @@ function StageTable({
       {prices && (
         <>
           <p className="ref-section-desc ref-section-desc--spaced">
-            Цена ресурсов — по текущему floor на маркете. Oil и гемы не учтены: Oil не продаётся,
-            у гемов нет рыночной цены.
+            Цена ресурсов — по текущему floor на маркете. Oil — по себестоимости добычи (без
+            бустов): он не продаётся. Гемы не учтены — у них нет рыночной цены.
           </p>
           <CoinRateNote rate={coinRate} />
         </>
@@ -1397,9 +1411,10 @@ function CoinRateSection() {
         = цена у Бетти ÷ floor-цена на рынке.
       </p>
       <p className="ref-section-desc">
-        Главный курс — медиана по всем предметам: она не прыгает от одного дешёвого лота. Самая
-        большая цифра в таблице — самый выгодный способ получить монеты (купить на рынке и продать
-        Бетти); чем она выше, тем выгоднее продавать этот предмет Бетти, а не на рынке. Цены floor
+        Курс — среднее по 3 самым выгодным предметам (подсвечены в таблице): это реальная цена,
+        по которой монеты можно получить прямо сейчас — купить предмет на рынке и продать Бетти.
+        Среднее по трём, а не один лучший, — чтобы курс не задавал один случайный дешёвый лот.
+        Чем больше число в таблице, тем выгоднее продавать предмет Бетти, а не на рынке. Цены floor
         без комиссии маркетплейса; у редких предметов они могут быть неточными из-за малого числа
         лотов. Coin Swindler увеличивает цену у Бетти только для урожая — фрукты и теплица без бустов.
       </p>

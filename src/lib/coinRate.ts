@@ -119,28 +119,31 @@ export function coinRateRows(prices: Record<string, number | null>, b: CoinSellB
   });
 }
 
-function median(values: number[]): number | null {
-  if (values.length === 0) return null;
-  const sorted = [...values].sort((x, y) => x - y);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-}
+/** Сколько самых выгодных предметов усредняем для курса. */
+export const COIN_RATE_TOP_N = 3;
 
 export interface CoinRateSummary {
-  /** Медиана монет за 1 Flower по всем предметам с ценой — «рыночный курс», устойчив к выбросам. */
-  median: number | null;
-  /** Самый выгодный способ получить монеты: купить предмет на рынке и продать Бетти. */
+  /**
+   * Курс: среднее «монет за 1 Flower» по COIN_RATE_TOP_N самым выгодным
+   * предметам — реальная цена, по которой монеты можно получить сейчас
+   * (купить на рынке и продать Бетти). Среднее по нескольким, а не один
+   * лучший, — чтобы один случайный дешёвый лот не задавал курс.
+   */
+  rate: number | null;
+  /** Предметы, из которых посчитан курс, от самого выгодного. */
+  top: CoinRateRow[];
+  /** Самый выгодный способ получить монеты (= top[0]). */
   best: CoinRateRow | null;
   priced: number;
 }
 
 export function coinRateSummary(rows: CoinRateRow[]): CoinRateSummary {
-  const priced = rows.filter((r) => r.coinsPerFlower != null);
-  const best = priced.reduce<CoinRateRow | null>(
-    (acc, r) => (acc == null || r.coinsPerFlower! > acc.coinsPerFlower! ? r : acc),
-    null,
-  );
-  return { median: median(priced.map((r) => r.coinsPerFlower!)), best, priced: priced.length };
+  const priced = rows
+    .filter((r) => r.coinsPerFlower != null)
+    .sort((a, b) => b.coinsPerFlower! - a.coinsPerFlower!);
+  const top = priced.slice(0, COIN_RATE_TOP_N);
+  const rate = top.length ? top.reduce((s, r) => s + r.coinsPerFlower!, 0) / top.length : null;
+  return { rate, top, best: top[0] ?? null, priced: priced.length };
 }
 
 /**

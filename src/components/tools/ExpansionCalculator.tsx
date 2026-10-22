@@ -3,6 +3,7 @@ import NumberStepper from '../NumberStepper';
 import ResourceIcon, { CoinsIcon, NodeIcon, FlowerAmount } from '../ResourceIcon';
 import CoinRateNote from '../CoinRateNote';
 import { useCoinRate } from '../../lib/useCoinRate';
+import { useOilPrice } from '../../lib/useOilPrice';
 import { coinsToFlower } from '../../lib/coinRate';
 import { useItemPrices } from '../../lib/useItemPrices';
 import ExpansionBoostToggles from '../ExpansionBoostToggles';
@@ -224,6 +225,9 @@ export default function ExpansionCalculator() {
   const prices = useItemPrices(EXPANSION_PRICE_NAMES);
   const { rate: coinRate } = useCoinRate();
   const coinsFlower = coinRate ? coinsToFlower(total.coins, coinRate) : null;
+  // Oil не торгуется — по себестоимости добычи без бустов (useOilPrice).
+  const oilPrice = useOilPrice();
+  const oilFlower = oilPrice ? (total.resources.Oil ?? 0) * oilPrice : 0;
   const invalidRange = toIndex <= fromIndex;
   const requiredLevel = invalidRange ? 0 : stages[toIndex].cost.level;
   const nodeGains = sumNodeGains(stages, fromIndex, toIndex);
@@ -311,9 +315,11 @@ export default function ExpansionCalculator() {
                         </td>
                         {prices && (
                           <td className="gc-calc-num">
-                            {EXPANSION_PRICE_NAMES.includes(r) && prices[r] != null
-                              ? <FlowerAmount compact value={resourcePrice(r, total.resources[r]!, prices)} />
-                              : '—'}
+                            {r === 'Oil' && oilPrice
+                              ? <FlowerAmount compact value={total.resources.Oil! * oilPrice} />
+                              : EXPANSION_PRICE_NAMES.includes(r) && prices[r] != null
+                                ? <FlowerAmount compact value={resourcePrice(r, total.resources[r]!, prices)} />
+                                : '—'}
                           </td>
                         )}
                       </tr>
@@ -325,7 +331,7 @@ export default function ExpansionCalculator() {
                         <td className="gc-calc-res-label">Итого во Flower</td>
                         <td />
                         <td className="gc-calc-num">
-                          <FlowerAmount value={resourcesPrice(total.resources, prices) + (coinsFlower ?? 0)} />
+                          <FlowerAmount value={resourcesPrice(total.resources, prices) + (coinsFlower ?? 0) + oilFlower} />
                         </td>
                       </tr>
                     </tfoot>
@@ -334,8 +340,8 @@ export default function ExpansionCalculator() {
               </div>
               {prices && (
                 <p className="gc-calc-note">
-                  Цена ресурсов — по текущему floor на маркете. Oil и гемы не учтены: Oil не
-                  продаётся, у гемов нет рыночной цены.
+                  Цена ресурсов — по текущему floor на маркете. Oil — по себестоимости добычи
+                  (без бустов): он не продаётся. Гемы не учтены — у них нет рыночной цены.
                 </p>
               )}
               {prices && <CoinRateNote rate={coinRate} className="gc-calc-note" />}
