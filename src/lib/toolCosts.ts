@@ -77,7 +77,7 @@ export interface ToolDef {
 
 export const TOOLS: ToolDef[] = [
   { name: 'Axe', labelRu: 'Топор', icon: '/sprites/tools/axe.png', group: 'workbench', price: 20, ingredients: {}, stock: 200 },
-  { name: 'Pickaxe', labelRu: 'Кирка', icon: '/sprites/tools/wood_pickaxe.png', group: 'workbench', price: 20, ingredients: { Wood: 3 }, stock: 60 },
+  { name: 'Pickaxe', labelRu: 'Кирка', icon: '/sprites/tools/pickaxe.png', group: 'workbench', price: 20, ingredients: { Wood: 3 }, stock: 60 },
   { name: 'Stone Pickaxe', labelRu: 'Каменная кирка', icon: '/sprites/tools/stone_pickaxe.png', group: 'workbench', price: 20, ingredients: { Wood: 3, Stone: 5 }, stock: 20 },
   { name: 'Iron Pickaxe', labelRu: 'Железная кирка', icon: '/sprites/tools/iron_pickaxe.png', group: 'workbench', price: 80, ingredients: { Wood: 3, Iron: 5 }, stock: 5 },
   { name: 'Gold Pickaxe', labelRu: 'Золотая кирка', icon: '/sprites/tools/gold_pickaxe.png', group: 'workbench', price: 100, ingredients: { Wood: 3, Gold: 3 }, stock: 5 },
