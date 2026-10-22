@@ -297,7 +297,7 @@ function BaitFishSection() {
     <section className="ref-section">
       <p className="ref-section-desc">
         Всё про рыбалку в одном месте: какую рыбу гарантирует наживка, что и на что ловить, в какие
-        сезоны клюёт и как получить марвелов. Данные — из исходников игры.
+        сезоны клюёт и сколько стоит ловля раков ловушками. Данные — из исходников игры.
       </p>
       <FishCatalog />
     </section>
@@ -1389,7 +1389,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'tools', icon: '🪓', label: 'Стоимость инструментов', Content: ToolsSection },
   { id: 'coins', icon: '🪙', label: 'Курс монет', Content: CoinRateSection },
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
-  { id: 'bait', icon: '🎣', label: 'Рыбалка: что и на что ловить', Content: BaitFishSection },
+  { id: 'bait', icon: '🎣', label: 'Рыбалка и раки', Content: BaitFishSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },
   { id: 'obsidian', icon: '🌋', label: 'Обсидиан (Lava Pit)', Content: ObsidianSection },
   { id: 'marvels', icon: '🐋', label: 'Морские марвелы', Content: MarvelsSection },

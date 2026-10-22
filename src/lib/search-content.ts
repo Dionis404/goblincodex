@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { TOOLS } from './toolCosts';
 import { SELLABLES } from './coinRate';
-import { FISH_RECORDS, GUARANTEED_CATCH } from './fishData.generated';
+import { CRUSTACEAN_LOOKUP, FISH_RECORDS, GUARANTEED_CATCH, WATER_TRAPS } from './fishData.generated';
 
 // Общая логика чтения контента для индексации (scripts/index-search.ts) и для
 // сборки контекста ответа нейропоиска (api/search-answer.json.ts) — оба места
@@ -151,9 +151,9 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
   },
   {
     id: 'bait',
-    title: 'Рыбалка: что и на что ловить',
+    title: 'Рыбалка и раки',
     summary:
-      'рыбалка, какая рыба ловится на какую наживку, гарантированный улов, Fish Flake, Fish Stick, Fish Oil, Crab Stick, Earthworm, Grub, Red Wiggler, Fishing Lure, сезоны рыбы, приманка chum, марвелы и куски карты, на что ловить рыбу',
+      'рыбалка, какая рыба ловится на какую наживку, гарантированный улов, Fish Flake, Fish Stick, Fish Oil, Crab Stick, Earthworm, Grub, Red Wiggler, Fishing Lure, сезоны рыбы, приманка chum, марвелы и куски карты, на что ловить рыбу, раки, ракообразные, Crab Pot, Mariner Pot, приманка для раков, стоимость установки ловушки',
     context:
       'Справочник рыбалки. Гарантированная наживка (выбираешь рыбу из списка, она клюёт наверняка, chum с ней ' +
       'использовать нельзя): ' +
@@ -163,7 +163,15 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
         `${f.name} (${f.type}; ${f.baits.join('/')}; ${f.seasons.length === 4 ? 'круглый год' : f.seasons.join('/')}; ${f.likes.join('/') || 'нет'})`,
       ).join('; ') +
       '. Гарантия — это наживка, приманка (chum) лишь повышает шанс. Куски карт марвелов — в разделе «Морские марвелы». ' +
-      'Точные шансы улова знает только сервер игры.',
+      'Точные шансы улова знает только сервер игры. ' +
+      'Раки (ракообразные) попадают в ловушки без случайности: ловушка + приманка → ровно одно существо. ' +
+      Object.entries(CRUSTACEAN_LOOKUP).map(([pot, rows]) =>
+        `${pot} (уровень ${WATER_TRAPS[pot].level}, ${WATER_TRAPS[pot].readyHours} ч): ` +
+        Object.entries(rows).map(([chum, name]) =>
+          `${name} — ${chum === 'none' ? 'без приманки' : `${WATER_TRAPS[pot].chums[chum]} ${chum}`}`,
+        ).join(', '),
+      ).join('. ') +
+      '. Стоимость установки — ловушка плюс приманка; ловушка тратится при каждой установке (кроме Royal Crab Pot).',
   },
   {
     id: 'upgrades',

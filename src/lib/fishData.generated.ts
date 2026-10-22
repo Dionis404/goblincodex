@@ -769,3 +769,69 @@ export const CHUM_AMOUNTS: Record<string, number> = {
   "Weed": 3,
   "Acorn": 3
 };
+
+/** Ловушки для ракообразных (crustaceans.ts): время, уровень бампкина и расход приманки. */
+export const WATER_TRAPS: Record<string, { readyHours: number; level: number; chums: Record<string, number> }> = {
+  "Crab Pot": {
+    "readyHours": 4,
+    "level": 18,
+    "chums": {
+      "Heart leaf": 3,
+      "Ribbon": 3,
+      "Wild Grass": 3,
+      "Frost Pebble": 3,
+      "Grape": 5,
+      "Rice": 5,
+      "Crimstone": 2,
+      "Moonfur": 1,
+      "Fish Stick": 2,
+      "Fish Oil": 2,
+      "Crab Stick": 2
+    }
+  },
+  "Mariner Pot": {
+    "readyHours": 8,
+    "level": 24,
+    "chums": {
+      "Crimstone": 2,
+      "Chewed Bone": 3,
+      "Ruffroot": 3,
+      "Dewberry": 3,
+      "Duskberry": 3,
+      "Lunara": 3,
+      "Moonfur": 1,
+      "Fish Stick": 2,
+      "Crab Stick": 2
+    }
+  }
+};
+
+/** Ловушка → приманка (или "none") → кто попадётся. Результат детерминирован, без случайности. */
+export const CRUSTACEAN_LOOKUP: Record<string, Record<string, string>> = {
+  "Crab Pot": {
+    "none": "Isopod",
+    "Heart leaf": "Blue Crab",
+    "Ribbon": "Blue Crab",
+    "Wild Grass": "Lobster",
+    "Frost Pebble": "Lobster",
+    "Grape": "Hermit Crab",
+    "Rice": "Hermit Crab",
+    "Crimstone": "Shrimp",
+    "Moonfur": "Mussel",
+    "Fish Stick": "Oyster",
+    "Fish Oil": "Anemone",
+    "Crab Stick": "Anemone"
+  },
+  "Mariner Pot": {
+    "none": "Barnacle",
+    "Crimstone": "Sea Slug",
+    "Chewed Bone": "Sea Snail",
+    "Ruffroot": "Sea Snail",
+    "Dewberry": "Garden Eel",
+    "Duskberry": "Garden Eel",
+    "Lunara": "Sea Grapes",
+    "Moonfur": "Octopus",
+    "Fish Stick": "Sea Urchin",
+    "Crab Stick": "Horseshoe Crab"
+  }
+};

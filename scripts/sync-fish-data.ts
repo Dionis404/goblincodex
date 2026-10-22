@@ -25,17 +25,18 @@ const { sflDir } = parseArgs();
 const source = fs.readFileSync(path.join(sflDir, "src/features/game/types/fishing.ts"), "utf8");
 
 /** Текст объявления `export const NAME ... = { ... };` — от имени до закрывающей скобки верхнего уровня. */
-function block(name: string): string {
-  const start = source.search(new RegExp(`(?:export )?const ${name}\\b`));
+function blockIn(text: string, name: string): string {
+  const start = text.search(new RegExp(`(?:export )?const ${name}\\b`));
   if (start < 0) throw new Error(`не найден блок ${name}`);
-  const open = source.indexOf("{", source.indexOf("=", start));
+  const open = text.indexOf("{", text.indexOf("=", start));
   let depth = 0;
-  for (let i = open; i < source.length; i++) {
-    if (source[i] === "{") depth++;
-    else if (source[i] === "}" && --depth === 0) return source.slice(open, i + 1);
+  for (let i = open; i < text.length; i++) {
+    if (text[i] === "{") depth++;
+    else if (text[i] === "}" && --depth === 0) return text.slice(open, i + 1);
   }
   throw new Error(`не закрыт блок ${name}`);
 }
+const block = (name: string): string => blockIn(source, name);
 
 const list = (s: string): string[] => [...s.matchAll(/"([^"]+)"/g)].map((m) => m[1]);
 const key = (q?: string, bare?: string) => q ?? bare!;
@@ -82,6 +83,52 @@ const chumBlock = block("CHUM_AMOUNTS");
 const chum: Record<string, number> = {};
 for (const m of chumBlock.matchAll(/(?:"([^"]+)"|(\w+)):\s*(\d+)/g)) chum[key(m[1], m[2])] = Number(m[3]);
 
+// ─── Раки: ловушки, приманки и что в них попадается (crustaceans.ts) ───────────
+const crustSource = fs.readFileSync(path.join(sflDir, "src/features/game/types/crustaceans.ts"), "utf8");
+const crustBlock = (name: string): string => blockIn(crustSource, name);
+const amounts = (name: string): Record<string, number> => {
+  const out: Record<string, number> = {};
+  for (const m of crustBlock(name).matchAll(/(?:"([^"]+)"|(\w+)):\s*(\d+)/g)) out[key(m[1], m[2])] = Number(m[3]);
+  return out;
+};
+const crabPotChums = amounts("CRAB_POT_CHUMS");
+const marinerPotChums = amounts("MARINER_POT_CHUMS");
+
+const lookupBlock = crustBlock("CRUSTACEANS_LOOKUP");
+const crustaceanLookup: Record<string, Record<string, string>> = {};
+for (const pot of ["Crab Pot", "Mariner Pot"]) {
+  const start = lookupBlock.indexOf(`"${pot}": {`);
+  if (start < 0) throw new Error(`нет ${pot} в CRUSTACEANS_LOOKUP`);
+  const open = lookupBlock.indexOf("{", start);
+  const close = lookupBlock.indexOf("}", open);
+  const rows: Record<string, string> = {};
+  for (const m of lookupBlock.slice(open, close).matchAll(/(?:"([^"]+)"|(\w+)):\s*"([^"]+)"/g)) rows[key(m[1], m[2])] = m[3];
+  crustaceanLookup[pot] = rows;
+}
+
+const trapBlock = crustBlock("WATER_TRAP");
+const waterTraps: Record<string, { readyHours: number; level: number; chums: Record<string, number> }> = {};
+for (const [pot, chums] of [["Crab Pot", crabPotChums], ["Mariner Pot", marinerPotChums]] as const) {
+  const start = trapBlock.indexOf(`"${pot}": {`);
+  const seg = trapBlock.slice(start, trapBlock.indexOf("},", start));
+  const hours = /readyTimeHours:\s*(\d+)/.exec(seg)?.[1];
+  const level = /level:\s*(\d+)/.exec(seg)?.[1];
+  if (!hours || !level) throw new Error(`не разобраны время/уровень ${pot}`);
+  waterTraps[pot] = { readyHours: Number(hours), level: Number(level), chums };
+}
+
+// Проверки целостности: каждое ракообразное из списка игры достижимо, приманки из lookup объявлены.
+const declaredCrustaceans = list(crustSource.slice(crustSource.indexOf("export const CRUSTACEANS = ["), crustSource.indexOf("] as const")));
+const reachable = new Set(Object.values(crustaceanLookup).flatMap((r) => Object.values(r)));
+if (declaredCrustaceans.length !== 16 || declaredCrustaceans.some((c) => !reachable.has(c))) {
+  throw new Error(`раки: объявлено ${declaredCrustaceans.length}, достижимо ${reachable.size} — формат crustaceans.ts изменился`);
+}
+for (const [pot, rows] of Object.entries(crustaceanLookup)) {
+  for (const chumName of Object.keys(rows)) {
+    if (chumName !== "none" && !(chumName in waterTraps[pot].chums)) throw new Error(`${pot}: приманка ${chumName} без расхода`);
+  }
+}
+
 const out = `// ЭТОТ ФАЙЛ СГЕНЕРИРОВАН scripts/sync-fish-data.ts из исходников Sunflower Land
 // (src/features/game/types/fishing.ts). Не править руками — запустите
 // \`npm run sfl:sync-fish\` после \`npm run sfl:clone\`.
@@ -105,10 +152,16 @@ export const GUARANTEED_CATCH: Record<string, string[]> = ${JSON.stringify(guara
 
 /** Сколько единиц предмета уходит как приманка за один заброс. */
 export const CHUM_AMOUNTS: Record<string, number> = ${JSON.stringify(chum, null, 2)};
+
+/** Ловушки для ракообразных (crustaceans.ts): время, уровень бампкина и расход приманки. */
+export const WATER_TRAPS: Record<string, { readyHours: number; level: number; chums: Record<string, number> }> = ${JSON.stringify(waterTraps, null, 2)};
+
+/** Ловушка → приманка (или "none") → кто попадётся. Результат детерминирован, без случайности. */
+export const CRUSTACEAN_LOOKUP: Record<string, Record<string, string>> = ${JSON.stringify(crustaceanLookup, null, 2)};
 `;
 const target = path.resolve("src/lib/fishData.generated.ts");
 fs.writeFileSync(target, out);
 console.log(
   `ok: ${regular.length} рыб (в игре всего ${fish.length}, марвелы глав пропущены), ` +
-    `${Object.keys(guaranteed).length} гарантирующих наживок, ${Object.keys(chum).length} приманок → ${path.relative(".", target)}`,
+    `${Object.keys(guaranteed).length} гарантирующих наживок, ${Object.keys(chum).length} приманок, ${[...new Set(Object.values(crustaceanLookup).flatMap((r) => Object.values(r)))].length} ракообразных → ${path.relative(".", target)}`,
 );

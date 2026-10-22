@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import './FishCatalog.css';
+import CrustaceanCosts from './CrustaceanCosts';
 import { CHUM_AMOUNTS } from '../../lib/fishData.generated';
 import {
   BAIT_INFO,
@@ -241,6 +242,15 @@ export default function FishCatalog() {
         <a href="/codex?tab=mechanics&amp;ref=marvels">Морские марвелы</a>.
       </p>
       <FishTable />
+
+      <h3 className="ref-fish-h">Раки: Crab Pot и Mariner Pot</h3>
+      <p className="ref-section-desc">
+        В ловушку кладут приманку и ждут: что попадётся, зависит только от ловушки и приманки, случая
+        здесь нет. Цена — установка целиком: ловушка (монеты по рыночному курсу и ресурсы) плюс
+        приманка по floor-цене маркетплейса. Ловушка тратится при каждой установке. У Fish Stick, Fish
+        Oil и Crab Stick рыночной цены нет, поэтому в сумму они не входят: у таких строк цена стоит «от» и рядом указана недостающая приманка.
+      </p>
+      <CrustaceanCosts />
     </div>
   );
 }
