@@ -3,6 +3,7 @@ import './ReferenceCatalog.css';
 import FoodCatalogTable from './tools/FoodCatalogTable';
 import ToolCostCalculator from './tools/ToolCostCalculator';
 import FishCatalog from './tools/FishCatalog';
+import ComposterCosts from './tools/ComposterCosts';
 import CoinRateTable from './tools/CoinRateTable';
 import CoinRateNote from './CoinRateNote';
 import { useCoinRate } from '../lib/useCoinRate';
@@ -1376,6 +1377,22 @@ function CoinRateSection() {
   );
 }
 
+function CompostSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Компостер перерабатывает урожай, фрукты и яйца в компост и червей. <strong>Компост</strong>{' '}
+        улучшает грядки и плодовые деревья, а <strong>черви</strong> — наживка для рыбалки (см.
+        раздел «Рыбалка и раки»). Для запуска нужен набор предметов, который зависит от сезона года
+        в игре, поэтому ниже все четыре сезона. Цена — по рыночным ценам ингредиентов; у самого
+        компоста и червей рыночной цены нет, и запуск даёт оба продукта сразу, поэтому цена одной
+        штуки приведена условно: если считать, что запуск делался ради компоста, и если ради червя.
+      </p>
+      <ComposterCosts />
+    </section>
+  );
+}
+
 interface RefSection {
   id: string;
   icon: string;
@@ -1390,6 +1407,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'coins', icon: '🪙', label: 'Курс монет', Content: CoinRateSection },
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
   { id: 'bait', icon: '🎣', label: 'Рыбалка и раки', Content: BaitFishSection },
+  { id: 'compost', icon: '🪱', label: 'Компостер', Content: CompostSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },
   { id: 'obsidian', icon: '🌋', label: 'Обсидиан (Lava Pit)', Content: ObsidianSection },
   { id: 'marvels', icon: '🐋', label: 'Морские марвелы', Content: MarvelsSection },

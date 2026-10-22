@@ -1,0 +1,86 @@
+/* Компостеры (src/components/tools/ComposterCosts.tsx). Строки сезонов и рецептов
+   используют общие стили .ref-bait-season-* и панель бустов .ref-fishing-boosts
+   из FishCatalog.css (компонент импортирует его сам). */
+.ref-comp-list {
+  display: grid;
+  gap: 14px;
+  margin: 14px 0;
+}
+.ref-comp-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ref-comp-icon {
+  width: 48px;
+  height: 56px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+.ref-comp-name {
+  font-family: var(--font-head);
+  font-size: 15px;
+}
+.ref-comp-facts {
+  list-style: none;
+  margin: 10px 0 4px;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.ref-comp-facts .ref-fish-icon {
+  vertical-align: -4px;
+}
+.ref-comp-row {
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+}
+.ref-comp-cost {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  white-space: nowrap;
+}
+.ref-comp-total {
+  font-weight: 700;
+}
+.ref-comp-split {
+  font-size: 12px;
+}
+@container (max-width: 560px) {
+  .ref-comp-row {
+    grid-template-columns: 1fr auto;
+  }
+  .ref-comp-row .ref-bait-ings {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+.ref-comp-calc {
+  container-type: inline-size;
+}
+
+/* Списки рангов не должны вылезать за карточку на узких экранах */
+.ref-comp-calc .ref-food-rank-select {
+  max-width: 100%;
+  min-width: 0;
+}
+.ref-comp-split .ref-recipe-icon,
+.ref-comp-total .ref-recipe-icon {
+  width: 14px;
+  height: 14px;
+}
+@container (max-width: 560px) {
+  .ref-comp-calc .ref-fishing-boosts .ref-food-boost-selects .ref-marvel-boost-check {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .ref-comp-calc .ref-fishing-boosts .ref-food-boost-selects .ref-food-rank-select {
+    width: 100%;
+    max-width: 100%;
+  }
+}

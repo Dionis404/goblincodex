@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import { TOOLS } from './toolCosts';
 import { SELLABLES } from './coinRate';
 import { CRUSTACEAN_LOOKUP, FISH_RECORDS, GUARANTEED_CATCH, WATER_TRAPS } from './fishData.generated';
+import { COMPOSTERS, COMPOST_RECIPES, COMPOSTER_BUILDINGS, WORM_AMOUNTS } from './composterData.generated';
 
 // Общая логика чтения контента для индексации (scripts/index-search.ts) и для
 // сборки контекста ответа нейропоиска (api/search-answer.json.ts) — оба места
@@ -148,6 +149,21 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
     context:
       'Таблица опыта бампкина: сколько XP нужно для каждого уровня до и после Возвышения ' +
       '(Ascension), сколько уровней даёт каждое повышение Ascension.',
+  },
+  {
+    id: 'compost',
+    title: 'Компостер',
+    summary:
+      'компостер, компост, черви, Compost Bin, Turbo Composter, Premium Composter, Sprout Mix, Fruitful Blend, Rapid Root, Earthworm, Grub, Red Wiggler, рецепты по сезонам, сколько стоит запуск компостера, ускорение яйцами',
+    context:
+      'Компостер перерабатывает урожай, фрукты и яйца в компост и червей-наживку. ' +
+      Object.entries(COMPOSTERS).map(([name, c]) =>
+        `${name} (постройка: ${Object.entries(COMPOSTER_BUILDINGS[name].ingredients).map(([i, n]) => `${n} ${i}`).join(' + ')}, уровень ${COMPOSTER_BUILDINGS[name].level}): ` +
+        `за запуск ${c.produceAmount} ${c.produce} и червь ${c.worm} (${WORM_AMOUNTS[c.worm].join('/')} на выбор), готовка ${c.hours} ч, ускорение ${c.speedUpAmount} яиц срезает ${c.speedUpHours} ч. Для запуска: ` +
+        Object.entries(COMPOST_RECIPES[name]).map(([season, recipe]) => `${season} — ${Object.entries(recipe).map(([i, n]) => `${n} ${i}`).join(' + ')}`).join('; '),
+      ).join('. ') +
+      '. Sprout Mix даёт +0,2 к урожаю с грядок, Fruitful Blend +0,1 к урожаю плодовых деревьев, Rapid Root сокращает рост на грядках на 50%. ' +
+      'Бусты: Efficient Bin, Turbo Charged, Premium Worms, Composting Revamp, Turd Topper (больше компоста), Wormy Treat, Composting Overhaul, Bucket O Worms, Saw Fish, Deep Sea Slug (больше червей), Soil Krabby и Swift Decomposer (быстрее).',
   },
   {
     id: 'bait',
