@@ -95,7 +95,7 @@ export interface PotCost {
   coins: number;
   /** Ресурсы ловушки во Flower; null — цен нет. */
   resourcesFlower: number | null;
-  /** Монеты по рыночному курсу; null — курса нет. */
+  /** Монеты по курсу монет; null — курса нет. */
   coinsFlower: number | null;
   /** Итого ловушка во Flower (то, что известно). */
   total: number;

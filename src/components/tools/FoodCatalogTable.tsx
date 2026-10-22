@@ -5,6 +5,12 @@ import BOOST_ICONS from '../../lib/boostIcons.json';
 import { SKILL_ICONS } from '../../lib/skills';
 import { FlowerAmount } from '../ResourceIcon';
 import { useItemPrices } from '../../lib/useItemPrices';
+import { useCoinRate } from '../../lib/useCoinRate';
+import { BAITS, averageBaitCost, baitCosts } from '../../lib/baitCosts';
+import { CHUM_PRICE_NAMES } from '../../lib/crustaceans';
+import { TOOL_PRICE_NAMES } from '../../lib/toolCosts';
+import { NO_FISHING_BOOSTS, fishUnitCost, type FishTier } from '../../lib/fishYield';
+import { FISH_RECORDS } from '../../lib/fishData.generated';
 
 /**
  * Рецепты и формулы сверены с исходниками sunflower-land (см. scripts/README.md):
@@ -219,7 +225,11 @@ const FOOD_PRICE_NAMES: string[] = (() => {
 
 // Блюда, у которых цену не показываем: в БД цен для их ингредиентов неверные
 // данные — лучше «—», чем вводящее в заблуждение число.
-const NO_PRICE_RECIPES = new Set(['Mushroom Jacket Potatoes', 'Creamy Crab Bite']);
+const NO_PRICE_RECIPES = new Set(['Mushroom Jacket Potatoes']);
+
+// Рыбные наживки (Fish Flake, Fish Stick, Fish Oil, Crab Stick) на маркете не
+// торгуются — их цену подставляем по рецепту (себестоимость, среднее по сезонам).
+const BAIT_PRICE_NAMES = [...new Set([...CHUM_PRICE_NAMES, ...TOOL_PRICE_NAMES])];
 
 interface RecipeCost {
   /** Сумма по ингредиентам с ценой; null — не оценён ни один ингредиент. */
@@ -258,7 +268,7 @@ function recipeCost(name: string, prices: Record<string, number | null>, seen: s
 /** Значок «i» с пояснением, что цена указана не за все ингредиенты (тултип по hover/фокусу/тапу). */
 function PartialPriceInfo({ missing }: { missing: string[] }) {
   if (missing.length === 0) return null;
-  const text = `Цена указана только за продаваемые ингредиенты. Нет цены на маркете: ${missing.join(', ')}.`;
+  const text = `Цена указана только за те ингредиенты, у которых она есть. Нет цены: ${missing.join(', ')}.`;
   return (
     <span className="ref-info-badge" tabIndex={0} role="img" aria-label={text} data-tip={text}>
       i
@@ -683,7 +693,7 @@ function BuildingTable({
 
 type FishSortKey =
   | 'name' | 'rawXp' | 'agedXp' | 'primeAgedXp' | 'saltCost' | 'agingHours' | 'agingXpPerHour'
-  | 'saltPrice' | 'agedXpPerFlower';
+  | 'fishCost' | 'saltPrice' | 'agedXpPerFlower';
 
 const FISH_COLUMNS: { key: FishSortKey; label: string }[] = [
   { key: 'name', label: 'Рыба' },
@@ -693,14 +703,16 @@ const FISH_COLUMNS: { key: FishSortKey; label: string }[] = [
   { key: 'agedXp', label: 'Aged (XP)' },
   { key: 'primeAgedXp', label: 'Prime Aged (XP)' },
   { key: 'agingXpPerHour', label: 'XP/час (соление)' },
+  { key: 'fishCost', label: 'Себест. рыбы' },
   { key: 'saltPrice', label: 'Цена соли' },
   { key: 'agedXpPerFlower', label: 'Доп. XP/Flower' },
 ];
 
-// Рыба не продаётся — в цене участвует только соль (предмет маркета, ищется
+// Соль — предмет маркета (ищется
 // в collectibles по имени).
 const FISH_PRICE_NAMES = ['Salt'];
-const PRICE_SORT_KEYS: FishSortKey[] = ['saltPrice', 'agedXpPerFlower'];
+const PRICE_SORT_KEYS: FishSortKey[] = ['fishCost', 'saltPrice', 'agedXpPerFlower'];
+const FISH_TIER = new Map(FISH_RECORDS.map((f) => [f.name, f.type as FishTier]));
 
 // ── Шанс на Prime Aged Fish (features/game/types/agingFormulas.ts getPrimeAgedChance) ──
 const PRIME_AGED_BASE_CHANCE = 10; // %
@@ -721,6 +733,7 @@ function primeAgedChance(b: PrimeChanceBoosts): number {
 }
 
 function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<string, number | null> | null }) {
+  const { rate: coinRate } = useCoinRate();
   const [sortKey, setSortKey] = useState<FishSortKey>('rawXp');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [primeBoosts, setPrimeBoosts] = useState<PrimeChanceBoosts>({
@@ -751,6 +764,9 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
       const agingXpPerHour = f.agingHours > 0 ? (avgAgedXp - boostedRawXp) / f.agingHours : Infinity;
       // Рыба не продаётся (её ловят), поэтому стоит только соль. Засолка даёт
       // прибавку к XP сырой рыбы — считаем её на 1 Flower потраченной соли.
+      // Сама рыба — по себестоимости заброса удочки (без бустов, fishYield.ts).
+      const tier = FISH_TIER.get(f.name);
+      const fishCost = prices && coinRate !== undefined && tier ? fishUnitCost(tier, 'spring', prices, coinRate, NO_FISHING_BOOSTS) : null;
       const saltUnit = prices?.Salt ?? null;
       const saltPrice = saltUnit != null ? saltUnit * f.saltCost : null;
       const agedXpPerFlower = saltPrice != null && saltPrice > 0 ? (avgAgedXp - boostedRawXp) / saltPrice : null;
@@ -760,11 +776,12 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
         boostedAgedXp,
         boostedPrimeAgedXp,
         agingXpPerHour,
+        fishCost,
         saltPrice,
         agedXpPerFlower,
       };
     });
-  }, [xpBoosts, chance, prices]);
+  }, [xpBoosts, chance, prices, coinRate]);
 
   const sortedRows = useMemo(() => {
     const copy = [...rows];
@@ -830,7 +847,8 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
       />
       {prices && (
         <p className="ref-section-desc">
-          Рыба не продаётся, поэтому в цене учитывается только соль: «Цена соли» — стоимость всей
+          Рыба на маркете не продаётся: «Себест. рыбы» — оценка по цене заброса удочки (монеты по
+          курсу + дерево и камень), делённой на улов за заброс, без бустов рыбалки. «Цена соли» — стоимость всей
           соли на засолку этой рыбы по текущему floor. «Доп. XP/Flower» (опыт за 1 Flower) — на сколько XP
           засолка (средний XP выдержанной рыбы с шансом Prime Aged минус XP сырой) увеличивает
           опыт на каждый потраченный на соль Flower. Нет цены соли — «—».
@@ -885,6 +903,9 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
                 <td data-label="XP/час (соление)">
                   {r.agingXpPerHour === Infinity ? '—' : Math.round(r.agingXpPerHour).toLocaleString('ru-RU')}
                 </td>
+                <td data-label="Себест. рыбы">
+                  {prices == null ? '…' : r.fishCost != null ? <>≈ <FlowerAmount compact value={r.fishCost} /></> : '—'}
+                </td>
                 <td data-label="Цена соли">
                   {prices == null ? '…' : r.saltPrice != null ? <FlowerAmount compact value={r.saltPrice} /> : '—'}
                 </td>
@@ -901,7 +922,15 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
 }
 
 export default function FoodCatalogTable() {
-  const prices = useItemPrices([...FOOD_PRICE_NAMES, ...FISH_PRICE_NAMES]);
+  const marketPrices = useItemPrices([...FOOD_PRICE_NAMES, ...FISH_PRICE_NAMES, ...BAIT_PRICE_NAMES]);
+  const { rate: coinRate } = useCoinRate();
+  const prices = useMemo(() => {
+    if (!marketPrices || coinRate === undefined) return marketPrices;
+    const merged = { ...marketPrices };
+    const costs = baitCosts(marketPrices, coinRate, NO_FISHING_BOOSTS);
+    for (const bait of BAITS) merged[bait] = averageBaitCost(costs[bait]);
+    return merged;
+  }, [marketPrices, coinRate]);
   const [activeTab, setActiveTab] = useState<Building | 'Fish'>('Fire Pit');
 
   const [timeBoosts, setTimeBoosts] = useState<TimeBoosts>({
@@ -1142,7 +1171,9 @@ export default function FoodCatalogTable() {
           )}
           <p className="ref-section-desc ref-section-desc--spaced">
             Цена — сумма ингредиентов по текущему floor на маркете (промежуточные блюда раскрыты до
-            сырых ингредиентов). «XP/Flower» — опыт за 1 Flower с учётом включённых бустов, делённый на цену.
+            сырых ингредиентов). Рыбные наживки (Fish Flake, Fish Stick, Fish Oil, Crab Stick) на
+            маркете не продаются, поэтому в блюдах они идут по себестоимости из раздела «Рыбалка и раки»
+            (среднее по сезонам, без бустов) — это оценка, а не рыночная цена. «XP/Flower» — опыт за 1 Flower с учётом включённых бустов, делённый на цену.
             Если часть ингредиентов не продаётся (например, Magic Mushroom), цена считается только
             по продаваемым — у такого блюда значок «i» с перечнем ингредиентов без цены. «—» — когда
             цены нет ни у одного ингредиента.

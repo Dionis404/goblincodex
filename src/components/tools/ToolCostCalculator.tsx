@@ -128,7 +128,7 @@ export default function ToolCostCalculator() {
   const setOilBoost = <K extends keyof OilBoosts>(key: K, value: OilBoosts[K]) =>
     setOilBoosts((prev) => ({ ...prev, [key]: value }));
 
-  // Монеты → Flower по рыночному курсу (раздел «Курс монет»), чтобы у
+  // Монеты → Flower по курсу монет (раздел «Курс монет»), чтобы у
   // инструмента была одна полная цена. null — курса нет, монеты не переводим.
   const { rate: coinRate } = useCoinRate();
   const coinsFlower = (coins: number) => (coinRate ? coinsToFlower(coins, coinRate) : null);

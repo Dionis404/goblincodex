@@ -96,7 +96,7 @@ export function expectedFishPerCast(tier: FishTier, season: SeasonName, b: Fishi
   return fish;
 }
 
-/** Цена одного заброса (удочка) во Flower: монеты по рыночному курсу + ресурсы по floor. */
+/** Цена одного заброса (удочка) во Flower: монеты по курсу монет + ресурсы по floor. */
 export function castCost(
   prices: Record<string, number | null>,
   coinRate: number | null | undefined,

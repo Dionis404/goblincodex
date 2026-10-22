@@ -455,7 +455,7 @@ function ResourceUpgradeSection() {
 }
 
 // Oil на маркетплейсе не торгуется — его цену подставляет useOilPrice
-// (себестоимость добычи без бустов); пока её нет, Oil в итог не входит.
+// (себестоимость добычи без бустов).
 const LAVA_PIT_UNPRICED = new Set(['Oil']);
 
 const LAVA_PIT_PRICE_NAMES = [...new Set(['Obsidian', ...LAVA_PIT_RECIPES.flatMap((r) => r.items.map((i) => i.name))])]
@@ -474,7 +474,7 @@ function ObsidianSection() {
   const marketPrices = useItemPrices(LAVA_PIT_PRICE_NAMES);
   const oilPrice = useOilPrice();
   const prices: Record<string, number | null> | null = marketPrices ? { ...marketPrices, Oil: oilPrice ?? null } : null;
-  // Сколько ингредиентов рецепта без цены «по определению» (Oil, пока нет себестоимости).
+  // Сколько ингредиентов рецепта без цены (Oil, если не удалось посчитать себестоимость).
   const unpricedCount = (items: LavaPitIngredient[]) =>
     oilPrice != null ? 0 : items.filter((i) => LAVA_PIT_UNPRICED.has(i.name)).length;
   const [boostsOn, setBoostsOn] = useState<Record<string, boolean>>({});
@@ -669,7 +669,7 @@ function StageTable({
   const stages = applyExpansionBoosts(baseStages, boosts);
   const total = sumStages(stages);
   const prices = useItemPrices(EXPANSION_PRICE_NAMES);
-  // Полная цена этапа во Flower: ресурсы по floor + монеты по рыночному курсу.
+  // Полная цена этапа во Flower: ресурсы по floor + монеты по курсу монет.
   const { rate: coinRate } = useCoinRate();
   const oilPrice = useOilPrice();
   // Oil — по себестоимости добычи (useOilPrice), его нет в floor-ценах.

@@ -10,7 +10,7 @@
  *      (самый дешёвый способ);
  *   3. находка (treasure) — «Crab»: выпадает при раскопках и как мусор при
  *      рыбалке, не торгуется; оцениваем ценой продажи в монетах
- *      (CRAB_SELL_COINS), переведённой во Flower по рыночному курсу монет.
+ *      (CRAB_SELL_COINS), переведённой во Flower по курсу монет.
  * Все цены — оценка себестоимости, а не рыночная.
  */
 import { BAIT_RECIPES, CRAB_SELL_COINS, CRUSTACEAN_LOOKUP, FISH_RECORDS } from './fishData.generated';
