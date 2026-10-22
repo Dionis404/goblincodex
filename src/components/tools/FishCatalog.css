@@ -245,3 +245,101 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Рецепты наживок и их цена (src/components/tools/BaitRecipes.tsx) ── */
+.ref-bait-recipes-wrap {
+  container-type: inline-size;
+  container-name: baitrec;
+}
+.ref-bait-recipes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+.ref-bait-season-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+.ref-bait-season-row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.ref-bait-season {
+  white-space: nowrap;
+  color: var(--text-sec);
+}
+.ref-bait-ings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+}
+.ref-bait-ing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.ref-bait-ing--unknown {
+  color: var(--red);
+}
+.ref-bait-cost {
+  font-weight: 700;
+  white-space: nowrap;
+  text-align: right;
+}
+@container baitrec (max-width: 620px) {
+  .ref-bait-recipes {
+    grid-template-columns: 1fr;
+  }
+}
+@container baitrec (max-width: 380px) {
+  .ref-bait-season-row {
+    grid-template-columns: 1fr auto;
+  }
+  .ref-bait-ings {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+.ref-crust-season {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+/* Панель бустов рыбалки (src/components/tools/FishingBoostsWidget.tsx) */
+.ref-fishing-boosts {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  margin: 12px 0;
+}
+.ref-fishing-boosts-seasonal,
+.ref-fishing-boosts .ref-food-boost-selects {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.ref-fishing-boosts-sum {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+}
+.ref-bait-ing--fish {
+  color: var(--text);
+}

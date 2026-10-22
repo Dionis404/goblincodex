@@ -1,7 +1,7 @@
 /**
  * sync-fish-data.ts
  * Генерирует src/lib/fishData.generated.ts из исходников игры: справочник рыб
- * (обычная рыба и постоянные марвелы из FISH), гарантированный улов по наживкам
+ * (обычная рыба из FISH), гарантированный улов по наживкам
  * и приманки (chum). Марвелы глав и куски карт сюда не входят — они в разделе
  * «Морские марвелы». Данные нельзя импортировать из клона напрямую — файл
  * игры тянет за собой полпроекта (translate, game types…), поэтому
@@ -65,6 +65,8 @@ function fishFrom(text: string): FishRecord[] {
 const regular = fishFrom(block("FISH"));
 const chapter = fishFrom(block("CHAPTER_FISH"));
 const fish = [...regular, ...chapter];
+// В справочник — только обычная рыба: у марвелов нет своих сезонов, а как их получить, описано на странице марвелов.
+const catalog = regular.filter((f) => f.type !== "marine marvel");
 
 // Ожидаемое число записей берём независимо — по объявлению типов в файле.
 const declared =
@@ -129,13 +131,62 @@ for (const [pot, rows] of Object.entries(crustaceanLookup)) {
   }
 }
 
+// ─── Рецепты наживок: Fish Flake/Stick/Oil, Crab Stick (fishProcessing.ts) ────
+const procSource = fs.readFileSync(path.join(sflDir, "src/features/game/types/fishProcessing.ts"), "utf8");
+const procBlock = (name: string): string => blockIn(procSource, name);
+const ITEM = /(?:"([^"]+)"|(\w+)):\s*new Decimal\((\d+)\)/g;
+const itemsOf = (text: string): Record<string, number> => {
+  const out: Record<string, number> = {};
+  for (const m of text.matchAll(ITEM)) out[key(m[1], m[2])] = Number(m[3]);
+  return out;
+};
+const BAIT_NAMES = ["Fish Flake", "Fish Stick", "Fish Oil", "Crab Stick"] as const;
+const SEASON_NAMES = ["spring", "summer", "autumn", "winter"] as const;
+
+const seconds: Record<string, number> = {};
+for (const m of procBlock("FISH_PROCESSING_TIME_SECONDS").matchAll(/"([^"]+)":\s*([\d*\s]+),/g)) {
+  seconds[m[1]] = m[2].split("*").reduce((acc, n) => acc * Number(n.trim()), 1);
+}
+const baseBlock = procBlock("BASE_PROCESSING_REQUIREMENTS");
+const SEASONAL_CONST: Record<string, string> = {
+  "Fish Flake": "FISH_FLAKE_SEASONAL",
+  "Fish Stick": "FISH_STICK_SEASONAL",
+  "Fish Oil": "FISH_OIL_SEASONAL",
+  "Crab Stick": "CRAB_STICK_SEASONAL",
+};
+interface BaitRecipe {
+  seconds: number;
+  base: Record<string, number>;
+  seasonal: Record<string, Record<string, number>>;
+}
+const baitRecipes: Record<string, BaitRecipe> = {};
+for (const bait of BAIT_NAMES) {
+  const baseStart = baseBlock.indexOf(`"${bait}": {`);
+  const base = itemsOf(baseBlock.slice(baseStart, baseBlock.indexOf("}", baseStart)));
+  const seasonalBlock = procBlock(SEASONAL_CONST[bait]);
+  const seasonal: Record<string, Record<string, number>> = {};
+  for (const season of SEASON_NAMES) {
+    const start = seasonalBlock.indexOf(`${season}: {`);
+    if (start < 0) throw new Error(`${bait}: нет сезона ${season}`);
+    seasonal[season] = itemsOf(seasonalBlock.slice(start, seasonalBlock.indexOf("}", start)));
+    if (Object.keys(seasonal[season]).length < 2) throw new Error(`${bait}/${season}: слишком мало ингредиентов`);
+  }
+  if (Object.keys(base).length === 0 || !seconds[bait]) throw new Error(`${bait}: не разобран рецепт`);
+  baitRecipes[bait] = { seconds: seconds[bait], base, seasonal };
+}
+
+// Crab — находка с раскопок и мусор при рыбалке, не торгуется: цену берём из продажи в монетах (treasure.ts).
+const treasureSource = fs.readFileSync(path.join(sflDir, "src/features/game/types/treasure.ts"), "utf8");
+const crabSell = /\bCrab:\s*\{\s*sellPrice:\s*([\d.]+)/.exec(treasureSource)?.[1];
+if (!crabSell) throw new Error("не найдена цена продажи Crab в treasure.ts");
+
 const out = `// ЭТОТ ФАЙЛ СГЕНЕРИРОВАН scripts/sync-fish-data.ts из исходников Sunflower Land
 // (src/features/game/types/fishing.ts). Не править руками — запустите
 // \`npm run sfl:sync-fish\` после \`npm run sfl:clone\`.
 
 export interface FishRecord {
   name: string;
-  /** basic | advanced | expert | marine marvel */
+  /** basic | advanced | expert */
   type: string;
   /** Подходящая наживка: червь (Earthworm/Grub/Red Wiggler) или Fishing Lure. */
   baits: string[];
@@ -144,8 +195,8 @@ export interface FishRecord {
   seasons: string[];
 }
 
-/** Обычная рыба и постоянные марвелы. Марвелы глав (CHAPTER_FISH) не включены — они в разделе «Морские марвелы». */
-export const FISH_RECORDS: FishRecord[] = ${JSON.stringify(regular, null, 2)};
+/** Обычная рыба. Марвелы (постоянные и глав) не включены — они в разделе «Морские марвелы». */
+export const FISH_RECORDS: FishRecord[] = ${JSON.stringify(catalog, null, 2)};
 
 /** Рыба, которую гарантирует наживка (Fish Flake и т.д.). */
 export const GUARANTEED_CATCH: Record<string, string[]> = ${JSON.stringify(guaranteed, null, 2)};
@@ -156,12 +207,27 @@ export const CHUM_AMOUNTS: Record<string, number> = ${JSON.stringify(chum, null,
 /** Ловушки для ракообразных (crustaceans.ts): время, уровень бампкина и расход приманки. */
 export const WATER_TRAPS: Record<string, { readyHours: number; level: number; chums: Record<string, number> }> = ${JSON.stringify(waterTraps, null, 2)};
 
+interface BaitRecipe {
+  /** Время изготовления, секунды. */
+  seconds: number;
+  /** Ингредиенты, которые нужны всегда. */
+  base: Record<string, number>;
+  /** Добавка по сезонам года (spring | summer | autumn | winter). */
+  seasonal: Record<string, Record<string, number>>;
+}
+
+/** Рецепты наживок: итоговый набор = base + seasonal[сезон]. Сезон года в игре меняется. */
+export const BAIT_RECIPES: Record<string, BaitRecipe> = ${JSON.stringify(baitRecipes, null, 2)};
+
+/** Цена продажи Crab в монетах (находка с раскопок / мусор при рыбалке; на рынке не торгуется). */
+export const CRAB_SELL_COINS = ${crabSell};
+
 /** Ловушка → приманка (или "none") → кто попадётся. Результат детерминирован, без случайности. */
 export const CRUSTACEAN_LOOKUP: Record<string, Record<string, string>> = ${JSON.stringify(crustaceanLookup, null, 2)};
 `;
 const target = path.resolve("src/lib/fishData.generated.ts");
 fs.writeFileSync(target, out);
 console.log(
-  `ok: ${regular.length} рыб (в игре всего ${fish.length}, марвелы глав пропущены), ` +
+  `ok: ${catalog.length} рыб (в игре всего ${fish.length}, марвелы пропущены), ` +
     `${Object.keys(guaranteed).length} гарантирующих наживок, ${Object.keys(chum).length} приманок, ${[...new Set(Object.values(crustaceanLookup).flatMap((r) => Object.values(r)))].length} ракообразных → ${path.relative(".", target)}`,
 );

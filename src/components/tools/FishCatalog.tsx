@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
+import { NO_FISHING_BOOSTS, type FishingBoosts } from '../../lib/fishYield';
 import './FishCatalog.css';
 import CrustaceanCosts from './CrustaceanCosts';
+import BaitRecipes from './BaitRecipes';
 import { CHUM_AMOUNTS } from '../../lib/fishData.generated';
 import {
   BAIT_INFO,
@@ -219,6 +221,8 @@ function FishTable() {
 }
 
 export default function FishCatalog() {
+  // Бусты рыбалки общие: от них зависит цена рыбы, а через неё — наживок и приманок раков.
+  const [fishing, setFishing] = useState<FishingBoosts>(NO_FISHING_BOOSTS);
   return (
     <div className="ref-fish-catalog">
       <h3 className="ref-fish-h">Гарантированный улов</h3>
@@ -227,6 +231,13 @@ export default function FishCatalog() {
         наверняка. С такой наживкой приманку (chum) использовать нельзя.
       </p>
       <GuaranteedCards />
+
+      <h3 className="ref-fish-h">Как сделать наживку и сколько это стоит</h3>
+      <p className="ref-section-desc">
+        Гарантирующие наживки делают из рыбы в Fish Market. Рецепт — постоянная часть плюс две
+        рыбы или существа, которые зависят от сезона года в игре.
+      </p>
+      <BaitRecipes fishing={fishing} onFishingChange={setFishing} />
 
       <h3 className="ref-fish-h">Что и на что ловить</h3>
       <p className="ref-section-desc">
@@ -247,10 +258,11 @@ export default function FishCatalog() {
       <p className="ref-section-desc">
         В ловушку кладут приманку и ждут: что попадётся, зависит только от ловушки и приманки, случая
         здесь нет. Цена — установка целиком: ловушка (монеты по рыночному курсу и ресурсы) плюс
-        приманка по floor-цене маркетплейса. Ловушка тратится при каждой установке. У Fish Stick, Fish
-        Oil и Crab Stick рыночной цены нет, поэтому в сумму они не входят: у таких строк цена стоит «от» и рядом указана недостающая приманка.
+        приманка по floor-цене маркетплейса. Ловушка тратится при каждой установке. Fish Stick, Fish
+        Oil и Crab Stick не торгуются — их цена посчитана по рецепту (см. выше) и помечена «≈». Если
+        у наживки всё же нет цены, стоит «от» и указана недостающая приманка.
       </p>
-      <CrustaceanCosts />
+      <CrustaceanCosts fishing={fishing} />
     </div>
   );
 }

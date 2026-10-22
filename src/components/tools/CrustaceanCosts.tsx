@@ -3,7 +3,11 @@ import { CoinsIcon, FlowerAmount } from '../ResourceIcon';
 import CoinRateNote from '../CoinRateNote';
 import { useItemPrices } from '../../lib/useItemPrices';
 import { useCoinRate } from '../../lib/useCoinRate';
-import { TOOLS, TOOL_PRICE_NAMES } from '../../lib/toolCosts';
+import { TOOLS } from '../../lib/toolCosts';
+import { BAIT_RECIPE_PRICE_NAMES } from './BaitRecipes';
+import { BAITS, SEASON_NAMES, baitCosts, baitUnitPrice, type SeasonName } from '../../lib/baitCosts';
+import { SEASON_INFO } from '../../lib/fishCatalog';
+import type { FishingBoosts } from '../../lib/fishYield';
 import { WATER_TRAPS } from '../../lib/fishData.generated';
 import {
   CHUM_ICONS,
@@ -21,7 +25,9 @@ import {
   type PotName,
 } from '../../lib/crustaceans';
 
-const PRICE_NAMES = [...new Set([...TOOL_PRICE_NAMES, ...CHUM_PRICE_NAMES])];
+const PRICE_NAMES = BAIT_RECIPE_PRICE_NAMES;
+
+type SeasonChoice = SeasonName | 'avg';
 
 const BOOST_OPTIONS: { key: keyof CrustaceanBoosts; label: string; icon: string }[] = [
   { key: 'royalCrabPot', label: 'Royal Crab Pot — ловушка не тратится', icon: '/sprites/sfts/royal_crab_pot.webp' },
@@ -43,11 +49,14 @@ function PotCard({
   prices,
   coinRate,
   boosts,
+  baitPriced,
 }: {
   pot: PotName;
   prices: Record<string, number | null> | null;
   coinRate: number | null | undefined;
   boosts: CrustaceanBoosts;
+  /** Приманки, чья цена посчитана по рецепту (а не взята с рынка). */
+  baitPriced: Set<string>;
 }) {
   const rows = prices ? crustaceanRows(pot, prices, coinRate, boosts) : null;
   const cost = prices ? potCost(pot, prices, coinRate, boosts) : null;
@@ -89,6 +98,7 @@ function PotCard({
             <span className="ref-crust-cost">
               <span>
                 {r.chum && r.chumFlower == null && <span className="ref-price-hint">от </span>}
+                {r.chum && r.chumFlower != null && baitPriced.has(r.chum.name) && <span className="ref-price-hint">≈ </span>}
                 <FlowerAmount compact value={r.perUnit} />
               </span>
               {r.chum && r.chumFlower == null && (
@@ -109,10 +119,23 @@ function PotCard({
   );
 }
 
-export default function CrustaceanCosts() {
+export default function CrustaceanCosts({ fishing }: { fishing: FishingBoosts }) {
   const prices = useItemPrices(PRICE_NAMES);
   const { rate: coinRate } = useCoinRate();
   const [boosts, setBoosts] = useState<CrustaceanBoosts>(NO_CRUSTACEAN_BOOSTS);
+  const [season, setSeason] = useState<SeasonChoice>('avg');
+
+  // Fish Stick, Fish Oil и Crab Stick на маркетплейсе не торгуются — цена по рецепту (baitCosts).
+  const costs = prices ? baitCosts(prices, coinRate, fishing) : null;
+  const baitPrices: Record<string, number> = {};
+  if (costs) {
+    for (const b of BAITS) {
+      const p = baitUnitPrice(costs, b, season);
+      if (p != null) baitPrices[b] = p;
+    }
+  }
+  const chumPrices = prices ? { ...prices, ...baitPrices } : null;
+  const baitPriced = new Set(Object.keys(baitPrices));
 
   return (
     <div className="ref-crust-calc">
@@ -132,9 +155,19 @@ export default function CrustaceanCosts() {
         </div>
       </div>
 
+      <label className="ref-crust-season">
+        <span>Сезон года в игре — от него зависит цена Fish Stick, Fish Oil и Crab Stick</span>
+        <select value={season} onChange={(e) => setSeason(e.target.value as SeasonChoice)} className="ref-food-rank-select">
+          <option value="avg">среднее по сезонам</option>
+          {SEASON_NAMES.map((n) => (
+            <option key={n} value={n}>{SEASON_INFO[n].emoji} {SEASON_INFO[n].label}</option>
+          ))}
+        </select>
+      </label>
+
       <div className="ref-crust-grid">
         {POTS.map((pot) => (
-          <PotCard key={pot} pot={pot} prices={prices} coinRate={coinRate} boosts={boosts} />
+          <PotCard key={pot} pot={pot} prices={chumPrices} coinRate={coinRate} boosts={boosts} baitPriced={baitPriced} />
         ))}
       </div>
 

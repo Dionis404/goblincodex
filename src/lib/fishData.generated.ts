@@ -4,7 +4,7 @@
 
 export interface FishRecord {
   name: string;
-  /** basic | advanced | expert | marine marvel */
+  /** basic | advanced | expert */
   type: string;
   /** Подходящая наживка: червь (Earthworm/Grub/Red Wiggler) или Fishing Lure. */
   baits: string[];
@@ -13,7 +13,7 @@ export interface FishRecord {
   seasons: string[];
 }
 
-/** Обычная рыба и постоянные марвелы. Марвелы глав (CHAPTER_FISH) не включены — они в разделе «Морские марвелы». */
+/** Обычная рыба. Марвелы (постоянные и глав) не включены — они в разделе «Морские марвелы». */
 export const FISH_RECORDS: FishRecord[] = [
   {
     "name": "Anchovy",
@@ -577,94 +577,6 @@ export const FISH_RECORDS: FishRecord[] = [
     "seasons": [
       "spring"
     ]
-  },
-  {
-    "name": "Twilight Anglerfish",
-    "type": "marine marvel",
-    "baits": [
-      "Red Wiggler",
-      "Grub",
-      "Fishing Lure"
-    ],
-    "likes": [
-      "Sunfish"
-    ],
-    "seasons": [
-      "winter",
-      "spring",
-      "summer",
-      "autumn"
-    ]
-  },
-  {
-    "name": "Starlight Tuna",
-    "type": "marine marvel",
-    "baits": [
-      "Red Wiggler",
-      "Fishing Lure"
-    ],
-    "likes": [
-      "Horse Mackerel",
-      "Zebra Turkeyfish"
-    ],
-    "seasons": [
-      "winter",
-      "spring",
-      "summer",
-      "autumn"
-    ]
-  },
-  {
-    "name": "Radiant Ray",
-    "type": "marine marvel",
-    "baits": [
-      "Red Wiggler",
-      "Fishing Lure"
-    ],
-    "likes": [
-      "Iron"
-    ],
-    "seasons": [
-      "winter",
-      "spring",
-      "summer",
-      "autumn"
-    ]
-  },
-  {
-    "name": "Phantom Barracuda",
-    "type": "marine marvel",
-    "baits": [
-      "Grub",
-      "Fishing Lure"
-    ],
-    "likes": [
-      "Squid"
-    ],
-    "seasons": [
-      "winter",
-      "spring",
-      "summer",
-      "autumn"
-    ]
-  },
-  {
-    "name": "Gilded Swordfish",
-    "type": "marine marvel",
-    "baits": [
-      "Earthworm",
-      "Red Wiggler",
-      "Fishing Lure"
-    ],
-    "likes": [
-      "Gold"
-    ],
-    "seasons": [
-      "winter",
-      "spring",
-      "summer",
-      "autumn"
-    ]
   }
 ];
 
@@ -805,6 +717,122 @@ export const WATER_TRAPS: Record<string, { readyHours: number; level: number; ch
     }
   }
 };
+
+interface BaitRecipe {
+  /** Время изготовления, секунды. */
+  seconds: number;
+  /** Ингредиенты, которые нужны всегда. */
+  base: Record<string, number>;
+  /** Добавка по сезонам года (spring | summer | autumn | winter). */
+  seasonal: Record<string, Record<string, number>>;
+}
+
+/** Рецепты наживок: итоговый набор = base + seasonal[сезон]. Сезон года в игре меняется. */
+export const BAIT_RECIPES: Record<string, BaitRecipe> = {
+  "Fish Flake": {
+    "seconds": 3600,
+    "base": {
+      "Anchovy": 4
+    },
+    "seasonal": {
+      "spring": {
+        "Porgy": 2,
+        "Sea Bass": 2
+      },
+      "summer": {
+        "Butterflyfish": 2,
+        "Sea Horse": 2
+      },
+      "autumn": {
+        "Halibut": 2,
+        "Muskellunge": 2
+      },
+      "winter": {
+        "Blowfish": 2,
+        "Clownfish": 2
+      }
+    }
+  },
+  "Fish Stick": {
+    "seconds": 7200,
+    "base": {
+      "Red Snapper": 6
+    },
+    "seasonal": {
+      "spring": {
+        "Olive Flounder": 2,
+        "Zebra Turkeyfish": 2
+      },
+      "summer": {
+        "Surgeonfish": 2,
+        "Tilapia": 2
+      },
+      "autumn": {
+        "Moray Eel": 2,
+        "Napoleanfish": 2
+      },
+      "winter": {
+        "Walleye": 2,
+        "Angelfish": 2
+      }
+    }
+  },
+  "Fish Oil": {
+    "seconds": 57600,
+    "base": {
+      "Tuna": 8
+    },
+    "seasonal": {
+      "spring": {
+        "Weakfish": 2,
+        "Oarfish": 2
+      },
+      "summer": {
+        "Cobia": 2,
+        "Sunfish": 2
+      },
+      "autumn": {
+        "Mahi Mahi": 4,
+        "Crab": 2
+      },
+      "winter": {
+        "Blue Marlin": 2,
+        "Football fish": 2
+      }
+    }
+  },
+  "Crab Stick": {
+    "seconds": 14400,
+    "base": {
+      "Crab": 1
+    },
+    "seasonal": {
+      "spring": {
+        "Blue Crab": 1,
+        "Hermit Crab": 1,
+        "Sea Slug": 1
+      },
+      "summer": {
+        "Mussel": 1,
+        "Isopod": 1,
+        "Sea Snail": 1
+      },
+      "autumn": {
+        "Shrimp": 1,
+        "Lobster": 1,
+        "Barnacle": 1
+      },
+      "winter": {
+        "Oyster": 1,
+        "Isopod": 1,
+        "Garden Eel": 1
+      }
+    }
+  }
+};
+
+/** Цена продажи Crab в монетах (находка с раскопок / мусор при рыбалке; на рынке не торгуется). */
+export const CRAB_SELL_COINS = 15;
 
 /** Ловушка → приманка (или "none") → кто попадётся. Результат детерминирован, без случайности. */
 export const CRUSTACEAN_LOOKUP: Record<string, Record<string, string>> = {

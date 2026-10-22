@@ -7,14 +7,13 @@ import { FISH_RECORDS, GUARANTEED_CATCH, type FishRecord } from './fishData.gene
 
 export type { FishRecord };
 
-export const TIER_ORDER = ['basic', 'advanced', 'expert', 'marine marvel'] as const;
+export const TIER_ORDER = ['basic', 'advanced', 'expert'] as const;
 export type Tier = (typeof TIER_ORDER)[number];
 
 export const TIER_LABELS: Record<Tier, string> = {
   basic: 'Базовая',
   advanced: 'Продвинутая',
   expert: 'Эксперт',
-  'marine marvel': 'Марвел',
 };
 
 export const SEASONS = ['spring', 'summer', 'autumn', 'winter'] as const;
@@ -56,9 +55,6 @@ const FISH_ICON_FILES: Record<string, string> = {
   'Whale Shark': 'whale_shark.png', 'Saw Shark': 'saw_shark.png', 'White Shark': 'white_shark.png',
   Porgy: 'porgy.png', Muskellunge: 'muskellunge.png', Trout: 'trout.png', Walleye: 'walleye.png',
   Weakfish: 'weak_fish.png', 'Rock Blackfish': 'rock_blackfish.png', Cobia: 'copia.png', Tilapia: 'tilapia.png',
-  'Twilight Anglerfish': 'twilight_anglerfish.png', 'Starlight Tuna': 'starlight_tuna.png',
-  'Radiant Ray': 'radiant_ray.png', 'Phantom Barracuda': 'phantom_barracuda.png',
-  'Gilded Swordfish': 'gilded_swordfish.png',
 };
 
 /** null — иконки нет. */
@@ -67,7 +63,7 @@ export function fishIcon(name: string): string | null {
   return file ? `/sprites/fish/${file}` : null;
 }
 
-/** Обычная рыба и пять постоянных марвелов — у них есть наживка, сезоны и приманка. */
+/** Обычная рыба: у неё есть наживка, сезоны и приманка. Марвелов в справочнике нет. */
 export function regularFish(): FishRecord[] {
   return FISH_RECORDS.filter((f) => (TIER_ORDER as readonly string[]).includes(f.type));
 }

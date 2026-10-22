@@ -158,7 +158,7 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
       'Справочник рыбалки. Гарантированная наживка (выбираешь рыбу из списка, она клюёт наверняка, chum с ней ' +
       'использовать нельзя): ' +
       Object.entries(GUARANTEED_CATCH).map(([bait, fish]) => `${bait} — ${fish.join(', ')}`).join('; ') +
-      '. Обычная рыба и постоянные марвелы (ранг; наживка; сезоны; любимая приманка chum): ' +
+      '. Обычная рыба (ранг; наживка; сезоны; любимая приманка chum): ' +
       FISH_RECORDS.filter((f) => f.type !== 'chapter').map((f) =>
         `${f.name} (${f.type}; ${f.baits.join('/')}; ${f.seasons.length === 4 ? 'круглый год' : f.seasons.join('/')}; ${f.likes.join('/') || 'нет'})`,
       ).join('; ') +
@@ -171,7 +171,11 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
           `${name} — ${chum === 'none' ? 'без приманки' : `${WATER_TRAPS[pot].chums[chum]} ${chum}`}`,
         ).join(', '),
       ).join('. ') +
-      '. Стоимость установки — ловушка плюс приманка; ловушка тратится при каждой установке (кроме Royal Crab Pot).',
+      '. Цена наживок по рецепту (Fish Flake, Fish Stick, Fish Oil, Crab Stick): рыба на маркетплейсе не торгуется, ' +
+      'её цена — себестоимость заброса удочки (20 монет, 3 Wood, 1 Stone), делённая на рыбу за заброс с бонусами ' +
+      '(Walrus +1, Trident 20% +1, Sunflower Rod 10% +1, Alba, Fishy Chance/Roll/Gamble, сезонные марвелы; Ancient Rod ' +
+      'делает удочку бесплатной). Crab оценивается по цене продажи 15 монет. ' +
+      'Стоимость установки — ловушка плюс приманка; ловушка тратится при каждой установке (кроме Royal Crab Pot).',
   },
   {
     id: 'upgrades',
