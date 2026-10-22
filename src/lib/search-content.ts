@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { TOOLS } from './toolCosts';
+import { SELLABLES } from './coinRate';
 
 // Общая логика чтения контента для индексации (scripts/index-search.ts) и для
 // сборки контекста ответа нейропоиска (api/search-answer.json.ts) — оба места
@@ -126,6 +127,18 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
       'считает её себестоимость: цена Oil Drill делится на средний выход с бурения (10 нефти, каждое ' +
       'третье бурение +20, в среднем 16.67; бонусы Oil Overalls +10, Oil Gallon +5, Oil Can +2, ' +
       'Oil Extraction +1/1.5/2, Stag Shrine +15 на каждом третьем; с Infernal Drill бур не тратится).',
+  },
+  {
+    id: 'coins',
+    title: 'Курс монет',
+    summary:
+      'сколько стоят монеты во Flower, курс монет к Flower, цена монет, продажа урожая и фруктов Бетти, Coin Swindler, выгодно ли продавать Бетти',
+    context:
+      'Курс монет к Flower: урожай и фрукты можно продать Бетти за монеты или на маркетплейсе за Flower. ' +
+      'Монет за 1 Flower = цена у Бетти ÷ floor-цена на рынке; главный курс — медиана по всем предметам, ' +
+      'максимум — самый выгодный обмен (купить на рынке и продать Бетти). Цены Бетти: ' +
+      SELLABLES.map((s) => `${s.name} — ${s.sellPrice} монет`).join('; ') +
+      '. Coin Swindler +10/20/30% и старый Green Thumb +5% — только для урожая, фрукты и теплица без бустов.',
   },
   {
     id: 'levels',

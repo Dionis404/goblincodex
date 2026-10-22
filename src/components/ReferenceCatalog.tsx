@@ -2,6 +2,10 @@ import { useState, useEffect, type JSX } from 'react';
 import './ReferenceCatalog.css';
 import FoodCatalogTable from './tools/FoodCatalogTable';
 import ToolCostCalculator from './tools/ToolCostCalculator';
+import CoinRateTable from './tools/CoinRateTable';
+import CoinRateNote from './CoinRateNote';
+import { useCoinRate } from '../lib/useCoinRate';
+import { coinsToFlower } from '../lib/coinRate';
 import NumberStepper from './NumberStepper';
 import ResourceIcon, { CoinsIcon, NodeIcon, FlowerAmount } from './ResourceIcon';
 import { useItemPrices } from '../lib/useItemPrices';
@@ -701,6 +705,10 @@ function StageTable({
   const stages = applyExpansionBoosts(baseStages, boosts);
   const total = sumStages(stages);
   const prices = useItemPrices(EXPANSION_PRICE_NAMES);
+  // Полная цена этапа во Flower: ресурсы по floor + монеты по рыночному курсу.
+  const { rate: coinRate } = useCoinRate();
+  const stageFlower = (cost: { resources: Parameters<typeof resourcesPrice>[0]; coins: number }) =>
+    resourcesPrice(cost.resources, prices!) + (coinRate ? coinsToFlower(cost.coins, coinRate) : 0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedStage = stages.find((s) => s.id === selectedId) ?? null;
 
@@ -712,7 +720,7 @@ function StageTable({
             <th>№</th>
             <th>Ресурсы</th>
             <th><CoinsIcon /> Монеты</th>
-            {prices && <th>Цена ресурсов</th>}
+            {prices && <th>Всего ≈ Flower</th>}
             <th>Время</th>
             <th>Ур. бампкина</th>
           </tr>
@@ -731,7 +739,7 @@ function StageTable({
                 <ResourceChips resources={s.cost.resources} />
               </td>
               <td>{s.cost.coins.toLocaleString('ru-RU')}</td>
-              {prices && <td><FlowerAmount compact value={resourcesPrice(s.cost.resources, prices)} /></td>}
+              {prices && <td><FlowerAmount compact value={stageFlower(s.cost)} /></td>}
               <td>{formatDuration(s.cost.seconds)}</td>
               <td>{s.cost.level}</td>
             </tr>
@@ -742,17 +750,20 @@ function StageTable({
             <td className="ref-table-name">Итого</td>
             <td className="ref-table-resources"><ResourceChips resources={total.resources} /></td>
             <td>{total.coins.toLocaleString('ru-RU')}</td>
-            {prices && <td><FlowerAmount value={resourcesPrice(total.resources, prices)} /></td>}
+            {prices && <td><FlowerAmount value={stageFlower(total)} /></td>}
             <td>{formatDuration(total.seconds)}</td>
             <td>{stages[stages.length - 1]?.cost.level ?? '—'}</td>
           </tr>
         </tfoot>
       </table>
       {prices && (
-        <p className="ref-section-desc ref-section-desc--spaced">
-          Цена ресурсов — по текущему floor на маркете. Oil и гемы не учтены: Oil не продаётся,
-          у гемов нет рыночной цены.
-        </p>
+        <>
+          <p className="ref-section-desc ref-section-desc--spaced">
+            Цена ресурсов — по текущему floor на маркете. Oil и гемы не учтены: Oil не продаётся,
+            у гемов нет рыночной цены.
+          </p>
+          <CoinRateNote rate={coinRate} />
+        </>
       )}
       {selectedStage && <StagePreview stage={selectedStage} ascensionLevel={ascensionLevel} />}
     </div>
@@ -1377,6 +1388,26 @@ function ToolsSection() {
   );
 }
 
+function CoinRateSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Сколько стоят монеты во Flower. Урожай и фрукты можно продать <strong>Бетти</strong> за
+        монеты или на маркетплейсе за Flower — отношение этих цен и есть курс: «монет за 1 Flower»
+        = цена у Бетти ÷ floor-цена на рынке.
+      </p>
+      <p className="ref-section-desc">
+        Главный курс — медиана по всем предметам: она не прыгает от одного дешёвого лота. Самая
+        большая цифра в таблице — самый выгодный способ получить монеты (купить на рынке и продать
+        Бетти); чем она выше, тем выгоднее продавать этот предмет Бетти, а не на рынке. Цены floor
+        без комиссии маркетплейса; у редких предметов они могут быть неточными из-за малого числа
+        лотов. Coin Swindler увеличивает цену у Бетти только для урожая — фрукты и теплица без бустов.
+      </p>
+      <CoinRateTable />
+    </section>
+  );
+}
+
 interface RefSection {
   id: string;
   icon: string;
@@ -1388,6 +1419,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'skills', icon: '🎓', label: 'Навыки', Content: SkillsSection },
   { id: 'expansions', icon: '🌋', label: 'Стоимость расширений', Content: ExpansionTablesSection },
   { id: 'tools', icon: '🪓', label: 'Стоимость инструментов', Content: ToolsSection },
+  { id: 'coins', icon: '🪙', label: 'Курс монет', Content: CoinRateSection },
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
   { id: 'bait', icon: '🎣', label: 'Улов по наживке', Content: BaitFishSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },

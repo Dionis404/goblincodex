@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react';
 import NumberStepper from '../NumberStepper';
 import ResourceIcon, { CoinsIcon, NodeIcon, FlowerAmount } from '../ResourceIcon';
+import CoinRateNote from '../CoinRateNote';
+import { useCoinRate } from '../../lib/useCoinRate';
+import { coinsToFlower } from '../../lib/coinRate';
 import { useItemPrices } from '../../lib/useItemPrices';
 import ExpansionBoostToggles from '../ExpansionBoostToggles';
 import {
@@ -219,6 +222,8 @@ export default function ExpansionCalculator() {
   const boostedStages = useMemo(() => applyExpansionBoosts(stages, boosts), [stages, boosts]);
   const total = sumRange(boostedStages, fromIndex, toIndex);
   const prices = useItemPrices(EXPANSION_PRICE_NAMES);
+  const { rate: coinRate } = useCoinRate();
+  const coinsFlower = coinRate ? coinsToFlower(total.coins, coinRate) : null;
   const invalidRange = toIndex <= fromIndex;
   const requiredLevel = invalidRange ? 0 : stages[toIndex].cost.level;
   const nodeGains = sumNodeGains(stages, fromIndex, toIndex);
@@ -284,7 +289,11 @@ export default function ExpansionCalculator() {
                           </span>
                         )}
                       </td>
-                      {prices && <td className="gc-calc-num">—</td>}
+                      {prices && (
+                        <td className="gc-calc-num">
+                          {coinsFlower != null ? <FlowerAmount compact value={coinsFlower} /> : '—'}
+                        </td>
+                      )}
                     </tr>
                     {RESOURCE_ORDER.filter((r) => total.resources[r]).map((r) => (
                       <tr key={r}>
@@ -313,9 +322,11 @@ export default function ExpansionCalculator() {
                   {prices && (
                     <tfoot>
                       <tr>
-                        <td className="gc-calc-res-label">Итого по ценам</td>
+                        <td className="gc-calc-res-label">Итого во Flower</td>
                         <td />
-                        <td className="gc-calc-num"><FlowerAmount value={resourcesPrice(total.resources, prices)} /></td>
+                        <td className="gc-calc-num">
+                          <FlowerAmount value={resourcesPrice(total.resources, prices) + (coinsFlower ?? 0)} />
+                        </td>
                       </tr>
                     </tfoot>
                   )}
@@ -324,9 +335,10 @@ export default function ExpansionCalculator() {
               {prices && (
                 <p className="gc-calc-note">
                   Цена ресурсов — по текущему floor на маркете. Oil и гемы не учтены: Oil не
-                  продаётся, у гемов нет рыночной цены; монеты во Flower не переводятся.
+                  продаётся, у гемов нет рыночной цены.
                 </p>
               )}
+              {prices && <CoinRateNote rate={coinRate} className="gc-calc-note" />}
               {total.transitionsCount > 0 && (
                 <p className="gc-calc-note">
                   <span className="gc-calc-transition-swatch" /> Выделено — часть стоимости, которая

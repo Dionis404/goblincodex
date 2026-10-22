@@ -2,6 +2,9 @@ import { Fragment, useState } from 'react';
 import NumberStepper from '../NumberStepper';
 import { CoinsIcon, FlowerAmount } from '../ResourceIcon';
 import { useItemPrices } from '../../lib/useItemPrices';
+import { useCoinRate } from '../../lib/useCoinRate';
+import { coinsToFlower } from '../../lib/coinRate';
+import CoinRateNote from '../CoinRateNote';
 import { SKILL_ICONS } from '../../lib/skills';
 import {
   TOOLS,
@@ -125,14 +128,22 @@ export default function ToolCostCalculator() {
   const setOilBoost = <K extends keyof OilBoosts>(key: K, value: OilBoosts[K]) =>
     setOilBoosts((prev) => ({ ...prev, [key]: value }));
 
+  // Монеты → Flower по рыночному курсу (раздел «Курс монет»), чтобы у
+  // инструмента была одна полная цена. null — курса нет, монеты не переводим.
+  const { rate: coinRate } = useCoinRate();
+  const coinsFlower = (coins: number) => (coinRate ? coinsToFlower(coins, coinRate) : null);
+
   // Нефть на маркетплейсе не торгуется — подставляем её себестоимость
-  // (цена Oil Drill ÷ средний выход), чтобы Sand Drill считался целиком.
+  // (цена Oil Drill ÷ средний выход: ресурсы бура + его монеты по курсу),
+  // чтобы Sand Drill считался целиком.
   const oilCost = oilUnitCost(boosts, oilBoosts);
-  const oilFlower = prices ? oilFlowerPrice(oilCost, prices) : null;
+  const oilResourcesFlower = prices ? oilFlowerPrice(oilCost, prices) : null;
+  const oilFlower = oilResourcesFlower == null ? null : oilResourcesFlower + (coinsFlower(oilCost.coins) ?? 0);
   const effectivePrices = prices ? { ...prices, Oil: oilFlower } : null;
 
   const total = toolOrderTotal(amounts, boosts);
   const totalValue = effectivePrices ? resourcesFlowerValue(total.resources, effectivePrices) : null;
+  const totalCoinsFlower = coinsFlower(total.coins);
   const totalOil = total.resources.Oil ?? 0;
 
   return (
@@ -172,7 +183,7 @@ export default function ToolCostCalculator() {
               <th>Инструмент</th>
               <th>Монеты за 1</th>
               <th>Ресурсы за 1</th>
-              <th>Ресурсы ≈ Flower</th>
+              <th>Всего ≈ Flower</th>
               <th>Количество</th>
             </tr>
           </thead>
@@ -187,6 +198,11 @@ export default function ToolCostCalculator() {
                   const ingredients = toolIngredients(tool, boosts);
                   const value = effectivePrices ? resourcesFlowerValue(ingredients, effectivePrices) : null;
                   const needsOil = 'Oil' in ingredients;
+                  const hasIngredients = Object.keys(ingredients).length > 0;
+                  const unitCoinsFlower = coinsFlower(unit);
+                  // Полная цена 1 шт.: монеты по курсу + ресурсы по рынку (нефть — по себестоимости).
+                  const loading = (hasIngredients && value == null) || coinRate === undefined;
+                  const unitTotal = (unitCoinsFlower ?? 0) + (value?.value ?? 0);
                   const boosted = isToolBoosted(tool, boosts);
                   return (
                     <tr key={tool.name} className={amounts[tool.name] ? 'ref-tool-row--selected' : undefined}>
@@ -216,14 +232,13 @@ export default function ToolCostCalculator() {
                         <ResourceList resources={ingredients} />
                       </td>
                       <td className="ref-tool-cell--flower">
-                        {Object.keys(ingredients).length === 0
-                          ? '—'
-                          : value == null
-                            ? '…'
-                            : value.value > 0
-                              ? <FlowerAmount compact value={value.value} />
-                              : 'нет данных'}
+                        {loading
+                          ? '…'
+                          : unitTotal > 0
+                            ? <FlowerAmount compact value={unitTotal} />
+                            : 'нет данных'}
                         {value?.hasUnpriced && <span className="ref-price-hint"> + Oil</span>}
+                        {coinRate === null && <span className="ref-tool-sub">без монет — нет курса</span>}
                         {needsOil && value && !value.hasUnpriced && (
                           <span className="ref-tool-sub">вкл. нефть по себестоимости</span>
                         )}
@@ -255,10 +270,8 @@ export default function ToolCostCalculator() {
             ) : (
               <>
                 1 шт ≈ {oilFlower == null ? (prices ? 'нет данных' : '…') : <FlowerAmount compact value={oilFlower} />}
-                {' + '}
-                <span className="ref-resource-chip">
-                  <CoinsIcon />
-                  {formatCoins(oilCost.coins)}
+                <span className="ref-price-hint">
+                  {' '}(ресурсы бура + {formatCoins(oilCost.coins)} монет{coinRate ? ' по курсу' : ' — без курса не учтены'})
                 </span>
               </>
             )}
@@ -334,13 +347,25 @@ export default function ToolCostCalculator() {
                 )}
               </p>
             )}
+            <p className="ref-tool-summary-line ref-tool-summary-total">
+              <span>Всего во Flower:</span>{' '}
+              {totalValue == null || coinRate === undefined
+                ? '…'
+                : <FlowerAmount value={(totalCoinsFlower ?? 0) + totalValue.value} />}
+              <span className="ref-price-hint">
+                {coinRate
+                  ? `(монеты по курсу 1 Flower ≈ ${Math.round(coinRate).toLocaleString('ru-RU')} + ресурсы)`
+                  : '(монеты не учтены — нет курса)'}
+              </span>
+            </p>
             {totalOil > 0 && !oilCost.free && (
               <p className="ref-tool-summary-line ref-price-hint">
-                В т.ч. {totalOil.toLocaleString('ru-RU')} нефти по себестоимости — на её добычу дополнительно
-                уйдёт ≈ {formatCoins(oilCost.coins * totalOil)} монет и{' '}
-                {(totalOil / oilCost.perDrill).toLocaleString('ru-RU', { maximumFractionDigits: 2 })} Oil Drill.
+                В т.ч. {totalOil.toLocaleString('ru-RU')} нефти по себестоимости — это ≈{' '}
+                {(totalOil / oilCost.perDrill).toLocaleString('ru-RU', { maximumFractionDigits: 2 })} Oil Drill
+                и {formatCoins(oilCost.coins * totalOil)} монет на них (уже в сумме).
               </p>
             )}
+            <CoinRateNote rate={coinRate} />
             <button type="button" className="gc-btn-secondary ref-tool-reset" onClick={() => setAmounts({})}>
               Сбросить количество
             </button>

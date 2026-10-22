@@ -1,0 +1,129 @@
+/* Живой блок «Курс монет» внутри гайда (src/components/CoinRateTop3.tsx) */
+.gc-coin-top3 {
+  margin: 20px 0;
+  padding: 16px 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--amber);
+  border-radius: var(--radius);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.gc-coin-top3-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-bottom: 8px;
+}
+.gc-coin-top3-live {
+  font-size: 12px;
+  color: var(--text-sec);
+}
+.gc-coin-top3-icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: -3px;
+  image-rendering: pixelated;
+}
+.gc-coin-top3 p {
+  margin: 0 0 8px;
+}
+.gc-coin-top3-rate {
+  font-size: 17px;
+}
+.gc-coin-top3-muted {
+  font-size: 13px;
+  color: var(--text-sec);
+}
+.gc-coin-top3-subtitle {
+  font-weight: 600;
+}
+/* Сбрасываем стили списков статьи (.gc-guide-article ol) — тут своя вёрстка. */
+.gc-coin-top3 .gc-coin-top3-list {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  counter-reset: top3;
+}
+.gc-coin-top3 .gc-coin-top3-list li {
+  counter-increment: top3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 0;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+}
+.gc-coin-top3 .gc-coin-top3-list li::before {
+  content: counter(top3) '.';
+  min-width: 18px;
+  font-weight: 700;
+  color: var(--text-sec);
+}
+.gc-coin-top3-item-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.gc-coin-top3-name {
+  flex: 1 1 auto;
+  font-weight: 600;
+}
+.gc-coin-top3-value {
+  font-weight: 700;
+  color: var(--green-dark);
+  font-variant-numeric: tabular-nums;
+}
+.gc-coin-top3 .gc-coin-top3-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green-dark);
+}
+
+/* Блок живёт внутри .gc-guide-article, чьи правила для img/ol/li/p/a
+   (global.css: картинки на всю ширину с отступами, нумерация кружками)
+   сильнее одиночных классов — перебиваем их явно с бо́льшей специфичностью. */
+.gc-guide-article .gc-coin-top3 img {
+  display: inline-block;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+}
+.gc-guide-article .gc-coin-top3 .gc-coin-top3-icon {
+  width: 18px;
+  height: 18px;
+}
+.gc-guide-article .gc-coin-top3 .gc-coin-top3-item-icon {
+  width: 24px;
+  height: 24px;
+}
+.gc-guide-article .gc-coin-top3 p {
+  margin: 0 0 8px;
+  font-size: inherit;
+  line-height: inherit;
+}
+.gc-guide-article .gc-coin-top3 .gc-coin-top3-list {
+  padding-left: 0;
+}
+.gc-guide-article .gc-coin-top3 .gc-coin-top3-list li {
+  position: static;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+.gc-guide-article .gc-coin-top3 .gc-coin-top3-list li::before {
+  position: static;
+  display: inline;
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 0;
+  color: var(--text-sec);
+  font-size: inherit;
+}
+.gc-guide-article .gc-coin-top3 .gc-coin-top3-rate {
+  font-size: 17px;
+}

@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getEntry, render, getCollection } from 'astro:content';
 import GuideAuthorBlock from '../../components/GuideAuthorBlock.tsx';
+import CoinRateTop3 from '../../components/CoinRateTop3.tsx';
 
 const { id } = Astro.params;
 const guide = await getEntry('guides', id!);
@@ -12,6 +13,10 @@ if (!guide || guide.data.draft) {
 }
 
 const { Content, headings } = await render(guide);
+
+// Живой блок курса монет (CoinRateTop3) — в гайдах, где в markdown стоит
+// метка <div data-coin-rate-top3></div>.
+const hasCoinRateWidget = guide.body?.includes('data-coin-rate-top3') ?? false;
 
 const tagColors: Record<string, string> = {
   'Новичкам':   'green',
@@ -110,7 +115,24 @@ if (relevantUsers.length > 0) {
         <!-- Контент -->
         <article class="gc-guide-article">
           <Content />
+          {hasCoinRateWidget && (
+            <div id="gc-coin-top3-src">
+              <CoinRateTop3 client:load />
+            </div>
+          )}
         </article>
+        {hasCoinRateWidget && (
+          <script is:inline>
+            // Markdown не умеет компоненты — в тексте гайда стоит метка
+            // <div data-coin-rate-top3>, переносим живой блок туда сразу при
+            // разборе страницы (до отрисовки). Без метки блок остаётся в конце.
+            (function () {
+              var src = document.getElementById('gc-coin-top3-src');
+              var slot = document.querySelector('.gc-guide-article [data-coin-rate-top3]');
+              if (src && slot) slot.replaceWith(src);
+            })();
+          </script>
+        )}
 
       </div>
 

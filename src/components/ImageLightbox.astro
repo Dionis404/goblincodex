@@ -54,7 +54,8 @@
       return;
     }
     const img = target.closest('.gc-guide-article img') as HTMLImageElement | null;
-    if (!img || img.closest('a')) return;
+    // data-no-lightbox — встроенные в статью виджеты (иконки, а не иллюстрации).
+    if (!img || img.closest('a') || img.closest('[data-no-lightbox]')) return;
     e.preventDefault();
     open(img);
   });
@@ -67,6 +68,7 @@
 <style is:global>
   .gc-guide-article img { cursor: zoom-in; }
   .gc-guide-article a img { cursor: pointer; }
+  .gc-guide-article [data-no-lightbox] img { cursor: default; }
   html.gc-lightbox-open { overflow: hidden; }
 
   .gc-lightbox {
