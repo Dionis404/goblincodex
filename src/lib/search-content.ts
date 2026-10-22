@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { TOOLS } from './toolCosts';
 
 // Общая логика чтения контента для индексации (scripts/index-search.ts) и для
 // сборки контекста ответа нейропоиска (api/search-answer.json.ts) — оба места
@@ -105,6 +106,26 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
     context:
       'Таблица стоимости расширения острова по этапам (stages) — сколько и каких ресурсов ' +
       'нужно на каждое следующее расширение земли, отдельно для острова и для Возвышения (Ascension).',
+  },
+  {
+    id: 'tools',
+    title: 'Стоимость инструментов',
+    summary:
+      'сколько стоит топор кирка удочка инструмент, цена инструментов в монетах и ресурсах, Workbench, скидки Feller\'s Discount Frugal Miner Reel Deal, Oil Drill, Crab Pot, Sand Shovel',
+    context:
+      'Калькулятор стоимости инструментов: цена 1 шт. в монетах и ресурсах, запас в магазине, ' +
+      'итог за выбранное количество и рыночная стоимость ресурсов во Flower. Базовые цены: ' +
+      TOOLS.map((t) => {
+        const res = Object.entries(t.ingredients).map(([r, n]) => `${n} ${r}`).join(', ');
+        return `${t.name} (${t.labelRu}) — ${t.price} монет${res ? ` + ${res}` : ''}`;
+      }).join('; ') +
+      '. Скидки умножаются: Feller\'s Discount на Axe ×0.8/×0.75/×0.7 по рангу, Frugal Miner на все кирки ' +
+      '×0.8/×0.7/×0.6, Reel Deal на Rod ×0.5/×0.45/×0.4, Cheap Rakes на Salt Rake ×0.8/×0.7/×0.6, бейдж ' +
+      'Artist ×0.9 на все инструменты, Salt Sculpture уровня 4+ ×0.9 на Salt Rake. Oil Rig заменяет 10 Leather ' +
+      'в рецепте Oil Drill на 20/15/10 Wool. Нефть (Oil) на маркетплейсе не продаётся — калькулятор ' +
+      'считает её себестоимость: цена Oil Drill делится на средний выход с бурения (10 нефти, каждое ' +
+      'третье бурение +20, в среднем 16.67; бонусы Oil Overalls +10, Oil Gallon +5, Oil Can +2, ' +
+      'Oil Extraction +1/1.5/2, Stag Shrine +15 на каждом третьем; с Infernal Drill бур не тратится).',
   },
   {
     id: 'levels',

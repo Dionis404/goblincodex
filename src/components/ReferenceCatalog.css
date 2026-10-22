@@ -1027,3 +1027,157 @@
   font-size: 26px;
   line-height: 1;
 }
+
+/* ── Стоимость инструментов (src/components/tools/ToolCostCalculator.tsx) ── */
+.ref-tool-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.ref-tool-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+.ref-tool-sub {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-sec);
+}
+.ref-tool-old-price {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--text-sec);
+}
+.ref-tool-table .ref-tool-group-row td {
+  background: var(--bg);
+  color: var(--green-dark);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 8px 14px;
+}
+.ref-tool-table tbody tr.ref-tool-group-row:hover {
+  background: none;
+}
+.ref-tool-table tr.ref-tool-row--selected td {
+  background: var(--green-pale);
+}
+.ref-tool-summary {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+}
+.ref-tool-summary .ref-section-desc {
+  margin: 0;
+}
+.ref-tool-summary-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 0;
+  font-size: 15px;
+}
+.ref-tool-reset {
+  margin-top: 4px;
+}
+
+/* Телефон: строка таблицы → карточка (как у таблиц еды). Иначе колонка
+   «Количество» уезжает за правый край и её не найти. */
+@media (max-width: 640px) {
+  .ref-tool-table thead {
+    display: none;
+  }
+  .ref-tool-table,
+  .ref-tool-table tbody {
+    display: block;
+  }
+  .ref-tool-table tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+  }
+  .ref-tool-table tbody tr:first-child {
+    border-top: none;
+  }
+  .ref-tool-table td {
+    display: block;
+    padding: 0;
+    border: none;
+    white-space: normal;
+    font-size: 14px;
+  }
+  .ref-tool-table tr.ref-tool-group-row {
+    display: block;
+    padding: 0;
+  }
+  /* Ячейки карточки разделены промежутками grid — подсвечиваем строку целиком. */
+  .ref-tool-table tr.ref-tool-row--selected {
+    background: var(--green-pale);
+  }
+  .ref-tool-table tr.ref-tool-row--selected td {
+    background: none;
+  }
+  .ref-tool-table .ref-tool-group-row td {
+    padding: 8px 14px;
+  }
+  .ref-tool-table .ref-tool-cell--coins,
+  .ref-tool-table .ref-tool-cell--flower {
+    justify-self: end;
+    text-align: right;
+  }
+  .ref-tool-table .ref-tool-cell--qty {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .ref-tool-table .ref-tool-cell--qty::before {
+    content: 'Количество';
+    font-size: 13px;
+    color: var(--text-sec);
+  }
+}
+
+/* Нефть по себестоимости — раскрывающийся блок под таблицей инструментов */
+.ref-oil-cost {
+  display: block;
+  margin-top: 16px;
+}
+.ref-oil-cost[open] > * + * {
+  margin-top: 14px;
+}
+.ref-oil-cost-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  list-style: none;
+}
+.ref-oil-cost-summary::-webkit-details-marker {
+  display: none;
+}
+.ref-oil-cost-summary::after {
+  content: '▾ бонусы добычи';
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--green-dark);
+}
+.ref-oil-cost[open] .ref-oil-cost-summary::after {
+  content: '▴ свернуть';
+}
+.ref-oil-cost .ref-section-desc {
+  margin-bottom: 0;
+}

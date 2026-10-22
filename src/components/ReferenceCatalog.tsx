@@ -1,6 +1,7 @@
 import { useState, useEffect, type JSX } from 'react';
 import './ReferenceCatalog.css';
 import FoodCatalogTable from './tools/FoodCatalogTable';
+import ToolCostCalculator from './tools/ToolCostCalculator';
 import NumberStepper from './NumberStepper';
 import ResourceIcon, { CoinsIcon, NodeIcon, FlowerAmount } from './ResourceIcon';
 import { useItemPrices } from '../lib/useItemPrices';
@@ -1356,6 +1357,26 @@ function FoodSection() {
   );
 }
 
+function ToolsSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Сколько монет и ресурсов уходит на инструменты: топоры и кирки в <strong>Workbench</strong>,
+        удочки, ловушки, грабли для соли, а также лопата и бур для раскопок. Укажите нужное количество — внизу появится итог по монетам, ресурсам и их
+        примерной рыночной стоимости во Flower (по floor-ценам маркетплейса).
+      </p>
+      <p className="ref-section-desc">
+        Скидки складываются умножением, как в игре: например, Frugal Miner ранга 3 (×0.6) и бейдж
+        Artist (×0.9) дают кирку за 20 × 0.6 × 0.9 = 10.8 монет. Навык <strong>Oil Rig</strong>{' '}
+        меняет рецепт Oil Drill — шерсть вместо кожи. Нефть на маркетплейсе не продаётся, поэтому
+        для Sand Drill она считается по себестоимости добычи (блок под таблицей). «Запас» под названием — сколько штук магазин
+        продаёт за одно пополнение; навыки More Axes и More Picks его увеличивают.
+      </p>
+      <ToolCostCalculator />
+    </section>
+  );
+}
+
 interface RefSection {
   id: string;
   icon: string;
@@ -1366,6 +1387,7 @@ interface RefSection {
 const REF_SECTIONS: RefSection[] = [
   { id: 'skills', icon: '🎓', label: 'Навыки', Content: SkillsSection },
   { id: 'expansions', icon: '🌋', label: 'Стоимость расширений', Content: ExpansionTablesSection },
+  { id: 'tools', icon: '🪓', label: 'Стоимость инструментов', Content: ToolsSection },
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
   { id: 'bait', icon: '🎣', label: 'Улов по наживке', Content: BaitFishSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },
@@ -1387,11 +1409,11 @@ interface ReferenceCatalogProps {
 }
 
 // Единый список навигации живёт теперь на уровне страницы (codex/index.astro,
-// класс .gc-ref-nav-item) — он вперемешку показывает и эти 8 React-таблиц, и
-// 2 markdown-статьи (Соление рыбы, Улучшение нод), поэтому переключение между
-// ВСЕМИ десятью пунктами идёт через общий show/hide в <script> той страницы,
+// класс .gc-ref-nav-item) — он вперемешку показывает и эти React-таблицы, и
+// markdown-статьи коллекции mechanics, поэтому переключение между
+// ВСЕМИ пунктами идёт через общий show/hide в <script> той страницы,
 // а не через стейт этого компонента. Здесь остаётся только сам стейт "какая
-// из 8 таблиц активна" — используется, когда общий сайдбар кликает по одной
+// из таблиц активна" — используется, когда общий сайдбар кликает по одной
 // из ref-таблиц; для markdown-пунктов этот компонент просто продолжает
 // показывать последнюю выбранную таблицу под капотом, невидимо (родитель
 // прячет весь ref-content целиком через CSS).

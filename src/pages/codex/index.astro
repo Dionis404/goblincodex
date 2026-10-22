@@ -134,12 +134,13 @@ const mechanicsRendered = await Promise.all(
 // соление рыбы, апгрейд нод и т.д.) — раньше "Механики" и "Справочник"
 // было не отличить по названию, теперь это одна понятная вкладка.
 
-// Подписи для 8 табличных пунктов общего сайдбара механик — держим в
+// Подписи табличных пунктов общего сайдбара механик — держим в
 // синхроне вручную с REF_SECTIONS в ReferenceCatalog.tsx (там же сами
 // компоненты таблиц; здесь нужны только id/icon/label для сайдбара).
 const REF_TABLE_SECTIONS = [
   { id: 'skills',     icon: '🎓', label: 'Навыки' },
   { id: 'expansions', icon: '🌋', label: 'Стоимость расширений' },
+  { id: 'tools',      icon: '🪓', label: 'Стоимость инструментов' },
   { id: 'levels',     icon: '⭐', label: 'Опыт и Возвышение' },
   { id: 'bait',       icon: '🎣', label: 'Улов по наживке' },
   { id: 'upgrades',   icon: '⛏️', label: 'Улучшение ресурсных нод' },
@@ -313,8 +314,8 @@ function formatUpdatedAgo(iso: string | null): string | null {
     </div>
 
     <!-- ═══════════════════════════════════════════════
-         МЕХАНИКИ: один общий сайдбар на 10 пунктов — 8 табличных секций
-         (рендерятся React-компонентом ReferenceCatalog) + 2 markdown-статьи
+         МЕХАНИКИ: один общий сайдбар — табличные секции
+         (рендерятся React-компонентом ReferenceCatalog) + markdown-статьи
          с формулами (Соление рыбы, Улучшение нод), которым формат таблицы
          не подходит. Сайдбар — чистый Astro/JS (см. .gc-ref-nav-item ниже),
          переключение табличных пунктов долетает до ReferenceCatalog через
@@ -520,8 +521,8 @@ function formatUpdatedAgo(iso: string | null): string | null {
     });
   });
 
-  // Механики: единый сайдбар на 10 пунктов — 8 таблиц (рендерит React-остров
-  // ReferenceCatalog, ему просто передаём id через CustomEvent) + 2 markdown-
+  // Механики: единый сайдбар — таблицы (рендерит React-остров
+  // ReferenceCatalog, ему просто передаём id через CustomEvent) + markdown-
   // статьи (обычные Astro <article>, просто show/hide).
   const refNavItems  = document.querySelectorAll<HTMLAnchorElement>('.gc-ref-nav-item');
   const refTablesWrap = document.getElementById('gc-ref-tables-wrap');
