@@ -136,7 +136,7 @@ export default function ToolCostCalculator() {
   const totalOil = total.resources.Oil ?? 0;
 
   return (
-    <div>
+    <div className="ref-tool-calc">
       <div className="ref-marvel-boost-widget">
         <div className="ref-food-boost-checks">
           <Check
@@ -198,7 +198,7 @@ export default function ToolCostCalculator() {
                             <span className="ref-tool-sub">
                               {tool.labelRu}
                               {tool.requirement && ` · ${tool.requirement}`}
-                              {tool.stock != null && ` · запас ${tool.stock}`}
+                              {tool.stock != null && ` · запас ${tool.stock}`}
                             </span>
                           </span>
                         </span>

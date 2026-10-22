@@ -1029,6 +1029,23 @@
 }
 
 /* ── Стоимость инструментов (src/components/tools/ToolCostCalculator.tsx) ── */
+/* Вид таблица/карточки зависит от ширины самого калькулятора, а не окна:
+   до 720px окна рядом стоит сайдбар, и на экранах ~800–1100px блоку
+   не хватает места на 5 колонок (таблице нужно ~670px, см. @container tools ниже). */
+.ref-tool-calc {
+  container-type: inline-size;
+  container-name: tools;
+}
+.ref-tool-table td {
+  padding: 10px 12px;
+}
+.ref-tool-table .ref-table-name,
+.ref-tool-table .ref-tool-cell--flower {
+  white-space: normal;
+}
+.ref-tool-table .ref-table-name {
+  min-width: 190px;
+}
 .ref-tool-name {
   display: inline-flex;
   align-items: center;
@@ -1088,9 +1105,9 @@
   margin-top: 4px;
 }
 
-/* Телефон: строка таблицы → карточка (как у таблиц еды). Иначе колонка
-   «Количество» уезжает за правый край и её не найти. */
-@media (max-width: 640px) {
+/* Узкий блок (телефон или планшет/ноутбук с сайдбаром): строка таблицы →
+   карточка. Иначе колонка «Количество» уезжает за правый край. */
+@container tools (max-width: 700px) {
   .ref-tool-table thead {
     display: none;
   }
