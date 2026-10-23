@@ -4,6 +4,7 @@ import { TOOLS } from './toolCosts';
 import { SELLABLES } from './coinRate';
 import { CRUSTACEAN_LOOKUP, FISH_RECORDS, GUARANTEED_CATCH, WATER_TRAPS } from './fishData.generated';
 import { COMPOSTERS, COMPOST_RECIPES, COMPOSTER_BUILDINGS, WORM_AMOUNTS } from './composterData.generated';
+import { FLOWER_SEEDS, FLOWER_RECIPES, CROSSBREED_AMOUNTS } from './flowerData.generated';
 
 // Общая логика чтения контента для индексации (scripts/index-search.ts) и для
 // сборки контекста ответа нейропоиска (api/search-answer.json.ts) — оба места
@@ -164,6 +165,18 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
       ).join('. ') +
       '. Sprout Mix даёт +0,2 к урожаю с грядок, Fruitful Blend +0,1 к урожаю плодовых деревьев, Rapid Root сокращает рост на грядках на 50%. ' +
       'Бусты: Efficient Bin, Turbo Charged, Premium Worms, Composting Revamp, Turd Topper (больше компоста), Wormy Treat, Composting Overhaul, Bucket O Worms, Saw Fish, Deep Sea Slug (больше червей), Soil Krabby и Swift Decomposer (быстрее).',
+  },
+  {
+    id: 'flowers',
+    title: 'Цветы',
+    summary:
+      'цветы, рецепты цветов, скрещивание цветов, Sunpetal Seed, Bloom Seed, Lily Seed, Edelweiss Seed, Gladiolus Seed, Lavender Seed, Clover Seed, Pansy, Cosmos, Balloon Flower, Daffodil, Carnation, Lotus, Prism Petal, Celestial Frostbloom, Primula Enigma, из чего получить цветок, сколько стоит посадка цветка',
+    context:
+      'Цветы растут из семян на грядках для цветов; к семени добавляют предмет для скрещивания (урожай, фрукт или цветок), и от него зависит результат. ' +
+      Object.entries(FLOWER_SEEDS).map(([seed, s]) =>
+        `${seed} (уровень ${s.level}, ${s.price} монет, растёт ${s.days} дн.${s.season ? `, только сезон ${s.season}` : ''}): ` +
+        s.flowers.map((f) => `${f} — ${FLOWER_RECIPES[f].map((i) => `${CROSSBREED_AMOUNTS[s.set][i]} ${i}`).join(' или ')}`).join('; '),
+      ).join('. ') + '.',
   },
   {
     id: 'bait',

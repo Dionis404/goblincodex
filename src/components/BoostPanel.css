@@ -1,0 +1,40 @@
+/* Сворачиваемая панель бустов (src/components/BoostPanel.tsx). Внутри лежит
+   прежняя карточка бустов со своими стилями (.ref-marvel-boost-widget и др.). */
+.ref-boost-panel {
+  margin: 12px 0 20px;
+}
+.ref-boost-panel > :not(summary) {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+.ref-boost-panel-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-head);
+  font-size: 13px;
+  color: var(--text-sec);
+  padding: 4px 2px;
+  user-select: none;
+}
+.ref-boost-panel-summary::-webkit-details-marker {
+  display: none;
+}
+.ref-boost-panel-summary::before {
+  content: '▸';
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.ref-boost-panel[open] > .ref-boost-panel-summary::before {
+  transform: rotate(90deg);
+}
+.ref-boost-panel-summary:hover {
+  color: var(--text);
+}
+.ref-boost-panel-summary:focus-visible {
+  outline: 2px solid var(--accent, currentColor);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

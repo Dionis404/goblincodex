@@ -9,6 +9,7 @@ import { BAITS, SEASON_NAMES, baitCosts, baitUnitPrice, type SeasonName } from '
 import { SEASON_INFO } from '../../lib/fishCatalog';
 import type { FishingBoosts } from '../../lib/fishYield';
 import { WATER_TRAPS } from '../../lib/fishData.generated';
+import BoostPanel from '../BoostPanel';
 import {
   CHUM_ICONS,
   CHUM_PRICE_NAMES,
@@ -139,21 +140,23 @@ export default function CrustaceanCosts({ fishing }: { fishing: FishingBoosts })
 
   return (
     <div className="ref-crust-calc">
-      <div className="ref-marvel-boost-widget">
-        <div className="ref-food-boost-checks">
-          {BOOST_OPTIONS.map((o) => (
-            <label className="ref-marvel-boost-check" key={o.key}>
-              <input
-                type="checkbox"
-                checked={boosts[o.key]}
-                onChange={(e) => setBoosts((prev) => ({ ...prev, [o.key]: e.target.checked }))}
-              />
-              <img src={o.icon} alt="" className="ref-marvel-icon ref-food-icon--sm" />
-              <span>{o.label}</span>
-            </label>
-          ))}
+      <BoostPanel title="Бусты ловушек">
+        <div className="ref-marvel-boost-widget">
+          <div className="ref-food-boost-checks">
+            {BOOST_OPTIONS.map((o) => (
+              <label className="ref-marvel-boost-check" key={o.key}>
+                <input
+                  type="checkbox"
+                  checked={boosts[o.key]}
+                  onChange={(e) => setBoosts((prev) => ({ ...prev, [o.key]: e.target.checked }))}
+                />
+                <img src={o.icon} alt="" className="ref-marvel-icon ref-food-icon--sm" />
+                <span>{o.label}</span>
+              </label>
+            ))}
+          </div>
         </div>
-      </div>
+      </BoostPanel>
 
       <label className="ref-crust-season">
         <span>Сезон года в игре — от него зависит цена Fish Stick, Fish Oil и Crab Stick</span>

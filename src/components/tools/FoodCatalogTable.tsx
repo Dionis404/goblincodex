@@ -11,6 +11,7 @@ import { CHUM_PRICE_NAMES } from '../../lib/crustaceans';
 import { TOOL_PRICE_NAMES } from '../../lib/toolCosts';
 import { NO_FISHING_BOOSTS, fishUnitCost, type FishTier } from '../../lib/fishYield';
 import { FISH_RECORDS } from '../../lib/fishData.generated';
+import BoostPanel from '../BoostPanel';
 
 /**
  * Рецепты и формулы сверены с исходниками sunflower-land (см. scripts/README.md):
@@ -805,33 +806,35 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
 
   return (
     <div>
-      <div className="ref-marvel-boost-widget">
-        <div className="ref-food-boost-checks">
-          <Check
-            label="Salt Sculpture ур. 2+ (+4%)"
-            icon="Salt Sculpture"
-            checked={primeBoosts.saltSculpture}
-            onChange={(v) => setPrimeBoosts((p) => ({ ...p, saltSculpture: v }))}
-          />
-          <Check
-            label="Winged Vase (+14%)"
-            icon="Winged Vase"
-            checked={primeBoosts.wingedVase}
-            onChange={(v) => setPrimeBoosts((p) => ({ ...p, wingedVase: v }))}
-          />
+      <BoostPanel title="Бусты шанса Prime Aged">
+        <div className="ref-marvel-boost-widget">
+          <div className="ref-food-boost-checks">
+            <Check
+              label="Salt Sculpture ур. 2+ (+4%)"
+              icon="Salt Sculpture"
+              checked={primeBoosts.saltSculpture}
+              onChange={(v) => setPrimeBoosts((p) => ({ ...p, saltSculpture: v }))}
+            />
+            <Check
+              label="Winged Vase (+14%)"
+              icon="Winged Vase"
+              checked={primeBoosts.wingedVase}
+              onChange={(v) => setPrimeBoosts((p) => ({ ...p, wingedVase: v }))}
+            />
+          </div>
+          <div className="ref-food-boost-selects">
+            <RankSelect
+              label="Fish Smoking (шанс Prime Aged)"
+              icon="Fish Smoking"
+              value={primeBoosts.fishSmokingRank}
+              onChange={(v) => setPrimeBoosts((p) => ({ ...p, fishSmokingRank: v as 0 | 1 | 2 | 3 }))}
+            />
+          </div>
+          <p className="ref-marvel-boost-total">
+            <strong>Шанс Prime Aged: {chance}%</strong>
+          </p>
         </div>
-        <div className="ref-food-boost-selects">
-          <RankSelect
-            label="Fish Smoking (шанс Prime Aged)"
-            icon="Fish Smoking"
-            value={primeBoosts.fishSmokingRank}
-            onChange={(v) => setPrimeBoosts((p) => ({ ...p, fishSmokingRank: v as 0 | 1 | 2 | 3 }))}
-          />
-        </div>
-        <p className="ref-marvel-boost-total">
-          <strong>Шанс Prime Aged: {chance}%</strong>
-        </p>
-      </div>
+      </BoostPanel>
       <p className="ref-section-desc">
         Колонка «XP/час (соление)» считается по среднему XP выдержанной рыбы с учётом шанса
         Prime Aged выше — а не по гарантированной обычной Aged Fish.
@@ -969,169 +972,173 @@ export default function FoodCatalogTable() {
 
   return (
     <div>
-      <div className="ref-marvel-boost-widget">
-        <div className="ref-food-boost-checks">
-          <Check
-            label="Масло залито в здание"
-            checked={timeBoosts.oilFilled}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, oilFilled: v }))}
-          />
-          <Check
-            label="Luna's Hat (×0.5)"
-            icon="Luna's Hat"
-            checked={timeBoosts.lunasHat}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, lunasHat: v }))}
-          />
-          <Check
-            label="Master Chef's Cleaver (×0.85)"
-            icon="Master Chef's Cleaver"
-            checked={timeBoosts.chefsCleaver}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, chefsCleaver: v }))}
-          />
-          <Check
-            label="Медальон фракции (×0.75)"
-            icon="Sunflorian Medallion"
-            checked={timeBoosts.factionMedallion}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, factionMedallion: v }))}
-          />
-          <Check
-            label="Super/Time Warp Totem (×0.5)"
-            icon="Super Totem"
-            checked={timeBoosts.totem}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, totem: v }))}
-          />
-          <Check
-            label="Desert Gnome (×0.9)"
-            icon="Desert Gnome"
-            checked={timeBoosts.desertGnome}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, desertGnome: v }))}
-          />
-          <Check
-            label="Legendary Shrine (×0.5)"
-            icon="Legendary Shrine"
-            checked={timeBoosts.legendaryShrine}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, legendaryShrine: v }))}
-          />
-          <Check
-            label="Boar Shrine (×0.8)"
-            icon="Boar Shrine"
-            checked={timeBoosts.boarShrine}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, boarShrine: v }))}
-          />
-          <Check
-            icon="Gourmet Hourglass"
-            label="Gourmet Hourglass (×0.5)"
-            checked={timeBoosts.gourmetHourglass}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, gourmetHourglass: v }))}
-          />
+      <BoostPanel title="Бусты времени готовки">
+        <div className="ref-marvel-boost-widget">
+          <div className="ref-food-boost-checks">
+            <Check
+              label="Масло залито в здание"
+              checked={timeBoosts.oilFilled}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, oilFilled: v }))}
+            />
+            <Check
+              label="Luna's Hat (×0.5)"
+              icon="Luna's Hat"
+              checked={timeBoosts.lunasHat}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, lunasHat: v }))}
+            />
+            <Check
+              label="Master Chef's Cleaver (×0.85)"
+              icon="Master Chef's Cleaver"
+              checked={timeBoosts.chefsCleaver}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, chefsCleaver: v }))}
+            />
+            <Check
+              label="Медальон фракции (×0.75)"
+              icon="Sunflorian Medallion"
+              checked={timeBoosts.factionMedallion}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, factionMedallion: v }))}
+            />
+            <Check
+              label="Super/Time Warp Totem (×0.5)"
+              icon="Super Totem"
+              checked={timeBoosts.totem}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, totem: v }))}
+            />
+            <Check
+              label="Desert Gnome (×0.9)"
+              icon="Desert Gnome"
+              checked={timeBoosts.desertGnome}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, desertGnome: v }))}
+            />
+            <Check
+              label="Legendary Shrine (×0.5)"
+              icon="Legendary Shrine"
+              checked={timeBoosts.legendaryShrine}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, legendaryShrine: v }))}
+            />
+            <Check
+              label="Boar Shrine (×0.8)"
+              icon="Boar Shrine"
+              checked={timeBoosts.boarShrine}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, boarShrine: v }))}
+            />
+            <Check
+              icon="Gourmet Hourglass"
+              label="Gourmet Hourglass (×0.5)"
+              checked={timeBoosts.gourmetHourglass}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, gourmetHourglass: v }))}
+            />
+          </div>
+          <div className="ref-food-boost-selects">
+            <RankSelect
+              label="Fast Feasts (Fire Pit/Kitchen)"
+              icon="Fast Feasts"
+              value={timeBoosts.fastFeastsRank}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, fastFeastsRank: v as 0 | 1 | 2 | 3 }))}
+            />
+            <RankSelect
+              label="Frosted Cakes (торты)"
+              icon="Frosted Cakes"
+              value={timeBoosts.frostedCakesRank}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, frostedCakesRank: v as 0 | 1 | 2 | 3 }))}
+            />
+            <RankSelect
+              label="Swift Sizzle (масло, Fire Pit)"
+              icon="Swift Sizzle"
+              value={timeBoosts.swiftSizzleRank}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, swiftSizzleRank: v as 0 | 1 | 2 | 3 }))}
+            />
+            <RankSelect
+              label="Turbo Fry (масло, Kitchen)"
+              icon="Turbo Fry"
+              value={timeBoosts.turboFryRank}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, turboFryRank: v as 0 | 1 | 2 | 3 }))}
+            />
+            <RankSelect
+              label="Fry Frenzy (масло, Deli)"
+              icon="Fry Frenzy"
+              value={timeBoosts.fryFrenzyRank}
+              onChange={(v) => setTimeBoosts((t) => ({ ...t, fryFrenzyRank: v as 0 | 1 | 2 | 3 }))}
+            />
+          </div>
         </div>
-        <div className="ref-food-boost-selects">
-          <RankSelect
-            label="Fast Feasts (Fire Pit/Kitchen)"
-            icon="Fast Feasts"
-            value={timeBoosts.fastFeastsRank}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, fastFeastsRank: v as 0 | 1 | 2 | 3 }))}
-          />
-          <RankSelect
-            label="Frosted Cakes (торты)"
-            icon="Frosted Cakes"
-            value={timeBoosts.frostedCakesRank}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, frostedCakesRank: v as 0 | 1 | 2 | 3 }))}
-          />
-          <RankSelect
-            label="Swift Sizzle (масло, Fire Pit)"
-            icon="Swift Sizzle"
-            value={timeBoosts.swiftSizzleRank}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, swiftSizzleRank: v as 0 | 1 | 2 | 3 }))}
-          />
-          <RankSelect
-            label="Turbo Fry (масло, Kitchen)"
-            icon="Turbo Fry"
-            value={timeBoosts.turboFryRank}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, turboFryRank: v as 0 | 1 | 2 | 3 }))}
-          />
-          <RankSelect
-            label="Fry Frenzy (масло, Deli)"
-            icon="Fry Frenzy"
-            value={timeBoosts.fryFrenzyRank}
-            onChange={(v) => setTimeBoosts((t) => ({ ...t, fryFrenzyRank: v as 0 | 1 | 2 | 3 }))}
-          />
-        </div>
-      </div>
+      </BoostPanel>
 
-      <div className="ref-marvel-boost-widget">
-        <div className="ref-food-boost-checks">
-          <Check
-            label="Golden Spatula (+10%)"
-            icon="Golden Spatula"
-            checked={xpBoosts.goldenSpatula}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, goldenSpatula: v }))}
-          />
-          <Check
-            label="Pan (+25%)"
-            icon="Pan"
-            checked={xpBoosts.pan}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, pan: v }))}
-          />
-          <Check label="VIP Access (+10%)" checked={xpBoosts.vip} onChange={(v) => setXpBoosts((x) => ({ ...x, vip: v }))} />
-          <Check
-            label="Observatory (+5%)"
-            icon="Observatory"
-            checked={xpBoosts.observatory}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, observatory: v }))}
-          />
-          <Check
-            label="Blossombeard (+10%)"
-            icon="Blossombeard"
-            checked={xpBoosts.blossombeard}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, blossombeard: v }))}
-          />
-          <Check
-            label="Luminous Anglerfish Topper (+50%, рыба)"
-            icon="Luminous Anglerfish Topper"
-            checked={xpBoosts.luminousAnglerfishTopper}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, luminousAnglerfishTopper: v }))}
-          />
-          <Check
-            label="Skill Shrimpy (+20%, рыба)"
-            icon="Skill Shrimpy"
-            checked={xpBoosts.skillShrimpy}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, skillShrimpy: v }))}
-          />
+      <BoostPanel title="Бусты опыта">
+        <div className="ref-marvel-boost-widget">
+          <div className="ref-food-boost-checks">
+            <Check
+              label="Golden Spatula (+10%)"
+              icon="Golden Spatula"
+              checked={xpBoosts.goldenSpatula}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, goldenSpatula: v }))}
+            />
+            <Check
+              label="Pan (+25%)"
+              icon="Pan"
+              checked={xpBoosts.pan}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, pan: v }))}
+            />
+            <Check label="VIP Access (+10%)" checked={xpBoosts.vip} onChange={(v) => setXpBoosts((x) => ({ ...x, vip: v }))} />
+            <Check
+              label="Observatory (+5%)"
+              icon="Observatory"
+              checked={xpBoosts.observatory}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, observatory: v }))}
+            />
+            <Check
+              label="Blossombeard (+10%)"
+              icon="Blossombeard"
+              checked={xpBoosts.blossombeard}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, blossombeard: v }))}
+            />
+            <Check
+              label="Luminous Anglerfish Topper (+50%, рыба)"
+              icon="Luminous Anglerfish Topper"
+              checked={xpBoosts.luminousAnglerfishTopper}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, luminousAnglerfishTopper: v }))}
+            />
+            <Check
+              label="Skill Shrimpy (+20%, рыба)"
+              icon="Skill Shrimpy"
+              checked={xpBoosts.skillShrimpy}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, skillShrimpy: v }))}
+            />
+          </div>
+          <div className="ref-food-boost-selects">
+            <RankSelect
+              label="Munching Mastery (все блюда)"
+              icon="Munching Mastery"
+              value={xpBoosts.munchingMasteryRank}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, munchingMasteryRank: v as 0 | 1 | 2 | 3 }))}
+            />
+            <RankSelect
+              label="Juicy Boost (Smoothie Shack)"
+              icon="Juicy Boost"
+              value={xpBoosts.juicyBoostRank}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, juicyBoostRank: v as 0 | 1 | 2 | 3 }))}
+            />
+            <RankSelect
+              label="Drive-Through Deli"
+              icon="Drive-Through Deli"
+              value={xpBoosts.driveThroughDeliRank}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, driveThroughDeliRank: v as 0 | 1 | 2 | 3 }))}
+            />
+            <RankSelect
+              label="Buzzworthy Treats (блюда с мёдом)"
+              icon="Buzzworthy Treats"
+              value={xpBoosts.buzzworthyTreatsRank}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, buzzworthyTreatsRank: v as 0 | 1 | 2 | 3 }))}
+            />
+            <RankSelect
+              label="Fishy Feast (рыба)"
+              icon="Fishy Feast"
+              value={xpBoosts.fishyFeastRank}
+              onChange={(v) => setXpBoosts((x) => ({ ...x, fishyFeastRank: v as 0 | 1 | 2 | 3 }))}
+            />
+          </div>
         </div>
-        <div className="ref-food-boost-selects">
-          <RankSelect
-            label="Munching Mastery (все блюда)"
-            icon="Munching Mastery"
-            value={xpBoosts.munchingMasteryRank}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, munchingMasteryRank: v as 0 | 1 | 2 | 3 }))}
-          />
-          <RankSelect
-            label="Juicy Boost (Smoothie Shack)"
-            icon="Juicy Boost"
-            value={xpBoosts.juicyBoostRank}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, juicyBoostRank: v as 0 | 1 | 2 | 3 }))}
-          />
-          <RankSelect
-            label="Drive-Through Deli"
-            icon="Drive-Through Deli"
-            value={xpBoosts.driveThroughDeliRank}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, driveThroughDeliRank: v as 0 | 1 | 2 | 3 }))}
-          />
-          <RankSelect
-            label="Buzzworthy Treats (блюда с мёдом)"
-            icon="Buzzworthy Treats"
-            value={xpBoosts.buzzworthyTreatsRank}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, buzzworthyTreatsRank: v as 0 | 1 | 2 | 3 }))}
-          />
-          <RankSelect
-            label="Fishy Feast (рыба)"
-            icon="Fishy Feast"
-            value={xpBoosts.fishyFeastRank}
-            onChange={(v) => setXpBoosts((x) => ({ ...x, fishyFeastRank: v as 0 | 1 | 2 | 3 }))}
-          />
-        </div>
-      </div>
+      </BoostPanel>
 
       <div className="ref-food-tabs">
         {BUILDINGS.map((b) => (

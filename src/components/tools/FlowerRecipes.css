@@ -1,0 +1,30 @@
+/* Рецепты цветов (src/components/tools/FlowerRecipes.tsx). Карточки и строки
+   используют общие стили .ref-bait-*, .ref-comp-* из FishCatalog.css и
+   ComposterCosts.css. */
+.ref-flower-calc {
+  container-type: inline-size;
+}
+.ref-flower-row {
+  grid-template-columns: 170px minmax(0, 1fr) auto;
+}
+.ref-flower-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.ref-flower-opt--best {
+  font-weight: 700;
+}
+.ref-flower-opt--nop {
+  color: var(--text-sec);
+}
+@container (max-width: 640px) {
+  .ref-flower-row {
+    grid-template-columns: 1fr auto;
+  }
+  .ref-flower-row .ref-bait-ings {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}

@@ -66,6 +66,10 @@ Copies bumpkin skill-tree icon sprites from the SFL source clone into `public/sp
 npx tsx scripts/sync-skill-icons.ts [--sfl-dir ./_sfl_temp] [--target-dir ./public/sprites]
 ```
 
+### `sync-flower-data.ts`
+
+Generates `src/lib/flowerData.generated.ts` (seeds, crossbreed item amounts, flower recipes) for the «Цветы» section. Seed price/level/growth time, seasonality and item amounts come from the game source clone (`types/flowers.ts`, `types/seeds.ts`). The recipe table itself (which flower you get from a seed + item) is **not** in the open game code — the server picks the result — so it lives in `scripts/data/flower-recipes.json`, copied by hand from the community calculator (sfl-calculator.com/en/flower-recipes; the data sits in the page's client script). The generator fails if that table disagrees with the game code (unknown/extra item, missing recipe, wrong set). Run `npm run sfl:clone` first, then `npm run sfl:sync-flowers`; when new flowers or crossbreed items appear, refresh the JSON from the calculator and re-run.
+
 ### `index-search.ts`
 
 Builds the semantic-search index: computes embeddings (via routerai.ru, model `qwen/qwen3-embedding-4b`) for every non-draft `guides`/`mechanics`/`news` article and every hand-written Справочник section, and upserts them into the `search_embeddings` table. This is what powers the site's neuropoisk (semantic search) — one combined index across guides, mechanics, Справочник, and the news/blog archive. Requires the `migrate-add-search-embeddings.sql` migration applied first (needs the `pgvector` Postgres extension).

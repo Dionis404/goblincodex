@@ -4,6 +4,7 @@ import FoodCatalogTable from './tools/FoodCatalogTable';
 import ToolCostCalculator from './tools/ToolCostCalculator';
 import FishCatalog from './tools/FishCatalog';
 import ComposterCosts from './tools/ComposterCosts';
+import FlowerRecipes from './tools/FlowerRecipes';
 import CoinRateTable from './tools/CoinRateTable';
 import CoinRateNote from './CoinRateNote';
 import { useCoinRate } from '../lib/useCoinRate';
@@ -13,6 +14,7 @@ import NumberStepper from './NumberStepper';
 import ResourceIcon, { CoinsIcon, NodeIcon, FlowerAmount } from './ResourceIcon';
 import { useItemPrices } from '../lib/useItemPrices';
 import ExpansionBoostToggles from './ExpansionBoostToggles';
+import BoostPanel from './BoostPanel';
 import {
   stagesForIsland,
   stagesForAscensionLevel,
@@ -529,19 +531,21 @@ function ObsidianSection() {
         Запуск цикла требует набор ресурсов, который зависит от текущего игрового сезона (не
         путать с сюжетными главами) — набор действует на момент старта плавки, а не сбора.
       </p>
-      <div className="ref-boost-toggles">
-        {LAVA_PIT_BOOSTS.map((b) => (
-          <label className="ref-boost-toggle" key={b.id}>
-            <input
-              type="checkbox"
-              checked={!!boostsOn[b.id]}
-              onChange={(e) => setBoostsOn((prev) => ({ ...prev, [b.id]: e.target.checked }))}
-            />
-            <img className="ref-boost-icon" src={b.icon} alt="" />
-            <strong>{b.label}</strong> <span>{b.hint}</span>
-          </label>
-        ))}
-      </div>
+      <BoostPanel title="Бусты Lava Pit">
+        <div className="ref-boost-toggles">
+          {LAVA_PIT_BOOSTS.map((b) => (
+            <label className="ref-boost-toggle" key={b.id}>
+              <input
+                type="checkbox"
+                checked={!!boostsOn[b.id]}
+                onChange={(e) => setBoostsOn((prev) => ({ ...prev, [b.id]: e.target.checked }))}
+              />
+              <img className="ref-boost-icon" src={b.icon} alt="" />
+              <strong>{b.label}</strong> <span>{b.hint}</span>
+            </label>
+          ))}
+        </div>
+      </BoostPanel>
       <div className="ref-recipe-grid">
         {LAVA_PIT_RECIPES.map((r) => {
           let total = 0;
@@ -1140,29 +1144,31 @@ function MarvelBoostWidget({ boosts, onChange }: { boosts: MarvelBoosts; onChang
   }
 
   return (
-    <div className="ref-marvel-boost-widget">
-      <label className="ref-marvel-boost-check">
-        <input type="checkbox" checked={boosts.navigationTable} onChange={() => toggle('navigationTable')} />
-        <img className="ref-marvel-icon" src="/sprites/sfts/navigation_table.webp" alt="" />
-        <span>Navigation Table (+100%)</span>
-      </label>
-      <label className="ref-marvel-boost-check">
-        <input type="checkbox" checked={boosts.deepSeaHelm} onChange={() => toggle('deepSeaHelm')} />
-        <img className="ref-marvel-icon" src="/sprites/wearables/255.webp" alt="" />
-        <span>Deep Sea Helm (+100%)</span>
-      </label>
-      <label className="ref-marvel-boost-check">
-        <input type="checkbox" checked={boosts.fullMoon} onChange={() => toggle('fullMoon')} />
-        <span>🌕 Full Moon</span>
-      </label>
-      <label className="ref-marvel-boost-check ref-marvel-boost-check--nested">
-        <input type="checkbox" checked={boosts.guardian} disabled={!boosts.fullMoon} onChange={() => toggle('guardian')} />
-        <span>🛡️ Season Guardian (только вместе с Full Moon)</span>
-      </label>
-      <p className="ref-marvel-boost-total">
-        <strong>{multiplier > 1 ? `Множитель: ×${multiplier}` : 'Выберите бонус'}</strong>
-      </p>
-    </div>
+    <BoostPanel title="Бусты">
+      <div className="ref-marvel-boost-widget">
+        <label className="ref-marvel-boost-check">
+          <input type="checkbox" checked={boosts.navigationTable} onChange={() => toggle('navigationTable')} />
+          <img className="ref-marvel-icon" src="/sprites/sfts/navigation_table.webp" alt="" />
+          <span>Navigation Table (+100%)</span>
+        </label>
+        <label className="ref-marvel-boost-check">
+          <input type="checkbox" checked={boosts.deepSeaHelm} onChange={() => toggle('deepSeaHelm')} />
+          <img className="ref-marvel-icon" src="/sprites/wearables/255.webp" alt="" />
+          <span>Deep Sea Helm (+100%)</span>
+        </label>
+        <label className="ref-marvel-boost-check">
+          <input type="checkbox" checked={boosts.fullMoon} onChange={() => toggle('fullMoon')} />
+          <span>🌕 Full Moon</span>
+        </label>
+        <label className="ref-marvel-boost-check ref-marvel-boost-check--nested">
+          <input type="checkbox" checked={boosts.guardian} disabled={!boosts.fullMoon} onChange={() => toggle('guardian')} />
+          <span>🛡️ Season Guardian (только вместе с Full Moon)</span>
+        </label>
+        <p className="ref-marvel-boost-total">
+          <strong>{multiplier > 1 ? `Множитель: ×${multiplier}` : 'Выберите бонус'}</strong>
+        </p>
+      </div>
+    </BoostPanel>
   );
 }
 
@@ -1393,6 +1399,26 @@ function CompostSection() {
   );
 }
 
+function FlowerSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Цветы растут на грядках для цветов из семян и скрещиваются: к семени добавляется один предмет
+        (урожай, фрукт или другой цветок), и от него зависит, какой цветок вырастет. Ниже у каждого
+        семени — все цветы и предметы, из которых они получаются; самый дешёвый вариант выделен. Цветы
+        на маркетплейсе не продаются, поэтому цена цветка — себестоимость: семя (монеты по курсу монет) +
+        самый дешёвый предмет скрещивания; урожай и фрукты — по floor, а если предмет сам цветок — по его
+        себестоимости, и так по цепочке (значок «≈»). Себестоимость одного цветка = (семя + предмет скрещивания)
+        ÷ ожидаемый выход за посадку. Бусты урожая, цены семян и времени роста включаются на панели ниже
+        (по умолчанию выключены). Какой цветок получится из пары
+        «семя + предмет», в коде игры не записано — сервер выбирает результат сам, поэтому таблица
+        рецептов собрана по данным сообщества и сверена с игрой только по составу предметов и количеству.
+      </p>
+      <FlowerRecipes />
+    </section>
+  );
+}
+
 interface RefSection {
   id: string;
   icon: string;
@@ -1408,6 +1434,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
   { id: 'bait', icon: '🎣', label: 'Рыбалка и раки', Content: BaitFishSection },
   { id: 'compost', icon: '🪱', label: 'Компостер', Content: CompostSection },
+  { id: 'flowers', icon: '🌸', label: 'Цветы', Content: FlowerSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },
   { id: 'obsidian', icon: '🌋', label: 'Обсидиан (Lava Pit)', Content: ObsidianSection },
   { id: 'marvels', icon: '🐋', label: 'Морские марвелы', Content: MarvelsSection },

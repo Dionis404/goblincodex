@@ -1,0 +1,409 @@
+{
+  "_source": "Таблица «цветок → предметы для скрещивания» снята вручную со страницы sfl-calculator.com/en/flower-recipes (данные сообщества; в открытом коде игры результат скрещивания не определён — его выбирает сервер). Количества предметов и параметры семян берутся из кода игры (scripts/sync-flower-data.ts).",
+  "seeds": {
+    "Sunpetal Seed": [
+      "Red Pansy",
+      "Yellow Pansy",
+      "Purple Pansy",
+      "White Pansy",
+      "Blue Pansy",
+      "Red Cosmos",
+      "Yellow Cosmos",
+      "Purple Cosmos",
+      "White Cosmos",
+      "Blue Cosmos",
+      "Prism Petal"
+    ],
+    "Bloom Seed": [
+      "Red Balloon Flower",
+      "Yellow Balloon Flower",
+      "Purple Balloon Flower",
+      "White Balloon Flower",
+      "Blue Balloon Flower",
+      "Red Daffodil",
+      "Yellow Daffodil",
+      "Purple Daffodil",
+      "White Daffodil",
+      "Blue Daffodil",
+      "Celestial Frostbloom"
+    ],
+    "Lily Seed": [
+      "Red Carnation",
+      "Yellow Carnation",
+      "Purple Carnation",
+      "White Carnation",
+      "Blue Carnation",
+      "Red Lotus",
+      "Yellow Lotus",
+      "Purple Lotus",
+      "White Lotus",
+      "Blue Lotus",
+      "Primula Enigma"
+    ],
+    "Lavender Seed": [
+      "Red Lavender",
+      "Yellow Lavender",
+      "Purple Lavender",
+      "White Lavender",
+      "Blue Lavender"
+    ],
+    "Gladiolus Seed": [
+      "Red Gladiolus",
+      "Yellow Gladiolus",
+      "Purple Gladiolus",
+      "White Gladiolus",
+      "Blue Gladiolus"
+    ],
+    "Clover Seed": [
+      "Red Clover",
+      "Yellow Clover",
+      "Purple Clover",
+      "White Clover",
+      "Blue Clover"
+    ],
+    "Edelweiss Seed": [
+      "Red Edelweiss",
+      "Yellow Edelweiss",
+      "Purple Edelweiss",
+      "White Edelweiss",
+      "Blue Edelweiss"
+    ]
+  },
+  "recipes": {
+    "Red Pansy": [
+      "Radish",
+      "Banana",
+      "Red Cosmos",
+      "Purple Daffodil",
+      "Red Balloon Flower",
+      "Red Lotus",
+      "Primula Enigma"
+    ],
+    "Yellow Pansy": [
+      "Sunflower",
+      "Apple",
+      "Red Pansy",
+      "Red Daffodil",
+      "Yellow Balloon Flower",
+      "Yellow Carnation"
+    ],
+    "Purple Pansy": [
+      "Blue Pansy",
+      "Purple Balloon Flower",
+      "Purple Carnation"
+    ],
+    "White Pansy": [
+      "Yellow Cosmos"
+    ],
+    "Blue Pansy": [
+      "Purple Cosmos",
+      "White Pansy",
+      "White Cosmos",
+      "White Daffodil",
+      "Blue Daffodil",
+      "White Carnation"
+    ],
+    "Red Cosmos": [
+      "Yellow Daffodil",
+      "Purple Lotus"
+    ],
+    "Yellow Cosmos": [
+      "Yellow Pansy",
+      "White Balloon Flower",
+      "Red Carnation"
+    ],
+    "Purple Cosmos": [
+      "Beetroot",
+      "Eggplant",
+      "Kale",
+      "Blue Cosmos",
+      "Blue Balloon Flower",
+      "Celestial Frostbloom"
+    ],
+    "White Cosmos": [
+      "Prism Petal",
+      "Yellow Lotus"
+    ],
+    "Blue Cosmos": [
+      "Cauliflower",
+      "Parsnip",
+      "Blueberry",
+      "Purple Pansy",
+      "White Lotus",
+      "Blue Carnation"
+    ],
+    "Prism Petal": [
+      "Blue Lotus"
+    ],
+    "Red Balloon Flower": [
+      "Sunflower",
+      "Beetroot",
+      "Apple",
+      "Banana",
+      "Purple Pansy",
+      "Red Pansy",
+      "Red Daffodil",
+      "Yellow Daffodil",
+      "Purple Daffodil",
+      "Yellow Carnation"
+    ],
+    "Yellow Balloon Flower": [
+      "Yellow Lotus"
+    ],
+    "Purple Balloon Flower": [
+      "Blue Carnation"
+    ],
+    "White Balloon Flower": [
+      "White Cosmos",
+      "Blue Daffodil",
+      "White Daffodil",
+      "White Balloon Flower"
+    ],
+    "Blue Balloon Flower": [
+      "Cauliflower",
+      "Parsnip",
+      "Eggplant",
+      "Kale",
+      "Blue Pansy",
+      "Blue Cosmos",
+      "Purple Cosmos",
+      "Blue Balloon Flower",
+      "Celestial Frostbloom"
+    ],
+    "Red Daffodil": [
+      "Yellow Pansy",
+      "Yellow Balloon Flower",
+      "Red Carnation",
+      "Primula Enigma"
+    ],
+    "Yellow Daffodil": [
+      "Red Cosmos",
+      "White Carnation",
+      "White Lotus"
+    ],
+    "Purple Daffodil": [
+      "Radish",
+      "Blueberry",
+      "Red Balloon Flower",
+      "Red Lotus",
+      "Blue Lotus"
+    ],
+    "White Daffodil": [
+      "Yellow Cosmos",
+      "Prism Petal"
+    ],
+    "Blue Daffodil": [
+      "Purple Balloon Flower",
+      "Purple Carnation",
+      "Purple Lotus"
+    ],
+    "Celestial Frostbloom": [
+      "White Pansy"
+    ],
+    "Red Carnation": [
+      "Purple Pansy"
+    ],
+    "Yellow Carnation": [
+      "Sunflower",
+      "Yellow Cosmos",
+      "Red Lotus",
+      "White Carnation"
+    ],
+    "Purple Carnation": [
+      "Eggplant",
+      "Blueberry",
+      "Apple",
+      "Blue Cosmos",
+      "Blue Balloon Flower",
+      "Purple Lotus"
+    ],
+    "White Carnation": [
+      "Yellow Pansy",
+      "White Cosmos",
+      "Prism Petal",
+      "Yellow Daffodil",
+      "Celestial Frostbloom"
+    ],
+    "Blue Carnation": [
+      "Purple Daffodil",
+      "White Balloon Flower",
+      "Primula Enigma"
+    ],
+    "Red Lotus": [
+      "Beetroot",
+      "Radish",
+      "Purple Cosmos",
+      "Red Balloon Flower",
+      "Yellow Balloon Flower",
+      "Purple Carnation",
+      "Yellow Carnation",
+      "Red Carnation"
+    ],
+    "Yellow Lotus": [
+      "Red Pansy",
+      "Red Cosmos",
+      "Red Daffodil",
+      "Yellow Lotus"
+    ],
+    "Purple Lotus": [
+      "Blue Carnation"
+    ],
+    "White Lotus": [
+      "Cauliflower",
+      "Parsnip",
+      "Kale",
+      "Banana",
+      "White Pansy",
+      "Blue Daffodil",
+      "Blue Lotus",
+      "White Lotus"
+    ],
+    "Blue Lotus": [
+      "Blue Pansy",
+      "White Daffodil"
+    ],
+    "Primula Enigma": [
+      "Purple Balloon Flower"
+    ],
+    "Red Edelweiss": [
+      "Artichoke",
+      "Barley",
+      "Yellow Edelweiss",
+      "Yellow Lavender",
+      "Purple Lavender",
+      "Red Clover"
+    ],
+    "Yellow Edelweiss": [
+      "Onion",
+      "Red Edelweiss",
+      "Yellow Gladiolus",
+      "Red Lavender",
+      "White Lavender"
+    ],
+    "Purple Edelweiss": [
+      "Rhubarb",
+      "Pepper",
+      "Red Gladiolus",
+      "Purple Gladiolus",
+      "Blue Gladiolus",
+      "Blue Lavender",
+      "Blue Clover"
+    ],
+    "White Edelweiss": [
+      "Blue Edelweiss",
+      "Yellow Clover"
+    ],
+    "Blue Edelweiss": [
+      "Purple Edelweiss",
+      "White Edelweiss",
+      "White Gladiolus",
+      "Purple Clover",
+      "White Clover"
+    ],
+    "Red Gladiolus": [
+      "Yellow Edelweiss"
+    ],
+    "Yellow Gladiolus": [
+      "Pepper",
+      "Onion",
+      "Barley",
+      "Yellow Gladiolus",
+      "White Gladiolus",
+      "Red Lavender",
+      "Yellow Lavender",
+      "White Lavender",
+      "Yellow Clover"
+    ],
+    "Purple Gladiolus": [
+      "Artichoke",
+      "Red Edelweiss",
+      "Red Gladiolus",
+      "Purple Gladiolus",
+      "Red Clover",
+      "Purple Clover"
+    ],
+    "White Gladiolus": [
+      "White Edelweiss",
+      "Blue Edelweiss",
+      "Blue Gladiolus"
+    ],
+    "Blue Gladiolus": [
+      "Rhubarb",
+      "Purple Edelweiss",
+      "Purple Lavender",
+      "Blue Lavender",
+      "White Clover",
+      "Blue Clover"
+    ],
+    "Red Lavender": [
+      "Pepper",
+      "Artichoke",
+      "Red Edelweiss",
+      "Purple Edelweiss",
+      "Red Lavender",
+      "Purple Lavender",
+      "Yellow Clover"
+    ],
+    "Yellow Lavender": [
+      "Red Gladiolus",
+      "Yellow Gladiolus",
+      "White Gladiolus",
+      "Yellow Lavender",
+      "Red Clover"
+    ],
+    "Purple Lavender": [
+      "Blue Lavender",
+      "Purple Gladiolus"
+    ],
+    "White Lavender": [
+      "Rhubarb",
+      "Onion",
+      "Barley",
+      "Yellow Edelweiss",
+      "Blue Gladiolus",
+      "White Lavender"
+    ],
+    "Blue Lavender": [
+      "White Edelweiss",
+      "Blue Edelweiss",
+      "Purple Clover",
+      "White Clover",
+      "Blue Clover"
+    ],
+    "Red Clover": [
+      "Red Edelweiss",
+      "Purple Clover"
+    ],
+    "Yellow Clover": [
+      "Pepper",
+      "Onion",
+      "Barley",
+      "Yellow Edelweiss",
+      "Red Gladiolus",
+      "Yellow Lavender",
+      "White Lavender",
+      "Yellow Clover"
+    ],
+    "Purple Clover": [
+      "Red Lavender",
+      "Red Clover"
+    ],
+    "White Clover": [
+      "Blue Edelweiss",
+      "Yellow Gladiolus",
+      "Blue Lavender"
+    ],
+    "Blue Clover": [
+      "Rhubarb",
+      "Artichoke",
+      "Purple Edelweiss",
+      "White Edelweiss",
+      "Purple Gladiolus",
+      "White Gladiolus",
+      "Blue Gladiolus",
+      "Purple Lavender",
+      "White Clover",
+      "Blue Clover"
+    ]
+  }
+}

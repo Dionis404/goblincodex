@@ -28,6 +28,7 @@ import {
   type RunCost,
 } from '../../lib/composter';
 import type { SkillRank } from '../../lib/toolCosts';
+import BoostPanel from '../BoostPanel';
 
 type FlagKey = { [K in keyof ComposterBoosts]: ComposterBoosts[K] extends boolean ? K : never }[keyof ComposterBoosts];
 type RankKey = { [K in keyof ComposterBoosts]: ComposterBoosts[K] extends boolean ? never : K }[keyof ComposterBoosts];
@@ -185,43 +186,45 @@ export default function ComposterCosts() {
 
   return (
     <div className="ref-comp-calc">
-      <div className="ref-marvel-boost-widget ref-fishing-boosts">
-        <div className="ref-food-boost-checks">
-          {ITEM_BOOSTS.map((o) => (
-            <label className="ref-marvel-boost-check" key={o.key}>
-              <input type="checkbox" checked={boosts[o.key]} onChange={(e) => set(o.key, e.target.checked)} />
-              <img src={o.icon} alt="" className="ref-marvel-icon ref-food-icon--sm" />
-              <span>{o.label}</span>
-            </label>
-          ))}
+      <BoostPanel title="Бусты компостера">
+        <div className="ref-marvel-boost-widget ref-fishing-boosts">
+          <div className="ref-food-boost-checks">
+            {ITEM_BOOSTS.map((o) => (
+              <label className="ref-marvel-boost-check" key={o.key}>
+                <input type="checkbox" checked={boosts[o.key]} onChange={(e) => set(o.key, e.target.checked)} />
+                <img src={o.icon} alt="" className="ref-marvel-icon ref-food-icon--sm" />
+                <span>{o.label}</span>
+              </label>
+            ))}
+          </div>
+          <div className="ref-food-boost-selects">
+            {SKILL_BOOSTS.map((s) => (
+              <label className="ref-marvel-boost-check" key={s.key}>
+                <span>
+                  {s.skill} <span className="ref-price-hint">({s.hint})</span>
+                </span>
+                <select
+                  value={boosts[s.key]}
+                  onChange={(e) => set(s.key, Number(e.target.value) as SkillRank)}
+                  className="ref-food-rank-select"
+                >
+                  <option value={0}>выкл</option>
+                  {[1, 2, 3].map((r) => (
+                    <option key={r} value={r}>ранг {r} · {s.format(r)}</option>
+                  ))}
+                </select>
+              </label>
+            ))}
+          </div>
+          {changed && (
+            <p className="ref-fishing-boosts-sum">
+              <button type="button" className="gc-btn-secondary ref-fish-reset" onClick={() => setBoosts(NO_COMPOSTER_BOOSTS)}>
+                Сбросить бусты
+              </button>
+            </p>
+          )}
         </div>
-        <div className="ref-food-boost-selects">
-          {SKILL_BOOSTS.map((s) => (
-            <label className="ref-marvel-boost-check" key={s.key}>
-              <span>
-                {s.skill} <span className="ref-price-hint">({s.hint})</span>
-              </span>
-              <select
-                value={boosts[s.key]}
-                onChange={(e) => set(s.key, Number(e.target.value) as SkillRank)}
-                className="ref-food-rank-select"
-              >
-                <option value={0}>выкл</option>
-                {[1, 2, 3].map((r) => (
-                  <option key={r} value={r}>ранг {r} · {s.format(r)}</option>
-                ))}
-              </select>
-            </label>
-          ))}
-        </div>
-        {changed && (
-          <p className="ref-fishing-boosts-sum">
-            <button type="button" className="gc-btn-secondary ref-fish-reset" onClick={() => setBoosts(NO_COMPOSTER_BOOSTS)}>
-              Сбросить бусты
-            </button>
-          </p>
-        )}
-      </div>
+      </BoostPanel>
 
       <div className="ref-comp-list">
         {COMPOSTER_NAMES.map((n) => (

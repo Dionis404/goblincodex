@@ -6,6 +6,7 @@ import { useCoinRate } from '../../lib/useCoinRate';
 import { coinsToFlower } from '../../lib/coinRate';
 import CoinRateNote from '../CoinRateNote';
 import { SKILL_ICONS } from '../../lib/skills';
+import BoostPanel from '../BoostPanel';
 import {
   TOOLS,
   TOOL_GROUP_LABELS,
@@ -148,33 +149,35 @@ export default function ToolCostCalculator() {
 
   return (
     <div className="ref-tool-calc">
-      <div className="ref-marvel-boost-widget">
-        <div className="ref-food-boost-checks">
-          <Check
-            label="Artist — бейдж (−10% на всё)"
-            icon="/sprites/icons/artist.png"
-            checked={boosts.artist}
-            onChange={(v) => setBoost('artist', v)}
-          />
-          <Check
-            label="Salt Sculpture ур. 4+ (−10% Salt Rake)"
-            icon="/sprites/sculptures/salt_sculpture_01.webp"
-            checked={boosts.saltSculpture}
-            onChange={(v) => setBoost('saltSculpture', v)}
-          />
-        </div>
-        <div className="ref-food-boost-selects">
-          {TOOL_SKILLS.map((s) => (
-            <RankSelect
-              key={s.key}
-              skill={s.skill}
-              target={s.target}
-              value={boosts[s.key]}
-              onChange={(v) => setBoost(s.key, v)}
+      <BoostPanel title="Бусты инструментов">
+        <div className="ref-marvel-boost-widget">
+          <div className="ref-food-boost-checks">
+            <Check
+              label="Artist — бейдж (−10% на всё)"
+              icon="/sprites/icons/artist.png"
+              checked={boosts.artist}
+              onChange={(v) => setBoost('artist', v)}
             />
-          ))}
+            <Check
+              label="Salt Sculpture ур. 4+ (−10% Salt Rake)"
+              icon="/sprites/sculptures/salt_sculpture_01.webp"
+              checked={boosts.saltSculpture}
+              onChange={(v) => setBoost('saltSculpture', v)}
+            />
+          </div>
+          <div className="ref-food-boost-selects">
+            {TOOL_SKILLS.map((s) => (
+              <RankSelect
+                key={s.key}
+                skill={s.skill}
+                target={s.target}
+                value={boosts[s.key]}
+                onChange={(v) => setBoost(s.key, v)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      </BoostPanel>
 
       <div className="ref-table-wrap">
         <table className="ref-table ref-tool-table">

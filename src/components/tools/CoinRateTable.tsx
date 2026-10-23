@@ -3,6 +3,7 @@ import { CoinsIcon } from '../ResourceIcon';
 import { useItemPrices } from '../../lib/useItemPrices';
 import { SKILL_ICONS } from '../../lib/skills';
 import type { SkillRank } from '../../lib/toolCosts';
+import BoostPanel from '../BoostPanel';
 import {
   NO_COIN_SELL_BOOSTS,
   OFFICIAL_COIN_PACKAGES,
@@ -39,41 +40,43 @@ export default function CoinRateTable() {
 
   return (
     <div className="ref-coin-calc">
-      <div className="ref-marvel-boost-widget">
-        <div className="ref-food-boost-checks">
-          <label className="ref-marvel-boost-check">
-            {SKILL_ICONS['Coin Swindler'] && (
-              <img src={SKILL_ICONS['Coin Swindler']} alt="" className="ref-marvel-icon ref-food-icon--sm" />
-            )}
-            <span>
-              Coin Swindler <span className="ref-price-hint">(урожай)</span>
-            </span>
-            <select
-              value={boosts.coinSwindler}
-              onChange={(e) => setBoosts((b) => ({ ...b, coinSwindler: Number(e.target.value) as SkillRank }))}
-              className="ref-food-rank-select"
-            >
-              <option value={0}>выкл</option>
-              {swindlerRanks.map((r, i) => (
-                <option key={i} value={i + 1}>
-                  ранг {i + 1} · +{Math.round(r * 100)}%
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="ref-marvel-boost-check">
-            <input
-              type="checkbox"
-              checked={boosts.greenThumbLegacy}
-              onChange={(e) => setBoosts((b) => ({ ...b, greenThumbLegacy: e.target.checked }))}
-            />
-            <img src="/sprites/skills/land/crops/green_thumb_LE.png" alt="" className="ref-marvel-icon ref-food-icon--sm" />
-            <span>
-              Green Thumb <span className="ref-price-hint">(старый навык в инвентаре, +5% за урожай)</span>
-            </span>
-          </label>
+      <BoostPanel title="Бусты курса">
+        <div className="ref-marvel-boost-widget">
+          <div className="ref-food-boost-checks">
+            <label className="ref-marvel-boost-check">
+              {SKILL_ICONS['Coin Swindler'] && (
+                <img src={SKILL_ICONS['Coin Swindler']} alt="" className="ref-marvel-icon ref-food-icon--sm" />
+              )}
+              <span>
+                Coin Swindler <span className="ref-price-hint">(урожай)</span>
+              </span>
+              <select
+                value={boosts.coinSwindler}
+                onChange={(e) => setBoosts((b) => ({ ...b, coinSwindler: Number(e.target.value) as SkillRank }))}
+                className="ref-food-rank-select"
+              >
+                <option value={0}>выкл</option>
+                {swindlerRanks.map((r, i) => (
+                  <option key={i} value={i + 1}>
+                    ранг {i + 1} · +{Math.round(r * 100)}%
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="ref-marvel-boost-check">
+              <input
+                type="checkbox"
+                checked={boosts.greenThumbLegacy}
+                onChange={(e) => setBoosts((b) => ({ ...b, greenThumbLegacy: e.target.checked }))}
+              />
+              <img src="/sprites/skills/land/crops/green_thumb_LE.png" alt="" className="ref-marvel-icon ref-food-icon--sm" />
+              <span>
+                Green Thumb <span className="ref-price-hint">(старый навык в инвентаре, +5% за урожай)</span>
+              </span>
+            </label>
+          </div>
         </div>
-      </div>
+      </BoostPanel>
 
       <div className="ref-marvel-boost-widget ref-coin-summary">
         {summary == null ? (

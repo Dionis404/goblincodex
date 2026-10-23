@@ -1,0 +1,205 @@
+/**
+ * Цветы: что скрещивать и сколько это стоит.
+ *
+ * Семена, количества предметов и сезонность — из flowerData.generated.ts
+ * (scripts/sync-flower-data.ts, код игры). Таблица «цветок → предметы» снята
+ * со страницы sfl-calculator.com (сервер игры выбирает результат сам).
+ *
+ * Цены: семя — в монетах, во Flower по курсу монет; предметы скрещивания и
+ * сами цветы — floor маркетплейса. Для предметов без цены (цветов на маркете
+ * бывает нет) рецепт считается неполным и в «самый дешёвый» не попадает.
+ */
+import { CROSSBREED_AMOUNTS, FLOWER_RECIPES, FLOWER_SEEDS } from './flowerData.generated';
+import { SELLABLES } from './coinRate';
+import { SKILLS } from './skills';
+import type { SkillRank } from './toolCosts';
+
+export const SEED_ORDER = Object.keys(FLOWER_SEEDS);
+
+const PNG_FLOWERS = /(Carnation|Edelweiss|Gladiolus)$/;
+
+export function flowerIcon(name: string): string {
+  const file = name.toLowerCase().replace(/ /g, '_');
+  return `/sprites/flowers/${file}.${PNG_FLOWERS.test(name) ? 'png' : 'webp'}`;
+}
+
+export function seedIcon(seed: string): string {
+  return flowerIcon(seed);
+}
+
+const SELLABLE_ICON = new Map(SELLABLES.map((s) => [s.name, s.icon]));
+const SELLABLE_RU = new Map(SELLABLES.map((s) => [s.name, s.labelRu]));
+
+/** Иконка предмета скрещивания: урожай/фрукт или цветок. */
+export function ingredientIcon(name: string): string {
+  return SELLABLE_ICON.get(name) ?? flowerIcon(name);
+}
+
+export function ingredientLabelRu(name: string): string | undefined {
+  return SELLABLE_RU.get(name);
+}
+
+/**
+ * Бусты цветов (код игры: harvestFlower.getFlowerAmount, plantFlower.getFlowerTime,
+ * seedBought.getSeedPrice). Шанс «+1 цветок» у каждого буста бросается отдельно,
+ * поэтому ожидаемый выход — 1 + сумма шансов (+1 у Legendary Shrine без шанса).
+ */
+export interface FlowerBoosts {
+  butterfly: boolean; // 20% шанс +1
+  hummingBird: boolean; // 20% шанс +1
+  chicory: boolean; // 10% шанс +1
+  desertRose: boolean; // 10% шанс +1
+  saltCrystalFlower: boolean; // 5% шанс +1
+  mothShrine: boolean; // 20% шанс +1 и время ×0.75
+  legendaryShrine: boolean; // +1 цветок
+  petalledPerk: SkillRank; // навык: шанс +1 по рангу
+  hungryCaterpillar: boolean; // семена цветов бесплатны
+  kuebiko: boolean; // все семена бесплатны
+  artist: boolean; // семена ×0.9
+  flowerSale: SkillRank; // навык: цена семян по рангу
+  flowerFox: boolean; // время ×0.9
+  bloomingBoost: SkillRank; // навык: время по рангу
+  flowerPower: SkillRank; // навык: время по рангу
+  floweryAbode: SkillRank; // навык: время ×1.5/1.6/1.7 (штраф)
+}
+
+export const NO_FLOWER_BOOSTS: FlowerBoosts = {
+  butterfly: false, hummingBird: false, chicory: false, desertRose: false, saltCrystalFlower: false,
+  mothShrine: false, legendaryShrine: false, petalledPerk: 0,
+  hungryCaterpillar: false, kuebiko: false, artist: false, flowerSale: 0,
+  flowerFox: false, bloomingBoost: 0, flowerPower: 0, floweryAbode: 0,
+};
+
+/** Значения рангов навыка из skills.ts (поле ranks, для Flowery Abode — growth). */
+export function flowerSkillValues(skill: string, field = 'ranks'): number[] {
+  const eff = (SKILLS.find((x) => x.name === skill)?.upgrade?.effect ?? {}) as Record<string, unknown>;
+  const v = eff[field];
+  return Array.isArray(v) ? (v as number[]) : [];
+}
+const rank = (skill: string, r: SkillRank, field = 'ranks'): number => (r === 0 ? 0 : (flowerSkillValues(skill, field)[r - 1] ?? 0));
+
+/** Ожидаемое число цветов за один сбор. */
+export function expectedFlowers(b: FlowerBoosts): number {
+  return (
+    1 +
+    (b.butterfly ? 0.2 : 0) + (b.hummingBird ? 0.2 : 0) + (b.chicory ? 0.1 : 0) + (b.desertRose ? 0.1 : 0) +
+    (b.saltCrystalFlower ? 0.05 : 0) + (b.mothShrine ? 0.2 : 0) + rank('Petalled Perk', b.petalledPerk) / 100 +
+    (b.legendaryShrine ? 1 : 0)
+  );
+}
+
+/** Цена одного семени в монетах с бустами. */
+export function seedCoins(seed: string, b: FlowerBoosts): number {
+  if (b.kuebiko || b.hungryCaterpillar) return 0;
+  let price = FLOWER_SEEDS[seed].price;
+  if (b.artist) price *= 0.9;
+  if (b.flowerSale) price *= rank('Flower Sale', b.flowerSale);
+  return price;
+}
+
+/** Дни роста с бустами. */
+export function growDays(seed: string, b: FlowerBoosts): number {
+  let days = FLOWER_SEEDS[seed].days;
+  if (b.flowerFox) days *= 0.9;
+  if (b.mothShrine) days *= 0.75;
+  if (b.bloomingBoost) days *= rank('Blooming Boost', b.bloomingBoost);
+  if (b.flowerPower) days *= rank('Flower Power', b.flowerPower);
+  if (b.floweryAbode) days *= rank('Flowery Abode', b.floweryAbode, 'growth');
+  return days;
+}
+
+export interface RecipeOption {
+  name: string;
+  amount: number;
+  /** Цена одной штуки; null — посчитать не из чего. */
+  unit: number | null;
+  /** true — предмет сам цветок (цена — себестоимость его выращивания). */
+  isFlower: boolean;
+  total: number | null;
+}
+
+export interface FlowerRow {
+  flower: string;
+  /** Варианты, дешёвые вперёд; без цены — в конце. */
+  options: RecipeOption[];
+  /** Самый дешёвый вариант с ценой. */
+  cheapest: RecipeOption | null;
+  /** Себестоимость одного цветка: (семя + самый дешёвый вариант) ÷ ожидаемый выход; null — не посчитать. */
+  cost: number | null;
+}
+
+const SEED_OF_FLOWER = new Map(
+  Object.entries(FLOWER_SEEDS).flatMap(([seed, s]) => s.flowers.map((f) => [f, seed] as const)),
+);
+
+function buildOptions(
+  flower: string,
+  prices: Record<string, number | null>,
+  costs: Record<string, number>,
+): RecipeOption[] {
+  const set = FLOWER_SEEDS[SEED_OF_FLOWER.get(flower)!].set;
+  const options = FLOWER_RECIPES[flower].map((name): RecipeOption => {
+    const amount = CROSSBREED_AMOUNTS[set][name];
+    const isFlower = name in FLOWER_RECIPES;
+    // Цветы на маркете не торгуются — считаем по себестоимости выращивания.
+    const unit = isFlower ? (costs[name] ?? null) : (prices[name] ?? null);
+    return { name, amount, unit, isFlower, total: unit == null ? null : unit * amount };
+  });
+  options.sort((a, b) => {
+    if (a.total == null || b.total == null) return a.total == null ? (b.total == null ? 0 : 1) : -1;
+    return a.total - b.total;
+  });
+  return options;
+}
+
+/**
+ * Себестоимость каждого цветка: цена семени + самый дешёвый предмет
+ * скрещивания. Предметом бывает другой цветок (и цепочка, и цикл), поэтому
+ * считаем итерациями, пока значения не перестанут уменьшаться.
+ */
+export function flowerCosts(
+  prices: Record<string, number | null>,
+  coinRate: number | null | undefined,
+  boosts: FlowerBoosts = NO_FLOWER_BOOSTS,
+): Record<string, number> {
+  const costs: Record<string, number> = {};
+  if (!coinRate) return costs;
+  const yieldPer = expectedFlowers(boosts);
+  for (let pass = 0; pass < 60; pass++) {
+    let changed = false;
+    for (const flower of Object.keys(FLOWER_RECIPES)) {
+      const best = buildOptions(flower, prices, costs)[0];
+      if (best?.total == null) continue;
+      // Посадка тратит семя и предмет скрещивания, а даёт expectedFlowers цветов.
+      const seed = SEED_OF_FLOWER.get(flower)!;
+      // Цепочки из цветов с выходом больше 1 и бесплатными семенами стремятся к нулю — округляем.
+      const raw = (seedCoins(seed, boosts) / coinRate + best.total) / yieldPer;
+      const cost = raw < 1e-7 ? 0 : raw;
+      if (costs[flower] == null || cost < costs[flower] - 1e-9) {
+        costs[flower] = cost;
+        changed = true;
+      }
+    }
+    if (!changed) break;
+  }
+  return costs;
+}
+
+export function flowerRow(
+  flower: string,
+  prices: Record<string, number | null>,
+  costs: Record<string, number>,
+): FlowerRow {
+  const options = buildOptions(flower, prices, costs);
+  return { flower, options, cheapest: options[0]?.total != null ? options[0] : null, cost: costs[flower] ?? null };
+}
+
+/** Цена семени во Flower по курсу монет; null — курс не посчитан. */
+export function seedFlowerPrice(seed: string, coinRate: number | null | undefined, boosts: FlowerBoosts = NO_FLOWER_BOOSTS): number | null {
+  return coinRate ? seedCoins(seed, boosts) / coinRate : null;
+}
+
+/** Названия предметов, чьи цены нужны: ингредиенты-урожай и фрукты (цветы на маркете не торгуются). */
+export const FLOWER_PRICE_NAMES: string[] = [
+  ...new Set(Object.values(FLOWER_RECIPES).flat().filter((n) => !(n in FLOWER_RECIPES))),
+];
