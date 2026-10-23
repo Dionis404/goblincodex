@@ -30,23 +30,38 @@ import {
   type RecipeOption,
 } from '../../lib/flowers';
 
-function Option({ option, best }: { option: RecipeOption; best: boolean }) {
+function Option({ option, cheap, fast }: { option: RecipeOption; cheap: boolean; fast: boolean }) {
+  const extraWait = option.isFlower && option.wait != null && Number.isFinite(option.wait) ? option.wait : null;
+  const cls = [
+    'ref-bait-ing ref-flower-opt',
+    cheap || fast ? 'ref-flower-opt--best' : '',
+    option.total == null ? 'ref-flower-opt--nop' : '',
+    option.worthwhile === false ? 'ref-flower-opt--weak' : '',
+  ].filter(Boolean).join(' ');
+  const title = [
+    cheap ? 'Самый дешёвый рецепт' : '',
+    fast ? 'Самый быстрый рецепт' : '',
+    option.worthwhile === false ? 'Есть рецепт не дороже и не дольше' : '',
+    option.isFlower ? 'Цветы не продаются на маркете — цена по себестоимости выращивания' : '',
+    option.total == null ? 'Нет цены' : '',
+  ].filter(Boolean).join('. ');
   return (
-    <span
-      className={`ref-bait-ing ref-flower-opt${best ? ' ref-flower-opt--best' : ''}${option.total == null ? ' ref-flower-opt--nop' : ''}`}
-      title={option.total == null ? 'Нет цены' : option.isFlower ? 'Цветы не продаются на маркете — цена по себестоимости выращивания' : undefined}
-    >
+    <span className={cls} title={title || undefined}>
+      {cheap && <span className="ref-flower-mark" aria-label="самый дешёвый">💰</span>}
+      {fast && <span className="ref-flower-mark" aria-label="самый быстрый">⚡</span>}
       <img src={ingredientIcon(option.name)} alt="" className="ref-fish-icon" style={{ width: 18, height: 18 }} />
       {option.amount > 1 ? `${option.amount}× ` : ''}{option.name}
       {option.total != null && (
         <span className="ref-price-hint"> {option.isFlower && '≈'}<FlowerAmount compact value={option.total} /></span>
       )}
+      {extraWait != null && <span className="ref-price-hint ref-flower-wait"> +{formatDays(extraWait)}</span>}
     </span>
   );
 }
 
-function Row({ row, sort }: { row: FlowerRow; sort: FlowerSort }) {
-  const time = row.days != null ? formatDays(row.days) : null;
+function Row({ row }: { row: FlowerRow }) {
+  const { cheapest, fastest } = row;
+  const same = cheapest === fastest;
   return (
     <li className="ref-bait-season-row ref-flower-row">
       <span className="ref-flower-name">
@@ -54,35 +69,22 @@ function Row({ row, sort }: { row: FlowerRow; sort: FlowerSort }) {
         <span>{row.flower}</span>
       </span>
       <span className="ref-bait-ings">
-        {row.options.map((o) => <Option key={o.name} option={o} best={o === row.cheapest} />)}
+        {row.options.map((o) => <Option key={o.name} option={o} cheap={o === cheapest} fast={o === fastest} />)}
       </span>
       <span className="ref-comp-cost">
-        {sort === 'fast' ? (
-          <>
-            <span className="ref-comp-total" title="Время всей цепочки: рост семени плюс ожидание цветка-ингредиента">
-              {time ?? '—'}
-            </span>
-            {row.cost != null && (
-              <span className="ref-price-hint ref-comp-split" title="Себестоимость цветка по самому быстрому варианту">
-                ≈ <FlowerAmount compact value={row.cost} />
-              </span>
-            )}
-          </>
+        {cheapest?.cost == null ? (
+          <span className="ref-price-hint">нет цены</span>
         ) : (
-          <>
-            {row.cost == null ? (
-              <span className="ref-price-hint">нет цены</span>
-            ) : (
-              <span className="ref-comp-total" title="Себестоимость цветка: (семя по курсу монет + самый дешёвый предмет скрещивания) ÷ ожидаемый выход">
-                ≈ <FlowerAmount compact value={row.cost} />
-              </span>
-            )}
-            {time && (
-              <span className="ref-price-hint ref-comp-split" title="Время всей цепочки по этому варианту">
-                {time}
-              </span>
-            )}
-          </>
+          <span className="ref-comp-total" title="Самый дешёвый рецепт: себестоимость цветка и время всей цепочки">
+            {same ? '💰⚡' : '💰'} ≈ <FlowerAmount compact value={cheapest.cost} />
+            {cheapest.days != null && <span className="ref-flower-time"> · {formatDays(cheapest.days)}</span>}
+          </span>
+        )}
+        {!same && fastest && fastest.days != null && (
+          <span className="ref-price-hint ref-comp-split" title="Самый быстрый рецепт: время всей цепочки и себестоимость цветка">
+            ⚡ {formatDays(fastest.days)}
+            {fastest.cost != null && <> · ≈ <FlowerAmount compact value={fastest.cost} /></>}
+          </span>
         )}
       </span>
     </li>
@@ -116,23 +118,9 @@ const SKILL_BOOSTS: { key: RankKey; skill: string; hint: string; format: (rank: 
 ];
 
 const SORTS: { key: FlowerSort; label: string; hint: string }[] = [
-  { key: 'default', label: 'Как в игре', hint: 'Порядок цветов как у семени; выделен самый дешёвый рецепт' },
-  { key: 'cheap', label: 'Самый дешёвый', hint: 'Цветы по возрастанию себестоимости; выделен самый дешёвый рецепт' },
-  { key: 'fast', label: 'Самый быстрый', hint: 'Цветы по времени цепочки; выделен самый быстрый рецепт' },
+  { key: 'cheap', label: 'Сначала дешёвые', hint: 'Рецепты в строке — от дешёвого к дорогому' },
+  { key: 'fast', label: 'Сначала быстрые', hint: 'Рецепты в строке — от быстрого к долгому' },
 ];
-
-/** Порядок строк: по цене или по времени выбранного рецепта (без данных — в конец). */
-function sortRows(rows: FlowerRow[], sort: FlowerSort): FlowerRow[] {
-  if (sort === 'default') return rows;
-  const key = (r: FlowerRow) => (sort === 'cheap' ? r.cost : r.days);
-  const tie = (r: FlowerRow) => (sort === 'cheap' ? r.days : r.cost);
-  return [...rows].sort((a, b) => {
-    const ka = key(a), kb = key(b);
-    if (ka == null || kb == null) return ka == null ? (kb == null ? 0 : 1) : -1;
-    if (Math.abs(ka - kb) > 1e-9) return ka - kb;
-    return (tie(a) ?? Infinity) - (tie(b) ?? Infinity);
-  });
-}
 
 function formatDays(d: number): string {
   const hours = d * 24;
@@ -202,7 +190,7 @@ export default function FlowerRecipes() {
   const prices = useItemPrices(FLOWER_PRICE_NAMES);
   const { rate } = useCoinRate();
   const [boosts, setBoosts] = useState<FlowerBoosts>(NO_FLOWER_BOOSTS);
-  const [sort, setSort] = useState<FlowerSort>('default');
+  const [sort, setSort] = useState<FlowerSort>('cheap');
   // Свёрнутые карточки семян (по умолчанию все раскрыты).
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const costs = useMemo(() => (prices ? flowerCosts(prices, rate, boosts) : null), [prices, rate, boosts]);
@@ -210,8 +198,8 @@ export default function FlowerRecipes() {
   return (
     <div className="ref-flower-calc">
       <BoostsPanel boosts={boosts} onChange={setBoosts} />
-      <div className="ref-flower-sort" role="group" aria-label="Сортировка цветов">
-        <span className="ref-price-hint">Сортировка:</span>
+      <div className="ref-flower-sort" role="group" aria-label="Порядок рецептов">
+        <span className="ref-price-hint">Порядок рецептов:</span>
         {SORTS.map((o) => (
           <button
             key={o.key}
@@ -266,8 +254,7 @@ export default function FlowerRecipes() {
               </summary>
               <ul className="ref-bait-season-list">
                 {prices && costs
-                  ? sortRows(info.flowers.map((f) => flowerRow(f, prices, { costs, times, coinRate: rate, boosts, sort })), sort)
-                      .map((row) => <Row key={row.flower} row={row} sort={sort} />)
+                  ? info.flowers.map((f) => <Row key={f} row={flowerRow(f, prices, { costs, times, coinRate: rate, boosts, sort })} />)
                   : <li className="ref-bait-season-row">…</li>}
               </ul>
             </details>

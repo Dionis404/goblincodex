@@ -78,3 +78,20 @@
   outline-offset: 2px;
   border-radius: 6px;
 }
+
+/* Рецепт, который проигрывает другому и по цене, и по времени */
+.ref-flower-opt--weak {
+  opacity: 0.55;
+}
+.ref-flower-mark {
+  font-size: 12px;
+  line-height: 1;
+}
+.ref-flower-wait,
+.ref-flower-time {
+  white-space: nowrap;
+}
+.ref-flower-time {
+  font-weight: 400;
+  color: var(--text-sec);
+}

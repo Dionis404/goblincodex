@@ -120,20 +120,23 @@ export interface RecipeOption {
   days?: number;
   /** Себестоимость одного цветка по этому варианту; задаётся в flowerRow. */
   cost?: number | null;
+  /** Сколько дней сверху ждать цветок-ингредиент (0 — урожай или фрукт); задаётся в flowerRow. */
+  wait?: number;
+  /** false — есть вариант не дороже и не дольше, причём хотя бы в чём-то лучше; задаётся в flowerRow. */
+  worthwhile?: boolean;
 }
 
-export type FlowerSort = 'default' | 'cheap' | 'fast';
+/** Порядок рецептов внутри строки цветка. */
+export type FlowerSort = 'cheap' | 'fast';
 
 export interface FlowerRow {
   flower: string;
-  /** Варианты, дешёвые вперёд; без цены — в конце. */
+  /** Варианты в выбранном порядке; без цены/времени — в конце. */
   options: RecipeOption[];
-  /** Выбранный вариант: самый дешёвый (по умолчанию и при сортировке по цене) или самый быстрый. */
+  /** Самый дешёвый вариант (при равной цене — быстрее). */
   cheapest: RecipeOption | null;
-  /** Себестоимость одного цветка по выбранному варианту; null — не посчитать. */
-  cost: number | null;
-  /** Дни до цветка по выбранному варианту (цепочка целиком); null — не посчитать. */
-  days: number | null;
+  /** Самый быстрый вариант (при равном времени — дешевле). */
+  fastest: RecipeOption | null;
 }
 
 const SEED_OF_FLOWER = new Map(
@@ -235,7 +238,7 @@ export function flowerRow(flower: string, prices: Record<string, number | null>,
   const options = buildOptions(flower, prices, ctx.costs).map((o): RecipeOption => {
     const wait = o.isFlower ? (ctx.times[o.name] ?? Infinity) : 0;
     const raw = o.total != null && ctx.coinRate ? (seedCoins(seed, ctx.boosts) / ctx.coinRate + o.total) / yieldPer : null;
-    return { ...o, days: ownDays + wait, cost: raw == null ? null : raw < 1e-7 ? 0 : raw };
+    return { ...o, days: ownDays + wait, wait, cost: raw == null ? null : raw < 1e-7 ? 0 : raw };
   });
   const byCost = (a: RecipeOption, b: RecipeOption) =>
     a.cost == null || b.cost == null ? (a.cost == null ? (b.cost == null ? 0 : 1) : -1) : a.cost - b.cost;
@@ -243,15 +246,26 @@ export function flowerRow(flower: string, prices: Record<string, number | null>,
     const d = (a.days ?? Infinity) - (b.days ?? Infinity);
     return Number.isFinite(d) && Math.abs(d) > 1e-9 ? d : byCost(a, b);
   };
-  const sorted = [...options].sort(ctx.sort === 'fast' ? byTime : byCost);
-  const pick = ctx.sort === 'fast' ? sorted.find((o) => Number.isFinite(o.days)) ?? null : sorted.find((o) => o.cost != null) ?? null;
-  return {
-    flower,
-    options: sorted,
-    cheapest: pick,
-    cost: pick?.cost ?? null,
-    days: pick && Number.isFinite(pick.days) ? pick.days! : null,
+  const byCostThenTime = (a: RecipeOption, b: RecipeOption) => {
+    const c = byCost(a, b);
+    return c !== 0 && Math.abs(c) > 1e-12 ? c : (a.days ?? Infinity) - (b.days ?? Infinity);
   };
+  // Вариант «не стоит того», если другой не дороже и не дольше и хотя бы в чём-то лучше.
+  const eps = 1e-9;
+  for (const o of options) {
+    const c = o.cost ?? Infinity;
+    const d = o.days ?? Infinity;
+    o.worthwhile = !options.some((p) => {
+      if (p === o) return false;
+      const pc = p.cost ?? Infinity;
+      const pd = p.days ?? Infinity;
+      return pc <= c + eps && pd <= d + eps && (pc < c - eps || pd < d - eps);
+    });
+  }
+  const sorted = [...options].sort(ctx.sort === 'fast' ? byTime : byCostThenTime);
+  const cheapest = [...options].sort(byCostThenTime).find((o) => o.cost != null) ?? null;
+  const fastest = [...options].sort(byTime).find((o) => Number.isFinite(o.days)) ?? null;
+  return { flower, options: sorted, cheapest, fastest };
 }
 
 /** Цена семени во Flower по курсу монет; null — курс не посчитан. */
