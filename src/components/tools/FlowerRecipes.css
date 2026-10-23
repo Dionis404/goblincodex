@@ -28,3 +28,53 @@
     grid-row: 2;
   }
 }
+
+.ref-flower-sort {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.ref-flower-sort-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.ref-flower-sort-btn--on {
+  background: var(--green-pale);
+  border-color: var(--green-dark);
+  color: var(--green-dark);
+  font-weight: 700;
+}
+
+.ref-flower-collapse-all {
+  margin-left: auto;
+}
+/* Карточка семени сворачивается: заголовок — это summary. */
+.ref-flower-seed-head {
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  padding-right: 24px;
+  user-select: none;
+}
+.ref-flower-seed-head::-webkit-details-marker {
+  display: none;
+}
+.ref-flower-seed-head::after {
+  content: '▸';
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-sec);
+  transition: transform 0.15s ease;
+}
+.ref-flower-seed[open] > .ref-flower-seed-head::after {
+  transform: translateY(-50%) rotate(90deg);
+}
+.ref-flower-seed-head:focus-visible {
+  outline: 2px solid var(--green-dark);
+  outline-offset: 2px;
+  border-radius: 6px;
+}

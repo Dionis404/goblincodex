@@ -116,16 +116,24 @@ export interface RecipeOption {
   /** true — предмет сам цветок (цена — себестоимость его выращивания). */
   isFlower: boolean;
   total: number | null;
+  /** Дни от посадки до цветка по этому варианту (с ожиданием цветка-ингредиента); задаётся в flowerRow. */
+  days?: number;
+  /** Себестоимость одного цветка по этому варианту; задаётся в flowerRow. */
+  cost?: number | null;
 }
+
+export type FlowerSort = 'default' | 'cheap' | 'fast';
 
 export interface FlowerRow {
   flower: string;
   /** Варианты, дешёвые вперёд; без цены — в конце. */
   options: RecipeOption[];
-  /** Самый дешёвый вариант с ценой. */
+  /** Выбранный вариант: самый дешёвый (по умолчанию и при сортировке по цене) или самый быстрый. */
   cheapest: RecipeOption | null;
-  /** Себестоимость одного цветка: (семя + самый дешёвый вариант) ÷ ожидаемый выход; null — не посчитать. */
+  /** Себестоимость одного цветка по выбранному варианту; null — не посчитать. */
   cost: number | null;
+  /** Дни до цветка по выбранному варианту (цепочка целиком); null — не посчитать. */
+  days: number | null;
 }
 
 const SEED_OF_FLOWER = new Map(
@@ -185,13 +193,65 @@ export function flowerCosts(
   return costs;
 }
 
-export function flowerRow(
-  flower: string,
-  prices: Record<string, number | null>,
-  costs: Record<string, number>,
-): FlowerRow {
-  const options = buildOptions(flower, prices, costs);
-  return { flower, options, cheapest: options[0]?.total != null ? options[0] : null, cost: costs[flower] ?? null };
+/**
+ * Дни до готового цветка: рост семени плюс ожидание цветка-ингредиента (его
+ * надо вырастить заранее). Берётся самая короткая цепочка; урожай и фрукты
+ * считаем уже имеющимися. Считается итерациями — цепочки и циклы.
+ */
+export function flowerTimes(boosts: FlowerBoosts = NO_FLOWER_BOOSTS): Record<string, number> {
+  const times: Record<string, number> = {};
+  for (let pass = 0; pass < 60; pass++) {
+    let changed = false;
+    for (const flower of Object.keys(FLOWER_RECIPES)) {
+      let wait = Infinity;
+      for (const name of FLOWER_RECIPES[flower]) {
+        const w = name in FLOWER_RECIPES ? (times[name] ?? Infinity) : 0;
+        if (w < wait) wait = w;
+      }
+      if (!Number.isFinite(wait)) continue;
+      const t = growDays(SEED_OF_FLOWER.get(flower)!, boosts) + wait;
+      if (times[flower] == null || t < times[flower] - 1e-9) {
+        times[flower] = t;
+        changed = true;
+      }
+    }
+    if (!changed) break;
+  }
+  return times;
+}
+
+export interface FlowerRowContext {
+  costs: Record<string, number>;
+  times: Record<string, number>;
+  coinRate: number | null | undefined;
+  boosts: FlowerBoosts;
+  sort: FlowerSort;
+}
+
+export function flowerRow(flower: string, prices: Record<string, number | null>, ctx: FlowerRowContext): FlowerRow {
+  const seed = SEED_OF_FLOWER.get(flower)!;
+  const yieldPer = expectedFlowers(ctx.boosts);
+  const ownDays = growDays(seed, ctx.boosts);
+  const options = buildOptions(flower, prices, ctx.costs).map((o): RecipeOption => {
+    const wait = o.isFlower ? (ctx.times[o.name] ?? Infinity) : 0;
+    const raw = o.total != null && ctx.coinRate ? (seedCoins(seed, ctx.boosts) / ctx.coinRate + o.total) / yieldPer : null;
+    return { ...o, days: ownDays + wait, cost: raw == null ? null : raw < 1e-7 ? 0 : raw };
+  });
+  const byCost = (a: RecipeOption, b: RecipeOption) =>
+    a.cost == null || b.cost == null ? (a.cost == null ? (b.cost == null ? 0 : 1) : -1) : a.cost - b.cost;
+  const byTime = (a: RecipeOption, b: RecipeOption) => {
+    const d = (a.days ?? Infinity) - (b.days ?? Infinity);
+    return Number.isFinite(d) && Math.abs(d) > 1e-9 ? d : byCost(a, b);
+  };
+  const sorted = [...options].sort(ctx.sort === 'fast' ? byTime : byCost);
+  const pick = ctx.sort === 'fast' ? sorted.find((o) => Number.isFinite(o.days)) ?? null : sorted.find((o) => o.cost != null) ?? null;
+  return {
+    flower,
+    options: sorted,
+    cheapest: pick,
+    cost: pick?.cost ?? null,
+    days: pick && Number.isFinite(pick.days) ? pick.days! : null,
+  };
 }
 
 /** Цена семени во Flower по курсу монет; null — курс не посчитан. */
