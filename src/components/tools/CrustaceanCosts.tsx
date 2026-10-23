@@ -7,7 +7,8 @@ import { TOOLS } from '../../lib/toolCosts';
 import { BAIT_RECIPE_PRICE_NAMES } from './BaitRecipes';
 import { BAITS, SEASON_NAMES, baitCosts, baitUnitPrice, type SeasonName } from '../../lib/baitCosts';
 import { SEASON_INFO } from '../../lib/fishCatalog';
-import type { FishingBoosts } from '../../lib/fishYield';
+import { NO_FISHING_BOOSTS, type FishingBoosts } from '../../lib/fishYield';
+import FishingBoostsWidget from './FishingBoostsWidget';
 import { WATER_TRAPS } from '../../lib/fishData.generated';
 import BoostPanel from '../BoostPanel';
 import {
@@ -120,11 +121,13 @@ function PotCard({
   );
 }
 
-export default function CrustaceanCosts({ fishing }: { fishing: FishingBoosts }) {
+export default function CrustaceanCosts() {
   const prices = useItemPrices(PRICE_NAMES);
   const { rate: coinRate } = useCoinRate();
   const [boosts, setBoosts] = useState<CrustaceanBoosts>(NO_CRUSTACEAN_BOOSTS);
   const [season, setSeason] = useState<SeasonChoice>('avg');
+  // Бусты рыбалки влияют на цену приманок (Fish Stick, Fish Oil, Crab Stick считаются из рыбы).
+  const [fishing, setFishing] = useState<FishingBoosts>(NO_FISHING_BOOSTS);
 
   // Fish Stick, Fish Oil и Crab Stick на маркетплейсе не торгуются — цена по рецепту (baitCosts).
   const costs = prices ? baitCosts(prices, coinRate, fishing) : null;
@@ -140,6 +143,7 @@ export default function CrustaceanCosts({ fishing }: { fishing: FishingBoosts })
 
   return (
     <div className="ref-crust-calc">
+      <FishingBoostsWidget boosts={fishing} onChange={setFishing} prices={prices} coinRate={coinRate} />
       <BoostPanel title="Бусты ловушек">
         <div className="ref-marvel-boost-widget">
           <div className="ref-food-boost-checks">

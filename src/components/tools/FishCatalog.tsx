@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { NO_FISHING_BOOSTS, type FishingBoosts } from '../../lib/fishYield';
 import './FishCatalog.css';
-import CrustaceanCosts from './CrustaceanCosts';
 import BaitRecipes from './BaitRecipes';
 import { CHUM_AMOUNTS } from '../../lib/fishData.generated';
 import {
@@ -221,7 +220,7 @@ function FishTable() {
 }
 
 export default function FishCatalog() {
-  // Бусты рыбалки общие: от них зависит цена рыбы, а через неё — наживок и приманок раков.
+  // Бусты рыбалки: от них зависит цена рыбы, а через неё — наживок.
   const [fishing, setFishing] = useState<FishingBoosts>(NO_FISHING_BOOSTS);
   return (
     <div className="ref-fish-catalog">
@@ -253,16 +252,6 @@ export default function FishCatalog() {
         <a href="/codex?tab=mechanics&amp;ref=marvels">Морские марвелы</a>.
       </p>
       <FishTable />
-
-      <h3 className="ref-fish-h">Раки: Crab Pot и Mariner Pot</h3>
-      <p className="ref-section-desc">
-        В ловушку кладут приманку и ждут: что попадётся, зависит только от ловушки и приманки, случая
-        здесь нет. Цена — установка целиком: ловушка (монеты по курсу монет и ресурсы) плюс
-        приманка по floor-цене маркетплейса. Ловушка тратится при каждой установке. Fish Stick, Fish
-        Oil и Crab Stick не торгуются — их цена посчитана по рецепту (см. выше) и помечена «≈». Если
-        у наживки всё же нет цены, стоит «от» и указана недостающая приманка.
-      </p>
-      <CrustaceanCosts fishing={fishing} />
     </div>
   );
 }

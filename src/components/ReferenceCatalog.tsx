@@ -5,6 +5,7 @@ import ToolCostCalculator from './tools/ToolCostCalculator';
 import FishCatalog from './tools/FishCatalog';
 import ComposterCosts from './tools/ComposterCosts';
 import FlowerRecipes from './tools/FlowerRecipes';
+import CrustaceanCosts from './tools/CrustaceanCosts';
 import CoinRateTable from './tools/CoinRateTable';
 import CoinRateNote from './CoinRateNote';
 import { useCoinRate } from '../lib/useCoinRate';
@@ -300,9 +301,26 @@ function BaitFishSection() {
     <section className="ref-section">
       <p className="ref-section-desc">
         Всё про рыбалку в одном месте: какую рыбу гарантирует наживка, что и на что ловить, в какие
-        сезоны клюёт и сколько стоит ловля раков ловушками. Данные — из исходников игры.
+        сезоны клюёт и сколько стоят наживки. Раки (Crab Pot и Mariner Pot) — в отдельном разделе. Данные — из исходников игры.
       </p>
       <FishCatalog />
+    </section>
+  );
+}
+
+function CrustaceanSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Раков (ракообразных) ловят ловушками Crab Pot и Mariner Pot. В ловушку кладут приманку и ждут:
+        что попадётся, зависит только от ловушки и приманки, случая здесь нет. Цена — установка целиком:
+        ловушка (монеты по курсу монет и ресурсы) плюс приманка по floor-цене маркетплейса. Ловушка
+        тратится при каждой установке. Fish Stick, Fish Oil и Crab Stick не торгуются — их цена
+        посчитана по рецепту (см. раздел <a href="/codex?tab=mechanics&amp;ref=bait">«Рыбалка»</a>) и
+        помечена «≈»; она зависит от бустов рыбалки, которые включаются на первой панели. Если у
+        наживки всё же нет цены, стоит «от» и указана недостающая приманка.
+      </p>
+      <CrustaceanCosts />
     </section>
   );
 }
@@ -1389,7 +1407,7 @@ function CompostSection() {
       <p className="ref-section-desc">
         Компостер перерабатывает урожай, фрукты и яйца в компост и червей. <strong>Компост</strong>{' '}
         улучшает грядки и плодовые деревья, а <strong>черви</strong> — наживка для рыбалки (см.
-        раздел «Рыбалка и раки»). Для запуска нужен набор предметов, который зависит от сезона года
+        раздел «Рыбалка»). Для запуска нужен набор предметов, который зависит от сезона года
         в игре, поэтому ниже все четыре сезона. Цена — по рыночным ценам ингредиентов; у самого
         компоста и червей рыночной цены нет, и запуск даёт оба продукта сразу, поэтому цена одной
         штуки приведена условно: если считать, что запуск делался ради компоста, и если ради червя.
@@ -1432,7 +1450,8 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'tools', icon: '🪓', label: 'Стоимость инструментов', Content: ToolsSection },
   { id: 'coins', icon: '🪙', label: 'Курс монет', Content: CoinRateSection },
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
-  { id: 'bait', icon: '🎣', label: 'Рыбалка и раки', Content: BaitFishSection },
+  { id: 'bait', icon: '🎣', label: 'Рыбалка', Content: BaitFishSection },
+  { id: 'crustaceans', icon: '🦀', label: 'Раки', Content: CrustaceanSection },
   { id: 'compost', icon: '🪱', label: 'Компостер', Content: CompostSection },
   { id: 'flowers', icon: '🌸', label: 'Цветы', Content: FlowerSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },

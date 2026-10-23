@@ -180,9 +180,9 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
   },
   {
     id: 'bait',
-    title: 'Рыбалка и раки',
+    title: 'Рыбалка',
     summary:
-      'рыбалка, какая рыба ловится на какую наживку, гарантированный улов, Fish Flake, Fish Stick, Fish Oil, Crab Stick, Earthworm, Grub, Red Wiggler, Fishing Lure, сезоны рыбы, приманка chum, марвелы и куски карты, на что ловить рыбу, раки, ракообразные, Crab Pot, Mariner Pot, приманка для раков, стоимость установки ловушки',
+      'рыбалка, какая рыба ловится на какую наживку, гарантированный улов, Fish Flake, Fish Stick, Fish Oil, Crab Stick, Earthworm, Grub, Red Wiggler, Fishing Lure, сезоны рыбы, приманка chum, марвелы и куски карты, на что ловить рыбу',
     context:
       'Справочник рыбалки. Гарантированная наживка (выбираешь рыбу из списка, она клюёт наверняка, chum с ней ' +
       'использовать нельзя): ' +
@@ -193,6 +193,18 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
       ).join('; ') +
       '. Гарантия — это наживка, приманка (chum) лишь повышает шанс. Куски карт марвелов — в разделе «Морские марвелы». ' +
       'Точные шансы улова знает только сервер игры. ' +
+      'Цена наживок по рецепту (Fish Flake, Fish Stick, Fish Oil, Crab Stick): рыба на маркетплейсе не торгуется, ' +
+      'её цена — себестоимость заброса удочки (20 монет, 3 Wood, 1 Stone), делённая на рыбу за заброс с бонусами ' +
+      '(Walrus +1, Trident 20% +1, Sunflower Rod 10% +1, Alba, Fishy Chance/Roll/Gamble, сезонные марвелы; Ancient Rod ' +
+      'делает удочку бесплатной). Crab оценивается по цене продажи 15 монет. ' +
+      'Раки (Crab Pot и Mariner Pot) — в отдельном разделе «Раки».',
+  },
+  {
+    id: 'crustaceans',
+    title: 'Раки',
+    summary:
+      'раки, ракообразные, Crab Pot, Mariner Pot, приманка для раков, chum, ловушки для раков, стоимость установки ловушки, что попадётся в Crab Pot, Fish Stick Fish Oil Crab Stick для раков',
+    context:
       'Раки (ракообразные) попадают в ловушки без случайности: ловушка + приманка → ровно одно существо. ' +
       Object.entries(CRUSTACEAN_LOOKUP).map(([pot, rows]) =>
         `${pot} (уровень ${WATER_TRAPS[pot].level}, ${WATER_TRAPS[pot].readyHours} ч): ` +
@@ -200,11 +212,7 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
           `${name} — ${chum === 'none' ? 'без приманки' : `${WATER_TRAPS[pot].chums[chum]} ${chum}`}`,
         ).join(', '),
       ).join('. ') +
-      '. Цена наживок по рецепту (Fish Flake, Fish Stick, Fish Oil, Crab Stick): рыба на маркетплейсе не торгуется, ' +
-      'её цена — себестоимость заброса удочки (20 монет, 3 Wood, 1 Stone), делённая на рыбу за заброс с бонусами ' +
-      '(Walrus +1, Trident 20% +1, Sunflower Rod 10% +1, Alba, Fishy Chance/Roll/Gamble, сезонные марвелы; Ancient Rod ' +
-      'делает удочку бесплатной). Crab оценивается по цене продажи 15 монет. ' +
-      'Стоимость установки — ловушка плюс приманка; ловушка тратится при каждой установке (кроме Royal Crab Pot).',
+      '. Стоимость установки — ловушка плюс приманка; ловушка тратится при каждой установке (кроме Royal Crab Pot).',
   },
   {
     id: 'upgrades',
