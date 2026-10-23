@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import './FishCatalog.css';
 import './FlowerRecipes.css';
 import { FlowerAmount, CoinsIcon } from '../ResourceIcon';
@@ -14,6 +14,8 @@ import {
   SEED_ORDER,
   NO_FLOWER_BOOSTS,
   expectedFlowers,
+  flowerAnchor,
+  flowerByAnchor,
   flowerCosts,
   flowerIcon,
   flowerTimes,
@@ -24,13 +26,14 @@ import {
   seedCoins,
   seedFlowerPrice,
   seedIcon,
+  seedOfFlower,
   type FlowerBoosts,
   type FlowerRow,
   type FlowerSort,
   type RecipeOption,
 } from '../../lib/flowers';
 
-function Option({ option, cheap, fast }: { option: RecipeOption; cheap: boolean; fast: boolean }) {
+function Option({ option, cheap, fast, onJump }: { option: RecipeOption; cheap: boolean; fast: boolean; onJump: (flower: string) => void }) {
   const extraWait = option.isFlower && option.wait != null && Number.isFinite(option.wait) ? option.wait : null;
   const cls = [
     'ref-bait-ing ref-flower-opt',
@@ -49,8 +52,25 @@ function Option({ option, cheap, fast }: { option: RecipeOption; cheap: boolean;
     <span className={cls} title={title || undefined}>
       {cheap && <span className="ref-flower-mark" aria-label="самый дешёвый">💰</span>}
       {fast && <span className="ref-flower-mark" aria-label="самый быстрый">⚡</span>}
-      <img src={ingredientIcon(option.name)} alt="" className="ref-fish-icon" style={{ width: 18, height: 18 }} />
-      {option.amount > 1 ? `${option.amount}× ` : ''}{option.name}
+      {option.isFlower ? (
+        <a
+          href={`#${flowerAnchor(option.name)}`}
+          className="ref-flower-link"
+          title={`Перейти к рецепту: ${option.name}`}
+          onClick={(e) => {
+            e.preventDefault();
+            onJump(option.name);
+          }}
+        >
+          <img src={ingredientIcon(option.name)} alt="" className="ref-fish-icon" style={{ width: 18, height: 18 }} />
+          {option.name}
+        </a>
+      ) : (
+        <>
+          <img src={ingredientIcon(option.name)} alt="" className="ref-fish-icon" style={{ width: 18, height: 18 }} />
+          {option.amount > 1 ? `${option.amount}× ` : ''}{option.name}
+        </>
+      )}
       {option.total != null && (
         <span className="ref-price-hint"> {option.isFlower && '≈'}<FlowerAmount compact value={option.total} /></span>
       )}
@@ -59,17 +79,17 @@ function Option({ option, cheap, fast }: { option: RecipeOption; cheap: boolean;
   );
 }
 
-function Row({ row }: { row: FlowerRow }) {
+function Row({ row, onJump }: { row: FlowerRow; onJump: (flower: string) => void }) {
   const { cheapest, fastest } = row;
   const same = cheapest === fastest;
   return (
-    <li className="ref-bait-season-row ref-flower-row">
+    <li className="ref-bait-season-row ref-flower-row" id={flowerAnchor(row.flower)}>
       <span className="ref-flower-name">
         <img src={flowerIcon(row.flower)} alt="" className="ref-fish-icon" style={{ width: 26, height: 26 }} />
         <span>{row.flower}</span>
       </span>
       <span className="ref-bait-ings">
-        {row.options.map((o) => <Option key={o.name} option={o} cheap={o === cheapest} fast={o === fastest} />)}
+        {row.options.map((o) => <Option key={o.name} option={o} cheap={o === cheapest} fast={o === fastest} onJump={onJump} />)}
       </span>
       <span className="ref-comp-cost">
         {cheapest?.cost == null ? (
@@ -194,6 +214,37 @@ export default function FlowerRecipes() {
   // Свёрнутые карточки семян (по умолчанию все раскрыты).
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const costs = useMemo(() => (prices ? flowerCosts(prices, rate, boosts) : null), [prices, rate, boosts]);
+
+  // Переход к рецепту цветка: раскрываем карточку его семени, прокручиваем и подсвечиваем строку.
+  const jumpTo = useCallback((flower: string) => {
+    const seed = seedOfFlower(flower);
+    if (!seed) return;
+    setCollapsed((prev) => {
+      if (!prev.has(seed)) return prev;
+      const next = new Set(prev);
+      next.delete(seed);
+      return next;
+    });
+    window.setTimeout(() => {
+      const el = document.getElementById(flowerAnchor(flower));
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.remove('ref-flower-row--flash');
+      void el.offsetWidth; // перезапуск анимации при повторном клике
+      el.classList.add('ref-flower-row--flash');
+      window.setTimeout(() => el.classList.remove('ref-flower-row--flash'), 2200);
+      try { history.replaceState(null, '', `#${flowerAnchor(flower)}`); } catch { /* адрес не обязателен */ }
+    }, 60);
+  }, []);
+
+  // Прямая ссылка вида #flower-red-pansy: открыть цветок, когда строки уже отрисованы.
+  const ready = !!(prices && costs);
+  useEffect(() => {
+    if (!ready) return;
+    const hash = window.location.hash.replace(/^#/, '');
+    const flower = hash.startsWith('flower-') ? flowerByAnchor(hash) : undefined;
+    if (flower) jumpTo(flower);
+  }, [ready, jumpTo]);
   const times = useMemo(() => flowerTimes(boosts), [boosts]);
   return (
     <div className="ref-flower-calc">
@@ -254,7 +305,7 @@ export default function FlowerRecipes() {
               </summary>
               <ul className="ref-bait-season-list">
                 {prices && costs
-                  ? info.flowers.map((f) => <Row key={f} row={flowerRow(f, prices, { costs, times, coinRate: rate, boosts, sort })} />)
+                  ? info.flowers.map((f) => <Row key={f} row={flowerRow(f, prices, { costs, times, coinRate: rate, boosts, sort })} onJump={jumpTo} />)
                   : <li className="ref-bait-season-row">…</li>}
               </ul>
             </details>

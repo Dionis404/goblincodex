@@ -30,6 +30,21 @@ export function seedIcon(seed: string): string {
 const SELLABLE_ICON = new Map(SELLABLES.map((s) => [s.name, s.icon]));
 const SELLABLE_RU = new Map(SELLABLES.map((s) => [s.name, s.labelRu]));
 
+/** Якорь строки цветка: Red Pansy → flower-red-pansy (для перехода по клику и прямых ссылок). */
+export function flowerAnchor(name: string): string {
+  return `flower-${name.toLowerCase().replace(/ /g, '-')}`;
+}
+
+/** Цветок по якорю из адреса страницы; undefined — такого цветка нет. */
+export function flowerByAnchor(anchor: string): string | undefined {
+  return Object.keys(FLOWER_RECIPES).find((f) => flowerAnchor(f) === anchor);
+}
+
+/** Семя, из которого растёт цветок. */
+export function seedOfFlower(flower: string): string | undefined {
+  return Object.keys(FLOWER_SEEDS).find((s) => FLOWER_SEEDS[s].flowers.includes(flower));
+}
+
 /** Иконка предмета скрещивания: урожай/фрукт или цветок. */
 export function ingredientIcon(name: string): string {
   return SELLABLE_ICON.get(name) ?? flowerIcon(name);

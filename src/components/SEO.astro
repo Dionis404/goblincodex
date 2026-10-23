@@ -13,7 +13,8 @@ interface Props {
 const {
   title,
   description,
-  image = '/og-default.png',
+  // ?v= — сброс кэша Cloudflare и соцсетей при замене обложки (меняйте цифру).
+  image = '/og-default.png?v=2',
   type = 'website',
   noindex = false,
   shareUrl,
@@ -76,6 +77,14 @@ const jsonLd = {
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={imageURL} />
+{image.startsWith('/og-default.png') && (
+  <>
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="GoblinCodex — русскоязычный хаб по Sunflower Land" />
+  </>
+)}
 <meta property="og:url" content={ogURL} />
 <meta property="og:site_name" content={siteName} />
 <meta property="og:locale" content="ru_RU" />

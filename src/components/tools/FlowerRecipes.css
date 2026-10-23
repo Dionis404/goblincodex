@@ -95,3 +95,37 @@
   font-weight: 400;
   color: var(--text-sec);
 }
+
+/* Цветок-ингредиент — ссылка на его рецепт */
+.ref-flower-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.ref-flower-link:hover {
+  color: var(--green-dark);
+  text-decoration-style: solid;
+}
+.ref-flower-link:focus-visible {
+  outline: 2px solid var(--green-dark);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Строка, к которой перешли по ссылке */
+.ref-flower-row {
+  scroll-margin-top: 90px;
+}
+.ref-flower-row--flash {
+  animation: ref-flower-flash 2.2s ease-out;
+}
+@keyframes ref-flower-flash {
+  0%, 35% { background: var(--green-pale); box-shadow: 0 0 0 3px var(--green-light); }
+  100% { background: transparent; box-shadow: 0 0 0 3px transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ref-flower-row--flash { animation-duration: 0.01s; }
+}
