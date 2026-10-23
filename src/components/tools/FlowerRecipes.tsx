@@ -118,8 +118,8 @@ const SKILL_BOOSTS: { key: RankKey; skill: string; hint: string; format: (rank: 
 ];
 
 const SORTS: { key: FlowerSort; label: string; hint: string }[] = [
-  { key: 'cheap', label: 'Сначала дешёвые', hint: 'Рецепты в строке — от дешёвого к дорогому' },
   { key: 'fast', label: 'Сначала быстрые', hint: 'Рецепты в строке — от быстрого к долгому' },
+  { key: 'cheap', label: 'Сначала дешёвые', hint: 'Рецепты в строке — от дешёвого к дорогому' },
 ];
 
 function formatDays(d: number): string {
@@ -190,7 +190,7 @@ export default function FlowerRecipes() {
   const prices = useItemPrices(FLOWER_PRICE_NAMES);
   const { rate } = useCoinRate();
   const [boosts, setBoosts] = useState<FlowerBoosts>(NO_FLOWER_BOOSTS);
-  const [sort, setSort] = useState<FlowerSort>('cheap');
+  const [sort, setSort] = useState<FlowerSort>('fast');
   // Свёрнутые карточки семян (по умолчанию все раскрыты).
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const costs = useMemo(() => (prices ? flowerCosts(prices, rate, boosts) : null), [prices, rate, boosts]);
