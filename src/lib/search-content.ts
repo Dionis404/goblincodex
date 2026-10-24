@@ -5,6 +5,7 @@ import { SELLABLES } from './coinRate';
 import { CRUSTACEAN_LOOKUP, FISH_RECORDS, GUARANTEED_CATCH, WATER_TRAPS } from './fishData.generated';
 import { COMPOSTERS, COMPOST_RECIPES, COMPOSTER_BUILDINGS, WORM_AMOUNTS } from './composterData.generated';
 import { FLOWER_SEEDS, FLOWER_RECIPES, CROSSBREED_AMOUNTS } from './flowerData.generated';
+import { FLOWER_POINTS, NPC_FLOWER_BONUSES, NPC_GIFTS } from './npcGiftData.generated';
 
 // Общая логика чтения контента для индексации (scripts/index-search.ts) и для
 // сборки контекста ответа нейропоиска (api/search-answer.json.ts) — оба места
@@ -198,6 +199,23 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
       '(Walrus +1, Trident 20% +1, Sunflower Rod 10% +1, Alba, Fishy Chance/Roll/Gamble, сезонные марвелы; Ancient Rod ' +
       'делает удочку бесплатной). Crab оценивается по цене продажи 15 монет. ' +
       'Раки (Crab Pot и Mariner Pot) — в отдельном разделе «Раки».',
+  },
+  {
+    id: 'npcgifts',
+    title: 'Подарки NPC',
+    summary:
+      'подарки NPC, подарить цветы, любимые цветы NPC, очки дружбы, друзья NPC, Betty, Bert, Finley, Raven, Miranda, Old Salty, Finn, Corale, Cornwell, Tywin, Victoria, Jester, Pumpkin Pete, Blacksmith, какой цветок дарить, награды за дружбу, Blossom Bonding, кому дарить цветы',
+    context:
+      'Цветы можно дарить NPC, чтобы получать очки дружбы; за очки NPC дарят награды. Очки за цветок = базовые очки + бонус любимого цветка NPC + Blossom Bonding. ' +
+      'Базовые очки: Pansy и Cosmos — 3, Balloon Flower и Carnation — 5, Daffodil и Lotus — 7, Edelweiss, Gladiolus, Lavender, Clover — 4, Prism Petal, Celestial Frostbloom, Primula Enigma — ' + FLOWER_POINTS['Prism Petal'] + '. ' +
+      Object.entries(NPC_FLOWER_BONUSES).map(([npc, b]) =>
+        `${npc} любит: ${Object.entries(b).map(([f, n]) => `${f} +${n}`).join(', ')}`,
+      ).join('; ') +
+      '. Награды за дружбу: ' +
+      Object.entries(NPC_GIFTS).map(([npc, g]) =>
+        `${npc} — пороги ${g.planned.map((x) => x.friendshipPoints).join('/')}, затем каждые ${g.repeats.friendshipPoints} очков`,
+      ).join('; ') +
+      '. Цена цветка — себестоимость выращивания; выгоднее дарить цветок с наибольшим числом очков на 1 Flower.',
   },
   {
     id: 'crustaceans',

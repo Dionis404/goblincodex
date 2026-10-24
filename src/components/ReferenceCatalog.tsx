@@ -5,6 +5,7 @@ import ToolCostCalculator from './tools/ToolCostCalculator';
 import FishCatalog from './tools/FishCatalog';
 import ComposterCosts from './tools/ComposterCosts';
 import FlowerRecipes from './tools/FlowerRecipes';
+import NpcGifts from './tools/NpcGifts';
 import CrustaceanCosts from './tools/CrustaceanCosts';
 import CoinRateTable from './tools/CoinRateTable';
 import CoinRateNote from './CoinRateNote';
@@ -304,6 +305,24 @@ function BaitFishSection() {
         сезоны клюёт и сколько стоят наживки. Раки (Crab Pot и Mariner Pot) — в отдельном разделе. Данные — из исходников игры.
       </p>
       <FishCatalog />
+    </section>
+  );
+}
+
+function NpcGiftSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Цветы можно дарить NPC: каждый цветок прибавляет очки дружбы, а за набранные очки NPC дарит награды.
+        Очки за цветок = базовые очки цветка + бонус, если цветок этот NPC любит особо, + бонус навыка
+        Blossom Bonding. Редкие цветы (Prism Petal, Celestial Frostbloom, Primula Enigma) дают больше
+        всего очков. Цветы на маркете не продаются, поэтому цена цветка — себестоимость его выращивания
+        (см. раздел <a href="/codex?tab=mechanics&amp;ref=flowers">«Цветы»</a>, без бустов). «Выгоднее
+        всего» — больше очков на 1 Flower себестоимости, «Быстрее всего» — цветок, который быстрее
+        вырастить. Нажмите на NPC в таблице, чтобы увидеть все цветы и посчитать, сколько цветов нужно
+        до награды.
+      </p>
+      <NpcGifts />
     </section>
   );
 }
@@ -1458,6 +1477,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'crustaceans', icon: '🦀', label: 'Раки', Content: CrustaceanSection },
   { id: 'compost', icon: '🪱', label: 'Компостер', Content: CompostSection },
   { id: 'flowers', icon: '🌸', label: 'Цветы', Content: FlowerSection },
+  { id: 'npcgifts', icon: '🎁', label: 'Подарки NPC', Content: NpcGiftSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },
   { id: 'obsidian', icon: '🌋', label: 'Обсидиан (Lava Pit)', Content: ObsidianSection },
   { id: 'marvels', icon: '🐋', label: 'Морские марвелы', Content: MarvelsSection },

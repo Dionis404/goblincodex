@@ -1,0 +1,157 @@
+/* Подарки NPC (src/components/tools/NpcGifts.tsx). Карточки и кнопки — общие
+   стили .ref-bait-card, .ref-flower-sort-btn из FishCatalog.css/FlowerRecipes.css. */
+.ref-npc-calc {
+  container-type: inline-size;
+}
+.ref-npc-table td,
+.ref-npc-flowers td,
+.ref-npc-rewards td {
+  vertical-align: middle;
+}
+.ref-npc-table td:nth-child(n + 3) {
+  white-space: normal;
+}
+.ref-npc-name {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--green-dark);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.ref-npc-name:hover {
+  text-decoration-style: solid;
+}
+.ref-npc-row--on td {
+  background: var(--green-pale);
+}
+.ref-npc-favs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.ref-npc-fav {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.ref-npc-fav img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.ref-npc-fav b {
+  font-size: 12px;
+  color: var(--green-dark);
+}
+.ref-npc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ref-npc-details {
+  margin-top: 20px;
+  scroll-margin-top: 90px;
+}
+.ref-npc-details > .ref-comp-head {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.ref-npc-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ref-npc-flower-row {
+  cursor: pointer;
+}
+.ref-npc-love {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--red);
+  white-space: nowrap;
+}
+.ref-npc-h {
+  margin: 18px 0 8px;
+  font-family: var(--font-head);
+  font-size: 15px;
+}
+.ref-npc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin-bottom: 10px;
+}
+.ref-npc-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ref-npc-number {
+  width: 90px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+}
+.ref-npc-using {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.ref-npc-rewards td:nth-child(2) {
+  white-space: normal;
+  min-width: 200px;
+}
+.ref-npc-reward--done td {
+  opacity: 0.5;
+}
+/* Узкая колонка: строки таблиц становятся карточками */
+@container (max-width: 640px) {
+  .ref-npc-calc .ref-table-wrap {
+    overflow-x: visible;
+    border: none;
+  }
+  .ref-npc-calc .ref-table,
+  .ref-npc-calc .ref-table tbody,
+  .ref-npc-calc .ref-table tr,
+  .ref-npc-calc .ref-table td {
+    display: block;
+    width: 100%;
+  }
+  .ref-npc-calc .ref-table thead {
+    display: none;
+  }
+  .ref-npc-calc .ref-table tr {
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    background: var(--card-bg);
+  }
+  .ref-npc-calc .ref-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 5px 0;
+    border-top: none;
+    white-space: normal;
+  }
+  .ref-npc-calc .ref-table td[data-label]::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-sec);
+  }
+}
