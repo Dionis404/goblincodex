@@ -292,3 +292,153 @@ export function seedFlowerPrice(seed: string, coinRate: number | null | undefine
 export const FLOWER_PRICE_NAMES: string[] = [
   ...new Set(Object.values(FLOWER_RECIPES).flat().filter((n) => !(n in FLOWER_RECIPES))),
 ];
+
+// ─── Помощник: полные цепочки посадок ────────────────────────────────────────
+
+/**
+ * План получения цветка: какое семя посадить, что скрестить и (если это цветок)
+ * откуда взять его самого. cost — себестоимость одного цветка (как в flowerCosts),
+ * days — время всей цепочки, planting — деньги на одну посадку каждого шага.
+ */
+export interface FlowerPlan {
+  flower: string;
+  seed: string;
+  /** Предмет скрещивания и сколько штук. */
+  option: string;
+  amount: number;
+  /** План выращивания цветка-ингредиента; null — предмет урожай или фрукт. */
+  child: FlowerPlan | null;
+  cost: number;
+  days: number;
+  planting: number;
+}
+
+export type PlanMode = 'balanced' | 'cheap' | 'fast';
+
+const EPS = 1e-9;
+const MAX_PLANS_PER_FLOWER = 12;
+
+function dominates(a: { cost: number; days: number }, b: { cost: number; days: number }): boolean {
+  return a.cost <= b.cost + EPS && a.days <= b.days + EPS && (a.cost < b.cost - EPS || a.days < b.days - EPS);
+}
+
+/** Добавляет план в набор лучших по цене и времени (парето-фронт); true — набор изменился. */
+function addPlan(set: FlowerPlan[], plan: FlowerPlan): boolean {
+  for (const p of set) {
+    if (dominates(p, plan)) return false;
+    if (Math.abs(p.cost - plan.cost) <= EPS && Math.abs(p.days - plan.days) <= EPS) return false;
+  }
+  for (let i = set.length - 1; i >= 0; i--) if (dominates(plan, set[i])) set.splice(i, 1);
+  set.push(plan);
+  set.sort((a, b) => a.days - b.days);
+  // Слишком длинный фронт прореживаем равномерно, крайние точки оставляем.
+  while (set.length > MAX_PLANS_PER_FLOWER) set.splice(1 + Math.floor((set.length - 2) / 2), 1);
+  return true;
+}
+
+/**
+ * Лучшие планы по каждому цветку: все варианты, которые нельзя улучшить сразу
+ * и по цене, и по времени. Цветок-ингредиент берёт свои лучшие планы, так что
+ * цепочки и циклы считаются итерациями до стабильности.
+ */
+export function flowerPlans(
+  prices: Record<string, number | null>,
+  coinRate: number | null | undefined,
+  boosts: FlowerBoosts = NO_FLOWER_BOOSTS,
+): Record<string, FlowerPlan[]> {
+  const plans: Record<string, FlowerPlan[]> = {};
+  for (const f of Object.keys(FLOWER_RECIPES)) plans[f] = [];
+  if (!coinRate) return plans;
+  const yieldPer = expectedFlowers(boosts);
+  for (let pass = 0; pass < 40; pass++) {
+    let changed = false;
+    for (const flower of Object.keys(FLOWER_RECIPES)) {
+      const seed = SEED_OF_FLOWER.get(flower)!;
+      const set = FLOWER_SEEDS[seed].set;
+      const seedFlower = seedCoins(seed, boosts) / coinRate;
+      const ownDays = growDays(seed, boosts);
+      for (const name of FLOWER_RECIPES[flower]) {
+        const amount = CROSSBREED_AMOUNTS[set][name];
+        if (name in FLOWER_RECIPES) {
+          for (const child of [...plans[name]]) {
+            const raw = (seedFlower + amount * child.cost) / yieldPer;
+            const plan: FlowerPlan = {
+              flower, seed, option: name, amount, child,
+              cost: raw < 1e-7 ? 0 : raw,
+              days: ownDays + child.days,
+              planting: seedFlower + amount * child.planting,
+            };
+            if (addPlan(plans[flower], plan)) changed = true;
+          }
+        } else {
+          const unit = prices[name] ?? null;
+          if (unit == null) continue;
+          const raw = (seedFlower + unit * amount) / yieldPer;
+          const plan: FlowerPlan = {
+            flower, seed, option: name, amount, child: null,
+            cost: raw < 1e-7 ? 0 : raw,
+            days: ownDays,
+            planting: seedFlower + unit * amount,
+          };
+          if (addPlan(plans[flower], plan)) changed = true;
+        }
+      }
+    }
+    if (!changed) break;
+  }
+  return plans;
+}
+
+/** Выбор плана из лучших: самый дешёвый, самый быстрый или баланс цены и времени. */
+export function pickPlan(plans: FlowerPlan[], mode: PlanMode): FlowerPlan | null {
+  if (plans.length === 0) return null;
+  const byDays = (a: FlowerPlan, b: FlowerPlan) => a.days - b.days || a.cost - b.cost;
+  const byCost = (a: FlowerPlan, b: FlowerPlan) => a.cost - b.cost || a.days - b.days;
+  if (mode === 'fast') return [...plans].sort(byDays)[0];
+  if (mode === 'cheap') return [...plans].sort(byCost)[0];
+  // Баланс: минимум «цена × время»; небольшая добавка к цене не даёт нулю выиграть у всех.
+  const delta = Math.max(...plans.map((p) => p.cost)) * 0.05 + 1e-9;
+  return [...plans].sort((a, b) => (a.cost + delta) * a.days - (b.cost + delta) * b.days || byDays(a, b))[0];
+}
+
+export interface PlanStep {
+  flower: string;
+  seed: string;
+  seedFlower: number | null;
+  /** Предмет скрещивания, количество и цена за всё количество (null — нет цены). */
+  ingredient: string;
+  amount: number;
+  isFlower: boolean;
+  ingredientTotal: number | null;
+  /** Дни на этот шаг (рост семени с бустами). */
+  days: number;
+}
+
+/** Шаги по порядку: сначала то, что нужно вырастить заранее, последним — целевой цветок. */
+export function planSteps(
+  plan: FlowerPlan,
+  prices: Record<string, number | null>,
+  coinRate: number | null | undefined,
+  boosts: FlowerBoosts = NO_FLOWER_BOOSTS,
+): PlanStep[] {
+  const steps: PlanStep[] = plan.child ? planSteps(plan.child, prices, coinRate, boosts) : [];
+  const isFlower = plan.child != null;
+  steps.push({
+    flower: plan.flower,
+    seed: plan.seed,
+    seedFlower: seedFlowerPrice(plan.seed, coinRate, boosts),
+    ingredient: plan.option,
+    amount: plan.amount,
+    isFlower,
+    ingredientTotal: isFlower ? plan.child!.planting * plan.amount : prices[plan.option] != null ? prices[plan.option]! * plan.amount : null,
+    days: growDays(plan.seed, boosts),
+  });
+  return steps;
+}
+
+/** Время: до двух суток — в часах, дальше — в днях. */
+export function formatDays(d: number): string {
+  const hours = d * 24;
+  const fmt = (n: number) => n.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
+  return hours < 48 ? `${fmt(hours)} ч` : `${fmt(d)} дн.`;
+}

@@ -9,6 +9,7 @@ import { FLOWER_SEEDS } from '../../lib/flowerData.generated';
 import { SKILL_ICONS } from '../../lib/skills';
 import type { SkillRank } from '../../lib/toolCosts';
 import BoostPanel from '../BoostPanel';
+import FlowerHelper from './FlowerHelper';
 import {
   FLOWER_PRICE_NAMES,
   SEED_ORDER,
@@ -19,6 +20,7 @@ import {
   flowerCosts,
   flowerIcon,
   flowerTimes,
+  formatDays,
   flowerSkillValues,
   growDays,
   flowerRow,
@@ -169,12 +171,6 @@ const SORTS: { key: FlowerSort; label: string; hint: string }[] = [
   { key: 'cheap', label: 'Сначала дешёвые', hint: 'Рецепты в строке — от дешёвого к дорогому' },
 ];
 
-function formatDays(d: number): string {
-  const hours = d * 24;
-  const fmt = (n: number) => n.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
-  return hours < 48 ? `${fmt(hours)} ч` : `${fmt(d)} дн.`;
-}
-
 function BoostsPanel({ boosts, onChange }: { boosts: FlowerBoosts; onChange: (b: FlowerBoosts) => void }) {
   const set = <K extends keyof FlowerBoosts>(key: K, value: FlowerBoosts[K]) => onChange({ ...boosts, [key]: value });
   const changed = JSON.stringify(boosts) !== JSON.stringify(NO_FLOWER_BOOSTS);
@@ -278,6 +274,7 @@ export default function FlowerRecipes() {
   return (
     <div className="ref-flower-calc">
       <BoostsPanel boosts={boosts} onChange={setBoosts} />
+      <FlowerHelper prices={prices} coinRate={rate} boosts={boosts} onJump={jumpTo} />
       <div className="ref-flower-sort" role="group" aria-label="Порядок рецептов">
         <span className="ref-price-hint">Порядок рецептов:</span>
         {SORTS.map((o) => (
