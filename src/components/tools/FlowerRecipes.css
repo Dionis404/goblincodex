@@ -129,3 +129,26 @@
 @media (prefers-reduced-motion: reduce) {
   .ref-flower-row--flash { animation-duration: 0.01s; }
 }
+
+.ref-flower-long-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-sec);
+  cursor: pointer;
+}
+.ref-flower-hidden {
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--text-sec);
+  font: inherit;
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.ref-flower-hidden:hover {
+  color: var(--green-dark);
+  border-color: var(--green-dark);
+}

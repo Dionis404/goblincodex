@@ -79,9 +79,26 @@ function Option({ option, cheap, fast, onJump }: { option: RecipeOption; cheap: 
   );
 }
 
-function Row({ row, onJump }: { row: FlowerRow; onJump: (flower: string) => void }) {
+/** Рецепт считается долгим, если цветок-ингредиент растёт дольше этого числа дней. */
+const LONG_WAIT_DAYS = 3;
+
+function Row({
+  row,
+  onJump,
+  showLong,
+  onShowLong,
+}: {
+  row: FlowerRow;
+  onJump: (flower: string) => void;
+  showLong: boolean;
+  onShowLong: () => void;
+}) {
   const { cheapest, fastest } = row;
   const same = cheapest === fastest;
+  // Долгие рецепты скрыты, но самый дешёвый и самый быстрый всегда на виду.
+  const isLong = (o: RecipeOption) => o.isFlower && (o.wait ?? 0) > LONG_WAIT_DAYS;
+  const visible = showLong ? row.options : row.options.filter((o) => !isLong(o) || o === cheapest || o === fastest);
+  const hidden = row.options.length - visible.length;
   return (
     <li className="ref-bait-season-row ref-flower-row" id={flowerAnchor(row.flower)}>
       <span className="ref-flower-name">
@@ -89,7 +106,17 @@ function Row({ row, onJump }: { row: FlowerRow; onJump: (flower: string) => void
         <span>{row.flower}</span>
       </span>
       <span className="ref-bait-ings">
-        {row.options.map((o) => <Option key={o.name} option={o} cheap={o === cheapest} fast={o === fastest} onJump={onJump} />)}
+        {visible.map((o) => <Option key={o.name} option={o} cheap={o === cheapest} fast={o === fastest} onJump={onJump} />)}
+        {hidden > 0 && (
+          <button
+            type="button"
+            className="ref-flower-hidden"
+            onClick={onShowLong}
+            title={`Скрыто рецептов, где цветок-ингредиент растёт дольше ${LONG_WAIT_DAYS} дн.: ${hidden}. Показать все`}
+          >
+            +{hidden} долгих
+          </button>
+        )}
       </span>
       <span className="ref-comp-cost">
         {cheapest?.cost == null ? (
@@ -211,6 +238,8 @@ export default function FlowerRecipes() {
   const { rate } = useCoinRate();
   const [boosts, setBoosts] = useState<FlowerBoosts>(NO_FLOWER_BOOSTS);
   const [sort, setSort] = useState<FlowerSort>('fast');
+  // Долгие рецепты (цветок-ингредиент растёт дольше LONG_WAIT_DAYS) по умолчанию скрыты.
+  const [showLong, setShowLong] = useState(false);
   // Свёрнутые карточки семян (по умолчанию все раскрыты).
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const costs = useMemo(() => (prices ? flowerCosts(prices, rate, boosts) : null), [prices, rate, boosts]);
@@ -263,6 +292,10 @@ export default function FlowerRecipes() {
             {o.label}
           </button>
         ))}
+        <label className="ref-flower-long-toggle" title={`Рецепты, где цветок-ингредиент растёт дольше ${LONG_WAIT_DAYS} дн. Самый дешёвый и самый быстрый рецепты видны всегда`}>
+          <input type="checkbox" checked={showLong} onChange={(e) => setShowLong(e.target.checked)} />
+          <span>Показывать долгие рецепты</span>
+        </label>
         <button
           type="button"
           className="gc-btn-secondary ref-flower-sort-btn ref-flower-collapse-all"
@@ -305,7 +338,7 @@ export default function FlowerRecipes() {
               </summary>
               <ul className="ref-bait-season-list">
                 {prices && costs
-                  ? info.flowers.map((f) => <Row key={f} row={flowerRow(f, prices, { costs, times, coinRate: rate, boosts, sort })} onJump={jumpTo} />)
+                  ? info.flowers.map((f) => <Row key={f} row={flowerRow(f, prices, { costs, times, coinRate: rate, boosts, sort })} onJump={jumpTo} showLong={showLong} onShowLong={() => setShowLong(true)} />)
                   : <li className="ref-bait-season-row">…</li>}
               </ul>
             </details>
