@@ -126,6 +126,19 @@ export function milestones(npc: string, repeatsShown = 2): Milestone[] {
   return out;
 }
 
+/** Очки дружбы, при которых даётся k-я повторная награда (k = 1, 2, …; повторы бесконечны). */
+export function repeatThreshold(npc: string, k: number): number | null {
+  const g = NPC_GIFTS[npc];
+  if (!g || k < 1) return null;
+  const last = Math.max(...g.planned.map((x) => x.friendshipPoints));
+  return last + k * g.repeats.friendshipPoints;
+}
+
+/** Награда, которая повторяется бесконечно после запланированных. */
+export function repeatGift(npc: string): NpcGift | null {
+  return NPC_GIFTS[npc]?.repeats ?? null;
+}
+
 /** Шаг повторяющейся награды (очков между наградами после последней запланированной). */
 export function repeatStep(npc: string): number | null {
   return NPC_GIFTS[npc]?.repeats.friendshipPoints ?? null;

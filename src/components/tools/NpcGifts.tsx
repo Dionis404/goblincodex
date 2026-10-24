@@ -19,7 +19,9 @@ import {
   giftRows,
   milestones,
   npcLabel,
+  repeatGift,
   repeatStep,
+  repeatThreshold,
   sortGiftRows,
   type GiftRow,
   type GiftSort,
@@ -60,6 +62,9 @@ export default function NpcGifts() {
   const [showAll, setShowAll] = useState(false);
   const [chosen, setChosen] = useState<string | null>(null);
   const [current, setCurrent] = useState(0);
+  // Повторные награды бесконечны: показываем несколько и даём подгрузить ещё.
+  const [repeatsShown, setRepeatsShown] = useState(2);
+  const [repeatTarget, setRepeatTarget] = useState(10);
 
   const costs = useMemo(() => (prices ? flowerCosts(prices, rate) : null), [prices, rate]);
   const times = useMemo(() => flowerTimes(), []);
@@ -76,13 +81,21 @@ export default function NpcGifts() {
   const shown = showAll ? sorted : sorted.slice(0, TOP_ROWS);
   const best = bestFor(rows);
   const giftRow = rows.find((r) => r.flower === chosen) ?? best.value ?? best.points;
-  const marks = milestones(npc);
+  // Пройденные повторы сворачиваем в одну строку, вперёд показываем repeatsShown предстоящих.
+  const stepNow = repeatStep(npc) ?? 1;
+  const lastPlanned = milestones(npc, 0).at(-1)?.points ?? 0;
+  const passedRepeats = current > lastPlanned ? Math.floor((current - lastPlanned) / stepNow) : 0;
+  const marks = milestones(npc, passedRepeats + repeatsShown).filter((m) => !m.repeating || m.points > current);
+  const repeatReward = repeatGift(npc);
+  const targetPoints = repeatThreshold(npc, repeatTarget);
+  const targetFlowers = giftRow && targetPoints != null ? flowersToReach(targetPoints, current, giftRow.points) : 0;
   const step = repeatStep(npc);
 
   function pickNpc(n: string) {
     setNpc(n);
     setChosen(null);
     setShowAll(false);
+    setRepeatsShown(2);
     window.setTimeout(() => document.getElementById('npc-details')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
   }
 
@@ -175,7 +188,7 @@ export default function NpcGifts() {
           </div>
           <label className="ref-npc-select">
             <span className="ref-price-hint">NPC:</span>
-            <select value={npc} onChange={(e) => { setNpc(e.target.value); setChosen(null); setShowAll(false); }} className="ref-food-rank-select">
+            <select value={npc} onChange={(e) => { setNpc(e.target.value); setChosen(null); setShowAll(false); setRepeatsShown(2); }} className="ref-food-rank-select">
               {NPC_NAMES.map((n) => <option key={n} value={n}>{npcLabel(n)}</option>)}
             </select>
           </label>
@@ -294,10 +307,42 @@ export default function NpcGifts() {
             </tbody>
           </table>
         </div>
-        {step && (
+        {passedRepeats > 0 && (
+          <p className="ref-price-hint">Повторных наград уже пройдено: {passedRepeats}. Ниже — те, что впереди.</p>
+        )}
+        <button type="button" className="gc-btn-secondary ref-flower-sort-btn" onClick={() => setRepeatsShown(repeatsShown + 5)}>
+          Показать ещё 5 повторов
+        </button>
+        {step && repeatReward && (
           <p className="ref-price-hint">
-            После последней запланированной награды следующая даётся каждые {step} очков (награда повторяется).
+            После последней запланированной награды следующая даётся каждые {step} очков и повторяется бесконечно:{' '}
+            {describeGift(repeatReward).join(', ') || '—'}.
           </p>
+        )}
+        {step && targetPoints != null && (
+          <div className="ref-npc-target">
+            <label className="ref-npc-input">
+              <span>Сколько повторных наград нужно:</span>
+              <input
+                type="number"
+                min={1}
+                step={1}
+                value={repeatTarget}
+                onChange={(e) => setRepeatTarget(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
+                className="ref-npc-number"
+              />
+            </label>
+            <span>
+              Чтобы получить {repeatTarget}-ю повторную награду, нужно <strong>{targetPoints.toLocaleString('ru-RU')}</strong> очков дружбы
+              {giftRow && targetFlowers > 0 && (
+                <>
+                  : ещё <strong>{targetFlowers.toLocaleString('ru-RU')}</strong> цветков «{giftRow.flower}»
+                  {giftRow.cost != null && <> ≈ <FlowerAmount compact value={targetFlowers * giftRow.cost} /></>}
+                </>
+              )}
+              .
+            </span>
+          </div>
         )}
       </div>
     </div>
