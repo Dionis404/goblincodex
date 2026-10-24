@@ -136,3 +136,26 @@ export function ascensionStandingForXp(experience: number, ascension: number): A
     experienceToNextLevel: ascensionLevelXp(ascension, level),
   };
 }
+
+/**
+ * Общий опыт (game.bumpkin.experience) по тому, что показывает игра в окне
+ * Бампкина: «Ascension N, Level L, XP a / b» — число Возвышений, уровень и опыт
+ * внутри уровня (a). Для N = 0 это обычная таблица уровней 1..150.
+ */
+export function totalXpFromPosition(ascensions: number, level: number, xpInLevel: number): number {
+  if (ascensions <= 0) return xpForLevel(level) + xpInLevel;
+  return ascensionBaseline(ascensions) + ascensionCumulativeAtLevel(ascensions, level) + xpInLevel;
+}
+
+/** Сколько опыта нужно, чтобы перейти с этого уровня на следующий (b в «a / b»); 0 — уровень максимальный. */
+export function levelSpan(ascensions: number, level: number): number {
+  if (ascensions <= 0) {
+    return level >= PRE_ASCENSION_MAX_LEVEL ? 0 : xpForLevel(level + 1) - xpForLevel(level);
+  }
+  return level >= LEVELS_PER_ASCENSION ? 0 : ascensionLevelXp(ascensions, level);
+}
+
+/** Самый высокий доступный уровень при данном числе Возвышений. */
+export function maxLevelFor(ascensions: number): number {
+  return ascensions <= 0 ? PRE_ASCENSION_MAX_LEVEL : LEVELS_PER_ASCENSION;
+}

@@ -1,17 +1,28 @@
 import { useMemo, useState } from 'react';
 import '../SortableTable.css';
 import FOOD_ICONS from '../../lib/foodIcons.json';
-import BOOST_ICONS from '../../lib/boostIcons.json';
-import { SKILL_ICONS } from '../../lib/skills';
 import { FlowerAmount } from '../ResourceIcon';
 import { useItemPrices } from '../../lib/useItemPrices';
 import { useCoinRate } from '../../lib/useCoinRate';
-import { BAITS, averageBaitCost, baitCosts } from '../../lib/baitCosts';
-import { CHUM_PRICE_NAMES } from '../../lib/crustaceans';
-import { TOOL_PRICE_NAMES } from '../../lib/toolCosts';
 import { NO_FISHING_BOOSTS, fishUnitCost, type FishTier } from '../../lib/fishYield';
+import {
+  BUILDINGS,
+  FOOD_ALL_PRICE_NAMES,
+  NO_TIME_BOOSTS,
+  NO_XP_BOOSTS,
+  fishXpMultiplier,
+  recipeCost,
+  timeMultiplier,
+  withBaitPrices,
+  xpMultiplier,
+  type Building,
+  type Recipe,
+  type TimeBoosts,
+  type XpBoosts,
+} from '../../lib/food';
 import { FISH_RECORDS } from '../../lib/fishData.generated';
 import BoostPanel from '../BoostPanel';
+import { Check, RankSelect, TimeBoostsPanel, XpBoostsPanel } from './FoodBoostPanels';
 
 /**
  * Рецепты и формулы сверены с исходниками sunflower-land (см. scripts/README.md):
@@ -33,13 +44,6 @@ function FoodIcon({ name, small }: { name: string; small?: boolean }) {
   const src = (FOOD_ICONS as Record<string, string>)[name];
   if (!src) return null;
   return <img src={src} alt="" className={small ? 'ref-marvel-icon ref-food-icon--sm' : 'ref-marvel-icon'} />;
-}
-
-/** Иконка навыка (SKILL_ICONS, src/lib/skills.ts) или предмета (boostIcons.json) по имени. */
-function BoostIcon({ name }: { name: string }) {
-  const src = SKILL_ICONS[name] ?? (BOOST_ICONS as Record<string, string>)[name];
-  if (!src) return null;
-  return <img src={src} alt="" className="ref-marvel-icon ref-food-icon--sm" />;
 }
 
 /** Значок молнии — ставится рядом со значением, изменённым активными бустами. */
@@ -90,181 +94,6 @@ function MobileSortSelect<K extends string>({
   );
 }
 
-type Building = 'Fire Pit' | 'Kitchen' | 'Bakery' | 'Deli' | 'Smoothie Shack';
-
-interface Recipe {
-  name: string;
-  building: Building;
-  experience: number;
-  cookingSeconds: number;
-  ingredients: [string, number][];
-  isCake?: boolean;
-  isHoney?: boolean;
-  /** Блюдо из предложения Главы 16 — ещё не в игре (см. новость 175), числа могут измениться. */
-  upcoming?: boolean;
-  /** Входит в FISH_CONSUMABLES игры — получает бусты типа Luminous Anglerfish Topper. */
-  isFish?: boolean;
-}
-
-const FIRE_PIT: Recipe[] = [
-  { name: 'Rhubarb Tart', building: 'Fire Pit', experience: 5, cookingSeconds: 60, ingredients: [['Rhubarb', 3]] },
-  { name: 'Mashed Potato', building: 'Fire Pit', experience: 3, cookingSeconds: 30, ingredients: [['Potato', 8]] },
-  { name: 'Pumpkin Soup', building: 'Fire Pit', experience: 24, cookingSeconds: 180, ingredients: [['Pumpkin', 10]] },
-  { name: 'Reindeer Carrot', building: 'Fire Pit', experience: 36, cookingSeconds: 300, ingredients: [['Carrot', 5]] },
-  { name: 'Mushroom Soup', building: 'Fire Pit', experience: 56, cookingSeconds: 600, ingredients: [['Wild Mushroom', 5]] },
-  { name: 'Bumpkin Broth', building: 'Fire Pit', experience: 96, cookingSeconds: 1200, ingredients: [['Carrot', 10], ['Cabbage', 5]] },
-  { name: 'Boiled Eggs', building: 'Fire Pit', experience: 90, cookingSeconds: 3600, ingredients: [['Egg', 10]] },
-  { name: 'Popcorn', building: 'Fire Pit', experience: 200, cookingSeconds: 720, ingredients: [['Sunflower', 100], ['Corn', 5]] },
-  { name: 'Rapid Roast', building: 'Fire Pit', experience: 300, cookingSeconds: 10, ingredients: [['Magic Mushroom', 1], ['Pumpkin', 40]] },
-  { name: 'Cabbers n Mash', building: 'Fire Pit', experience: 250, cookingSeconds: 2400, ingredients: [['Mashed Potato', 10], ['Cabbage', 20]] },
-  { name: 'Kale Stew', building: 'Fire Pit', experience: 400, cookingSeconds: 7200, ingredients: [['Kale', 10]] },
-  { name: 'Fried Tofu', building: 'Fire Pit', experience: 400, cookingSeconds: 5400, ingredients: [['Soybean', 15], ['Sunflower', 200]] },
-  { name: 'Kale Omelette', building: 'Fire Pit', experience: 1250, cookingSeconds: 12600, ingredients: [['Egg', 40], ['Kale', 5]] },
-  { name: 'Rice Bun', building: 'Fire Pit', experience: 2600, cookingSeconds: 18000, ingredients: [['Rice', 2], ['Wheat', 50]] },
-  { name: 'Antipasto', building: 'Fire Pit', experience: 3000, cookingSeconds: 10800, ingredients: [['Olive', 2], ['Grape', 2]] },
-  { name: 'Pizza Margherita', building: 'Fire Pit', experience: 25000, cookingSeconds: 72000, ingredients: [['Tomato', 30], ['Cheese', 5], ['Wheat', 20]] },
-  { name: 'Furikake Sprinkle', building: 'Fire Pit', experience: 1000, cookingSeconds: 0, ingredients: [['Fish Flake', 1], ['Seaweed', 1]], isFish: true },
-  // Блюда Главы 16 — ещё не в игре. Числа по PR #7810 (ребаланс трюфельных рецептов, на момент записи не влит); названия — как в коде игры.
-  { name: 'Ember-Roasted Truffle Potatoes', building: 'Fire Pit', experience: 800, cookingSeconds: 1 * 3600, ingredients: [['Truffle', 1], ['Potato', 30]], upcoming: true },
-];
-
-const KITCHEN: Recipe[] = [
-  { name: 'Sunflower Crunch', building: 'Kitchen', experience: 50, cookingSeconds: 600, ingredients: [['Sunflower', 300]] },
-  { name: 'Mushroom Jacket Potatoes', building: 'Kitchen', experience: 240, cookingSeconds: 600, ingredients: [['Wild Mushroom', 10], ['Potato', 5]] },
-  { name: 'Beetroot Blaze', building: 'Kitchen', experience: 2000, cookingSeconds: 30, ingredients: [['Magic Mushroom', 2], ['Beetroot', 50]] },
-  { name: 'Roast Veggies', building: 'Kitchen', experience: 170, cookingSeconds: 7200, ingredients: [['Cauliflower', 15], ['Carrot', 10]] },
-  { name: 'Club Sandwich', building: 'Kitchen', experience: 170, cookingSeconds: 10800, ingredients: [['Sunflower', 100], ['Carrot', 25], ['Wheat', 5]] },
-  { name: 'Cauliflower Burger', building: 'Kitchen', experience: 255, cookingSeconds: 10800, ingredients: [['Cauliflower', 15], ['Wheat', 5]] },
-  { name: 'Fruit Salad', building: 'Kitchen', experience: 225, cookingSeconds: 1800, ingredients: [['Apple', 1], ['Orange', 1], ['Blueberry', 1]] },
-  { name: 'Bumpkin Salad', building: 'Kitchen', experience: 290, cookingSeconds: 12600, ingredients: [['Beetroot', 20], ['Parsnip', 10]] },
-  { name: 'Goblin’s Treat', building: 'Kitchen', experience: 500, cookingSeconds: 21600, ingredients: [['Pumpkin', 10], ['Radish', 20], ['Cabbage', 10]] },
-  { name: 'Pancakes', building: 'Kitchen', experience: 1000, cookingSeconds: 3600, ingredients: [['Wheat', 10], ['Egg', 10], ['Honey', 6]], isHoney: true },
-  { name: 'Bumpkin ganoush', building: 'Kitchen', experience: 1000, cookingSeconds: 18000, ingredients: [['Eggplant', 30], ['Potato', 50], ['Parsnip', 10]] },
-  { name: 'Bumpkin Roast', building: 'Kitchen', experience: 2500, cookingSeconds: 43200, ingredients: [['Mashed Potato', 20], ['Roast Veggies', 5]] },
-  { name: 'Goblin Brunch', building: 'Kitchen', experience: 2500, cookingSeconds: 43200, ingredients: [['Boiled Eggs', 5], ['Goblin’s Treat', 1]] },
-  { name: 'Tofu Scramble', building: 'Kitchen', experience: 1000, cookingSeconds: 10800, ingredients: [['Soybean', 20], ['Egg', 20], ['Cauliflower', 10]] },
-  { name: 'Caprese Salad', building: 'Kitchen', experience: 6000, cookingSeconds: 10800, ingredients: [['Cheese', 1], ['Tomato', 25], ['Kale', 20]] },
-  { name: 'Steamed Red Rice', building: 'Kitchen', experience: 3000, cookingSeconds: 14400, ingredients: [['Rice', 3], ['Beetroot', 50]] },
-  { name: 'Spaghetti al Limone', building: 'Kitchen', experience: 15000, cookingSeconds: 54000, ingredients: [['Wheat', 10], ['Lemon', 15], ['Cheese', 3]] },
-  { name: 'Surimi Rice Bowl', building: 'Kitchen', experience: 3000, cookingSeconds: 0, ingredients: [['Fish Stick', 1], ['Rice', 1], ['Onion', 1]], isFish: true },
-  { name: 'Creamy Crab Bite', building: 'Kitchen', experience: 10000, cookingSeconds: 0, ingredients: [['Crab Stick', 1], ['Cheese', 3]], isFish: true },
-  { name: 'Crimstone Infused Fish Oil', building: 'Kitchen', experience: 18000, cookingSeconds: 0, ingredients: [['Fish Oil', 1], ['Crimstone', 1]], isFish: true },
-  { name: 'Creamy Truffle Risotto', building: 'Kitchen', experience: 28000, cookingSeconds: 48 * 3600, ingredients: [['Truffle', 8], ['Rice', 3], ['Wild Mushroom', 5]], upcoming: true },
-];
-
-const BAKERY: Recipe[] = [
-  { name: 'Apple Pie', building: 'Bakery', experience: 720, cookingSeconds: 14400, ingredients: [['Apple', 5], ['Wheat', 10], ['Egg', 20]] },
-  { name: 'Kale & Mushroom Pie', building: 'Bakery', experience: 720, cookingSeconds: 14400, ingredients: [['Wild Mushroom', 10], ['Kale', 5], ['Wheat', 5]] },
-  { name: 'Cornbread', building: 'Bakery', experience: 600, cookingSeconds: 43200, ingredients: [['Corn', 15], ['Wheat', 5], ['Egg', 10]] },
-  { name: 'Sunflower Cake', building: 'Bakery', experience: 525, cookingSeconds: 23400, ingredients: [['Sunflower', 1000], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Potato Cake', building: 'Bakery', experience: 650, cookingSeconds: 37800, ingredients: [['Potato', 500], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Pumpkin Cake', building: 'Bakery', experience: 625, cookingSeconds: 37800, ingredients: [['Pumpkin', 130], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Carrot Cake', building: 'Bakery', experience: 750, cookingSeconds: 46800, ingredients: [['Carrot', 120], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Cabbage Cake', building: 'Bakery', experience: 860, cookingSeconds: 54000, ingredients: [['Cabbage', 90], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Orange Cake', building: 'Bakery', experience: 730, cookingSeconds: 14400, ingredients: [['Orange', 5], ['Egg', 30], ['Wheat', 10]], isCake: true },
-  { name: 'Beetroot Cake', building: 'Bakery', experience: 1250, cookingSeconds: 79200, ingredients: [['Beetroot', 100], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Cauliflower Cake', building: 'Bakery', experience: 1190, cookingSeconds: 79200, ingredients: [['Cauliflower', 60], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Parsnip Cake', building: 'Bakery', experience: 1300, cookingSeconds: 86400, ingredients: [['Parsnip', 45], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Radish Cake', building: 'Bakery', experience: 1200, cookingSeconds: 86400, ingredients: [['Radish', 25], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Eggplant Cake', building: 'Bakery', experience: 1400, cookingSeconds: 86400, ingredients: [['Eggplant', 30], ['Wheat', 10], ['Egg', 30]], isCake: true },
-  { name: 'Wheat Cake', building: 'Bakery', experience: 1100, cookingSeconds: 86400, ingredients: [['Wheat', 35], ['Egg', 30]], isCake: true },
-  { name: 'Honey Cake', building: 'Bakery', experience: 4000, cookingSeconds: 28800, ingredients: [['Honey', 10], ['Wheat', 10], ['Egg', 20]], isCake: true, isHoney: true },
-  { name: 'Lemon Cheesecake', building: 'Bakery', experience: 30000, cookingSeconds: 108000, ingredients: [['Lemon', 20], ['Cheese', 5], ['Egg', 40]], isCake: true },
-  { name: 'Truffle Cake', building: 'Bakery', experience: 25000, cookingSeconds: 26 * 3600, ingredients: [['Truffle', 15], ['Wheat', 30], ['Egg', 30], ['Honey', 5]], isCake: true, isHoney: true, upcoming: true },
-];
-
-const DELI: Recipe[] = [
-  { name: 'Cheese', building: 'Deli', experience: 1, cookingSeconds: 1200, ingredients: [['Milk', 3]] },
-  { name: 'Shroom Syrup', building: 'Deli', experience: 10000, cookingSeconds: 10, ingredients: [['Magic Mushroom', 3], ['Honey', 20]], isHoney: true },
-  { name: 'Fermented Carrots', building: 'Deli', experience: 250, cookingSeconds: 86400, ingredients: [['Carrot', 20]] },
-  { name: 'Blueberry Jam', building: 'Deli', experience: 500, cookingSeconds: 43200, ingredients: [['Blueberry', 5]] },
-  { name: 'Sauerkraut', building: 'Deli', experience: 500, cookingSeconds: 86400, ingredients: [['Cabbage', 20]] },
-  { name: 'Fancy Fries', building: 'Deli', experience: 1000, cookingSeconds: 86400, ingredients: [['Sunflower', 500], ['Potato', 500]] },
-  { name: 'Blue Cheese', building: 'Deli', experience: 6000, cookingSeconds: 10800, ingredients: [['Cheese', 2], ['Blueberry', 10]] },
-  { name: 'Honey Cheddar', building: 'Deli', experience: 15000, cookingSeconds: 43200, ingredients: [['Cheese', 3], ['Honey', 5]], isHoney: true },
-];
-
-const SMOOTHIE_SHACK: Recipe[] = [
-  { name: 'Quick Juice', building: 'Smoothie Shack', experience: 100, cookingSeconds: 1800, ingredients: [['Sunflower', 50], ['Pumpkin', 40]] },
-  { name: 'Carrot Juice', building: 'Smoothie Shack', experience: 200, cookingSeconds: 3600, ingredients: [['Carrot', 30]] },
-  { name: 'Purple Smoothie', building: 'Smoothie Shack', experience: 310, cookingSeconds: 1800, ingredients: [['Blueberry', 5], ['Cabbage', 10]] },
-  { name: 'Orange Juice', building: 'Smoothie Shack', experience: 375, cookingSeconds: 2700, ingredients: [['Orange', 5]] },
-  { name: 'Apple Juice', building: 'Smoothie Shack', experience: 500, cookingSeconds: 3600, ingredients: [['Apple', 5]] },
-  { name: 'Sour Shake', building: 'Smoothie Shack', experience: 1000, cookingSeconds: 3600, ingredients: [['Lemon', 20]] },
-  { name: 'Power Smoothie', building: 'Smoothie Shack', experience: 775, cookingSeconds: 5400, ingredients: [['Blueberry', 10], ['Kale', 5]] },
-  { name: 'Bumpkin Detox', building: 'Smoothie Shack', experience: 975, cookingSeconds: 7200, ingredients: [['Apple', 5], ['Orange', 5], ['Carrot', 10]] },
-  { name: 'Banana Blast', building: 'Smoothie Shack', experience: 1200, cookingSeconds: 10800, ingredients: [['Banana', 10], ['Egg', 10]] },
-  { name: 'The Lot', building: 'Smoothie Shack', experience: 1500, cookingSeconds: 12600, ingredients: [['Blueberry', 1], ['Orange', 1], ['Grape', 1], ['Apple', 1], ['Banana', 1]] },
-  { name: 'Grape Juice', building: 'Smoothie Shack', experience: 3300, cookingSeconds: 10800, ingredients: [['Grape', 5], ['Radish', 20]] },
-  { name: 'Slow Juice', building: 'Smoothie Shack', experience: 7500, cookingSeconds: 86400, ingredients: [['Grape', 10], ['Kale', 100]] },
-];
-
-const BUILDINGS: { key: Building; label: string; icon: string; recipes: Recipe[] }[] = [
-  { key: 'Fire Pit', label: 'Fire Pit', icon: '\u{1F525}', recipes: FIRE_PIT },
-  { key: 'Kitchen', label: 'Kitchen', icon: '\u{1F373}', recipes: KITCHEN },
-  { key: 'Bakery', label: 'Bakery', icon: '\u{1F370}', recipes: BAKERY },
-  { key: 'Deli', label: 'Deli', icon: '\u{1F9C0}', recipes: DELI },
-  { key: 'Smoothie Shack', label: 'Smoothie Shack', icon: '\u{1F964}', recipes: SMOOTHIE_SHACK },
-];
-
-// ── Цены блюд ────────────────────────────────────────────────────────────
-// Цена блюда = сумма floor-цен ингредиентов. Промежуточные блюда (Mashed Potato
-// и т.п.) раскрываются рекурсивно до сырых ингредиентов — на маркете их цены
-// нет. Ингредиенты без цены (не продаются, напр. Magic Mushroom) не обнуляют
-// блюдо: считаем по тем, что продаются, а недостающие имена возвращаем в
-// missing — UI показывает значок «i» с пояснением. Если цены нет вообще ни у
-// одного ингредиента — cost = null.
-const RECIPE_BY_NAME = new Map<string, Recipe>(BUILDINGS.flatMap((b) => b.recipes).map((r) => [r.name, r]));
-
-const FOOD_PRICE_NAMES: string[] = (() => {
-  const raw = new Set<string>();
-  for (const recipe of RECIPE_BY_NAME.values()) {
-    for (const [name] of recipe.ingredients) if (!RECIPE_BY_NAME.has(name)) raw.add(name);
-  }
-  return [...raw];
-})();
-
-// Блюда, у которых цену не показываем: в БД цен для их ингредиентов неверные
-// данные — лучше «—», чем вводящее в заблуждение число.
-const NO_PRICE_RECIPES = new Set(['Mushroom Jacket Potatoes']);
-
-// Рыбные наживки (Fish Flake, Fish Stick, Fish Oil, Crab Stick) на маркете не
-// торгуются — их цену подставляем по рецепту (себестоимость, среднее по сезонам).
-const BAIT_PRICE_NAMES = [...new Set([...CHUM_PRICE_NAMES, ...TOOL_PRICE_NAMES])];
-
-interface RecipeCost {
-  /** Сумма по ингредиентам с ценой; null — не оценён ни один ингредиент. */
-  cost: number | null;
-  /** Сырые ингредиенты без цены — не вошли в cost. */
-  missing: string[];
-}
-
-function recipeCost(name: string, prices: Record<string, number | null>, seen: string[] = []): RecipeCost {
-  const recipe = RECIPE_BY_NAME.get(name);
-  if (!recipe || seen.includes(name) || NO_PRICE_RECIPES.has(name)) return { cost: null, missing: [] };
-  let sum = 0;
-  let priced = false;
-  const missing: string[] = [];
-  for (const [ing, amount] of recipe.ingredients) {
-    if (RECIPE_BY_NAME.has(ing)) {
-      const sub = recipeCost(ing, prices, [...seen, name]);
-      if (sub.cost != null) {
-        sum += sub.cost * amount;
-        priced = true;
-      }
-      for (const m of sub.missing) if (!missing.includes(m)) missing.push(m);
-    } else {
-      const unit = prices[ing] ?? null;
-      if (unit == null) {
-        if (!missing.includes(ing)) missing.push(ing);
-      } else {
-        sum += unit * amount;
-        priced = true;
-      }
-    }
-  }
-  return { cost: priced ? sum : null, missing };
-}
 
 /** Значок «i» с пояснением, что цена указана не за все ингредиенты (тултип по hover/фокусу/тапу). */
 function PartialPriceInfo({ missing }: { missing: string[] }) {
@@ -332,136 +161,6 @@ const FISH_ROWS: FishRow[] = Object.entries(FISH_BASE_XP).map(([name, baseXP]) =
   };
 });
 
-// ── Бусты времени готовки (ранги — src/lib/skills.ts, сверено с boosts.ts) ──
-
-interface TimeBoosts {
-  fastFeastsRank: 0 | 1 | 2 | 3; // Fire Pit + Kitchen: x0.9/0.85/0.8
-  frostedCakesRank: 0 | 1 | 2 | 3; // Cakes: x0.9/0.8/0.7
-  oilFilled: boolean; // масло залито в конкретное здание прямо сейчас
-  swiftSizzleRank: 0 | 1 | 2 | 3; // ранг Swift Sizzle (масло, Fire Pit)
-  turboFryRank: 0 | 1 | 2 | 3; // ранг Turbo Fry (масло, Kitchen)
-  fryFrenzyRank: 0 | 1 | 2 | 3; // ранг Fry Frenzy (масло, Deli)
-  lunasHat: boolean; // x0.5, все здания
-  chefsCleaver: boolean; // x0.85, все здания
-  factionMedallion: boolean; // x0.75, все здания
-  totem: boolean; // Super Totem / Time Warp Totem, x0.5, все здания
-  desertGnome: boolean; // x0.9, все здания
-  legendaryShrine: boolean; // x0.5, временный, стакается с Boar Shrine
-  boarShrine: boolean; // x0.8, временный, стакается с Legendary Shrine
-  gourmetHourglass: boolean; // x0.5, временный
-}
-
-const FAST_FEASTS_RANKS = [0.1, 0.15, 0.2];
-const FROSTED_CAKES_RANKS = [0.1, 0.2, 0.3];
-// Базовый % (без скилла) + ранги по зданию — src/lib/skills.ts / cook.ts BUILDING_OIL_BOOSTS
-const OIL_BOOSTS: Record<Building, number[]> = {
-  'Fire Pit': [0.2, 0.4, 0.45, 0.5], // Swift Sizzle
-  Kitchen: [0.25, 0.5, 0.55, 0.6], // Turbo Fry
-  Deli: [0.4, 0.6, 0.65, 0.7], // Fry Frenzy
-  'Smoothie Shack': [0.3], // фиксированный, скилла нет
-  Bakery: [0.35], // фиксированный, скилла нет
-};
-
-// Каждое здание с масляным скиллом читает свой отдельный ранг — Swift Sizzle,
-// Turbo Fry и Fry Frenzy прокачиваются независимо друг от друга.
-function oilSkillRankFor(building: Building, b: TimeBoosts): number {
-  if (building === 'Fire Pit') return b.swiftSizzleRank;
-  if (building === 'Kitchen') return b.turboFryRank;
-  if (building === 'Deli') return b.fryFrenzyRank;
-  return 0;
-}
-
-function timeMultiplier(recipe: Recipe, b: TimeBoosts): number {
-  let mult = 1;
-  if ((recipe.building === 'Fire Pit' || recipe.building === 'Kitchen') && b.fastFeastsRank > 0) {
-    mult *= 1 - FAST_FEASTS_RANKS[b.fastFeastsRank - 1];
-  }
-  if (recipe.isCake && b.frostedCakesRank > 0) {
-    mult *= 1 - FROSTED_CAKES_RANKS[b.frostedCakesRank - 1];
-  }
-  if (b.oilFilled) {
-    const ranks = OIL_BOOSTS[recipe.building];
-    const skillRank = oilSkillRankFor(recipe.building, b);
-    const idx = ranks.length > 1 ? Math.min(skillRank, ranks.length - 1) : 0;
-    mult *= 1 - ranks[idx];
-  }
-  if (b.lunasHat) mult *= 0.5;
-  if (b.chefsCleaver) mult *= 0.85;
-  if (b.factionMedallion) mult *= 0.75;
-  if (b.totem) mult *= 0.5;
-  if (b.desertGnome) mult *= 0.9;
-  if (b.legendaryShrine) mult *= 0.5;
-  if (b.boarShrine) mult *= 0.8;
-  if (b.gourmetHourglass) mult *= 0.5;
-  return mult;
-}
-
-// ── Бусты опыта (ранги — src/lib/skills.ts, сверено с boosts.ts) ──
-
-interface XpBoosts {
-  munchingMasteryRank: 0 | 1 | 2 | 3; // все блюда: +5/+7.5/+10%
-  juicyBoostRank: 0 | 1 | 2 | 3; // Smoothie Shack: +10/+20/+30%
-  driveThroughDeliRank: 0 | 1 | 2 | 3; // Deli: +15/+20/+25%
-  buzzworthyTreatsRank: 0 | 1 | 2 | 3; // блюда с мёдом: +10/+20/+30%
-  fishyFeastRank: 0 | 1 | 2 | 3; // рыба (сырая/выдержанная): +20/+30/+40%
-  goldenSpatula: boolean; // +10%, все блюда
-  pan: boolean; // +25%, все блюда
-  vip: boolean; // +10%, все блюда
-  observatory: boolean; // +5%, все блюда
-  blossombeard: boolean; // +10%, все блюда
-  luminousAnglerfishTopper: boolean; // +50%, только рыба
-  skillShrimpy: boolean; // +20%, только рыба
-}
-
-const MUNCHING_MASTERY_RANKS = [0.05, 0.075, 0.1];
-const JUICY_BOOST_RANKS = [0.1, 0.2, 0.3];
-const DRIVE_THROUGH_DELI_RANKS = [0.15, 0.2, 0.25];
-const BUZZWORTHY_TREATS_RANKS = [0.1, 0.2, 0.3];
-const FISHY_FEAST_RANKS = [0.2, 0.3, 0.4];
-
-// Бусты, общие для всех блюд и рыбы (Golden Spatula/Pan/VIP/Observatory/Blossombeard).
-function universalXpMultiplier(b: XpBoosts): number {
-  let mult = 1;
-  if (b.munchingMasteryRank > 0) mult *= 1 + MUNCHING_MASTERY_RANKS[b.munchingMasteryRank - 1];
-  if (b.goldenSpatula) mult *= 1.1;
-  if (b.pan) mult *= 1.25;
-  if (b.vip) mult *= 1.1;
-  if (b.observatory) mult *= 1.05;
-  if (b.blossombeard) mult *= 1.1;
-  return mult;
-}
-
-function xpMultiplier(recipe: Recipe, b: XpBoosts): number {
-  let mult = universalXpMultiplier(b);
-  if (recipe.building === 'Smoothie Shack' && b.juicyBoostRank > 0) {
-    mult *= 1 + JUICY_BOOST_RANKS[b.juicyBoostRank - 1];
-  }
-  if (recipe.building === 'Deli' && b.driveThroughDeliRank > 0) {
-    mult *= 1 + DRIVE_THROUGH_DELI_RANKS[b.driveThroughDeliRank - 1];
-  }
-  if (recipe.isHoney && b.buzzworthyTreatsRank > 0) {
-    mult *= 1 + BUZZWORTHY_TREATS_RANKS[b.buzzworthyTreatsRank - 1];
-  }
-  // Furikake Sprinkle/Surimi Rice Bowl/Creamy Crab Bite/Crimstone Infused Fish
-  // Oil входят в FISH_CONSUMABLES в игре — получают те же бусты, что рыба.
-  if (recipe.isFish) {
-    if (b.fishyFeastRank > 0) mult *= 1 + FISHY_FEAST_RANKS[b.fishyFeastRank - 1];
-    if (b.luminousAnglerfishTopper) mult *= 1.5;
-    if (b.skillShrimpy) mult *= 1.2;
-  }
-  return mult;
-}
-
-// Рыба (сырая и выдержанная) получает универсальные бусты + Fishy Feast +
-// Luminous Anglerfish Topper + Skill Shrimpy (все — специфичны для FISH_CONSUMABLES).
-function fishXpMultiplier(b: XpBoosts): number {
-  let mult = universalXpMultiplier(b);
-  if (b.fishyFeastRank > 0) mult *= 1 + FISHY_FEAST_RANKS[b.fishyFeastRank - 1];
-  if (b.luminousAnglerfishTopper) mult *= 1.5;
-  if (b.skillShrimpy) mult *= 1.2;
-  return mult;
-}
-
 function formatDuration(totalSeconds: number): string {
   if (totalSeconds <= 0) return 'мгновенно';
   const s = Math.round(totalSeconds);
@@ -475,59 +174,6 @@ function formatDuration(totalSeconds: number): string {
   if (d === 0 && m > 0) parts.push(`${m} мин`);
   if (d === 0 && h === 0 && m === 0) parts.push(`${sec} сек`);
   return parts.join(' ') || '0 сек';
-}
-
-function RankSelect({
-  label,
-  icon,
-  value,
-  onChange,
-  max = 3,
-}: {
-  label: string;
-  icon?: string;
-  value: number;
-  onChange: (v: number) => void;
-  max?: number;
-}) {
-  return (
-    <label className="ref-marvel-boost-check">
-      {icon && <BoostIcon name={icon} />}
-      <span>{label}</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="ref-food-rank-select"
-      >
-        <option value={0}>выкл</option>
-        {Array.from({ length: max }, (_, i) => i + 1).map((r) => (
-          <option key={r} value={r}>
-            ранг {r}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}
-
-function Check({
-  label,
-  icon,
-  checked,
-  onChange,
-}: {
-  label: string;
-  icon?: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <label className="ref-marvel-boost-check">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-      {icon && <BoostIcon name={icon} />}
-      <span>{label}</span>
-    </label>
-  );
 }
 
 type SortKey = 'name' | 'experience' | 'cookingSeconds' | 'xpPerHour' | 'cost' | 'xpPerFlower';
@@ -925,220 +571,25 @@ function FishTable({ xpBoosts, prices }: { xpBoosts: XpBoosts; prices: Record<st
 }
 
 export default function FoodCatalogTable() {
-  const marketPrices = useItemPrices([...FOOD_PRICE_NAMES, ...FISH_PRICE_NAMES, ...BAIT_PRICE_NAMES]);
+  const marketPrices = useItemPrices([...FOOD_ALL_PRICE_NAMES, ...FISH_PRICE_NAMES]);
   const { rate: coinRate } = useCoinRate();
   const prices = useMemo(() => {
     if (!marketPrices || coinRate === undefined) return marketPrices;
-    const merged = { ...marketPrices };
-    const costs = baitCosts(marketPrices, coinRate, NO_FISHING_BOOSTS);
-    for (const bait of BAITS) merged[bait] = averageBaitCost(costs[bait]);
-    return merged;
+    return withBaitPrices(marketPrices, coinRate);
   }, [marketPrices, coinRate]);
   const [activeTab, setActiveTab] = useState<Building | 'Fish'>('Fire Pit');
 
-  const [timeBoosts, setTimeBoosts] = useState<TimeBoosts>({
-    fastFeastsRank: 0,
-    frostedCakesRank: 0,
-    oilFilled: false,
-    swiftSizzleRank: 0,
-    turboFryRank: 0,
-    fryFrenzyRank: 0,
-    lunasHat: false,
-    chefsCleaver: false,
-    factionMedallion: false,
-    totem: false,
-    desertGnome: false,
-    legendaryShrine: false,
-    boarShrine: false,
-    gourmetHourglass: false,
-  });
+  const [timeBoosts, setTimeBoosts] = useState<TimeBoosts>(NO_TIME_BOOSTS);
 
-  const [xpBoosts, setXpBoosts] = useState<XpBoosts>({
-    munchingMasteryRank: 0,
-    juicyBoostRank: 0,
-    driveThroughDeliRank: 0,
-    buzzworthyTreatsRank: 0,
-    fishyFeastRank: 0,
-    goldenSpatula: false,
-    pan: false,
-    vip: false,
-    observatory: false,
-    blossombeard: false,
-    luminousAnglerfishTopper: false,
-    skillShrimpy: false,
-  });
+  const [xpBoosts, setXpBoosts] = useState<XpBoosts>(NO_XP_BOOSTS);
 
   const activeGroup = activeTab === 'Fish' ? null : BUILDINGS.find((b) => b.key === activeTab)!;
 
   return (
     <div>
-      <BoostPanel title="Бусты времени готовки">
-        <div className="ref-marvel-boost-widget">
-          <div className="ref-food-boost-checks">
-            <Check
-              label="Масло залито в здание"
-              checked={timeBoosts.oilFilled}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, oilFilled: v }))}
-            />
-            <Check
-              label="Luna's Hat (×0.5)"
-              icon="Luna's Hat"
-              checked={timeBoosts.lunasHat}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, lunasHat: v }))}
-            />
-            <Check
-              label="Master Chef's Cleaver (×0.85)"
-              icon="Master Chef's Cleaver"
-              checked={timeBoosts.chefsCleaver}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, chefsCleaver: v }))}
-            />
-            <Check
-              label="Медальон фракции (×0.75)"
-              icon="Sunflorian Medallion"
-              checked={timeBoosts.factionMedallion}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, factionMedallion: v }))}
-            />
-            <Check
-              label="Super/Time Warp Totem (×0.5)"
-              icon="Super Totem"
-              checked={timeBoosts.totem}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, totem: v }))}
-            />
-            <Check
-              label="Desert Gnome (×0.9)"
-              icon="Desert Gnome"
-              checked={timeBoosts.desertGnome}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, desertGnome: v }))}
-            />
-            <Check
-              label="Legendary Shrine (×0.5)"
-              icon="Legendary Shrine"
-              checked={timeBoosts.legendaryShrine}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, legendaryShrine: v }))}
-            />
-            <Check
-              label="Boar Shrine (×0.8)"
-              icon="Boar Shrine"
-              checked={timeBoosts.boarShrine}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, boarShrine: v }))}
-            />
-            <Check
-              icon="Gourmet Hourglass"
-              label="Gourmet Hourglass (×0.5)"
-              checked={timeBoosts.gourmetHourglass}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, gourmetHourglass: v }))}
-            />
-          </div>
-          <div className="ref-food-boost-selects">
-            <RankSelect
-              label="Fast Feasts (Fire Pit/Kitchen)"
-              icon="Fast Feasts"
-              value={timeBoosts.fastFeastsRank}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, fastFeastsRank: v as 0 | 1 | 2 | 3 }))}
-            />
-            <RankSelect
-              label="Frosted Cakes (торты)"
-              icon="Frosted Cakes"
-              value={timeBoosts.frostedCakesRank}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, frostedCakesRank: v as 0 | 1 | 2 | 3 }))}
-            />
-            <RankSelect
-              label="Swift Sizzle (масло, Fire Pit)"
-              icon="Swift Sizzle"
-              value={timeBoosts.swiftSizzleRank}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, swiftSizzleRank: v as 0 | 1 | 2 | 3 }))}
-            />
-            <RankSelect
-              label="Turbo Fry (масло, Kitchen)"
-              icon="Turbo Fry"
-              value={timeBoosts.turboFryRank}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, turboFryRank: v as 0 | 1 | 2 | 3 }))}
-            />
-            <RankSelect
-              label="Fry Frenzy (масло, Deli)"
-              icon="Fry Frenzy"
-              value={timeBoosts.fryFrenzyRank}
-              onChange={(v) => setTimeBoosts((t) => ({ ...t, fryFrenzyRank: v as 0 | 1 | 2 | 3 }))}
-            />
-          </div>
-        </div>
-      </BoostPanel>
+      <TimeBoostsPanel boosts={timeBoosts} onChange={setTimeBoosts} />
 
-      <BoostPanel title="Бусты опыта">
-        <div className="ref-marvel-boost-widget">
-          <div className="ref-food-boost-checks">
-            <Check
-              label="Golden Spatula (+10%)"
-              icon="Golden Spatula"
-              checked={xpBoosts.goldenSpatula}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, goldenSpatula: v }))}
-            />
-            <Check
-              label="Pan (+25%)"
-              icon="Pan"
-              checked={xpBoosts.pan}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, pan: v }))}
-            />
-            <Check label="VIP Access (+10%)" checked={xpBoosts.vip} onChange={(v) => setXpBoosts((x) => ({ ...x, vip: v }))} />
-            <Check
-              label="Observatory (+5%)"
-              icon="Observatory"
-              checked={xpBoosts.observatory}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, observatory: v }))}
-            />
-            <Check
-              label="Blossombeard (+10%)"
-              icon="Blossombeard"
-              checked={xpBoosts.blossombeard}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, blossombeard: v }))}
-            />
-            <Check
-              label="Luminous Anglerfish Topper (+50%, рыба)"
-              icon="Luminous Anglerfish Topper"
-              checked={xpBoosts.luminousAnglerfishTopper}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, luminousAnglerfishTopper: v }))}
-            />
-            <Check
-              label="Skill Shrimpy (+20%, рыба)"
-              icon="Skill Shrimpy"
-              checked={xpBoosts.skillShrimpy}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, skillShrimpy: v }))}
-            />
-          </div>
-          <div className="ref-food-boost-selects">
-            <RankSelect
-              label="Munching Mastery (все блюда)"
-              icon="Munching Mastery"
-              value={xpBoosts.munchingMasteryRank}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, munchingMasteryRank: v as 0 | 1 | 2 | 3 }))}
-            />
-            <RankSelect
-              label="Juicy Boost (Smoothie Shack)"
-              icon="Juicy Boost"
-              value={xpBoosts.juicyBoostRank}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, juicyBoostRank: v as 0 | 1 | 2 | 3 }))}
-            />
-            <RankSelect
-              label="Drive-Through Deli"
-              icon="Drive-Through Deli"
-              value={xpBoosts.driveThroughDeliRank}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, driveThroughDeliRank: v as 0 | 1 | 2 | 3 }))}
-            />
-            <RankSelect
-              label="Buzzworthy Treats (блюда с мёдом)"
-              icon="Buzzworthy Treats"
-              value={xpBoosts.buzzworthyTreatsRank}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, buzzworthyTreatsRank: v as 0 | 1 | 2 | 3 }))}
-            />
-            <RankSelect
-              label="Fishy Feast (рыба)"
-              icon="Fishy Feast"
-              value={xpBoosts.fishyFeastRank}
-              onChange={(v) => setXpBoosts((x) => ({ ...x, fishyFeastRank: v as 0 | 1 | 2 | 3 }))}
-            />
-          </div>
-        </div>
-      </BoostPanel>
+      <XpBoostsPanel boosts={xpBoosts} onChange={setXpBoosts} />
 
       <div className="ref-food-tabs">
         {BUILDINGS.map((b) => (
