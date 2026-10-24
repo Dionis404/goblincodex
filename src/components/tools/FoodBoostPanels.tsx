@@ -197,6 +197,17 @@ export function XpBoostsPanel({ boosts, onChange }: { boosts: XpBoosts; onChange
             onChange={(v) => onChange({ ...boosts, blossombeard: v })}
           />
           <Check
+            label="Grain Grinder (+20%, торты)"
+            checked={boosts.grainGrinder}
+            onChange={(v) => onChange({ ...boosts, grainGrinder: v })}
+          />
+          <Check
+            label="Swiss Whiskers (+500 к блюдам с сыром)"
+            icon="Swiss Whiskers"
+            checked={boosts.swissWhiskers}
+            onChange={(v) => onChange({ ...boosts, swissWhiskers: v })}
+          />
+          <Check
             label="Luminous Anglerfish Topper (+50%, рыба)"
             icon="Luminous Anglerfish Topper"
             checked={boosts.luminousAnglerfishTopper}
@@ -240,6 +251,20 @@ export function XpBoostsPanel({ boosts, onChange }: { boosts: XpBoosts; onChange
             value={boosts.fishyFeastRank}
             onChange={(v) => onChange({ ...boosts, fishyFeastRank: v as 0 | 1 | 2 | 3 })}
           />
+          <label className="ref-marvel-boost-check">
+            <span>Faction Pet (все блюда и рыба)</span>
+            <select
+              value={boosts.factionPetRank}
+              onChange={(e) => onChange({ ...boosts, factionPetRank: Number(e.target.value) as 0 | 1 | 2 | 3 | 4 })}
+              className="ref-food-rank-select"
+            >
+              <option value={0}>выкл</option>
+              <option value={1}>×1.1 · 2–3 недели подряд</option>
+              <option value={2}>×1.2 · 4–5 недель</option>
+              <option value={3}>×1.3 · 6–7 недель</option>
+              <option value={4}>×1.5 · 8+ недель</option>
+            </select>
+          </label>
         </div>
       </div>
     </BoostPanel>

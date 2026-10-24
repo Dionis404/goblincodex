@@ -45,7 +45,7 @@ export interface BaitCost {
 }
 
 const FISH_TIER = new Map(FISH_RECORDS.map((f) => [f.name, f.type as FishTier]));
-const CRUSTACEAN_POT = new Map<string, PotName>(
+export const CRUSTACEAN_POT = new Map<string, PotName>(
   Object.entries(CRUSTACEAN_LOOKUP).flatMap(([pot, rows]) =>
     Object.values(rows).map((name) => [name, pot as PotName] as const),
   ),

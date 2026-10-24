@@ -273,8 +273,12 @@ export interface XpBoosts {
   blossombeard: boolean; // +10%, все блюда
   luminousAnglerfishTopper: boolean; // +50%, только рыба
   skillShrimpy: boolean; // +20%, только рыба
+  factionPetRank: 0 | 1 | 2 | 3 | 4; // Faction Pet: ×1.1/1.2/1.3/1.5 (недели подряд 2–3 / 4–5 / 6–7 / 8+), все блюда и рыба
+  grainGrinder: boolean; // +20%, торты
+  swissWhiskers: boolean; // +500 к блюдам с Cheese
 }
 
+export const FACTION_PET_MULTIPLIERS = [1.1, 1.2, 1.3, 1.5];
 export const MUNCHING_MASTERY_RANKS = [0.05, 0.075, 0.1];
 export const JUICY_BOOST_RANKS = [0.1, 0.2, 0.3];
 export const DRIVE_THROUGH_DELI_RANKS = [0.15, 0.2, 0.25];
@@ -290,6 +294,7 @@ export function universalXpMultiplier(b: XpBoosts): number {
   if (b.vip) mult *= 1.1;
   if (b.observatory) mult *= 1.05;
   if (b.blossombeard) mult *= 1.1;
+  if (b.factionPetRank > 0) mult *= FACTION_PET_MULTIPLIERS[b.factionPetRank - 1];
   return mult;
 }
 
@@ -301,6 +306,7 @@ export function xpMultiplier(recipe: Recipe, b: XpBoosts): number {
   if (recipe.building === 'Deli' && b.driveThroughDeliRank > 0) {
     mult *= 1 + DRIVE_THROUGH_DELI_RANKS[b.driveThroughDeliRank - 1];
   }
+  if (recipe.isCake && b.grainGrinder) mult *= 1.2;
   if (recipe.isHoney && b.buzzworthyTreatsRank > 0) {
     mult *= 1 + BUZZWORTHY_TREATS_RANKS[b.buzzworthyTreatsRank - 1];
   }
@@ -312,6 +318,21 @@ export function xpMultiplier(recipe: Recipe, b: XpBoosts): number {
     if (b.skillShrimpy) mult *= 1.2;
   }
   return mult;
+}
+
+/** Блюдо с Cheese среди ингредиентов (игра: isFoodMadeWithCheese). */
+export function isCheeseDish(recipe: Recipe): boolean {
+  return recipe.ingredients.some(([name]) => name === 'Cheese');
+}
+
+/**
+ * Опыт блюда с бустами (игра: getFoodExpBoost). Swiss Whiskers добавляет +500 к
+ * блюдам с сыром после множителей, а Faction Pet умножает уже сумму.
+ */
+export function foodXp(recipe: Recipe, b: XpBoosts): number {
+  const faction = b.factionPetRank > 0 ? FACTION_PET_MULTIPLIERS[b.factionPetRank - 1] : 1;
+  const flat = b.swissWhiskers && isCheeseDish(recipe) ? 500 * faction : 0;
+  return recipe.experience * xpMultiplier(recipe, b) + flat;
 }
 
 // Рыба (сырая и выдержанная) получает универсальные бусты + Fishy Feast +
@@ -355,6 +376,9 @@ export const NO_XP_BOOSTS: XpBoosts = {
   blossombeard: false,
   luminousAnglerfishTopper: false,
   skillShrimpy: false,
+  factionPetRank: 0,
+  grainGrinder: false,
+  swissWhiskers: false,
 };
 
 /**
@@ -374,3 +398,15 @@ export function withBaitPrices(
 
 /** Все названия предметов, чьи цены нужны для расчёта блюд (сырьё и инструменты наживок). */
 export const FOOD_ALL_PRICE_NAMES: string[] = [...new Set([...FOOD_PRICE_NAMES, ...BAIT_PRICE_NAMES])];
+
+/** Опыт сырой рыбы (базовый, без бустов). Выдержанная рыба и расчёт соления — в FoodCatalogTable. */
+export const FISH_BASE_XP: Record<string, number> = {
+  Anchovy: 80, 'Red Snapper': 100, Butterflyfish: 110, 'Sea Bass': 140, Blowfish: 170,
+  'Olive Flounder': 180, Napoleanfish: 180, Tilapia: 190, Tuna: 200, 'Mahi Mahi': 200,
+  'Blue Marlin': 200, 'Football fish': 200, Sunfish: 200, 'Sea Horse': 240, Halibut: 220,
+  'Moray Eel': 220, 'Zebra Turkeyfish': 220, Oarfish: 220, Clownfish: 210, Surgeonfish: 210,
+  Walleye: 210, Weakfish: 210, 'Horse Mackerel': 250, Squid: 250, Angelfish: 250, Porgy: 250,
+  Muskellunge: 250, Cobia: 310, 'Rock Blackfish': 320, Trout: 330, Coelacanth: 410, Ray: 430,
+  Parrotfish: 440, 'Barred Knifejaw': 580, 'Hammerhead shark': 750, 'Whale Shark': 1370,
+  'Saw Shark': 1920, 'White Shark': 2000,
+};

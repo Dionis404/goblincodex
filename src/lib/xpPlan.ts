@@ -1,14 +1,20 @@
 /**
- * Планировщик прокачки опыта бампкина через еду.
+ * Планировщик прокачки опыта бампкина через еду и рыбу.
  *
- * Модель. Блюда готовятся в зданиях (Fire Pit, Kitchen, Bakery, Deli, Smoothie
- * Shack), каждое здание работает непрерывно и независимо. Блюдо даёт опыт (с
- * бустами) за время приготовления (с бустами) и стоит денег (floor-цены
- * ингредиентов). Чтобы набрать нужный опыт за срок D дней, надо распределить
- * время зданий между блюдами так, чтобы потратить меньше всего Flower — это
- * задача линейного программирования; решаем её методом множителя Лагранжа
- * (цена опыта λ): при каждом λ здание выгоднее всего занять блюдом с лучшим
- * «λ × опыт/час − цена/час», а на стыке двух блюд время делится дробно.
+ * Модель. Опыт даёт съеденное блюдо или рыба. Каждое блюдо стоит денег
+ * (floor-цены ингредиентов) и занимает «ресурсы»: время зданий (Fire Pit, Kitchen,
+ * Bakery, Deli, Smoothie Shack, Fish Market — в часах в сутки) и заброс удочки
+ * (в бросках в сутки, у игры дневной лимит). Ингредиенты блюда, которые сами готовятся
+ * (Cheese для Blue Cheese, Mashed Potato для Cabbers n Mash, рыбные наживки
+ * для рыбных блюд), нагружают свои ресурсы тоже — поэтому блюдо описывается
+ * вектором «usage»: сколько каждого ресурса нужно на одну порцию, включая заготовки.
+ *
+ * Чтобы набрать нужный опыт за срок D дней с наименьшей ценой, нужно выбрать,
+ * сколько каких блюд приготовить, чтобы загрузка каждого ресурса не превысила
+ * D × его суточную ёмкость. Это задача линейного программирования; решаем её
+ * методом множителя Лагранжа: при цене опыта λ ищем набор блюд, максимизирующий
+ * «λ × опыт − цена» (симплекс-метод), и подбираем λ делением пополам, а на стыке
+ * двух решений делим их дробно.
  *
  * VIP: за вход каждый день выдаётся одно блюдо по уровню (getVipDailyBonusItem
  * в игре). Оно съедается бесплатно, поэтому уменьшает опыт, который надо
@@ -16,67 +22,187 @@
  * уровень по ходу прокачки оцениваем равномерным ростом опыта.
  *
  * Не учитывается: цена масла, ручной перезапуск готовки, наличие ингредиентов
- * на ферме (всё считается покупкой по floor), сырая и выдержанная рыба.
+ * на ферме (всё считается покупкой по floor), выдержанная рыба (Aging Shed),
+ * червь для заброса (его цена не выделяется из компостера), приманки ловушек как
+ * расход времени (в цену они входят), случайный улов без наживки, нехватка Crab
+ * (оценивается по цене продажи Бетти и считается неограниченной).
  */
 import {
   BUILDINGS,
+  FISH_BASE_XP,
   NO_PRICE_RECIPES,
   RECIPE_BY_NAME,
+  fishXpMultiplier,
+  foodXp,
   recipeCost,
   timeMultiplier,
-  xpMultiplier,
   type Building,
   type Recipe,
   type TimeBoosts,
   type XpBoosts,
 } from './food';
 import { PRE_ASCENSION_MAX_LEVEL, levelForXp } from './bumpkinXp';
+import { BAIT_RECIPES, FISH_RECORDS, GUARANTEED_CATCH } from './fishData.generated';
+import { BAITS, CRUSTACEAN_POT, SEASON_NAMES } from './baitCosts';
+import { NO_CRUSTACEAN_BOOSTS, expectedYield, readyHours } from './crustaceans';
+import { castCost, expectedFishPerCast, type FishTier, type FishingBoosts } from './fishYield';
+
+/**
+ * Ресурсы, которые тратит еда: здания (часы), Fish Market (часы), заброс удочки
+ * (штуки) и место под ловушку на раков (часы ловушки).
+ */
+export type Resource = Building | 'Fish Market' | 'Fishing' | 'Traps';
+
+/** Ёмкость ресурсов в сутки: часы для зданий и Fish Market, забросы для рыбалки. */
+export type Capacity = Partial<Record<Resource, number>>;
 
 export interface Dish {
-  recipe: Recipe;
-  building: Building;
-  /** Опыт за одно блюдо с бустами. */
+  name: string;
+  /** Откуда блюдо: здание, где оно готовится, или «Рыбалка» для сырой рыбы. */
+  group: Resource;
+  kind: 'dish' | 'fish';
+  /** Опыт за одну порцию с бустами. */
   xp: number;
-  /** Часы приготовления одного блюда с бустами. */
-  hours: number;
-  /** Цена одного блюда во Flower. */
+  /** Цена одной порции во Flower (с заготовками). */
   cost: number;
-  xpPerHour: number;
-  costPerHour: number;
-  costPerXp: number;
+  /** Сколько каждого ресурса нужно на порцию, включая заготовки. */
+  usage: Partial<Record<Resource, number>>;
+  /** Заготовки на порцию: название → сколько штук (все уровни вложенности). */
+  needs: Record<string, number>;
+}
+
+const FISH_TIER = new Map(FISH_RECORDS.map((f) => [f.name, f.type as FishTier]));
+
+/**
+ * Ресурсы на одну наживку: забросы (на рыбу из рецепта), часы Fish Market и часы
+ * ловушек (на раков из рецепта: время сбора ловушки делится на улов за сбор).
+ */
+function baitUsage(bait: string, fishing: FishingBoosts): { casts: number; hours: number; trapHours: number } {
+  const recipe = BAIT_RECIPES[bait];
+  let casts = 0;
+  let trapHours = 0;
+  const perCrustacean = (name: string) => {
+    const pot = CRUSTACEAN_POT.get(name);
+    return pot ? readyHours(pot, NO_CRUSTACEAN_BOOSTS) / expectedYield(NO_CRUSTACEAN_BOOSTS) : 0;
+  };
+  for (const season of SEASON_NAMES) {
+    const items = { ...recipe.base, ...recipe.seasonal[season] };
+    for (const [name, amount] of Object.entries(items)) {
+      const tier = FISH_TIER.get(name);
+      if (tier) casts += amount / expectedFishPerCast(tier, season, fishing);
+      trapHours += amount * perCrustacean(name);
+    }
+  }
+  const n = SEASON_NAMES.length;
+  return { casts: casts / n, hours: recipe.seconds / 3600, trapHours: trapHours / n };
+}
+
+/** Средний улов за заброс для рыбы по сезонам года. */
+function avgYield(tier: FishTier, fishing: FishingBoosts): number {
+  return SEASON_NAMES.reduce((s, season) => s + expectedFishPerCast(tier, season, fishing), 0) / SEASON_NAMES.length;
+}
+
+type Usage = Partial<Record<Resource, number>>;
+
+/** Ресурсы и заготовки на одну порцию блюда (рекурсивно по промежуточным блюдам и наживкам). */
+function usageOf(
+  recipe: Recipe,
+  timeBoosts: TimeBoosts,
+  fishing: FishingBoosts,
+  seen: string[] = [],
+): { usage: Usage; needs: Record<string, number> } | null {
+  if (seen.includes(recipe.name)) return null;
+  const usage: Usage = {
+    [recipe.building]: (recipe.cookingSeconds * timeMultiplier(recipe, timeBoosts)) / 3600,
+  };
+  const needs: Record<string, number> = {};
+  const add = (u: Usage, factor: number) => {
+    for (const [r, v] of Object.entries(u) as [Resource, number][]) usage[r] = (usage[r] ?? 0) + factor * v;
+  };
+  for (const [name, amount] of recipe.ingredients) {
+    if ((BAITS as readonly string[]).includes(name)) {
+      const b = baitUsage(name, fishing);
+      add({ Fishing: b.casts, 'Fish Market': b.hours, Traps: b.trapHours }, amount);
+      needs[name] = (needs[name] ?? 0) + amount;
+      continue;
+    }
+    const sub = RECIPE_BY_NAME.get(name);
+    if (!sub) continue;
+    const inner = usageOf(sub, timeBoosts, fishing, [...seen, recipe.name]);
+    if (!inner) return null;
+    needs[name] = (needs[name] ?? 0) + amount;
+    add(inner.usage, amount);
+    for (const [n, c] of Object.entries(inner.needs)) needs[n] = (needs[n] ?? 0) + amount * c;
+  }
+  return { usage, needs };
+}
+
+export interface DishContext {
+  prices: Record<string, number | null>;
+  coinRate: number | null | undefined;
+  xpBoosts: XpBoosts;
+  timeBoosts: TimeBoosts;
+  fishing: FishingBoosts;
 }
 
 /**
- * Блюда, которые можно планировать: уже есть в игре и у всех ингредиентов
- * есть цена (иначе цену не посчитать). Опыт и время — с выбранными бустами.
+ * Блюда и рыба, которые можно планировать: уже есть в игре и у всех ингредиентов
+ * есть цена. Опыт и время — с выбранными бустами; наживки считаются по рецепту.
  */
-export function buildDishes(
-  prices: Record<string, number | null>,
-  xpBoosts: XpBoosts,
-  timeBoosts: TimeBoosts,
-): Dish[] {
+export function buildDishes(ctx: DishContext): Dish[] {
+  const { prices, xpBoosts, timeBoosts, fishing } = ctx;
   const dishes: Dish[] = [];
   for (const group of BUILDINGS) {
     for (const recipe of group.recipes) {
       if (recipe.upcoming || NO_PRICE_RECIPES.has(recipe.name)) continue;
       const price = recipeCost(recipe.name, prices);
       if (price.cost == null || price.missing.length > 0) continue;
-      const xp = recipe.experience * xpMultiplier(recipe, xpBoosts);
-      const hours = (recipe.cookingSeconds * timeMultiplier(recipe, timeBoosts)) / 3600;
-      if (!(xp > 0) || !(hours > 0)) continue;
-      dishes.push({
-        recipe,
-        building: group.key,
-        xp,
-        hours,
-        cost: price.cost,
-        xpPerHour: xp / hours,
-        costPerHour: price.cost / hours,
-        costPerXp: price.cost / xp,
-      });
+      const xp = foodXp(recipe, xpBoosts);
+      const u = usageOf(recipe, timeBoosts, fishing);
+      if (!u || !(xp > 0)) continue;
+      const total = Object.values(u.usage).reduce((s, v) => s + v, 0);
+      if (!(total > 0)) continue;
+      dishes.push({ name: recipe.name, group: group.key, kind: 'dish', xp, cost: price.cost, usage: u.usage, needs: u.needs });
     }
   }
+  dishes.push(...rawFishDishes(ctx));
   return dishes;
+}
+
+/**
+ * Сырая рыба: ловим выбранную рыбу «гарантирующей» наживкой (выбираем самую
+ * дешёвую из подходящих), съедаем сразу. Заброс на саму рыбу плюс забросы и
+ * часы Fish Market на изготовление наживки.
+ */
+function rawFishDishes(ctx: DishContext): Dish[] {
+  const { prices, coinRate, xpBoosts, fishing } = ctx;
+  if (!coinRate) return [];
+  const fishXp = fishXpMultiplier(xpBoosts);
+  const cast = castCost(prices, coinRate, fishing);
+  const out: Dish[] = [];
+  for (const [name, baseXp] of Object.entries(FISH_BASE_XP)) {
+    const tier = FISH_TIER.get(name);
+    if (!tier) continue;
+    let best: { bait: string; price: number } | null = null;
+    for (const bait of BAITS) {
+      if (!GUARANTEED_CATCH[bait]?.includes(name)) continue;
+      const p = prices[bait];
+      if (p != null && (best == null || p < best.price)) best = { bait, price: p };
+    }
+    if (!best) continue;
+    const y = avgYield(tier, fishing);
+    const b = baitUsage(best.bait, fishing);
+    out.push({
+      name,
+      group: 'Fishing',
+      kind: 'fish',
+      xp: baseXp * fishXp,
+      cost: cast / y + best.price,
+      usage: { Fishing: 1 / y + b.casts, 'Fish Market': b.hours },
+      needs: { [best.bait]: 1 },
+    });
+  }
+  return out;
 }
 
 // ─── VIP: ежедневное блюдо ────────────────────────────────────────────────────
@@ -137,7 +263,7 @@ export function vipFreeDishes(
     const recipe = RECIPE_BY_NAME.get(name);
     if (!recipe) continue;
     // Бесплатное блюдо съедают с бустом VIP (+10%) — он действует, раз выдана награда.
-    result.xp += recipe.experience * xpMultiplier(recipe, { ...xpBoosts, vip: true });
+    result.xp += foodXp(recipe, { ...xpBoosts, vip: true });
     const price = recipeCost(name, prices);
     if (price.cost != null && price.missing.length === 0) result.value += price.cost;
     else result.valueKnown = false;
@@ -146,38 +272,70 @@ export function vipFreeDishes(
   return result;
 }
 
-// ─── Распределение времени зданий ────────────────────────────────────────────
+// ─── Линейное программирование ───────────────────────────────────────────────
+
+/**
+ * max v·x при A·x ≤ b, x ≥ 0 (b > 0). Табличный симплекс-метод с правилом
+ * Бленда — для наших размеров (≤ 8 ресурсов, ≤ 80 блюд) этого достаточно.
+ */
+function simplexMax(v: number[], A: number[][], b: number[]): number[] {
+  const m = b.length;
+  const n = v.length;
+  const cols = n + m + 1;
+  const T: number[][] = Array.from({ length: m + 1 }, () => new Array<number>(cols).fill(0));
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) T[i][j] = A[i][j];
+    T[i][n + i] = 1;
+    T[i][cols - 1] = b[i];
+  }
+  for (let j = 0; j < n; j++) T[m][j] = -v[j];
+  const basis = Array.from({ length: m }, (_, i) => n + i);
+  const EPS = 1e-10;
+
+  for (let iter = 0; iter < 20_000; iter++) {
+    let enter = -1;
+    for (let j = 0; j < n + m; j++) {
+      if (T[m][j] < -EPS) {
+        enter = j;
+        break;
+      }
+    }
+    if (enter < 0) break;
+    let leave = -1;
+    let best = Infinity;
+    for (let i = 0; i < m; i++) {
+      if (T[i][enter] > EPS) {
+        const ratio = T[i][cols - 1] / T[i][enter];
+        if (ratio < best - 1e-12 || (Math.abs(ratio - best) <= 1e-12 && leave >= 0 && basis[i] < basis[leave])) {
+          best = ratio;
+          leave = i;
+        }
+      }
+    }
+    if (leave < 0) break;
+    const pivot = T[leave][enter];
+    for (let j = 0; j < cols; j++) T[leave][j] /= pivot;
+    for (let i = 0; i <= m; i++) {
+      if (i === leave) continue;
+      const factor = T[i][enter];
+      if (Math.abs(factor) < 1e-15) continue;
+      for (let j = 0; j < cols; j++) T[i][j] -= factor * T[leave][j];
+    }
+    basis[leave] = enter;
+  }
+  const x = new Array<number>(n).fill(0);
+  for (let i = 0; i < m; i++) if (basis[i] < n) x[basis[i]] = Math.max(0, T[i][cols - 1]);
+  return x;
+}
+
+// ─── Распределение ресурсов ──────────────────────────────────────────────────
 
 export interface Allocation {
   dish: Dish;
-  /** Часы работы здания над этим блюдом. */
-  hours: number;
-  /** Сколько блюд успеет сготовиться (может быть дробным — округляем при показе). */
+  /** Сколько таких порций приготовить (дробное — округляем при показе). */
   count: number;
   xp: number;
   cost: number;
-}
-
-interface Pick {
-  dish: Dish | null; // null — здание простаивает
-}
-
-/** Лучшее блюдо здания при цене опыта λ: максимум λ·опыт/час − цена/час (или простой). */
-function pickBest(dishes: Dish[], lambda: number): Pick {
-  let best: Dish | null = null;
-  let bestScore = 0;
-  for (const d of dishes) {
-    const score = lambda * d.xpPerHour - d.costPerHour;
-    if (score > bestScore + 1e-12) {
-      bestScore = score;
-      best = d;
-    }
-  }
-  return { dish: best };
-}
-
-function groupByBuilding(dishes: Dish[], enabled: Building[]): Dish[][] {
-  return enabled.map((b) => dishes.filter((d) => d.building === b)).filter((g) => g.length > 0);
 }
 
 export interface Cooking {
@@ -185,63 +343,108 @@ export interface Cooking {
   allocations: Allocation[];
   xp: number;
   cost: number;
+  /** Использовано ресурсов за срок (часы или забросы), с заготовками. */
+  loads: Partial<Record<Resource, number>>;
+  /** Заготовки: название → сколько штук надо приготовить. */
+  prep: Record<string, number>;
+}
+
+const EMPTY_COOKING: Cooking = { feasible: true, allocations: [], xp: 0, cost: 0, loads: {}, prep: {} };
+
+/** Ресурсы, которыми реально можно пользоваться (ёмкость > 0). */
+function activeResources(capacity: Capacity): Resource[] {
+  return (Object.keys(capacity) as Resource[]).filter((r) => (capacity[r] ?? 0) > 0);
+}
+
+/** Блюда, которые целиком обходятся включёнными ресурсами (заготовки тоже). */
+function availableDishes(dishes: Dish[], capacity: Capacity): Dish[] {
+  const active = activeResources(capacity);
+  return dishes.filter((d) => (Object.keys(d.usage) as Resource[]).every((r) => active.includes(r)));
+}
+
+/** Ресурсы, которые используют хоть какие-то доступные блюда. */
+function usedResources(avail: Dish[], capacity: Capacity): Resource[] {
+  return activeResources(capacity).filter((r) => avail.some((d) => (d.usage[r] ?? 0) > 0));
+}
+
+/** Решение для цены опыта λ: сколько порций каждого блюда в сутки (при ёмкости 1 «сутки» на ресурс). */
+function solveAt(lambda: number, dishes: Dish[], resources: Resource[], capacity: Capacity): number[] {
+  const raw = dishes.map((d) => lambda * d.xp - d.cost);
+  const scale = Math.max(...raw.map((r) => Math.abs(r)), 1e-12);
+  const v = raw.map((r) => r / scale);
+  const A = resources.map((r) => dishes.map((d) => (d.usage[r] ?? 0) / (capacity[r] as number)));
+  return simplexMax(v, A, resources.map(() => 1));
+}
+
+const xpPerDay = (x: number[], dishes: Dish[]) => x.reduce((s, c, i) => s + c * dishes[i].xp, 0);
+
+/** Верхняя граница цены опыта: при ней важна только скорость. */
+function lambdaMax(dishes: Dish[]): number {
+  return 1e6 * Math.max(...dishes.map((d) => d.cost / d.xp), 1e-9) + 1;
+}
+
+/** Предельная скорость: опыт в сутки, если все ресурсы заняты самыми быстрыми по опыту блюдами. */
+export function maxXpPerDay(dishes: Dish[], capacity: Capacity): number {
+  const avail = availableDishes(dishes, capacity);
+  const resources = usedResources(avail, capacity);
+  if (avail.length === 0 || resources.length === 0) return 0;
+  return xpPerDay(solveAt(lambdaMax(avail), avail, resources, capacity), avail);
 }
 
 /**
- * Дешевле всего набрать `need` опыта за `days` дней: каждое здание работает
- * все `days × 24` часов. Возвращает пустой план, если срок слишком мал.
+ * Дешевле всего набрать `need` опыта за `days` дней. Возвращает feasible = false,
+ * если срок слишком мал.
  */
-export function cheapestCooking(
-  need: number,
-  days: number,
-  dishes: Dish[],
-  enabled: Building[],
-  hoursPerDay = 24,
-): Cooking {
-  if (need <= 0) return { feasible: true, allocations: [], xp: 0, cost: 0 };
-  const groups = groupByBuilding(dishes, enabled);
-  const H = days * hoursPerDay;
-  const total = (lambda: number) =>
-    groups.reduce((sum, g) => sum + H * (pickBest(g, lambda).dish?.xpPerHour ?? 0), 0);
+export function cheapestCooking(need: number, days: number, dishes: Dish[], capacity: Capacity): Cooking {
+  if (need <= 0) return EMPTY_COOKING;
+  const avail = availableDishes(dishes, capacity);
+  const resources = usedResources(avail, capacity);
+  if (avail.length === 0 || resources.length === 0) return { ...EMPTY_COOKING, feasible: false };
+  const total = (x: number[]) => days * xpPerDay(x, avail);
 
-  const hi0 = 1e9;
-  if (total(hi0) < need - 1e-9) return { feasible: false, allocations: [], xp: 0, cost: 0 };
+  const hi0 = lambdaMax(avail);
+  const top = solveAt(hi0, avail, resources, capacity);
+  if (total(top) < need * (1 - 1e-9)) return { ...EMPTY_COOKING, feasible: false };
 
   let lo = 0;
   let hi = hi0;
-  for (let i = 0; i < 200 && hi - lo > 1e-12 * Math.max(1, hi); i++) {
+  let xLo = solveAt(lo, avail, resources, capacity);
+  let xHi = top;
+  for (let i = 0; i < 70 && hi - lo > 1e-9 * hi; i++) {
     const mid = (lo + hi) / 2;
-    if (total(mid) >= need) hi = mid;
-    else lo = mid;
-  }
-  const tLo = total(lo);
-  const tHi = total(hi);
-  const f = tHi > tLo + 1e-12 ? Math.min(1, Math.max(0, (need - tLo) / (tHi - tLo))) : 1;
-
-  const map = new Map<Dish, number>();
-  const add = (dish: Dish | null, hours: number) => {
-    if (dish && hours > 1e-9) map.set(dish, (map.get(dish) ?? 0) + hours);
-  };
-  for (const g of groups) {
-    const a = pickBest(g, lo).dish;
-    const b = pickBest(g, hi).dish;
-    if (a === b) add(b, H);
-    else {
-      add(a, (1 - f) * H);
-      add(b, f * H);
+    const xm = solveAt(mid, avail, resources, capacity);
+    if (total(xm) >= need) {
+      hi = mid;
+      xHi = xm;
+    } else {
+      lo = mid;
+      xLo = xm;
     }
   }
-  const allocations: Allocation[] = [...map.entries()].map(([dish, hours]) => ({
-    dish,
-    hours,
-    count: hours / dish.hours,
-    xp: hours * dish.xpPerHour,
-    cost: hours * dish.costPerHour,
-  }));
-  allocations.sort((x, y) => y.xp - x.xp);
-  const xp = allocations.reduce((s, a) => s + a.xp, 0);
-  const cost = allocations.reduce((s, a) => s + a.cost, 0);
-  return { feasible: true, allocations, xp, cost };
+  const tLo = total(xLo);
+  const tHi = total(xHi);
+  const f = tHi > tLo + 1e-9 ? Math.min(1, Math.max(0, (need - tLo) / (tHi - tLo))) : 1;
+
+  const counts = avail.map((_, i) => days * ((1 - f) * xLo[i] + f * xHi[i]));
+  const allocations: Allocation[] = [];
+  const loads: Partial<Record<Resource, number>> = {};
+  const prep: Record<string, number> = {};
+  avail.forEach((dish, i) => {
+    const count = counts[i];
+    if (count < 1e-9) return;
+    allocations.push({ dish, count, xp: count * dish.xp, cost: count * dish.cost });
+    for (const [r, u] of Object.entries(dish.usage) as [Resource, number][]) loads[r] = (loads[r] ?? 0) + count * u;
+    for (const [name, c] of Object.entries(dish.needs)) prep[name] = (prep[name] ?? 0) + count * c;
+  });
+  allocations.sort((a, b) => b.xp - a.xp);
+  return {
+    feasible: true,
+    allocations,
+    xp: allocations.reduce((s, a) => s + a.xp, 0),
+    cost: allocations.reduce((s, a) => s + a.cost, 0),
+    loads,
+    prep,
+  };
 }
 
 // ─── Полный план: срок, VIP, цена ────────────────────────────────────────────
@@ -252,12 +455,11 @@ export interface PlanInput {
   /** Игрок уже возвышался — уровень в VIP-блюде считаем максимальным. */
   ascended: boolean;
   dishes: Dish[];
-  enabled: Building[];
+  /** Ёмкость ресурсов в сутки (часы или забросы). */
+  capacity: Capacity;
   xpBoosts: XpBoosts;
   vip: boolean;
   prices: Record<string, number | null>;
-  /** Сколько часов в сутки здания реально готовят (24 — без простоев). */
-  hoursPerDay: number;
 }
 
 export interface Plan {
@@ -267,43 +469,42 @@ export interface Plan {
   gain: number;
   /** Из него бесплатно за VIP-блюда. */
   free: VipFree;
-  /** Опыт, который надо приготовить. */
+  /** Опыт, который надо набрать готовкой и рыбалкой. */
   cooked: number;
   cooking: Cooking;
-  /** Затраты: готовка плюс (0 за VIP-блюда). */
+  /** Затраты (VIP-блюда бесплатны). */
   cost: number;
+}
+
+function freeFor(input: PlanInput, days: number): VipFree {
+  const gain = Math.max(0, input.targetXp - input.startXp);
+  return input.vip
+    ? vipFreeDishes(input.startXp, gain, days, input.ascended, input.xpBoosts, input.prices)
+    : NO_VIP_FREE;
 }
 
 export function planFor(input: PlanInput, days: number): Plan {
   const gain = Math.max(0, input.targetXp - input.startXp);
-  const free = input.vip
-    ? vipFreeDishes(input.startXp, gain, days, input.ascended, input.xpBoosts, input.prices)
-    : NO_VIP_FREE;
+  const free = freeFor(input, days);
   const cooked = Math.max(0, gain - free.xp);
-  const cooking = cheapestCooking(cooked, days, input.dishes, input.enabled, input.hoursPerDay);
+  const cooking = cheapestCooking(cooked, days, input.dishes, input.capacity);
   return { feasible: cooking.feasible, days, gain, free, cooked, cooking, cost: cooking.cost };
 }
 
-/** Предельная скорость: опыт в сутки, если все включённые здания заняты лучшим по скорости блюдом. */
-export function maxXpPerDay(dishes: Dish[], enabled: Building[], hoursPerDay = 24): number {
-  return groupByBuilding(dishes, enabled).reduce(
-    (s, g) => s + hoursPerDay * Math.max(...g.map((d) => d.xpPerHour)),
-    0,
-  );
-}
-
-/** Минимальный срок, за который вообще можно набрать опыт (все здания на самых быстрых блюдах). */
+/** Минимальный срок, за который вообще можно набрать опыт (все ресурсы заняты самыми быстрыми блюдами). */
 export function minDays(input: PlanInput): number | null {
   if (input.targetXp <= input.startXp) return 0;
-  const rate = maxXpPerDay(input.dishes, input.enabled, input.hoursPerDay);
-  const feasibleAt = (d: number) => planFor(input, d).feasible;
+  const rate = maxXpPerDay(input.dishes, input.capacity);
   if (!(rate > 0)) return null;
-  let hi = Math.max(1, (input.targetXp - input.startXp) / rate);
+  const gain = input.targetXp - input.startXp;
+  // Быстрая проверка без решения задачи: хватает ли предельной скорости на нужный опыт.
+  const feasibleAt = (d: number) => rate * d >= gain - freeFor(input, d).xp - 1e-6;
+  let hi = Math.max(1, gain / rate);
   let guard = 0;
   while (!feasibleAt(hi) && guard++ < 60) hi *= 1.5;
   if (!feasibleAt(hi)) return null;
   let lo = 0;
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 60; i++) {
     const mid = (lo + hi) / 2;
     if (feasibleAt(mid)) hi = mid;
     else lo = mid;
@@ -341,7 +542,7 @@ export function planCurve(input: PlanInput, stretch: number): PlanCurve | null {
   let balanced = fast;
   if (hi > d0 && cheap.cost < fast.cost) {
     let bestScore = Infinity;
-    const N = 80;
+    const N = 40;
     const span = fast.cost - cheap.cost;
     for (let i = 0; i <= N; i++) {
       const d = d0 + ((hi - d0) * i) / N;

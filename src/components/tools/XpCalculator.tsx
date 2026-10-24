@@ -4,6 +4,8 @@ import NumberStepper from '../NumberStepper';
 import { FlowerAmount } from '../ResourceIcon';
 import FOOD_ICONS from '../../lib/foodIcons.json';
 import { TimeBoostsPanel, XpBoostsPanel } from './FoodBoostPanels';
+import FishingBoostsWidget from './FishingBoostsWidget';
+import { NO_FISHING_BOOSTS, type FishingBoosts } from '../../lib/fishYield';
 import { useItemPrices } from '../../lib/useItemPrices';
 import { useCoinRate } from '../../lib/useCoinRate';
 import {
@@ -11,12 +13,24 @@ import {
   FOOD_ALL_PRICE_NAMES,
   NO_TIME_BOOSTS,
   NO_XP_BOOSTS,
+  RECIPE_BY_NAME,
+  recipeCost,
   withBaitPrices,
   type Building,
   type TimeBoosts,
   type XpBoosts,
 } from '../../lib/food';
-import { buildDishes, planCurve, planFor, type Plan, type PlanInput, type PlanMode } from '../../lib/xpPlan';
+import {
+  buildDishes,
+  planCurve,
+  planFor,
+  type Capacity,
+  type Dish,
+  type Plan,
+  type PlanInput,
+  type PlanMode,
+  type Resource,
+} from '../../lib/xpPlan';
 import {
   PRE_ASCENSION_MAX_LEVEL,
   LEVELS_PER_ASCENSION,
@@ -136,13 +150,55 @@ function dishIcon(name: string): string | undefined {
   return (FOOD_ICONS as Record<string, string>)[name];
 }
 
-function buildingLabel(key: Building): string {
-  return BUILDINGS.find((b) => b.key === key)?.label ?? key;
+function resourceLabel(r: Resource): string {
+  if (r === 'Fishing') return 'Рыбалка (забросы)';
+  if (r === 'Fish Market') return 'Fish Market';
+  if (r === 'Traps') return 'Ловушки на раков (часы)';
+  return BUILDINGS.find((b) => b.key === r)?.label ?? r;
 }
 
-function PlanDetails({ plan, hoursPerDay }: { plan: Plan; hoursPerDay: number }) {
+/** Из чего складывается цена блюда: ингредиенты (в том числе заготовки) с ценой, у сырой рыбы — наживка и заброс. */
+function Breakdown({ dish, prices }: { dish: Dish; prices: Record<string, number | null> }) {
+  if (dish.kind === 'fish') {
+    const bait = Object.keys(dish.needs)[0];
+    const baitPrice = bait ? prices[bait] : null;
+    return (
+      <span className="gc-xpp-breakdown">
+        {bait && baitPrice != null && <>наживка {bait} ≈ <FlowerAmount compact value={baitPrice} /> · </>}
+        заброс ≈ <FlowerAmount compact value={Math.max(0, dish.cost - (baitPrice ?? 0))} />
+      </span>
+    );
+  }
+  const recipe = RECIPE_BY_NAME.get(dish.name);
+  if (!recipe) return null;
+  const parts = recipe.ingredients
+    .map(([name, amount]) => {
+      const unit = RECIPE_BY_NAME.has(name) ? recipeCost(name, prices).cost : prices[name];
+      return { name, amount, total: unit != null ? unit * amount : null };
+    })
+    .filter((p) => p.total != null && p.total > 0)
+    .sort((a, b) => (b.total ?? 0) - (a.total ?? 0))
+    .slice(0, 4);
+  return (
+    <span className="gc-xpp-breakdown">
+      {parts.map((p, i) => (
+        <span key={p.name}>
+          {i > 0 && ' + '}
+          {p.amount > 1 ? `${p.amount}× ` : ''}
+          {p.name} ≈ <FlowerAmount compact value={p.total!} />
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function PlanDetails({ plan, capacity, prices }: { plan: Plan; capacity: Capacity; prices: Record<string, number | null> }) {
   const rows = plan.cooking.allocations.filter((a) => a.count >= 0.5);
   const vipDishes = Object.entries(plan.free.dishes);
+  const loads = (Object.entries(plan.cooking.loads) as [Resource, number][]).filter(([, used]) => used > 1e-6);
+  const prep = Object.entries(plan.cooking.prep)
+    .filter(([, n]) => n >= 0.5)
+    .sort((x, y) => y[1] - x[1]);
   return (
     <>
       {vipDishes.length > 0 && (
@@ -163,46 +219,83 @@ function PlanDetails({ plan, hoursPerDay }: { plan: Plan; hoursPerDay: number })
                 ; приготовить их стоило бы ≈ <FlowerAmount compact value={plan.free.value} />
               </>
             )}
-            . Эти блюда уже учтены: готовить нужно только остальной опыт.
+            . Эти блюда уже учтены: добирать нужно только остальной опыт.
           </span>
         </div>
       )}
       {rows.length === 0 ? (
         <p className="gc-calc-note">Готовить ничего не нужно — опыта хватает за счёт бесплатных блюд.</p>
       ) : (
-        <div className="gc-calc-table-wrap">
-          <table className="gc-calc-table gc-xpp-table">
-            <thead>
-              <tr>
-                <th>Здание</th>
-                <th>Блюдо</th>
-                <th>Сколько</th>
-                <th>Время работы</th>
-                <th>Опыт</th>
-                <th>Цена</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((a) => (
-                <tr key={a.dish.recipe.name}>
-                  <td data-label="Здание">{buildingLabel(a.dish.building)}</td>
-                  <td data-label="Блюдо">
-                    <span className="gc-xpp-dish">
-                      {dishIcon(a.dish.recipe.name) && <img src={dishIcon(a.dish.recipe.name)} alt="" />}
-                      {a.dish.recipe.name}
-                    </span>
-                  </td>
-                  <td className="gc-calc-num" data-label="Сколько">× {fmt(a.count)}</td>
-                  <td className="gc-calc-num" data-label="Время работы">
-                    {a.hours >= hoursPerDay * 2 ? `${Math.round(a.hours / hoursPerDay)} дн.` : `${Math.round(a.hours)} ч`}
-                  </td>
-                  <td className="gc-calc-num" data-label="Опыт">{fmt(a.xp)}</td>
-                  <td className="gc-calc-num" data-label="Цена">≈ <FlowerAmount compact value={a.cost} /></td>
+        <>
+          <div className="gc-calc-table-wrap">
+            <table className="gc-calc-table gc-xpp-table">
+              <thead>
+                <tr>
+                  <th>Где</th>
+                  <th>Что</th>
+                  <th>Сколько</th>
+                  <th>Опыт</th>
+                  <th>За штуку</th>
+                  <th>Цена</th>
                 </tr>
+              </thead>
+              <tbody>
+                {rows.map((a) => (
+                  <tr key={a.dish.name}>
+                    <td data-label="Где">{resourceLabel(a.dish.group)}</td>
+                    <td data-label="Что">
+                      <span className="gc-xpp-dish">
+                        {dishIcon(a.dish.name) && <img src={dishIcon(a.dish.name)} alt="" />}
+                        {a.dish.name}
+                        {a.dish.kind === 'fish' && <span className="gc-calc-note"> (сырая рыба)</span>}
+                      </span>
+                      <Breakdown dish={a.dish} prices={prices} />
+                    </td>
+                    <td className="gc-calc-num" data-label="Сколько">× {fmt(a.count)}</td>
+                    <td className="gc-calc-num" data-label="Опыт">{fmt(a.xp)}</td>
+                    <td className="gc-calc-num" data-label="За штуку">≈ <FlowerAmount compact value={a.dish.cost} /></td>
+                    <td className="gc-calc-num" data-label="Цена">≈ <FlowerAmount compact value={a.cost} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {prep.length > 0 && (
+            <p className="gc-calc-note gc-xpp-prep">
+              <b>Заготовки</b> (готовятся в тех же зданиях, время уже учтено):{' '}
+              {prep.map(([name, n], i) => (
+                <span key={name} className="gc-xpp-vip-dish">
+                  {dishIcon(name) && <img src={dishIcon(name)} alt="" />}
+                  {name} × {fmt(n)}
+                  {i < prep.length - 1 ? ',' : ''}
+                </span>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </p>
+          )}
+
+          {loads.length > 0 && (
+            <div className="gc-xpp-loads">
+              <b>Загрузка за срок</b>
+              {loads.map(([r, used]) => {
+                const total = (capacity[r] ?? 0) * plan.days;
+                const pct = total > 0 ? Math.min(100, (used / total) * 100) : 0;
+                const unit = r === 'Fishing' ? 'бросков' : 'ч';
+                return (
+                  <div key={r} className="gc-xpp-load">
+                    <span className="gc-xpp-load-name">{resourceLabel(r)}</span>
+                    <span className="gc-xpp-load-bar">
+                      <span style={{ width: `${pct}%` }} />
+                    </span>
+                    <span className="gc-xpp-load-val">
+                      {fmt(used)} / {fmt(total)} {unit} ({Math.round(pct)}%)
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
     </>
   );
@@ -222,6 +315,10 @@ export default function XpCalculator() {
   const [timeBoosts, setTimeBoosts] = useState<TimeBoosts>(NO_TIME_BOOSTS);
   const [enabled, setEnabled] = useState<Building[]>(BUILDINGS.map((b) => b.key));
   const [hoursPerDay, setHoursPerDay] = useState(24);
+  const [fishingOn, setFishingOn] = useState(true);
+  const [castsPerDay, setCastsPerDay] = useState(20);
+  const [trapSpots, setTrapSpots] = useState(4);
+  const [fishing, setFishing] = useState<FishingBoosts>(NO_FISHING_BOOSTS);
   const [stretch, setStretch] = useState(3);
   const [mode, setMode] = useState<PlanMode>('balanced');
   const [customDays, setCustomDays] = useState(100);
@@ -264,15 +361,28 @@ export default function XpCalculator() {
     () => (marketPrices && coinRate !== undefined ? withBaitPrices(marketPrices, coinRate) : null),
     [marketPrices, coinRate],
   );
-  const dishes = useMemo(() => (prices ? buildDishes(prices, xpBoosts, timeBoosts) : []), [prices, xpBoosts, timeBoosts]);
+  const dishes = useMemo(
+    () => (prices ? buildDishes({ prices, coinRate, xpBoosts, timeBoosts, fishing }) : []),
+    [prices, coinRate, xpBoosts, timeBoosts, fishing],
+  );
+  const capacity: Capacity = useMemo(() => {
+    const c: Capacity = {};
+    for (const b of enabled) c[b] = hoursPerDay;
+    if (fishingOn && castsPerDay > 0) {
+      c.Fishing = castsPerDay;
+      c['Fish Market'] = hoursPerDay;
+      if (trapSpots > 0) c.Traps = trapSpots * 24;
+    }
+    return c;
+  }, [enabled, hoursPerDay, fishingOn, castsPerDay, trapSpots]);
   const vip = xpBoosts.vip;
 
   const input: PlanInput | null = useMemo(
     () =>
-      prices && dishes.length > 0 && enabled.length > 0
-        ? { startXp: experience, targetXp, ascended: hasAscended, dishes, enabled, xpBoosts, vip, prices, hoursPerDay }
+      prices && dishes.length > 0 && Object.keys(capacity).length > 0
+        ? { startXp: experience, targetXp, ascended: hasAscended, dishes, capacity, xpBoosts, vip, prices }
         : null,
-    [prices, dishes, enabled, experience, targetXp, hasAscended, xpBoosts, vip, hoursPerDay],
+    [prices, dishes, capacity, experience, targetXp, hasAscended, xpBoosts, vip],
   );
   const curve = useMemo(() => (input && remaining > 0 ? planCurve(input, stretch) : null), [input, remaining, stretch]);
   const plan: Plan | null =
@@ -413,8 +523,34 @@ export default function XpCalculator() {
                     <span>{b.icon} {b.label}</span>
                   </label>
                 ))}
+                <label className="gc-xpp-chip">
+                  <input type="checkbox" checked={fishingOn} onChange={(e) => setFishingOn(e.target.checked)} />
+                  <span>🎣 Рыбалка</span>
+                </label>
               </div>
             </div>
+            <label className="gc-calc-field">
+              <span>Забросов удочки в сутки</span>
+              <input
+                type="number"
+                min={0}
+                value={castsPerDay}
+                disabled={!fishingOn}
+                onChange={(e) => setCastsPerDay(Math.max(0, Math.floor(Number(e.target.value) || 0)))}
+              />
+              <small>Дневной лимит игры — 20; он растёт от навыков Fisherman и предметов (Angler Waders, Nautilus и др.).</small>
+            </label>
+            <label className="gc-calc-field">
+              <span>Мест под ловушки на раков</span>
+              <select value={trapSpots} disabled={!fishingOn} onChange={(e) => setTrapSpots(Number(e.target.value))}>
+                <option value={0}>нет ловушек</option>
+                <option value={1}>1 — базовый остров</option>
+                <option value={2}>2 — Лепестковый рай</option>
+                <option value={3}>3 — Пустыня</option>
+                <option value={4}>4 — Вулкан и выше</option>
+              </select>
+              <small>Нужны для блюд с Crab Stick (Creamy Crab Bite): раков ловят в Crab Pot и Mariner Pot.</small>
+            </label>
             <label className="gc-calc-field">
               <span>Сколько часов в сутки здания готовят</span>
               <select value={hoursPerDay} onChange={(e) => setHoursPerDay(Number(e.target.value))}>
@@ -439,6 +575,7 @@ export default function XpCalculator() {
 
           <TimeBoostsPanel boosts={timeBoosts} onChange={setTimeBoosts} />
           <XpBoostsPanel boosts={xpBoosts} onChange={setXpBoosts} />
+          {fishingOn && <FishingBoostsWidget boosts={fishing} onChange={setFishing} prices={marketPrices} coinRate={coinRate} />}
         </div>
       )}
 
@@ -448,8 +585,8 @@ export default function XpCalculator() {
           <h2 className="gc-calc-h2">План прокачки</h2>
           {!prices ? (
             <p className="gc-calc-note">Загружаю цены…</p>
-          ) : enabled.length === 0 ? (
-            <p className="gc-calc-note">Отметьте хотя бы одно здание.</p>
+          ) : Object.keys(capacity).length === 0 ? (
+            <p className="gc-calc-note">Отметьте хотя бы одно здание или рыбалку.</p>
           ) : dishes.length === 0 ? (
             <p className="gc-calc-note">Не удалось посчитать цены блюд — попробуйте позже.</p>
           ) : !curve ? (
@@ -513,7 +650,7 @@ export default function XpCalculator() {
                       <div className="gc-calc-kpi-value">{fmt(plan.cooked)}</div>
                     </div>
                   </div>
-                  <PlanDetails plan={plan} hoursPerDay={hoursPerDay} />
+                  <PlanDetails plan={plan} capacity={capacity} prices={prices} />
                 </>
               ) : null}
             </>
@@ -523,7 +660,8 @@ export default function XpCalculator() {
             <li>Цена — по floor-ценам ингредиентов на маркетплейсе (рыбные наживки — по себестоимости); цена масла не входит.</li>
             <li>Здания готовят непрерывно все выбранные часы в сутки; число блюд округлено, поэтому сроки приблизительны.</li>
             <li>Блюда, у которых нет цены на какой-то ингредиент (например, из Magic Mushroom), в план не попадают; блюда новой главы, которых ещё нет в игре, тоже.</li>
-            <li>Сырая и выдержанная рыба в расчёт пока не входит.</li>
+            <li>Рыба: сырая ловится на «гарантирующую» наживку (самую дешёвую для неё) и съедается сразу; рыбные блюда используют наживку Fish Flake/Stick/Oil/Crab Stick. Забросы тратятся и на саму рыбу, и на рыбу для наживок; изготовление наживок занимает Fish Market. Выдержанная рыба (Aging Shed) и случайный улов без наживки не учитываются; блюда с Crab Stick (Creamy Crab Bite) берут время ловушек: раки, их цену и приманки считаем по разделу «Раки», Crab — по цене продажи Бетти (доступность не ограничиваем).</li>
+            <li>Заготовки из рецептов (Cheese, Mashed Potato и т. п.) готовятся в тех же зданиях, и их время входит в загрузку.</li>
             <li>Ежедневное VIP-блюдо считается за каждые полные сутки срока; его уровень оценивается по равномерному росту опыта.</li>
           </ul>
         </div>

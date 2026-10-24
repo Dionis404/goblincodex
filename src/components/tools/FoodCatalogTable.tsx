@@ -7,10 +7,12 @@ import { useCoinRate } from '../../lib/useCoinRate';
 import { NO_FISHING_BOOSTS, fishUnitCost, type FishTier } from '../../lib/fishYield';
 import {
   BUILDINGS,
+  FISH_BASE_XP,
   FOOD_ALL_PRICE_NAMES,
   NO_TIME_BOOSTS,
   NO_XP_BOOSTS,
   fishXpMultiplier,
+  foodXp,
   recipeCost,
   timeMultiplier,
   withBaitPrices,
@@ -113,16 +115,6 @@ function PartialPriceInfo({ missing }: { missing: string[] }) {
  * (getAgingMaxXP / getAgingSaltCost / getAgingTimeMs) — см. также FishAgingTable.tsx
  * и src/content/mechanics/fish-aging.md.
  */
-const FISH_BASE_XP: Record<string, number> = {
-  Anchovy: 80, 'Red Snapper': 100, Butterflyfish: 110, 'Sea Bass': 140, Blowfish: 170,
-  'Olive Flounder': 180, Napoleanfish: 180, Tilapia: 190, Tuna: 200, 'Mahi Mahi': 200,
-  'Blue Marlin': 200, 'Football fish': 200, Sunfish: 200, 'Sea Horse': 240, Halibut: 220,
-  'Moray Eel': 220, 'Zebra Turkeyfish': 220, Oarfish: 220, Clownfish: 210, Surgeonfish: 210,
-  Walleye: 210, Weakfish: 210, 'Horse Mackerel': 250, Squid: 250, Angelfish: 250, Porgy: 250,
-  Muskellunge: 250, Cobia: 310, 'Rock Blackfish': 320, Trout: 330, Coelacanth: 410, Ray: 430,
-  Parrotfish: 440, 'Barred Knifejaw': 580, 'Hammerhead shark': 750, 'Whale Shark': 1370,
-  'Saw Shark': 1920, 'White Shark': 2000,
-};
 
 const PRIME_AGED_XP_MULTIPLIER = 1.3;
 
@@ -215,7 +207,7 @@ function BuildingTable({
       const tMult = timeMultiplier(r, timeBoosts);
       const xMult = xpMultiplier(r, xpBoosts);
       const boostedSeconds = r.cookingSeconds * tMult;
-      const boostedXp = r.experience * xMult;
+      const boostedXp = foodXp(r, xpBoosts);
       const xpPerHour = boostedSeconds > 0 ? (boostedXp / boostedSeconds) * 3600 : Infinity;
       const { cost, missing } = prices ? recipeCost(r.name, prices) : { cost: null, missing: [] as string[] };
       const xpPerFlower = cost != null && cost > 0 ? boostedXp / cost : null;
