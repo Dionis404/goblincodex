@@ -156,14 +156,23 @@
   }
 }
 
-.ref-npc-target {
-  display: flex;
-  flex-wrap: wrap;
+
+/* Картинки NPC (public/sprites/npcs/<имя>.webp|png) */
+.ref-npc-who {
+  display: inline-flex;
   align-items: center;
-  gap: 8px 18px;
-  margin-top: 12px;
-  padding: 12px 14px;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  font-size: 14px;
+  gap: 8px;
+}
+.ref-npc-avatar {
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+.ref-npc-avatar--sm {
+  width: 36px;
+  height: 36px;
+}
+.ref-npc-avatar--lg {
+  width: 64px;
+  height: 64px;
 }

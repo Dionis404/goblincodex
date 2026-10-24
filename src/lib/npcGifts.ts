@@ -21,6 +21,14 @@ export function npcLabel(npc: string): string {
   return npc.replace(/(^|\s)(\S)/g, (_, space: string, ch: string) => space + ch.toUpperCase());
 }
 
+/**
+ * Имя файла картинки NPC без расширения: «pumpkin' pete» → «pumpkin_pete».
+ * Картинки лежат в public/sprites/npcs/<имя>.webp (или .png).
+ */
+export function npcImageName(npc: string): string {
+  return npc.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
 /** Бонус очков за подарок от навыка Blossom Bonding по рангу. */
 export function blossomBonus(rank: SkillRank): number {
   return rank === 0 ? 0 : (flowerSkillValues('Blossom Bonding')[rank - 1] ?? 0);
@@ -124,14 +132,6 @@ export function milestones(npc: string, repeatsShown = 2): Milestone[] {
     out.push({ points: last + k * g.repeats.friendshipPoints, gift: g.repeats, repeating: true });
   }
   return out;
-}
-
-/** Очки дружбы, при которых даётся k-я повторная награда (k = 1, 2, …; повторы бесконечны). */
-export function repeatThreshold(npc: string, k: number): number | null {
-  const g = NPC_GIFTS[npc];
-  if (!g || k < 1) return null;
-  const last = Math.max(...g.planned.map((x) => x.friendshipPoints));
-  return last + k * g.repeats.friendshipPoints;
 }
 
 /** Награда, которая повторяется бесконечно после запланированных. */
