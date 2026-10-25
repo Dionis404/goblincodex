@@ -15,6 +15,7 @@
     "sfl:sync-sprites": "tsx scripts/sync-sprites.ts",
     "sfl:sync-fish": "tsx scripts/sync-fish-data.ts",
     "sfl:sync-composter": "tsx scripts/sync-composter-data.ts",
+    "sfl:sync-fermentation": "tsx scripts/sync-fermentation-data.ts",
     "sfl:sync-flowers": "tsx scripts/sync-flower-data.ts",
     "sfl:sync-npc-gifts": "tsx scripts/sync-npc-gift-data.ts",
     "sfl:sync-skill-icons": "tsx scripts/sync-skill-icons.ts",

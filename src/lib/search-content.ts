@@ -4,6 +4,7 @@ import { TOOLS } from './toolCosts';
 import { SELLABLES } from './coinRate';
 import { CRUSTACEAN_LOOKUP, FISH_RECORDS, GUARANTEED_CATCH, WATER_TRAPS } from './fishData.generated';
 import { COMPOSTERS, COMPOST_RECIPES, COMPOSTER_BUILDINGS, WORM_AMOUNTS } from './composterData.generated';
+import { BAIT_FAMILIES, FERMENTATION_RECIPES, SPICE_RACK_RECIPES } from './fermentationData.generated';
 import { FLOWER_SEEDS, FLOWER_RECIPES, CROSSBREED_AMOUNTS } from './flowerData.generated';
 import { FLOWER_POINTS, NPC_FLOWER_BONUSES, NPC_GIFTS } from './npcGiftData.generated';
 
@@ -166,6 +167,24 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
       ).join('. ') +
       '. Sprout Mix даёт +0,2 к урожаю с грядок, Fruitful Blend +0,1 к урожаю плодовых деревьев, Rapid Root сокращает рост на грядках на 50%. ' +
       'Бусты: Efficient Bin, Turbo Charged, Premium Worms, Composting Revamp, Turd Topper (больше компоста), Wormy Treat, Composting Overhaul, Bucket O Worms, Saw Fish, Deep Sea Slug (больше червей), Soil Krabby и Swift Decomposer (быстрее).',
+  },
+  {
+    id: 'fermentation',
+    title: 'Ферментация и специи',
+    summary:
+      'ферментация, сарай выдержки, Aging Shed, стойка ферментации, стойка специй, маринады, Pickled Radish, Pickled Zucchini, Pickled Tomato, Pickled Broccoli, Pickled Onion, Pickled Pepper, Refined Salt, Salt Lick, Honey Treat, Truffle Seasoning, Greenhouse Glow, Greenhouse Goodie, Sproutroot Surprise, Turbofruit Mix, Capsule Bait, Umbrella Bait, Crimson Baitfish, соль из водорослей, Ager, Refiner, Bacalhau, Astrolabe, Salt Bottle Onesie, рецепты, цены, бусты',
+    context:
+      'Стойки Aging Shed. Ферментация: ' +
+      FERMENTATION_RECIPES.map((r) =>
+        `${r.name} (${Object.entries(r.ingredients).map(([i, n]) => `${n} ${i}`).join(' + ')} → ${Object.entries(r.outputs).map(([i, n]) => `${n} ${i}`).join(' + ')}, ${r.seconds / 60} мин)`,
+      ).join('; ') +
+      '. Наживки: ' +
+      BAIT_FAMILIES.map((f) => `${f.bait} — 1 Aged или Prime Aged рыба (${f.fishTier}) + маринад ${f.pickles.join(' или ')}, 5 наживки из Aged и 10 из Prime Aged`).join('; ') +
+      '. Специи: ' +
+      SPICE_RACK_RECIPES.map((r) =>
+        `${r.name} (${Object.entries(r.ingredients).map(([i, n]) => `${n} ${i}`).join(' + ')} → ${Object.entries(r.outputs).map(([i, n]) => `${n} ${i}`).join(' + ')}, ${r.seconds / 60} мин)`,
+      ).join('; ') +
+      '. Бусты: Ager ×2/×3/×4 к выходу и расходу, Refiner шанс +1 Refined Salt, Bacalhau +1/+2/+3 к наживке, Astrolabe 15% удвоить выход, Salt Bottle Onesie +1 на стойке специй.',
   },
   {
     id: 'flowers',

@@ -4,6 +4,7 @@ import FoodCatalogTable from './tools/FoodCatalogTable';
 import ToolCostCalculator from './tools/ToolCostCalculator';
 import FishCatalog from './tools/FishCatalog';
 import ComposterCosts from './tools/ComposterCosts';
+import FermentationRecipes from './tools/FermentationRecipes';
 import FlowerRecipes from './tools/FlowerRecipes';
 import NpcGifts from './tools/NpcGifts';
 import CrustaceanCosts from './tools/CrustaceanCosts';
@@ -1436,6 +1437,29 @@ function CompostSection() {
   );
 }
 
+function FermentationSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        В <strong>Aging Shed</strong> три стойки. Здесь — две из них: <strong>ферментация</strong> (маринады из
+        урожая и соли, соль из отходов, теплица Greenhouse Glow/Goodie, смеси для грядок и наживки из
+        выдержанной рыбы) и <strong>специи</strong> (Refined Salt, Salt Lick, Honey Treat, Truffle Seasoning).
+        Выдержка самой рыбы — в разделе «Еда и готовка». Слотов на каждой стойке по одному на уровень
+        Aging Shed, максимум 6.
+      </p>
+      <p className="ref-section-desc">
+        Цена — по floor-ценам ингредиентов; предметы без рынка (маринады, Refined Salt) считаются по
+        себестоимости рецепта (значок «≈»), Crab — по цене продажи Бетти. Бусты включаются на панели ниже.
+        <strong> Ager</strong> умножает и выход, и расход, поэтому цена штуки не меняется, зато слот даёт
+        больше за то же время; Astrolabe и Refiner показаны в среднем (математическое ожидание), а Refiner
+        работает только для Refined Salt. Наживка из выдержанной рыбы: берётся самая дешёвая по соли рыба
+        ранга, а Prime Aged рыба даёт вдвое больше наживки при той же цене рецепта.
+      </p>
+      <FermentationRecipes />
+    </section>
+  );
+}
+
 function FlowerSection() {
   return (
     <section className="ref-section">
@@ -1476,6 +1500,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'bait', icon: '🎣', label: 'Рыбалка', Content: BaitFishSection },
   { id: 'crustaceans', icon: '🦀', label: 'Раки', Content: CrustaceanSection },
   { id: 'compost', icon: '🪱', label: 'Компостер', Content: CompostSection },
+  { id: 'fermentation', icon: '🫙', label: 'Ферментация и специи', Content: FermentationSection },
   { id: 'flowers', icon: '🌸', label: 'Цветы', Content: FlowerSection },
   { id: 'npcgifts', icon: '🎁', label: 'Подарки NPC', Content: NpcGiftSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },
