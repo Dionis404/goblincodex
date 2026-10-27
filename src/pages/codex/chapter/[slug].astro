@@ -96,9 +96,14 @@ const now = Date.now();
       {prevChapter ? (
         <a href={`/codex/chapter/${prevChapter.slug}`} class="gc-btn-secondary">← Глава {prevChapter.order}: {prevChapter.name}</a>
       ) : <span />}
-      {nextChapter ? (
-        <a href={`/codex/chapter/${nextChapter.slug}`} class="gc-btn-secondary">Глава {nextChapter.order}: {nextChapter.name} →</a>
-      ) : <span />}
+      <div class="gc-chapter-nav-right">
+        {isUpcoming && (
+          <a href="/codex/chapter/auction-tiers" class="gc-btn-primary">📊 Тиры аукционов</a>
+        )}
+        {nextChapter && (
+          <a href={`/codex/chapter/${nextChapter.slug}`} class="gc-btn-secondary">Глава {nextChapter.order}: {nextChapter.name} →</a>
+        )}
+      </div>
     </div>
 
     <h2 class="gc-chapter-section-title">💎 Предметы главы</h2>
@@ -145,7 +150,9 @@ const now = Date.now();
 
     <h2 class="gc-chapter-section-title">🔨 Аукционы главы</h2>
     {isUpcoming && (
-      <p class="gc-chapter-tiers-link"><a href="/codex/chapter/auction-tiers">📊 Тиры предметов аукционов этой главы →</a></p>
+      <p class="gc-chapter-tiers-link">
+        <a href="/codex/chapter/auction-tiers" class="gc-btn-secondary">📊 Тиры предметов аукционов: какие самые ценные →</a>
+      </p>
     )}
 
     {chapterAuctions.length === 0 ? (
@@ -175,7 +182,7 @@ const now = Date.now();
 
 .gc-chapter-meta-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -200,7 +207,8 @@ const now = Date.now();
   margin-top: 40px;
 }
 .gc-chapter-section-title:first-of-type { margin-top: 0; }
-.gc-chapter-tiers-link { margin: -6px 0 14px; font-size: 14px; }
+.gc-chapter-nav-right { display: flex; gap: 12px; flex-wrap: wrap; }
+.gc-chapter-tiers-link { margin: -4px 0 18px; }
 
 /* ── Предметы главы — те же карточки, что и на живой /codex?tab=chapter ── */
 .gc-chapter-items-grid {
@@ -300,5 +308,6 @@ const now = Date.now();
 
 @media (max-width: 640px) {
   .gc-chapter-nav { flex-direction: column; align-items: stretch; }
+  .gc-chapter-nav-right { flex-direction: column; }
 }
 </style>
