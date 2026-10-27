@@ -265,9 +265,36 @@ const CHAPTER_ITEM_NAMES: Record<string, string> = {
   "Astrolabe": "chapter-ascension-age",
   "Ascension Monument": "chapter-ascension-age",
   "Otty the Otter": "chapter-ascension-age",
+  // Cave Dwellers — Stella's Megastore (CAVE_DWELLERS_ITEMS в megastore.ts;
+  // Hourglass не тегируются, см. выше)
+  "Duende Shoes": "chapter-cave-dwellers",
+  "Duende Pants": "chapter-cave-dwellers",
+  "Duende Shirt": "chapter-cave-dwellers",
+  "Duende Hat": "chapter-cave-dwellers",
+  "Straw House": "chapter-cave-dwellers",
+  "Duende Monument": "chapter-cave-dwellers",
+  "Mining Drill": "chapter-cave-dwellers",
+  // Cave Dwellers — декорации главы (decorations.ts), крафт (crafting.ts
+  // CHAPTER_CRAFTING_ITEMS) и аура (bumpkin.ts ITEM_IDS)
+  "Giant Truffle": "chapter-cave-dwellers",
+  "Piggy Bank": "chapter-cave-dwellers",
+  "Stick House": "chapter-cave-dwellers",
+  "Brick House": "chapter-cave-dwellers",
+  "Big Bad Wolf": "chapter-cave-dwellers",
+  "Pig Plush": "chapter-cave-dwellers",
+  "Pig Doll": "chapter-cave-dwellers",
+  "Firefly Aura": "chapter-cave-dwellers",
+  // Cave Dwellers — мутанты и марвелы главы (chapterMutants.ts)
+  "Mushroom Chicken": "chapter-cave-dwellers",
+  "Ladybug Cow": "chapter-cave-dwellers",
+  "Beetle Sheep": "chapter-cave-dwellers",
+  "Cyclops Bloom": "chapter-cave-dwellers",
+  "Manatee": "chapter-cave-dwellers",
+  "Betta": "chapter-cave-dwellers",
+  "Macropinna": "chapter-cave-dwellers",
 };
 
-/** Chapter banners (`${ChapterName} Banner`) — chapter.ts CHAPTER_BANNERS, one per chapter (all 14). */
+/** Chapter banners (`${ChapterName} Banner`) — chapter.ts CHAPTER_BANNERS, one per chapter. */
 const CHAPTER_BANNER_NAMES: Record<string, string> = {
   "Solar Flare Banner": "chapter-solar-flare",
   "Dawn Breaker Banner": "chapter-dawn-breaker",
@@ -284,6 +311,7 @@ const CHAPTER_BANNER_NAMES: Record<string, string> = {
   "Crabs and Traps Banner": "chapter-crabs-and-traps",
   "Salt Awakening Banner": "chapter-salt-awakening",
   "Ascension Age Banner": "chapter-ascension-age",
+  "Cave Dwellers Banner": "chapter-cave-dwellers",
 };
 
 /**

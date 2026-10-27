@@ -276,7 +276,9 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
       'Таблица шансов улова редких морских существ — "марвелов" — в зависимости от типа рыбы. ' +
       'Марвелы текущей главы: Crocodile (ловится на Red Snapper 0.5% и Moray Eel 1.5%), Dumbo Octopus ' +
       '(Olive Flounder 0.5%, Napoleanfish 0.5%), Seahorse Dad (Angelfish 0.1%, Porgy 1%). Марвелы прошлой ' +
-      'главы: Crystal Shrimp, Deep Sea Slug, Deep Sea Pig. Плюс базовые марвелы вроде Starlight Tuna.',
+      'главы: Crystal Shrimp, Deep Sea Slug, Deep Sea Pig. Плюс базовые марвелы вроде Starlight Tuna. ' +
+      'Глава 16 Cave Dwellers (старт 2 ноября 2026): марвелы Manatee, Betta, Macropinna уже есть в коде игры, ' +
+      'но на какую рыбу они ловятся, пока неизвестно; Macropinna даёт +0,1 Obsidian в Lava Pit.',
   },
   {
     id: 'food',

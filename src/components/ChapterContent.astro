@@ -6,12 +6,14 @@
 import { getCollection } from 'astro:content';
 import ChapterAuctions from './ChapterAuctions.tsx';
 import { fetchAuctionsInRange } from '../lib/auctionsApi';
-import { getCurrentChapter } from '../lib/chapters';
+import { getCurrentChapter, getUpcomingChapter } from '../lib/chapters';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
 import { sectionHref } from '../lib/subdomains';
 
 const currentChapter = getCurrentChapter();
+// За две недели до старта следующей главы показываем её предметы отдельным блоком.
+const upcomingChapter = getUpcomingChapter();
 
 // Компонент подключается и на /chapter основного домена, и внутри /codex.
 // Когда поддомены включены (см. src/lib/subdomains.ts), ссылки на гайды
@@ -37,11 +39,15 @@ const auctions = currentChapter
   : [];
 const now = Date.now();
 
-const chapterItems = currentChapter
-  ? Object.values(itemCatalog)
-      .filter((i) => i.tags?.includes(`chapter-${currentChapter.slug}`))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  : [];
+const itemsOf = (slug: string) =>
+  Object.values(itemCatalog)
+    .filter((i) => i.tags?.includes(`chapter-${slug}`))
+    .sort((a, b) => a.name.localeCompare(b.name));
+const chapterItems = currentChapter ? itemsOf(currentChapter.slug) : [];
+const upcomingItems = upcomingChapter ? itemsOf(upcomingChapter.slug) : [];
+const upcomingStart = upcomingChapter
+  ? new Date(upcomingChapter.startDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'UTC' })
+  : '';
 
 // Карточки-кнопки, открывающие гайд по механике в модалке —
 // сама модалка вынесена в отдельный ChapterMechanicModal.astro
@@ -103,6 +109,47 @@ const MECHANIC_CARDS = [
   )}
 </section>
 
+{upcomingChapter && (
+  <section class="gc-chapter-section">
+    <h2 class="gc-block-title-lg">🔜 Скоро: глава {upcomingChapter.order} — {upcomingChapter.name}</h2>
+    <p class="gc-chapter-upcoming-desc">
+      Старт {upcomingStart}. Валюта главы — {upcomingChapter.ticket}, артефакт — {upcomingChapter.artifact}.
+      Предметы и бонусы взяты из кода игры до старта и ещё могут поменяться.
+    </p>
+    {upcomingItems.length > 0 ? (
+      <div class="gc-chapter-items-grid">
+        {upcomingItems.map((item) => (
+          <div class="gc-chapter-item-card">
+            <div class="gc-chapter-item-sprite">
+              {item.sprite ? (
+                <img src={`/sprites/${item.sprite}`} alt={item.name} loading="lazy" />
+              ) : (
+                <span class="gc-chapter-item-sprite-placeholder">?</span>
+              )}
+            </div>
+            <div class="gc-chapter-item-info">
+              <div class="gc-chapter-item-name">{item.name}</div>
+              {item.boosts.length > 0 ? (
+                <div class="gc-chapter-item-boosts">
+                  {item.boosts.map((b) => (
+                    <span class={`gc-chapter-item-boost gc-chapter-item-boost--${b.labelType}`}>
+                      {b.shortDescriptionRu || b.shortDescription}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span class="gc-chapter-item-no-boost">Без бонусов</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="gc-guides-empty">Предметы новой главы появятся здесь, как только попадут в базу.</div>
+    )}
+  </section>
+)}
+
 <!-- ── Предметы главы ── -->
 <section class="gc-chapter-section">
   <h2 class="gc-block-title-lg">💎 Предметы главы</h2>
@@ -149,6 +196,11 @@ const MECHANIC_CARDS = [
 
 <style>
 .gc-chapter-section { margin-bottom: 40px; }
+.gc-chapter-upcoming-desc {
+  margin: -6px 0 16px;
+  font-size: 14px;
+  color: var(--text-sec);
+}
 .gc-chapter-archive-links {
   display: flex;
   gap: 12px;

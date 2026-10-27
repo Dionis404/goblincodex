@@ -1110,6 +1110,13 @@ const CURRENT_CHAPTER_MARVELS: MarvelRow[] = [
   { marvel: 'Seahorse Dad', marvelIcon: '/sprites/sfts/seahorse_dad.webp', fish: 'Porgy', fishIcon: '/sprites/fish/porgy.png', odds: 1 },
 ];
 
+/** Марвелы главы 16 (Cave Dwellers): уже есть в коде игры, но триггерных рыб и шансов пока нет. */
+const NEXT_CHAPTER_MARVELS: { name: string; icon: string; difficulty: number; note: string }[] = [
+  { name: 'Manatee', icon: '/sprites/sfts/manatee.webp', difficulty: 4, note: 'Предварительно — марвел-талисман главы. Способностей пока нет.' },
+  { name: 'Betta', icon: '/sprites/sfts/betta.webp', difficulty: 3, note: 'Способностей пока нет.' },
+  { name: 'Macropinna', icon: '/sprites/sfts/macropinna.webp', difficulty: 3, note: '+0,1 Obsidian при сборе в Lava Pit.' },
+];
+
 const PREVIOUS_CHAPTER_MARVELS: MarvelRow[] = [
   { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Tuna', fishIcon: '/sprites/fish/tuna.png', odds: 0.8 },
   { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Sea Bass', fishIcon: '/sprites/fish/sea_bass.png', odds: 3 },
@@ -1291,6 +1298,30 @@ function MarvelsSection() {
           <div className="ref-accordion-body">
             <p className="ref-section-desc">Марвел-талисман главы — <strong>Seahorse Dad</strong>.</p>
             <MarvelTable rows={CURRENT_CHAPTER_MARVELS} multiplier={multiplier} />
+          </div>
+        </details>
+
+        <details className="ref-accordion">
+          <summary className="ref-accordion-summary">
+            Скоро: марвелы главы 16 — Cave Dwellers
+            <span className="ref-accordion-count">{NEXT_CHAPTER_MARVELS.length} марвела</span>
+          </summary>
+          <div className="ref-accordion-body">
+            <p className="ref-section-desc">
+              Глава стартует 2 ноября 2026. Три марвела — <strong>Manatee</strong>, <strong>Betta</strong> и{' '}
+              <strong>Macropinna</strong> — уже добавлены в код игры, но триггерных рыб и шансов дропа
+              фрагментов карты там пока нет (у прошлых глав они появлялись в коде ближе к старту), так что
+              на какую рыбу они ловятся, пока неизвестно. Сложность головоломки карты — число в таблице
+              (чем больше, тем сложнее; у Seahorse Dad — 4). Таблицу пополним, как только данные появятся.
+            </p>
+            <div className="ref-bait-fish">
+              {NEXT_CHAPTER_MARVELS.map((m) => (
+                <span className="ref-fish-chip" key={m.name} title={m.note}>
+                  <img className="ref-marvel-icon" src={m.icon} alt="" />
+                  {m.name} · сложность {m.difficulty} · {m.note}
+                </span>
+              ))}
+            </div>
           </div>
         </details>
 
