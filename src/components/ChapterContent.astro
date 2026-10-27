@@ -111,42 +111,16 @@ const MECHANIC_CARDS = [
 
 {upcomingChapter && (
   <section class="gc-chapter-section">
-    <h2 class="gc-block-title-lg">🔜 Скоро: глава {upcomingChapter.order} — {upcomingChapter.name}</h2>
-    <p class="gc-chapter-upcoming-desc">
-      Старт {upcomingStart}. Валюта главы — {upcomingChapter.ticket}, артефакт — {upcomingChapter.artifact}.
-      Предметы и бонусы взяты из кода игры до старта и ещё могут поменяться.
-    </p>
-    {upcomingItems.length > 0 ? (
-      <div class="gc-chapter-items-grid">
-        {upcomingItems.map((item) => (
-          <div class="gc-chapter-item-card">
-            <div class="gc-chapter-item-sprite">
-              {item.sprite ? (
-                <img src={`/sprites/${item.sprite}`} alt={item.name} loading="lazy" />
-              ) : (
-                <span class="gc-chapter-item-sprite-placeholder">?</span>
-              )}
-            </div>
-            <div class="gc-chapter-item-info">
-              <div class="gc-chapter-item-name">{item.name}</div>
-              {item.boosts.length > 0 ? (
-                <div class="gc-chapter-item-boosts">
-                  {item.boosts.map((b) => (
-                    <span class={`gc-chapter-item-boost gc-chapter-item-boost--${b.labelType}`}>
-                      {b.shortDescriptionRu || b.shortDescription}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <span class="gc-chapter-item-no-boost">Без бонусов</span>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <div class="gc-guides-empty">Предметы новой главы появятся здесь, как только попадут в базу.</div>
-    )}
+    <a href={`/codex/chapter/${upcomingChapter.slug}`} class="gc-card gc-card-hover gc-chapter-upcoming">
+      <span class="gc-chapter-upcoming-icon">🔜</span>
+      <span class="gc-chapter-upcoming-body">
+        <span class="gc-chapter-upcoming-title">Скоро: глава {upcomingChapter.order} — {upcomingChapter.name}</span>
+        <span class="gc-chapter-upcoming-desc">
+          Старт {upcomingStart}. Валюта главы — {upcomingChapter.ticket}, артефакт — {upcomingChapter.artifact}.
+          {upcomingItems.length > 0 ? ` Уже известно предметов: ${upcomingItems.length}.` : ''} Предметы и аукционы новой главы →
+        </span>
+      </span>
+    </a>
   </section>
 )}
 
@@ -196,8 +170,29 @@ const MECHANIC_CARDS = [
 
 <style>
 .gc-chapter-section { margin-bottom: 40px; }
+.gc-chapter-upcoming {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  text-decoration: none;
+  color: var(--text);
+}
+.gc-chapter-upcoming-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.gc-chapter-upcoming-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gc-chapter-upcoming-title {
+  font-family: var(--font-head);
+  font-size: 17px;
+  font-weight: 700;
+}
 .gc-chapter-upcoming-desc {
-  margin: -6px 0 16px;
   font-size: 14px;
   color: var(--text-sec);
 }

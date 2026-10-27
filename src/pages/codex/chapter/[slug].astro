@@ -18,10 +18,11 @@ if (!chapter) {
 const startMs = new Date(chapter.startDate).getTime();
 const endMs = new Date(chapter.endDate).getTime();
 
-// Эта страница — архив прошлых глав; у текущей главы уже есть полноценная
-// живая версия на /codex?tab=chapter (баннер, таймер, актуальные аукционы) —
-// не дублируем её здесь, просто уводим туда.
-if (Date.now() < endMs) {
+// Страница показывает прошлые главы (архив) и следующую главу до её старта
+// (превью: предметы из кода игры и объявленные аукционы). У текущей главы уже
+// есть полноценная живая версия на /codex?tab=chapter — туда и уводим.
+const isUpcoming = Date.now() < startMs;
+if (!isUpcoming && Date.now() < endMs) {
   return Astro.redirect('/codex?tab=chapter', 302);
 }
 
@@ -56,15 +57,28 @@ const now = Date.now();
 <BaseLayout
   currentPage="codex"
   title={`Глава ${chapter.order}: ${chapter.name} | GoblinCodex`}
-  description={`${chapter.name} — глава ${chapter.order} Sunflower Land: даты, тикет, артефакт и история аукционов.`}
+  description={isUpcoming
+    ? `${chapter.name} — глава ${chapter.order} Sunflower Land: дата старта, валюта, артефакт, предметы и аукционы новой главы.`
+    : `${chapter.name} — глава ${chapter.order} Sunflower Land: даты, тикет, артефакт и история аукционов.`}
 >
   <div class="gc-content gc-page-enter">
 
-    <a href="/codex/chapter/past" class="gc-btn-secondary gc-past-back">← Все главы</a>
+    {isUpcoming ? (
+      <a href="/codex?tab=chapter" class="gc-btn-secondary gc-past-back">← Текущая глава</a>
+    ) : (
+      <a href="/codex/chapter/past" class="gc-btn-secondary gc-past-back">← Все главы</a>
+    )}
 
     <div class="gc-past-header">
-      <h1 class="gc-page-title">📜 Глава {chapter.order}: {chapter.name}</h1>
-      <p class="gc-past-sub">{formatDate(chapter.startDate)} — {formatDate(chapter.endDate)}</p>
+      <h1 class="gc-page-title">{isUpcoming ? '🔜' : '📜'} Глава {chapter.order}: {chapter.name}</h1>
+      <p class="gc-past-sub">
+        {isUpcoming ? `Старт ${formatDate(chapter.startDate)}, конец ${formatDate(chapter.endDate)}` : `${formatDate(chapter.startDate)} — ${formatDate(chapter.endDate)}`}
+      </p>
+      {isUpcoming && (
+        <p class="gc-past-sub">
+          Глава ещё не началась: предметы и их бонусы взяты из кода игры и до старта могут поменяться.
+        </p>
+      )}
     </div>
 
     <div class="gc-chapter-meta-grid">
@@ -122,7 +136,9 @@ const now = Date.now();
         <div class="gc-past-empty-icon">🚧</div>
         <div class="gc-past-empty-title">Список предметов недоступен</div>
         <p class="gc-past-empty-desc">
-          У глав до Bull Run (глава 8) исходники игры уже не хранят список предметов главы — сохранился только баннер и артефакт выше.
+          {isUpcoming
+            ? 'Предметы новой главы появятся здесь, как только попадут в базу.'
+            : 'У глав до Bull Run (глава 8) исходники игры уже не хранят список предметов главы — сохранился только баннер и артефакт выше.'}
         </p>
       </div>
     )}
@@ -132,13 +148,15 @@ const now = Date.now();
     {chapterAuctions.length === 0 ? (
       <div class="gc-past-empty">
         <div class="gc-past-empty-icon">🚧</div>
-        <div class="gc-past-empty-title">Аукционов не найдено</div>
+        <div class="gc-past-empty-title">{isUpcoming ? 'Расписание ещё не опубликовано' : 'Аукционов не найдено'}</div>
         <p class="gc-past-empty-desc">
-          Либо в этой главе их не было, либо архив API не сохранил данные так далеко назад.
+          {isUpcoming
+            ? 'Аукционы новой главы появятся здесь, как только игра выложит их расписание.'
+            : 'Либо в этой главе их не было, либо архив API не сохранил данные так далеко назад.'}
         </p>
       </div>
     ) : (
-      <ChapterAuctions client:visible auctions={chapterAuctions} chapterName={chapter.name} itemCatalog={itemCatalog} initialNow={now} defaultStatusFilter="ended" />
+      <ChapterAuctions client:visible auctions={chapterAuctions} chapterName={chapter.name} itemCatalog={itemCatalog} initialNow={now} defaultStatusFilter={isUpcoming ? 'all' : 'ended'} />
     )}
 
   </div>
