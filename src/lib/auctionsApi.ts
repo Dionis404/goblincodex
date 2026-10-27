@@ -94,11 +94,25 @@ const AUCTIONS_TTL_MS = 10 * 60 * 1000; // 10 мин — та же полити�
 export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
   const load = async () => {
     const timeoutMs = limit > 100 ? 15000 : 5000;
-    const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?history=true&limit=${limit}`, timeoutMs);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data: ApiAuction[] = await res.json();
-    if (!Array.isArray(data)) throw new Error('unexpected response shape');
-    return data.map(mapAuction);
+    // goblin-api ограничивает limit сверху и на слишком большой отвечает 422
+    // (так история целиком пропадала с сайта). Берём допустимый максимум из
+    // ответа FastAPI (detail[].ctx.le), а если его там нет — уменьшаем лимит.
+    let current = limit;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?history=true&limit=${current}`, timeoutMs);
+      if (res.status === 422 && current > 100) {
+        const body = (await res.json().catch(() => null)) as { detail?: { ctx?: { le?: number } }[] } | null;
+        const le = body?.detail?.find((d) => typeof d.ctx?.le === 'number')?.ctx?.le;
+        current = le && le < current ? le : Math.max(100, Math.floor(current / 2));
+        continue;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: ApiAuction[] = await res.json();
+      if (!Array.isArray(data)) throw new Error('unexpected response shape');
+      if (current !== limit) console.warn(`[auctionsApi] history limit ${limit} отклонён API, использован ${current}`);
+      return data.map(mapAuction);
+    }
+    throw new Error('HTTP 422: limit не принят API');
   };
 
   try {
