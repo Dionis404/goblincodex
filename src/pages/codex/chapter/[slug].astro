@@ -144,6 +144,9 @@ const now = Date.now();
     )}
 
     <h2 class="gc-chapter-section-title">🔨 Аукционы главы</h2>
+    {isUpcoming && (
+      <p class="gc-chapter-tiers-link"><a href="/codex/chapter/auction-tiers">📊 Тиры предметов аукционов этой главы →</a></p>
+    )}
 
     {chapterAuctions.length === 0 ? (
       <div class="gc-past-empty">
@@ -197,6 +200,7 @@ const now = Date.now();
   margin-top: 40px;
 }
 .gc-chapter-section-title:first-of-type { margin-top: 0; }
+.gc-chapter-tiers-link { margin: -6px 0 14px; font-size: 14px; }
 
 /* ── Предметы главы — те же карточки, что и на живой /codex?tab=chapter ── */
 .gc-chapter-items-grid {

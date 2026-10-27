@@ -1,0 +1,240 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCurrentChapter, getUpcomingChapter } from '../../../lib/chapters';
+import { GEM_USD, SUPPLY_EXPONENT, SUPPLY_REFERENCE, analyzeAuctionTiers } from '../../../lib/auctionTiers';
+import type { getCatalogItems } from '../../../lib/db';
+import { getCachedCatalogItems } from '../../../lib/catalog-cache';
+
+export const prerender = false;
+
+// Тиры считаем только для будущих аукционов: за две недели до старта —
+// для следующей главы, после старта — для неё же, пока идут её аукционы.
+const chapter = getUpcomingChapter() ?? getCurrentChapter();
+if (!chapter) return Astro.redirect('/codex?tab=chapter', 302);
+const isUpcoming = new Date(chapter.startDate).getTime() > Date.now();
+
+const analysis = await analyzeAuctionTiers(new Date(chapter.startDate).getTime(), new Date(chapter.endDate).getTime());
+
+let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
+try {
+  const { data: items } = await getCachedCatalogItems();
+  itemCatalog = Object.fromEntries(items.map((i) => [i.name, i]));
+} catch (err) {
+  console.error('[codex/chapter/auction-tiers] DB fetch error:', err);
+}
+
+const usd = (v: number | null) =>
+  v == null ? '—' : `$${v.toLocaleString('ru-RU', { minimumFractionDigits: v < 10 ? 2 : 0, maximumFractionDigits: v < 10 ? 2 : 0 })}`;
+const num = (v: number | null, digits = 0) => (v == null ? '—' : v.toLocaleString('ru-RU', { maximumFractionDigits: digits }));
+const date = (ms: number) => new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as const;
+---
+
+<BaseLayout
+  currentPage="codex"
+  title={`Тиры аукционов: ${chapter.name} | GoblinCodex`}
+  description={`Рейтинг предметов аукционов главы ${chapter.name} Sunflower Land по цене в долларах с поправкой на саплай.`}
+>
+  <div class="gc-content gc-page-enter">
+    <a href={isUpcoming ? `/codex/chapter/${chapter.slug}` : '/codex?tab=chapter'} class="gc-btn-secondary gc-tiers-back">← Глава {chapter.order}</a>
+
+    <div class="gc-tiers-header">
+      <h1 class="gc-page-title">📊 Тиры аукционов</h1>
+      <p class="gc-tiers-sub">Глава {chapter.order}: {chapter.name}</p>
+    </div>
+
+    <details class="gc-card gc-tiers-how">
+      <summary>Как считается тир</summary>
+      <ol>
+        <li>
+          <b>Цена предмета в $.</b> Если предмет уже торгуется на маркетплейсе — его floor в $.
+          Если нет — медиана ставок победителей на его уже прошедших дропах за Flower и Gem: Flower по
+          курсу на момент аукциона, Gem по цене пака (15 500 gems за $129,99, то есть {usd(GEM_USD * 1000)}
+          за 1000 gems). Стартовая цена дропа символическая (1 Flower или 1 Gem), поэтому новый предмет
+          получает цену только после своего первого дропа. Дропы за тикеты главы в цену не входят.
+        </li>
+        <li>
+          <b>Поправка на саплай.</b> Чем меньше штук разыграно на аукционах главы (по всем дропам), тем
+          предмет ценнее: цена × ({SUPPLY_REFERENCE} ÷ саплай)<sup>{SUPPLY_EXPONENT}</sup>. 10 штук — ×1,5,
+          25 — ×1,19, 50 — ×1, 200 — ×0,71.
+        </li>
+        <li>
+          <b>Тир</b> — место в рейтинге по цене с поправкой: на каждом тире один предмет, Тир 1 — самый ценный.
+        </li>
+      </ol>
+      <p class="gc-tiers-note">
+        Курс Flower берётся на момент начала аукциона (аукцион длится 10 минут; время отдельной ставки API
+        не отдаёт). Ставки берутся только у победителей (места до саплая). Рейтинг пересчитывается по мере
+        того, как проходят дропы: чем больше ставок, тем точнее цена.
+      </p>
+    </details>
+
+    <p class="gc-tiers-stats">
+      Аукционов главы: {analysis.auctionsTotal}, из них завершено: {analysis.auctionsEnded}.
+      {analysis.flowerRateNow != null && <> Курс Flower сейчас: {usd(analysis.flowerRateNow)}.</>}
+    </p>
+
+    {analysis.rows.length > 0 ? (
+      <div class="gc-tiers-table-wrap">
+        <table class="gc-tiers-table">
+          <thead>
+            <tr>
+              <th>Тир</th>
+              <th>Предмет</th>
+              <th>Саплай</th>
+              <th>Рынок</th>
+              <th>Аукцион (медиана)</th>
+              <th>Поправка</th>
+              <th>Итог</th>
+            </tr>
+          </thead>
+          <tbody>
+            {analysis.rows.map((r) => {
+              const sprite = itemCatalog[r.name]?.sprite;
+              return (
+                <tr>
+                  <td data-label="Тир"><span class={`gc-tier-badge ${r.tier <= 3 ? 'gc-tier-badge--top' : ''}`}>{r.tier}</span></td>
+                  <td data-label="Предмет">
+                    <span class="gc-tiers-item">
+                      {sprite ? <img src={`/sprites/${sprite}`} alt="" loading="lazy" /> : <span class="gc-tiers-type">{TYPE_ICON[r.type]}</span>}
+                      {r.name}
+                    </span>
+                  </td>
+                  <td data-label="Саплай" class="gc-num">
+                    {num(r.supply)}
+                    {r.drops > 1 && <span class="gc-tiers-hint"> ({r.drops} дропа)</span>}
+                  </td>
+                  <td data-label="Рынок" class="gc-num">
+                    {r.marketUsd != null ? (
+                      <>
+                        <span class={r.source === 'market' ? 'gc-tiers-used' : ''}>{usd(r.marketUsd)}</span>
+                        {r.marketFlower != null && <span class="gc-tiers-hint">{num(r.marketFlower, 2)} Flower</span>}
+                      </>
+                    ) : (
+                      <span class="gc-tiers-hint">не продаётся</span>
+                    )}
+                  </td>
+                  <td data-label="Аукцион" class="gc-num">
+                    {r.auctionUsd != null ? (
+                      <>
+                        <span class={r.source === 'auction' ? 'gc-tiers-used' : ''}>{usd(r.auctionUsd)}</span>
+                        <span class="gc-tiers-hint">
+                          {[r.auctionFlower ? `${num(r.auctionFlower, 2)} Flower` : '', r.auctionGems ? `${num(r.auctionGems)} Gem` : '']
+                            .filter(Boolean)
+                            .join(' + ')}
+                          {` · ${r.winners} ставок`}
+                        </span>
+                      </>
+                    ) : (
+                      <span class="gc-tiers-hint">нет ставок</span>
+                    )}
+                  </td>
+                  <td data-label="Поправка" class="gc-num">×{num(r.multiplier, 2)}</td>
+                  <td data-label="Итог" class="gc-num"><b>{usd(r.score)}</b></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div class="gc-card gc-tiers-empty">
+        Пока не по чему считать: предметы главы ещё не продаются на рынке, а их дропы за Flower и Gem ещё не прошли.
+      </div>
+    )}
+
+    {analysis.pending.length > 0 && (
+      <>
+        <h2 class="gc-tiers-h2">⏳ Ещё без цены</h2>
+        <p class="gc-tiers-note">На рынке их ещё нет, а дропы за Flower и Gem ещё не прошли — тир появится после первого такого дропа.</p>
+        <ul class="gc-tiers-pending">
+          {analysis.pending.map((p) => {
+            const sprite = itemCatalog[p.name]?.sprite;
+            return (
+              <li class="gc-card">
+                {sprite ? <img src={`/sprites/${sprite}`} alt="" loading="lazy" /> : <span>{TYPE_ICON[p.type]}</span>}
+                <span>
+                  {p.name}
+                  <span class="gc-tiers-hint">саплай {num(p.supply)} · первый аукцион {date(p.firstStart)}</span>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </>
+    )}
+
+  </div>
+</BaseLayout>
+
+<style>
+.gc-tiers-back { display: inline-flex; margin: 20px 0 0; }
+.gc-tiers-header { padding: 24px 0 12px; }
+.gc-tiers-sub { font-size: 15px; color: var(--text-sec); margin-top: 6px; }
+.gc-tiers-how { padding: 14px 18px; margin-bottom: 16px; font-size: 14px; line-height: 1.6; }
+.gc-tiers-how summary { cursor: pointer; font-weight: 700; }
+.gc-tiers-how ol { margin: 10px 0 6px 18px; display: grid; gap: 6px; }
+.gc-tiers-note { font-size: 13px; color: var(--text-sec); line-height: 1.6; }
+.gc-tiers-stats { font-size: 14px; color: var(--text-sec); margin-bottom: 12px; }
+.gc-tiers-h2 { font-family: var(--font-head); font-size: 18px; font-weight: 700; margin: 36px 0 8px; }
+
+.gc-tiers-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--card-bg); }
+.gc-tiers-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.gc-tiers-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sec);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.gc-tiers-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.gc-tiers-table tr:last-child td { border-bottom: none; }
+.gc-num { text-align: right; white-space: nowrap; }
+.gc-tiers-table th:nth-child(n + 3) { text-align: right; }
+.gc-tiers-hint { display: block; font-size: 11px; color: var(--text-ter); }
+.gc-tiers-used { font-weight: 700; }
+.gc-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-family: var(--font-head);
+  font-weight: 700;
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.gc-tier-badge--top { background: var(--amber-pale); color: var(--amber); }
+.gc-tiers-item { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
+.gc-tiers-item img, .gc-tiers-pending img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+.gc-tiers-type { font-size: 22px; }
+.gc-tiers-empty { padding: 32px; text-align: center; color: var(--text-sec); }
+.gc-tiers-pending {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.gc-tiers-pending li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-size: 13px; font-weight: 600; }
+
+@media (max-width: 720px) {
+  .gc-tiers-table thead { display: none; }
+  .gc-tiers-table, .gc-tiers-table tbody, .gc-tiers-table tr, .gc-tiers-table td { display: block; width: 100%; }
+  .gc-tiers-table tr { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .gc-tiers-table td { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border: none; text-align: right; }
+  .gc-tiers-table td::before { content: attr(data-label); color: var(--text-sec); font-size: 12px; text-align: left; }
+  .gc-tiers-table td[data-label='Предмет'] { text-align: left; }
+}
+</style>
