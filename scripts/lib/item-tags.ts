@@ -284,6 +284,9 @@ const CHAPTER_ITEM_NAMES: Record<string, string> = {
   "Pig Plush": "chapter-cave-dwellers",
   "Pig Doll": "chapter-cave-dwellers",
   "Firefly Aura": "chapter-cave-dwellers",
+  // Cave Dwellers — аукционы главы (Hercules Beetle Hat — новый; Antique Dress и
+  // Harpoon — старые предметы, получившие бонусы в этой главе, их не тегируем)
+  "Hercules Beetle Hat": "chapter-cave-dwellers",
   // Cave Dwellers — мутанты и марвелы главы (chapterMutants.ts)
   "Mushroom Chicken": "chapter-cave-dwellers",
   "Ladybug Cow": "chapter-cave-dwellers",
