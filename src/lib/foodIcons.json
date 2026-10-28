@@ -157,5 +157,9 @@
   "Egg": "/sprites/resources/animals/egg.png",
   "Milk": "/sprites/resources/animals/milk.webp",
   "Wild Mushroom": "/sprites/resources/wild_mushroom.png",
-  "Magic Mushroom": "/sprites/resources/magic_mushroom.png"
+  "Magic Mushroom": "/sprites/resources/magic_mushroom.png",
+  "Ember-Roasted Truffle Potatoes": "/sprites/food/ember_roasted_truffle_potatoes.webp",
+  "Truffle Cake": "/sprites/food/truffle_cake.webp",
+  "Creamy Truffle Risotto": "/sprites/food/creamy_truffle_risotto.webp",
+  "Goblin’s Treat": "/sprites/food/goblins_treat.png"
 }
