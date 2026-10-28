@@ -14,8 +14,6 @@ const chapter = getUpcomingChapter() ?? getCurrentChapter();
 if (!chapter) return Astro.redirect('/codex?tab=chapter', 302);
 const isUpcoming = new Date(chapter.startDate).getTime() > Date.now();
 
-const analysis = await analyzeAuctionTiers(new Date(chapter.startDate).getTime(), new Date(chapter.endDate).getTime());
-
 let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
 try {
   const { data: items } = await getCachedCatalogItems();
@@ -23,6 +21,11 @@ try {
 } catch (err) {
   console.error('[codex/chapter/auction-tiers] DB fetch error:', err);
 }
+
+const analysis = await analyzeAuctionTiers(new Date(chapter.startDate).getTime(), new Date(chapter.endDate).getTime(), (name) => {
+  const entry = itemCatalog[name];
+  return entry ? entry.boosts.length > 0 : true;
+});
 
 const usd = (v: number | null) =>
   v == null ? '—' : `$${v.toLocaleString('ru-RU', { minimumFractionDigits: v < 10 ? 2 : 0, maximumFractionDigits: v < 10 ? 2 : 0 })}`;
@@ -72,7 +75,7 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
         </li>
         <li>
           <b>Предварительный тир</b> — для предметов, у которых цены ещё нет: место по числу штук, которые
-          разыгрываются за тикеты главы (меньше штук — выше тир). Он заменяется настоящим после первого дропа
+          разыгрываются за тикеты главы (меньше штук — выше тир); предметы с бонусом стоят выше декора. Он заменяется настоящим после первого дропа
           за Flower или Gem.
         </li>
       </ol>
@@ -174,7 +177,7 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
         <p class="gc-tiers-note">
           Цены у этих предметов ещё нет: на рынке их нет, а дропы за Flower и Gem ещё не прошли. Пока их место
           оценено по саплаю дропов за тикеты главы — чем меньше штук разыгрывается за тикеты, тем выше
-          предварительный тир (при равном саплае тир общий). Нумерация продолжает тиры из таблицы выше. Настоящий тир появится после первого дропа за Flower или Gem.
+          предварительный тир; предметы с бонусом стоят выше декора, даже если у декора саплай меньше (при равном саплае в одной группе тир общий). Нумерация продолжает тиры из таблицы выше. Настоящий тир появится после первого дропа за Flower или Gem.
         </p>
         <ul class="gc-tiers-pending">
           {analysis.pending.map((p) => {
@@ -186,6 +189,7 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
                 <span>
                   {p.name}
                   <span class="gc-tiers-hint">
+                    {p.boost ? 'бонус' : 'декор'} ·
                     {p.ticket
                       ? `за ${p.ticket}: ${pieces(p.ticketSupply)} (${drops(p.ticketDrops)})`
                       : 'дропов за тикеты нет'}

@@ -186,6 +186,8 @@ export interface PendingItem {
   /** Название тикета главы (Duende Cap и т. п.). */
   ticket: string | null;
   prelimTier: number | null;
+  /** Есть ли у предмета бонус (иначе декор): в предварительном рейтинге бонусные выше декора. */
+  boost: boolean;
   topRange: TopRange | null;
 }
 
@@ -201,7 +203,16 @@ const itemName = (a: UiAuction) => a.collectible ?? a.wearable ?? a.nft ?? '?';
 const ticketOf = (a: UiAuction): string | null =>
   a.sfl > 0 ? null : (Object.keys(a.ingredients).find((k) => k !== 'Gem') ?? null);
 
-export async function analyzeAuctionTiers(startMs: number, endMs: number): Promise<TierAnalysis> {
+/**
+ * isBoost — есть ли у предмета бонус (по каталогу). В предварительном рейтинге
+ * предметы с бонусом стоят выше декора независимо от саплая; по умолчанию все
+ * считаются бонусными.
+ */
+export async function analyzeAuctionTiers(
+  startMs: number,
+  endMs: number,
+  isBoost: (name: string) => boolean = () => true,
+): Promise<TierAnalysis> {
   const now = Date.now();
   const auctions = await fetchAuctionsInRange(startMs, endMs);
   const keys = await priceKeys().catch(() => new Map<string, string>());
@@ -275,6 +286,7 @@ export async function analyzeAuctionTiers(startMs: number, endMs: number): Promi
         ticketDrops: it.ticketDrops,
         ticket: it.ticket,
         prelimTier: null,
+        boost: isBoost(name),
         topRange: null,
       });
       return;
@@ -303,18 +315,20 @@ export async function analyzeAuctionTiers(startMs: number, endMs: number): Promi
 
   rows.sort((a, b) => b.score - a.score);
   rows.forEach((r, i) => ((r as TierRow).tier = i + 1));
-  // Предварительный тир продолжает лестницу после тиров с ценой: меньше штук
-  // за тикеты — выше; равный саплай — общий тир.
+  // Предварительный тир продолжает лестницу после тиров с ценой: сначала
+  // предметы с бонусом, затем декор; внутри — меньше штук за тикеты выше;
+  // равный саплай в одной группе — общий тир.
   pending.sort(
     (a, b) =>
       Number(a.ticketSupply === 0) - Number(b.ticketSupply === 0) ||
+      Number(!a.boost) - Number(!b.boost) ||
       a.ticketSupply - b.ticketSupply ||
       a.firstStart - b.firstStart,
   );
   pending.forEach((p, i) => {
     if (p.ticketSupply === 0) return;
     const prev = pending[i - 1];
-    p.prelimTier = prev && prev.ticketSupply === p.ticketSupply ? prev.prelimTier : rows.length + i + 1;
+    p.prelimTier = prev && prev.ticketSupply === p.ticketSupply && prev.boost === p.boost ? prev.prelimTier : rows.length + i + 1;
   });
 
   // Места в топе по тикетам: идём по общей лестнице тиров и копим саплай за
