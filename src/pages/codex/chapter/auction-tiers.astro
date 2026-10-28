@@ -4,6 +4,7 @@ import { getCurrentChapter, getUpcomingChapter } from '../../../lib/chapters';
 import { GEM_USD, SUPPLY_EXPONENT, SUPPLY_REFERENCE, analyzeAuctionTiers } from '../../../lib/auctionTiers';
 import type { getCatalogItems } from '../../../lib/db';
 import { getCachedCatalogItems } from '../../../lib/catalog-cache';
+import { pluralRu } from '../../../lib/formatRelativeTime';
 
 export const prerender = false;
 
@@ -27,6 +28,9 @@ const usd = (v: number | null) =>
   v == null ? '—' : `$${v.toLocaleString('ru-RU', { minimumFractionDigits: v < 10 ? 2 : 0, maximumFractionDigits: v < 10 ? 2 : 0 })}`;
 const num = (v: number | null, digits = 0) => (v == null ? '—' : v.toLocaleString('ru-RU', { maximumFractionDigits: digits }));
 const date = (ms: number) => new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+const drops = (n: number) => `${n} ${pluralRu(n, 'дроп', 'дропа', 'дропов')}`;
+const pieces = (n: number) => `${num(n)} ${pluralRu(n, 'штука', 'штуки', 'штук')}`;
+const place = (r: { from: number; to: number }) => (r.from === r.to ? `${r.from}` : `${r.from}–${r.to}`);
 const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as const;
 ---
 
@@ -61,6 +65,16 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
         <li>
           <b>Тир</b> — место в рейтинге по цене с поправкой: на каждом тире один предмет, Тир 1 — самый ценный.
         </li>
+        <li>
+          <b>Место в топе</b> — на каких местах в рейтинге по тикетам главы игрок забирает предмет, если все
+          игроки выше разбирают более высокие тиры. Верхняя граница — сумма штук за тикеты у всех тиров выше + 1,
+          нижняя — та же сумма плюс штуки за тикеты самого предмета. Предметы с общим тиром делят один диапазон.
+        </li>
+        <li>
+          <b>Предварительный тир</b> — для предметов, у которых цены ещё нет: место по числу штук, которые
+          разыгрываются за тикеты главы (меньше штук — выше тир). Он заменяется настоящим после первого дропа
+          за Flower или Gem.
+        </li>
       </ol>
       <p class="gc-tiers-note">
         Курс Flower берётся на момент начала аукциона (аукцион длится 10 минут; время отдельной ставки API
@@ -86,6 +100,7 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
               <th>Аукцион (медиана)</th>
               <th>Поправка</th>
               <th>Итог</th>
+              <th>Место в топе</th>
             </tr>
           </thead>
           <tbody>
@@ -102,7 +117,7 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
                   </td>
                   <td data-label="Саплай" class="gc-num">
                     {num(r.supply)}
-                    {r.drops > 1 && <span class="gc-tiers-hint"> ({r.drops} дропа)</span>}
+                    {r.drops > 1 && <span class="gc-tiers-hint"> ({drops(r.drops)})</span>}
                   </td>
                   <td data-label="Рынок" class="gc-num">
                     {r.marketUsd != null ? (
@@ -131,6 +146,16 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
                   </td>
                   <td data-label="Поправка" class="gc-num">×{num(r.multiplier, 2)}</td>
                   <td data-label="Итог" class="gc-num"><b>{usd(r.score)}</b></td>
+                  <td data-label="Место в топе" class="gc-num">
+                    {r.topRange ? (
+                      <>
+                        <b>{place(r.topRange)}</b>
+                        <span class="gc-tiers-hint">{pieces(r.ticketSupply)} за {r.ticket}</span>
+                      </>
+                    ) : (
+                      <span class="gc-tiers-hint">не за тикеты</span>
+                    )}
+                  </td>
                 </tr>
               );
             })}
@@ -145,17 +170,28 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
 
     {analysis.pending.length > 0 && (
       <>
-        <h2 class="gc-tiers-h2">⏳ Ещё без цены</h2>
-        <p class="gc-tiers-note">На рынке их ещё нет, а дропы за Flower и Gem ещё не прошли — тир появится после первого такого дропа.</p>
+        <h2 class="gc-tiers-h2">⏳ Предварительный тир</h2>
+        <p class="gc-tiers-note">
+          Цены у этих предметов ещё нет: на рынке их нет, а дропы за Flower и Gem ещё не прошли. Пока их место
+          оценено по саплаю дропов за тикеты главы — чем меньше штук разыгрывается за тикеты, тем выше
+          предварительный тир (при равном саплае тир общий). Нумерация продолжает тиры из таблицы выше. Настоящий тир появится после первого дропа за Flower или Gem.
+        </p>
         <ul class="gc-tiers-pending">
           {analysis.pending.map((p) => {
             const sprite = itemCatalog[p.name]?.sprite;
             return (
               <li class="gc-card">
+                <span class="gc-tier-badge gc-tier-badge--prelim" title="Предварительный тир">{p.prelimTier ?? '—'}</span>
                 {sprite ? <img src={`/sprites/${sprite}`} alt="" loading="lazy" /> : <span>{TYPE_ICON[p.type]}</span>}
                 <span>
                   {p.name}
-                  <span class="gc-tiers-hint">саплай {num(p.supply)} · первый аукцион {date(p.firstStart)}</span>
+                  <span class="gc-tiers-hint">
+                    {p.ticket
+                      ? `за ${p.ticket}: ${pieces(p.ticketSupply)} (${drops(p.ticketDrops)})`
+                      : 'дропов за тикеты нет'}
+                  </span>
+                  {p.topRange && <span class="gc-tiers-place">место в топе: {place(p.topRange)}</span>}
+                  <span class="gc-tiers-hint">всего саплай {num(p.supply)} · первый аукцион {date(p.firstStart)}</span>
                 </span>
               </li>
             );
@@ -195,6 +231,7 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
 .gc-tiers-table th:nth-child(n + 3) { text-align: right; }
 .gc-tiers-hint { display: block; font-size: 11px; color: var(--text-ter); }
 .gc-tiers-used { font-weight: 700; }
+.gc-tiers-place { display: block; font-size: 12px; color: var(--amber); margin-top: 2px; }
 .gc-tier-badge {
   display: inline-flex;
   align-items: center;
@@ -209,6 +246,7 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
   color: var(--green-dark);
 }
 .gc-tier-badge--top { background: var(--amber-pale); color: var(--amber); }
+.gc-tier-badge--prelim { background: transparent; border: 1px dashed var(--border); color: var(--text-sec); flex-shrink: 0; }
 .gc-tiers-item { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
 .gc-tiers-item img, .gc-tiers-pending img {
   width: 32px;

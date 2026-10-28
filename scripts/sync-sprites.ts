@@ -1,7 +1,14 @@
 /**
  * sync-sprites.ts
  * Copies sprite files from a sunflower-land clone into goblincodex/public/sprites/,
- * skipping files that are already up to date (by mtime).
+ * skipping files whose content is already identical (compared by bytes — mtime
+ * is useless here: a fresh `git pull` stamps changed files "now", while our copy
+ * may be newer than the upstream edit, so a replaced picture was never picked up).
+ *
+ * Pictures that the game keeps on its asset CDN (`SUNNYSIDE.*` refs: buildings,
+ * crafting items, animal food, decorations, rocks…) aren't in the repo; they are
+ * downloaded from the CDN to the same relative path. Already-present CDN files
+ * are kept as is unless --refresh-cdn is passed (then they are compared by bytes).
  *
  * Run from the repo root:
  *   npm run sfl:sync-sprites
@@ -11,14 +18,15 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { parseSpriteMap } from "./lib/sprite-map";
+import { parseSpriteMap, parseCdnSpriteMap } from "./lib/sprite-map";
 
 // ─── CLI args ─────────────────────────────────────────────────────────────────
 
-function parseArgs(): { sflDir: string; targetDir: string } {
+function parseArgs(): { sflDir: string; targetDir: string; refreshCdn: boolean } {
   const args = process.argv.slice(2);
   let sflDir = "";
   let targetDir = "";
+  const refreshCdn = args.includes("--refresh-cdn");
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--sfl-dir" && args[i + 1]) sflDir = args[++i];
@@ -31,7 +39,31 @@ function parseArgs(): { sflDir: string; targetDir: string } {
   return {
     sflDir: path.resolve(sflDir),
     targetDir: path.resolve(targetDir),
+    refreshCdn,
   };
+}
+
+const GAME_ASSETS_BASE = "https://sunflower-land.com/game-assets";
+
+function sameContent(a: string, b: string): boolean {
+  const x = fs.readFileSync(a);
+  const y = fs.readFileSync(b);
+  return x.length === y.length && x.equals(y);
+}
+
+/** GET с повторами: CDN иногда рвёт соединение при параллельных запросах. */
+async function fetchBytes(url: string): Promise<Buffer | null> {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const res = await fetch(url);
+      if (res.status === 404) return null;
+      if (res.ok) return Buffer.from(await res.arrayBuffer());
+    } catch {
+      /* повтор */
+    }
+    await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+  }
+  return null;
 }
 
 // Sprites referenced by populate-buffs-db.ts / the frontend that aren't
@@ -61,8 +93,8 @@ const EXTRA_SPRITES = [
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-function main() {
-  const { sflDir, targetDir } = parseArgs();
+async function main() {
+  const { sflDir, targetDir, refreshCdn } = parseArgs();
 
   console.log(`SFL source : ${sflDir}`);
   console.log(`Target dir : ${targetDir}`);
@@ -101,28 +133,73 @@ function main() {
       fs.mkdirSync(destDir, { recursive: true });
     }
 
-    // Copy if missing or source is newer
-    let shouldCopy = true;
-    if (fs.existsSync(destFile)) {
-      const srcMtime = fs.statSync(srcFile).mtimeMs;
-      const destMtime = fs.statSync(destFile).mtimeMs;
-      if (srcMtime <= destMtime) {
-        shouldCopy = false;
-      }
-    }
-
-    if (shouldCopy) {
+    // Copy if missing or the content differs
+    const existed = fs.existsSync(destFile);
+    if (!existed || !sameContent(srcFile, destFile)) {
       fs.copyFileSync(srcFile, destFile);
       copied++;
+      if (existed) console.log(`  updated: ${spritePath}`);
     } else {
       upToDate++;
     }
   }
 
+  // ── CDN: картинки, которых нет в репозитории игры ──────────────────
+  const cdnPaths = new Set(
+    [...parseCdnSpriteMap(sflDir).values()].filter((rel) => !uniqueSprites.has(rel)),
+  );
+  let cdnDownloaded = 0;
+  let cdnUpdated = 0;
+  let cdnPresent = 0;
+  const cdnFailed: string[] = [];
+  const queue = [...cdnPaths];
+  console.log(`\nCDN sprites referenced: ${queue.length}`);
+  const worker = async () => {
+    while (queue.length) {
+      const rel = queue.shift()!;
+      const dest = path.join(targetDir, rel);
+      const exists = fs.existsSync(dest);
+      // Файл бывает и в репозитории игры (не попал в карту) — берём оттуда.
+      const inRepo = path.join(sflDir, "src", "assets", rel);
+      if (fs.existsSync(inRepo)) {
+        if (!exists || !sameContent(inRepo, dest)) {
+          fs.mkdirSync(path.dirname(dest), { recursive: true });
+          fs.copyFileSync(inRepo, dest);
+          cdnDownloaded++;
+        } else cdnPresent++;
+        continue;
+      }
+      if (exists && !refreshCdn) {
+        cdnPresent++;
+        continue;
+      }
+      const bytes = await fetchBytes(`${GAME_ASSETS_BASE}/${rel}`);
+      if (!bytes) {
+        cdnFailed.push(rel);
+        continue;
+      }
+      if (exists) {
+        if (fs.readFileSync(dest).equals(bytes)) {
+          cdnPresent++;
+          continue;
+        }
+        cdnUpdated++;
+        console.log(`  updated (cdn): ${rel}`);
+      } else {
+        cdnDownloaded++;
+      }
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.writeFileSync(dest, bytes);
+    }
+  };
+  await Promise.all(Array.from({ length: 4 }, worker));
+
   console.log("\nDone.");
   console.log(`  Copied    : ${copied}`);
   console.log(`  Up to date: ${upToDate}`);
   console.log(`  Not found : ${missing.length}`);
+  console.log(`  CDN       : ${cdnDownloaded} downloaded, ${cdnUpdated} updated, ${cdnPresent} already present, ${cdnFailed.length} failed`);
+  if (cdnFailed.length) cdnFailed.forEach((p) => console.log(`    cdn failed: ${p}`));
 
   if (missing.length > 0) {
     console.log("\nMissing in source (first 20):");
@@ -131,4 +208,7 @@ function main() {
   }
 }
 
-main();
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

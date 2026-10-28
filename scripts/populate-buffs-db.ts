@@ -12,7 +12,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Pool } from "pg";
-import { extractNamedBlock, extractTopLevelEntries, extractTopLevelKeys, parseSpriteMap, parseGameIds, parseWearableIds, parseMiscItemNames } from "./lib/sprite-map";
+import { extractNamedBlock, extractTopLevelEntries, extractTopLevelKeys, parseSpriteMap, parseCdnSpriteMap, parseGameIds, parseWearableIds, parseMiscItemNames } from "./lib/sprite-map";
 import { classifyResource } from "./lib/resource-classifier";
 import { getItemTags } from "./lib/item-tags";
 
@@ -1559,6 +1559,9 @@ async function main() {
 
   console.log("\n🔍 Parsing sprite paths...");
   const spriteMap = parseSpriteMap(SFL_DIR);
+  // Картинки с CDN игры (SUNNYSIDE.*): добавляем только то, чего нет среди
+  // локальных файлов репозитория. Сами файлы качает sfl:sync-sprites.
+  for (const [name, rel] of parseCdnSpriteMap(SFL_DIR)) if (!spriteMap.has(name)) spriteMap.set(name, rel);
   console.log(`   ${spriteMap.size} sprites mapped`);
 
   console.log("\n🔍 Parsing game IDs...");

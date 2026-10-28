@@ -433,6 +433,60 @@ export function parseItemDetailsCdnRefs(sflDir: string): Map<string, string> {
 }
 
 /**
+ * Flat `category.key -> CDN-relative path` map from assets/sunnyside.ts, for
+ * resolving `SUNNYSIDE.category.key` image refs. Tracks the nearest enclosing
+ * top-level `category: {` while scanning, then grabs every
+ * `key: `${CONFIG.PROTECTED_IMAGE_URL}/path`` line under it — category is
+ * the only nesting level (sub-objects use flat keys like `chickenSick`).
+ */
+export function parseSunnysideCdnMap(sflDir: string): Map<string, string> {
+  const file = path.join(sflDir, "src/assets/sunnyside.ts");
+  const map = new Map<string, string>();
+  if (!fs.existsSync(file)) return map;
+  let category: string | null = null;
+  let depth = 0;
+  for (const line of fs.readFileSync(file, "utf8").split(/\r?\n/)) {
+    const catM = /^ {2}(\w+): \{\s*$/.exec(line);
+    if (catM) {
+      category = catM[1];
+      depth = 1;
+      continue;
+    }
+    if (category) {
+      depth += (line.match(/\{/g) ?? []).length - (line.match(/\}/g) ?? []).length;
+      if (depth <= 0) {
+        category = null;
+        continue;
+      }
+      const kvM = /^\s+(\w+): `\$\{CONFIG\.PROTECTED_IMAGE_URL\}\/([^`]+)`,?\s*$/.exec(line);
+      if (kvM) map.set(`${category}.${kvM[1]}`, kvM[2]);
+    }
+  }
+  return map;
+}
+
+/**
+ * Item name → CDN-relative sprite path for items whose picture is not a file
+ * in the repo but lives on the game's asset CDN: `SUNNYSIDE.category.key`
+ * refs in ITEM_DETAILS (buildings, crafting items, animal food, decorations,
+ * rocks, trees…) and crop icons. parseSpriteMap doesn't see these, so
+ * without this map such items have no sprite. Files are downloaded by
+ * sync-sprites.ts to the same relative path under public/sprites/.
+ */
+export function parseCdnSpriteMap(sflDir: string): Map<string, string> {
+  const sunnyside = parseSunnysideCdnMap(sflDir);
+  const result = new Map<string, string>();
+  for (const [name, ref] of parseItemDetailsCdnRefs(sflDir)) {
+    const rel = sunnyside.get(ref);
+    if (rel) result.set(name, rel);
+  }
+  for (const [name, rel] of parseCropCdnMap(sflDir)) {
+    if (!result.has(name)) result.set(name, rel);
+  }
+  return result;
+}
+
+/**
  * Build a map of wearable name → numeric game ID by parsing ITEM_IDS in
  * src/features/game/types/bumpkin.ts. Wearables are a separate NFT
  * collection from collectibles/crops/resources (KNOWN_IDS in index.ts) with

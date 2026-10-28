@@ -147,15 +147,46 @@ export interface TierRow {
   winners: number;
   multiplier: number;
   score: number;
+  ticketSupply: number;
+  ticket: string | null;
+  topRange: TopRange | null;
+}
+
+/**
+ * Места в топе по тикетам главы, на которых игрок забирает предмет, если все
+ * выше разбирают более высокие тиры: from = сумма саплая за тикеты у тиров
+ * выше + 1, to = та же сумма + саплай за тикеты самого предмета.
+ */
+export interface TopRange {
+  from: number;
+  to: number;
 }
 
 export interface TierAnalysis {
   rows: TierRow[];
-  /** Предметы без цены: аукционы ещё не прошли или нет ставок. */
-  pending: { name: string; type: UiAuction['type']; supply: number; firstStart: number }[];
+  /**
+   * Предметы без цены: аукционы ещё не прошли или нет ставок. Предварительный
+   * тир — место по саплаю дропов за тикеты главы (меньше штук — выше тир);
+   * при равном саплае тир общий. null — дропов за тикеты у предмета нет.
+   */
+  pending: PendingItem[];
   auctionsTotal: number;
   auctionsEnded: number;
   flowerRateNow: number | null;
+}
+
+export interface PendingItem {
+  name: string;
+  type: UiAuction['type'];
+  supply: number;
+  firstStart: number;
+  /** Сколько штук разыгрывается за тикеты главы (по всем таким дропам). */
+  ticketSupply: number;
+  ticketDrops: number;
+  /** Название тикета главы (Duende Cap и т. п.). */
+  ticket: string | null;
+  prelimTier: number | null;
+  topRange: TopRange | null;
 }
 
 interface Bid {
@@ -165,6 +196,10 @@ interface Bid {
 }
 
 const itemName = (a: UiAuction) => a.collectible ?? a.wearable ?? a.nft ?? '?';
+
+/** Тикет главы, за который идёт дроп: не Flower и не Gem. */
+const ticketOf = (a: UiAuction): string | null =>
+  a.sfl > 0 ? null : (Object.keys(a.ingredients).find((k) => k !== 'Gem') ?? null);
 
 export async function analyzeAuctionTiers(startMs: number, endMs: number): Promise<TierAnalysis> {
   const now = Date.now();
@@ -197,24 +232,51 @@ export async function analyzeAuctionTiers(startMs: number, endMs: number): Promi
   }
 
   // Предметы главы: суммарный саплай по всем дропам.
-  const items = new Map<string, { type: UiAuction['type']; supply: number; drops: number; firstStart: number }>();
+  type ItemStats = {
+    type: UiAuction['type'];
+    supply: number;
+    drops: number;
+    firstStart: number;
+    ticketSupply: number;
+    ticketDrops: number;
+    ticket: string | null;
+  };
+  const items = new Map<string, ItemStats>();
   for (const a of auctions) {
-    const it = items.get(itemName(a)) ?? { type: a.type, supply: 0, drops: 0, firstStart: a.startAt };
+    const it = items.get(itemName(a)) ?? {
+      type: a.type, supply: 0, drops: 0, firstStart: a.startAt, ticketSupply: 0, ticketDrops: 0, ticket: null,
+    };
     it.supply += a.supply;
     it.drops += 1;
     it.firstStart = Math.min(it.firstStart, a.startAt);
+    const ticket = ticketOf(a);
+    if (ticket) {
+      it.ticket = ticket;
+      it.ticketSupply += a.supply;
+      it.ticketDrops += 1;
+    }
     items.set(itemName(a), it);
   }
 
   const rows: Omit<TierRow, 'tier'>[] = [];
-  const pending: TierAnalysis['pending'] = [];
+  const pending: PendingItem[] = [];
   await mapLimit([...items.entries()], CONCURRENCY, async ([name, it]) => {
     const market = await marketPrice(name, keys).catch(() => null);
     const bids = bidsByItem.get(name) ?? [];
     const auctionUsd = bids.length ? median(bids.map((b) => b.usd)) : null;
     const priceUsd = market?.usd ?? auctionUsd;
     if (priceUsd == null) {
-      pending.push({ name, type: it.type, supply: it.supply, firstStart: it.firstStart });
+      pending.push({
+        name,
+        type: it.type,
+        supply: it.supply,
+        firstStart: it.firstStart,
+        ticketSupply: it.ticketSupply,
+        ticketDrops: it.ticketDrops,
+        ticket: it.ticket,
+        prelimTier: null,
+        topRange: null,
+      });
       return;
     }
     const multiplier = supplyMultiplier(it.supply);
@@ -233,13 +295,53 @@ export async function analyzeAuctionTiers(startMs: number, endMs: number): Promi
       winners: bids.length,
       multiplier,
       score: priceUsd * multiplier,
+      ticketSupply: it.ticketSupply,
+      ticket: it.ticket,
+      topRange: null,
     });
   });
 
   rows.sort((a, b) => b.score - a.score);
-  pending.sort((a, b) => a.firstStart - b.firstStart);
+  rows.forEach((r, i) => ((r as TierRow).tier = i + 1));
+  // Предварительный тир продолжает лестницу после тиров с ценой: меньше штук
+  // за тикеты — выше; равный саплай — общий тир.
+  pending.sort(
+    (a, b) =>
+      Number(a.ticketSupply === 0) - Number(b.ticketSupply === 0) ||
+      a.ticketSupply - b.ticketSupply ||
+      a.firstStart - b.firstStart,
+  );
+  pending.forEach((p, i) => {
+    if (p.ticketSupply === 0) return;
+    const prev = pending[i - 1];
+    p.prelimTier = prev && prev.ticketSupply === p.ticketSupply ? prev.prelimTier : rows.length + i + 1;
+  });
+
+  // Места в топе по тикетам: идём по общей лестнице тиров и копим саплай за
+  // тикеты. Предметы с общим тиром делят один диапазон на всю группу.
+  const ladder: { tier: number | null; ticketSupply: number; topRange: TopRange | null }[] = [
+    ...(rows as TierRow[]),
+    ...pending,
+  ].map((x) => ({ ...x, tier: 'prelimTier' in x ? x.prelimTier : x.tier }));
+  let taken = 0;
+  for (let i = 0; i < ladder.length; ) {
+    let j = i;
+    let group = 0;
+    while (j < ladder.length && (j === i || (ladder[j].tier != null && ladder[j].tier === ladder[i].tier))) {
+      group += ladder[j].ticketSupply;
+      j++;
+    }
+    const range = group > 0 ? { from: taken + 1, to: taken + group } : null;
+    for (let k = i; k < j; k++) {
+      const src = k < rows.length ? (rows[k] as TierRow) : pending[k - rows.length];
+      src.topRange = src.ticketSupply > 0 ? range : null;
+    }
+    taken += group;
+    i = j;
+  }
+
   return {
-    rows: rows.map((r, i) => ({ ...r, tier: i + 1 })),
+    rows: rows as TierRow[],
     pending,
     auctionsTotal: auctions.length,
     auctionsEnded: ended.length,

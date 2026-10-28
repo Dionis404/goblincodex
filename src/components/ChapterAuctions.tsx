@@ -237,6 +237,10 @@ function Dropdown({ value, options, onChange }: { value: string; options: Dropdo
 const COST_ICONS: Record<string, string> = {
   'Gem': '/sprites/icons/gem.webp',
   'Salt Rock': '/sprites/icons/salt_rock_ticket.webp',
+  'Shiny Feather': '/sprites/icons/shiny_feather.webp',
+  // Тикет главы 16: в игре Beetle Wing переименовали в Duende Cap (картинка та же).
+  'Duende Cap': '/sprites/icons/beetle_wing.webp',
+  'Beetle Wing': '/sprites/icons/beetle_wing.webp',
   'Flower': '/sprites/icons/flower_token.webp',
 };
 

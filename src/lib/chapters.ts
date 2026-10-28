@@ -43,7 +43,7 @@ export const CHAPTERS: ChapterInfo[] = [
   { order: 13, name: 'Crabs and Traps',     slug: 'crabs-and-traps',     startDate: '2026-02-02T00:00:00.000Z', endDate: '2026-05-04T00:00:00.000Z', ticket: 'Floater', artifact: 'Ammonite Shell' },
   { order: 14, name: 'Salt Awakening',      slug: 'salt-awakening',      startDate: '2026-05-04T00:00:00.000Z', endDate: '2026-08-03T00:00:00.000Z', ticket: 'Salt Rock', artifact: 'Salt Dino Egg' },
   { order: 15, name: 'Ascension Age',       slug: 'ascension-age',       startDate: '2026-08-03T00:00:00.000Z', endDate: '2026-11-02T00:00:00.000Z', ticket: 'Shiny Feather', artifact: 'Otter Pebble', banner: '/images/chapter 15.png' },
-  { order: 16, name: 'Cave Dwellers',       slug: 'cave-dwellers',       startDate: '2026-11-02T00:00:00.000Z', endDate: '2027-02-01T00:00:00.000Z', ticket: 'Beetle Wing', artifact: 'Clover Coin' },
+  { order: 16, name: 'Cave Dwellers',       slug: 'cave-dwellers',       startDate: '2026-11-02T00:00:00.000Z', endDate: '2027-02-01T00:00:00.000Z', ticket: 'Duende Cap', artifact: 'Clover Coin' },
 ];
 
 export function getCurrentChapter(now: Date = new Date()): ChapterInfo | undefined {
