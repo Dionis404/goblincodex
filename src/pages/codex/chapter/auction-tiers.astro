@@ -35,6 +35,9 @@ const drops = (n: number) => `${n} ${pluralRu(n, 'дроп', 'дропа', 'др
 const pieces = (n: number) => `${num(n)} ${pluralRu(n, 'штука', 'штуки', 'штук')}`;
 const place = (r: { from: number; to: number }) => (r.from === r.to ? `${r.from}` : `${r.from}–${r.to}`);
 const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as const;
+// NFT-лоты в каталоге не лежат — как в игре, рисуем яйцо питомца.
+const NFT_SPRITES: Record<string, string> = { Pet: 'icons/pet_nft_egg.png' };
+const spriteOf = (name: string) => itemCatalog[name]?.sprite ?? NFT_SPRITES[name] ?? null;
 ---
 
 <BaseLayout
@@ -108,7 +111,7 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
           </thead>
           <tbody>
             {analysis.rows.map((r) => {
-              const sprite = itemCatalog[r.name]?.sprite;
+              const sprite = spriteOf(r.name);
               return (
                 <tr>
                   <td data-label="Тир"><span class={`gc-tier-badge ${r.tier <= 3 ? 'gc-tier-badge--top' : ''}`}>{r.tier}</span></td>
@@ -181,7 +184,7 @@ const TYPE_ICON = { collectible: '📦', wearable: '👕', nft: '🐾' } as cons
         </p>
         <ul class="gc-tiers-pending">
           {analysis.pending.map((p) => {
-            const sprite = itemCatalog[p.name]?.sprite;
+            const sprite = spriteOf(p.name);
             return (
               <li class="gc-card">
                 <span class="gc-tier-badge gc-tier-badge--prelim" title="Предварительный тир">{p.prelimTier ?? '—'}</span>

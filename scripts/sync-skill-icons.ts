@@ -43,7 +43,8 @@ function extractSkillEntries(source: string): { name: string; block: string }[] 
   if (end === -1) throw new Error("BUMPKIN_REVAMP_SKILL_TREE end marker not found");
   const body = source.slice(start, end);
 
-  const entryRe = /\n {2}(["a-zA-Z0-9'’\-.& ]+): \{\n {4}name: /g;
+  // Первое поле записи — обычно name, но бывает и tree (Alternate Medicine).
+  const entryRe = /\n {2}(["a-zA-Z0-9'’\-.& ]+): \{\n {4}(?:name|tree): /g;
   const matches = [...body.matchAll(entryRe)];
   return matches.map((m, i) => {
     const name = m[1].replace(/^"|"$/g, "");
@@ -137,19 +138,13 @@ async function main() {
   const entries = extractSkillEntries(source);
 
   const resolved = new Map<string, Resolved>();
-  for (const { name: key, block: entryBlock } of entries) {
-    const imgM = /(?:^|\n)\s*image:\s*([^,\n]+),?/.exec(entryBlock);
-    if (!imgM) {
-      resolved.set(key, { kind: "none" });
-      continue;
-    }
-    const val = imgM[1].trim();
+  /** Разбор одного выражения картинки из исходников игры: SUNNYSIDE.*, ITEM_DETAILS[...].image или локальный импорт. */
+  const resolveExpr = (val: string): Resolved => {
     if (val.startsWith("SUNNYSIDE")) {
       const refM = /SUNNYSIDE\??\.(\w+)\??\.(\w+)/.exec(val);
       const cdnKey = refM ? `${refM[1]}.${refM[2]}` : undefined;
       const spritePath = cdnKey ? cdnMap.get(cdnKey) : undefined;
-      resolved.set(key, spritePath ? { kind: "cdn", spritePath } : { kind: "cdn-unresolved" });
-      continue;
+      return spritePath ? { kind: "cdn", spritePath } : { kind: "cdn-unresolved" };
     }
     if (val.startsWith("ITEM_DETAILS")) {
       // Two distinct call shapes in the source: dot notation (`ITEM_DETAILS.Sunflower.image`,
@@ -171,22 +166,59 @@ async function main() {
       // "Axe" tool vs. the cosmetic "Axe" wearable) it would silently return
       // the wrong picture if checked first.
       const cropSpritePath = itemName ? cropCdnMap.get(itemName) : undefined;
-      if (cropSpritePath) {
-        resolved.set(key, { kind: "cdn", spritePath: cropSpritePath });
-        continue;
-      }
+      if (cropSpritePath) return { kind: "cdn", spritePath: cropSpritePath };
       const cdnKey = itemName ? itemCdnRefs.get(itemName) : undefined;
       const itemCdnSpritePath = cdnKey ? cdnMap.get(cdnKey) : undefined;
-      if (itemCdnSpritePath) {
-        resolved.set(key, { kind: "cdn", spritePath: itemCdnSpritePath });
-        continue;
-      }
+      if (itemCdnSpritePath) return { kind: "cdn", spritePath: itemCdnSpritePath };
       const localSpritePath = itemName ? itemSpriteMap.get(itemName) : undefined;
-      resolved.set(key, localSpritePath ? { kind: "item", spritePath: localSpritePath } : { kind: "none" });
-      continue;
+      return localSpritePath ? { kind: "item", spritePath: localSpritePath } : { kind: "none" };
     }
     const spritePath = localImports.get(val);
-    resolved.set(key, spritePath ? { kind: "local", spritePath } : { kind: "none" });
+    return spritePath ? { kind: "local", spritePath } : { kind: "none" };
+  };
+
+  // Иконка ветки — как SKILL_TREE_ICONS в игре (SkillCategoryList.tsx).
+  const TREE_ICON_EXPR: Record<string, string> = {
+    Crops: "SUNNYSIDE.skills.crops",
+    Trees: "SUNNYSIDE.skills.trees",
+    Cooking: "SUNNYSIDE.skills.cooking",
+    Animals: "SUNNYSIDE.animals.chickenIdle",
+    Fishing: "SUNNYSIDE.icons.fish",
+    Greenhouse: "ITEM_DETAILS.Greenhouse.image",
+    Mining: "SUNNYSIDE.tools.stone_pickaxe",
+    "Bees & Flowers": 'ITEM_DETAILS["Red Pansy"].image',
+    Machinery: 'ITEM_DETAILS["Crop Machine"].image',
+    Compost: 'ITEM_DETAILS["Premium Composter"].image',
+    Aging: 'ITEM_DETAILS["Salt"].image',
+    Cave: "ITEM_DETAILS.Cave.image",
+  };
+  const isFound = (r: Resolved) => r.kind === "local" || r.kind === "item" || r.kind === "cdn";
+
+  // Как getSkillImage в игре (SkillPathDetails.tsx): своя картинка навыка, иначе
+  // иконка предмета, на который он даёт буст (boostedItemIcon), иначе иконка ветки.
+  const fallbackFrom = new Map<string, "boosted" | "tree">();
+  for (const { name: key, block: entryBlock } of entries) {
+    const imgM = /(?:^|\n)\s*image:\s*([^,\n]+),?/.exec(entryBlock);
+    let r: Resolved = imgM ? resolveExpr(imgM[1].trim()) : { kind: "none" };
+    if (!isFound(r)) {
+      const boostedM = /boostedItemIcon:\s*([^,\n]+),?/.exec(entryBlock);
+      const viaBoost = boostedM ? resolveExpr(boostedM[1].trim()) : { kind: "none" as const };
+      if (isFound(viaBoost)) {
+        r = viaBoost;
+        fallbackFrom.set(key, "boosted");
+      } else {
+        const tree = /\n\s*tree:\s*"([^"]+)"/.exec(entryBlock)?.[1];
+        // "Fruit Patch" в игре — локальный assets/fruit/fruits.png, остальные — выражения выше.
+        const treeExpr = tree ? TREE_ICON_EXPR[tree] : undefined;
+        const viaTree: Resolved =
+          tree === "Fruit Patch" ? { kind: "item", spritePath: "fruit/fruits.png" } : treeExpr ? resolveExpr(treeExpr) : { kind: "none" };
+        if (isFound(viaTree)) {
+          r = viaTree;
+          fallbackFrom.set(key, "tree");
+        }
+      }
+    }
+    resolved.set(key, r);
   }
 
   let copied = 0;
@@ -245,7 +277,11 @@ async function main() {
   const cdnUnresolved = [...resolved.entries()].filter(([, r]) => r.kind === "cdn-unresolved").map(([n]) => n);
   const none = [...resolved.entries()].filter(([, r]) => r.kind === "none").map(([n]) => n);
   console.log(`\nCDN ref found but not in sunnyside.ts's own map (${cdnUnresolved.length}):`, cdnUnresolved.join(", "));
-  console.log(`\nNo image field at all (${none.length}):`, none.join(", "));
+  console.log(`\nNo picture resolved at all (${none.length}):`, none.join(", "));
+  const viaBoosted = [...fallbackFrom].filter(([, v]) => v === "boosted").map(([n]) => n);
+  const viaTree = [...fallbackFrom].filter(([, v]) => v === "tree").map(([n]) => n);
+  console.log(`\nNo own image — boosted item icon (${viaBoosted.length}):`, viaBoosted.join(", "));
+  console.log(`\nNo own image — skill tree icon (${viaTree.length}):`, viaTree.join(", "));
 
   const outFile = path.resolve("scripts/skill-icon-map.json");
   fs.writeFileSync(outFile, JSON.stringify(mapping, null, 2));

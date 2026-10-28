@@ -129,6 +129,14 @@ function itemName(a: Auction): string {
   return a.collectible ?? a.wearable ?? a.nft ?? '—';
 }
 
+// NFT-лоты (питомцы) в каталоге не лежат — игра рисует для них яйцо
+// (getAuctionItemDisplay.ts: NFT_IMAGE_DESCRIPTION_MAPPING).
+const NFT_SPRITES: Record<string, string> = { Pet: 'icons/pet_nft_egg.png' };
+
+function itemSprite(a: Auction, catalog?: Record<string, CatalogEntry>): string | null {
+  return catalog?.[itemName(a)]?.sprite ?? (a.nft ? NFT_SPRITES[a.nft] : undefined) ?? null;
+}
+
 function itemKind(a: Auction, catalog?: Record<string, CatalogEntry>): Kind {
   const entry = catalog?.[itemName(a)];
   if (entry) return entry.boosts.length > 0 ? 'boost' : 'decor';
@@ -533,9 +541,9 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                     <div className="ca-row-time">
                       {formatTime(a.startAt, tz)}–{formatTime(a.endAt, tz)}
                     </div>
-                    <div className={`ca-row-sprite-btn${itemCatalog?.[itemName(a)]?.sprite ? '' : ' ca-row-sprite-btn--emoji'}`}>
-                      {itemCatalog?.[itemName(a)]?.sprite ? (
-                        <SpriteImg sprite={itemCatalog[itemName(a)].sprite} name={itemName(a)} />
+                    <div className={`ca-row-sprite-btn${itemSprite(a, itemCatalog) ? '' : ' ca-row-sprite-btn--emoji'}`}>
+                      {itemSprite(a, itemCatalog) ? (
+                        <SpriteImg sprite={itemSprite(a, itemCatalog)} name={itemName(a)} />
                       ) : (
                         <span className="ca-row-icon">{TYPE_ICON[a.type]}</span>
                       )}
@@ -592,7 +600,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
 
             <div className="ca-modal-header">
               <div className="ca-modal-sprite">
-                <SpriteImg sprite={itemCatalog?.[itemName(selected)]?.sprite ?? null} name={itemName(selected)} size={96} />
+                <SpriteImg sprite={itemSprite(selected, itemCatalog)} name={itemName(selected)} size={96} />
               </div>
               <div className="ca-modal-info">
                 <h2 className="ca-modal-name">{itemName(selected)}</h2>

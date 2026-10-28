@@ -368,8 +368,10 @@ export function parseSpriteMap(sflDir: string): Map<string, string> {
     const entries = extractTopLevelEntries(itemDetailsBlock);
 
     for (const { key, block: entryBlock } of entries) {
-      // Only match lowercase-starting variable names (excludes CROP_LIFECYCLE, SUNNYSIDE, etc.)
-      const imageMatch = /\bimage:\s*([a-z]\w*)\b/.exec(entryBlock);
+      // Any identifier; only default-imported files resolve via varToFile, so
+      // SUNNYSIDE / CROP_LIFECYCLE (named imports) fall through. Uppercase vars
+      // do occur (`import Wagon from "assets/decorations/wagon.webp"`).
+      const imageMatch = /\bimage:\s*([A-Za-z_$][\w$]*)\s*[,\n]/.exec(entryBlock);
       if (imageMatch) {
         const filePath = varToFile.get(imageMatch[1]);
         if (filePath) spriteMap.set(key, filePath);
