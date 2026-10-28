@@ -1,0 +1,233 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { COLLECTOR_BASE, collectorGet, type CollectorResult } from '../../lib/sflCollector';
+
+const item = (Astro.url.searchParams.get('item') ?? '').trim().slice(0, 100);
+const auction = (Astro.url.searchParams.get('auction') ?? '').trim().slice(0, 100);
+const watched = (Astro.url.searchParams.get('watched') ?? "Grinx's Hammer").trim().slice(0, 100);
+
+interface Block {
+  title: string;
+  note: string;
+  req: Promise<CollectorResult>;
+}
+
+const blocks: Block[] = [
+  { title: 'Сборщики', note: 'Последний запуск каждой задачи', req: collectorGet('/sfl/status') },
+  { title: 'Торговец в пещере — сейчас', note: 'Предложения и окно визита (консенсус топ-100)', req: collectorGet('/sfl/merchant/current') },
+  { title: 'Торговец — история', note: 'Последние 5 визитов', req: collectorGet('/sfl/merchant/history?limit=5') },
+  { title: 'Задания недели', note: 'Общие для всех NPC', req: collectorGet('/sfl/chores/current') },
+  { title: 'Баунти-борд', note: 'Животные и Поппи', req: collectorGet('/sfl/bounties/current') },
+  { title: 'Билетные доставки сейчас', note: 'Самый частый заказ у топа и его доля (share)', req: collectorGet('/sfl/deliveries/tickets') },
+  { title: 'Билетные доставки — история', note: 'Как менялся заказ у NPC за 7 дней (одинаковые снимки склеены)', req: collectorGet('/sfl/deliveries/tickets/history?days=7') },
+  { title: 'Задания — история', note: 'По неделям, последние 4', req: collectorGet('/sfl/chores/history?weeks=4') },
+  { title: 'Баунти-борд — история', note: 'Составы борда во времени, последние 4', req: collectorGet('/sfl/bounties/history?boards=4') },
+  { title: 'Доставки за монеты — статистика', note: 'Ночной дамп, все активные фермы', req: collectorGet('/sfl/deliveries/stats?type=coins') },
+  { title: 'Доставки за Flower — статистика', note: 'Ночной дамп, все активные фермы', req: collectorGet('/sfl/deliveries/stats?type=flower') },
+];
+if (item) blocks.push({ title: `Владельцы предмета: ${item}`, note: 'Последняя проверка у топа', req: collectorGet(`/sfl/items/${encodeURIComponent(item)}/owners`) });
+if (auction) blocks.push({ title: `Владельцы по аукциону: ${auction}`, note: 'Все проверки: сразу, +1 ч, +24 ч, ночные', req: collectorGet(`/sfl/auctions/${encodeURIComponent(auction)}/top-owners`) });
+
+blocks.push(
+  { title: 'Текущая глава', note: 'Мутанты и магазин Стеллы — из данных игры', req: collectorGet('/sfl/chapter/current') },
+  { title: 'Предметы главы — у скольких игроков', note: 'Мутанты и магазин Стеллы по ночному дампу: holders — все активные, top_holders — топ', req: collectorGet('/sfl/chapter/items') },
+  { title: 'Топ лидерборда — сейчас', note: 'Опыт, уровень, возвышение; обновляется каждый час (первые 20)', req: collectorGet('/sfl/top/latest?limit=20') },
+  { title: 'Профили топа — ночной дамп', note: 'Опыт, уровень, возвышение и отслеживаемые предметы главы (первые 20)', req: collectorGet('/sfl/top/profiles?limit=20') },
+  { title: `Отслеживаемый предмет: ${watched}`, note: 'Кто из топа им владеет — по последнему дампу', req: collectorGet(`/sfl/top/watched/${encodeURIComponent(watched)}`) },
+);
+
+const results = await Promise.all(blocks.map((b) => b.req));
+const health = await collectorGet('/health', 4000);
+
+const MAX_ROWS = 15;
+
+/** Любой ответ → плоский список строк для таблицы. */
+function toRows(data: unknown): { rows: Record<string, unknown>[]; extra: string | null } {
+  if (Array.isArray(data)) return { rows: data.filter((r) => r && typeof r === 'object') as Record<string, unknown>[], extra: null };
+  if (data && typeof data === 'object') {
+    const obj = data as Record<string, unknown>;
+    if (Array.isArray(obj.rows)) {
+      const { rows, ...rest } = obj;
+      return {
+        rows: (rows as unknown[]).filter((r) => r && typeof r === 'object') as Record<string, unknown>[],
+        extra: Object.entries(rest).map(([k, v]) => `${k}: ${String(v)}`).join(' · ') || null,
+      };
+    }
+    // Объект с главным списком (глава, владельцы): строки — из списка, остальное — подпись.
+    const listKey = ['items', 'owners'].find((k) => Array.isArray(obj[k]) && (obj[k] as unknown[]).some((r) => r && typeof r === 'object' && !Array.isArray(r)));
+    if (listKey) {
+      const { [listKey]: list, ...rest } = obj;
+      return {
+        rows: (list as unknown[]).filter((r) => r && typeof r === 'object') as Record<string, unknown>[],
+        extra: Object.entries(rest).map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : String(v)}`).join(' · ') || null,
+      };
+    }
+    return { rows: [obj], extra: null };
+  }
+  return { rows: [], extra: null };
+}
+
+function cell(v: unknown): { text: string; full: string | null } {
+  if (v == null) return { text: '—', full: null };
+  if (Array.isArray(v)) {
+    const full = JSON.stringify(v);
+    const head = full.length > 60 ? `${full.slice(0, 60)}…` : full;
+    return { text: v.length > 1 ? `[${v.length}] ${head}` : head, full };
+  }
+  if (typeof v === 'object') {
+    const full = JSON.stringify(v);
+    return { text: full.length > 70 ? `${full.slice(0, 70)}…` : full, full };
+  }
+  const s = String(v);
+  if (typeof v === 'string' && /^\d{4}-\d\d-\d\dT/.test(s)) {
+    return { text: s.replace('T', ' ').replace(/\.\d+/, '').replace(/(Z|\+00:00)$/, ' UTC'), full: s };
+  }
+  return { text: s.length > 90 ? `${s.slice(0, 90)}…` : s, full: s.length > 90 ? s : null };
+}
+
+function age(iso: unknown): string | null {
+  if (typeof iso !== 'string') return null;
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return null;
+  const min = Math.round((Date.now() - t) / 60000);
+  if (min < 1) return 'только что';
+  if (min < 90) return `${min} мин назад`;
+  if (min < 48 * 60) return `${Math.round(min / 60)} ч назад`;
+  return `${Math.round(min / 1440)} дн назад`;
+}
+
+const chip = (r: CollectorResult) => (r.status >= 200 && r.status < 300 ? 'ok' : r.status === 404 ? 'empty' : 'bad');
+const chipText = (r: CollectorResult) =>
+  r.status === 0 ? 'нет связи' : r.status === 404 ? '404 · данных ещё нет' : `HTTP ${r.status}`;
+---
+
+<BaseLayout
+  title="Debug: sfl-collector"
+  description="Внутренняя проверка данных, которые собирает sfl-collector."
+  noindex={true}
+>
+  <main class="gc-content gc-col-page">
+    <header class="gc-col-head">
+      <span class="gc-col-tag">Debug</span>
+      <h1>sfl-collector: какие данные мы видим</h1>
+      <p>
+        Служебная страница вне навигации. Сервер сайта читает публичные эндпоинты
+        <code>{COLLECTOR_BASE}</code> (только чтение) и показывает ответ как есть.
+        <b class={`gc-col-chip gc-col-chip--${chip(health)}`}>health: {chipText(health)}</b>
+      </p>
+      <form method="get" class="gc-col-form">
+        <input name="item" placeholder="Предмет, например Pumpkin Hat" value={item} />
+        <input name="auction" placeholder="ID аукциона" value={auction} />
+        <input name="watched" placeholder="Отслеживаемый предмет" value={watched} />
+        <button type="submit" class="gc-btn-secondary">Проверить</button>
+      </form>
+    </header>
+
+    {blocks.map((b, i) => {
+      const r = results[i];
+      const { rows, extra } = toRows(r.data);
+      const cols = [...new Set(rows.flatMap((x) => Object.keys(x)))];
+      const shown = rows.slice(0, MAX_ROWS);
+      const isStatus = i === 0;
+      return (
+        <section class="gc-card gc-col-block">
+          <div class="gc-col-block-head">
+            <div>
+              <h2>{b.title}</h2>
+              <p class="gc-col-note">{b.note}</p>
+            </div>
+            <div class="gc-col-meta">
+              <span class={`gc-col-chip gc-col-chip--${chip(r)}`}>{chipText(r)}</span>
+              <span class="gc-col-ms">{r.ms} мс</span>
+              <code class="gc-col-path">GET {r.path}</code>
+            </div>
+          </div>
+
+          {r.error && r.status !== 404 && <p class="gc-col-error">{r.error}</p>}
+          {r.status === 404 && r.error && <p class="gc-col-note">{r.error}</p>}
+          {extra && <p class="gc-col-note">{extra}</p>}
+
+          {shown.length > 0 ? (
+            <div class="gc-col-table-wrap">
+              <table class="gc-col-table">
+                <thead>
+                  <tr>
+                    {cols.map((c) => <th>{c}</th>)}
+                    {isStatus && <th>обновлено</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {shown.map((row) => (
+                    <tr>
+                      {cols.map((c) => {
+                        const v = cell(row[c]);
+                        return <td title={v.full ?? undefined}>{v.text}</td>;
+                      })}
+                      {isStatus && <td>{age(row.finished_at ?? row.started_at) ?? '—'}</td>}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {rows.length > MAX_ROWS && <p class="gc-col-note">Показаны первые {MAX_ROWS} из {rows.length} строк — полный ответ в JSON ниже.</p>}
+            </div>
+          ) : (
+            r.status >= 200 && r.status < 300 && <p class="gc-col-note">Пустой ответ.</p>
+          )}
+
+          {r.data != null && (
+            <details class="gc-col-raw">
+              <summary>Сырой JSON</summary>
+              <pre>{JSON.stringify(r.data, null, 2).slice(0, 20000)}</pre>
+            </details>
+          )}
+        </section>
+      );
+    })}
+  </main>
+</BaseLayout>
+
+<style>
+  .gc-col-page { padding-top: 24px; padding-bottom: 48px; }
+  .gc-col-head h1 { font-family: var(--font-head); font-size: 28px; margin: 6px 0 8px; }
+  .gc-col-head p { color: var(--text-sec); font-size: 14px; line-height: 1.6; }
+  .gc-col-tag {
+    display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 10px;
+    border-radius: 999px; background: var(--amber-pale); color: var(--amber);
+  }
+  .gc-col-form { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 20px; }
+  .gc-col-form input {
+    flex: 1 1 200px; min-width: 0; padding: 8px 12px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--card-bg); color: inherit; font: inherit;
+  }
+  .gc-col-block { padding: 16px 18px; margin-bottom: 14px; }
+  .gc-col-block-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 20px; }
+  .gc-col-block h2 { font-family: var(--font-head); font-size: 17px; margin: 0; }
+  .gc-col-note { font-size: 13px; color: var(--text-sec); margin: 4px 0 0; }
+  .gc-col-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; }
+  .gc-col-ms { color: var(--text-ter); }
+  .gc-col-path { color: var(--text-sec); word-break: break-all; }
+  .gc-col-chip {
+    display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 10px;
+    border-radius: 999px; margin-left: 6px;
+  }
+  .gc-col-meta .gc-col-chip { margin-left: 0; }
+  .gc-col-chip--ok { background: var(--green-pale); color: var(--green-dark); }
+  .gc-col-chip--empty { background: var(--amber-pale); color: var(--amber); }
+  .gc-col-chip--bad { background: rgba(220, 70, 70, 0.18); color: #e57373; }
+  .gc-col-error { color: #e57373; font-size: 13px; margin: 8px 0 0; word-break: break-word; }
+  .gc-col-table-wrap { overflow-x: auto; margin-top: 12px; border: 1px solid var(--border); border-radius: 10px; }
+  .gc-col-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .gc-col-table th {
+    text-align: left; font-size: 11px; color: var(--text-sec); padding: 8px 10px;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  .gc-col-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; max-width: 320px; word-break: break-word; }
+  .gc-col-table tr:last-child td { border-bottom: none; }
+  .gc-col-raw { margin-top: 10px; font-size: 13px; }
+  .gc-col-raw summary { cursor: pointer; color: var(--text-sec); }
+  .gc-col-raw pre {
+    max-height: 360px; overflow: auto; margin-top: 8px; padding: 10px 12px; border-radius: 8px;
+    background: rgba(0, 0, 0, 0.25); font-size: 12px; line-height: 1.5;
+  }
+</style>
