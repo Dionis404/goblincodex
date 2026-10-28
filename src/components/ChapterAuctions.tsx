@@ -117,21 +117,21 @@ const KIND_LABEL: Record<Kind, string> = {
   decor: 'Декор',
 };
 
-// Ручная разметка предметов главы: буст даёт игровой бонус, декор — чисто украшение.
-// TODO: заменить на автоподгрузку из БД предметов, когда она будет готова.
+// Буст даёт игровой бонус, декор — чисто украшение. Берём из каталога предметов
+// (sfl_buffs, наполняется sfl:populate из кода игры). Ручной список — только для
+// предметов, которых в каталоге нет (питомцы-NFT и т. п.).
 const ITEM_KIND: Record<string, Kind> = {
   'Pufferfish': 'decor',
   'Fat Crab': 'decor',
-  // Ascension Age — нет записи в collectibleItemBuffs.ts/bumpkinItemBuffs.ts
-  'Coat Rack': 'decor',
-  'Salt Rug': 'decor',
 };
 
 function itemName(a: Auction): string {
   return a.collectible ?? a.wearable ?? a.nft ?? '—';
 }
 
-function itemKind(a: Auction): Kind {
+function itemKind(a: Auction, catalog?: Record<string, CatalogEntry>): Kind {
+  const entry = catalog?.[itemName(a)];
+  if (entry) return entry.boosts.length > 0 ? 'boost' : 'decor';
   return ITEM_KIND[itemName(a)] ?? 'boost';
 }
 
@@ -397,12 +397,12 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
         return status === statusFilter;
       })
       .filter(a => (costFilter === 'all' || costKey(a) === costFilter))
-      .filter(a => (kindFilter === 'all' || itemKind(a) === kindFilter))
+      .filter(a => (kindFilter === 'all' || itemKind(a, itemCatalog) === kindFilter))
       .filter(a => (nameFilter === 'all' || itemName(a) === nameFilter))
       .filter(a => (chapterFilter === 'all' || chapterNameAt(a.startAt) === chapterFilter))
       .filter(a => !q || itemName(a).toLowerCase().includes(q))
       .sort((a, b) => a.startAt - b.startAt);
-  }, [auctions, statusFilter, costFilter, kindFilter, nameFilter, chapterFilter, search, now]);
+  }, [auctions, itemCatalog, statusFilter, costFilter, kindFilter, nameFilter, chapterFilter, search, now]);
 
   const summary = useMemo(() => {
     let totalSupply = 0;
@@ -545,7 +545,7 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
                         {itemName(a)}
                       </button>
                       <div className="ca-row-meta">
-                        <span className={`ca-kind-badge ca-kind-badge--${itemKind(a)}`}>{KIND_LABEL[itemKind(a)]}</span>
+                        <span className={`ca-kind-badge ca-kind-badge--${itemKind(a, itemCatalog)}`}>{KIND_LABEL[itemKind(a, itemCatalog)]}</span>
                         <span className="ca-type-badge">{TYPE_LABEL[a.type]}</span>
                         <span className="ca-row-supply">Лимит {a.supply} на ставку</span>
                         {ingredients.length > 0 ? (
