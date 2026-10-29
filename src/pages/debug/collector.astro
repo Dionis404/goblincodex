@@ -2,6 +2,10 @@
 export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { COLLECTOR_BASE, collectorGet, type CollectorResult } from '../../lib/sflCollector';
+import { latestPrices } from '../../lib/latestPrices';
+import { getCurrentChapter } from '../../lib/chapters';
+import { VALUER_PRICE_NAMES, choreSpend, coinRateFrom, createValuer, isAnimal, type Basket } from '../../lib/rewardValue';
+import type { AnimalType } from '../../lib/animals';
 
 const item = (Astro.url.searchParams.get('item') ?? '').trim().slice(0, 100);
 const auction = (Astro.url.searchParams.get('auction') ?? '').trim().slice(0, 100);
@@ -39,6 +43,115 @@ blocks.push(
 
 const results = await Promise.all(blocks.map((b) => b.req));
 const health = await collectorGet('/health', 4000);
+
+// ─── Выгодность: цена сданного по рынку и Flower за награду ─────────────────
+type Items = Record<string, number>;
+const listOf = <T,>(path: string): T[] => {
+  const d = results.find((r) => r.path === path)?.data;
+  return Array.isArray(d) ? (d as T[]) : [];
+};
+const tickets = listOf<{ npc: string; items: Items; base_tickets: number; share: number }>('/sfl/deliveries/tickets');
+const bounties = listOf<{ id: string; name: string; category: 'animal' | 'poppy'; level: number | null; coins: number | null; items: Items | null }>('/sfl/bounties/current');
+const chores = listOf<{ npc: string; task: string; reward: { items?: Items; coins?: number } | null }>('/sfl/chores/current');
+const ticketName = getCurrentChapter()?.ticket ?? 'Ticket';
+
+const choreSpends = chores.map((c) => choreSpend(c.task));
+const priceNames = [
+  ...VALUER_PRICE_NAMES,
+  ...tickets.flatMap((t) => Object.keys(t.items)),
+  ...bounties.filter((b) => b.category === 'poppy').map((b) => b.name),
+  ...choreSpends.flatMap((s) => Object.keys(s.items ?? {})),
+];
+const prices = tickets.length || bounties.length || chores.length ? await latestPrices(priceNames).catch(() => ({})) : {};
+const coinRate = coinRateFrom(prices);
+const valuer = createValuer(prices, coinRate);
+
+interface ValueRow {
+  who: string;
+  give: Basket | null;
+  giveNote?: string;
+  /** Билеты главы в награде (база, без VIP и предметов главы). */
+  tickets: number;
+  /** Остальная награда во Flower (монеты, предметы). */
+  other: number | null;
+  otherLabel: string;
+}
+
+function rewardOf(items: Items | null | undefined, coins: number | null | undefined) {
+  const rest: Items = { ...(items ?? {}) };
+  const t = rest[ticketName] ?? 0;
+  delete rest[ticketName];
+  if (coins) rest.coins = (rest.coins ?? 0) + coins;
+  const keys = Object.keys(rest);
+  const b = valuer.basket(rest);
+  return {
+    tickets: t,
+    other: keys.length ? b.total : 0,
+    otherLabel: keys.map((k) => `${fmtN(rest[k])} ${k === 'coins' ? 'монет' : k}`).join(', '),
+  };
+}
+
+const deliveryRows: ValueRow[] = tickets.map((t) => ({
+  who: `${t.npc} · ${Math.round(t.share * 100)}% топа`,
+  give: valuer.basket(t.items),
+  tickets: t.base_tickets,
+  other: 0,
+  otherLabel: '',
+}));
+const poppyRows: ValueRow[] = bounties
+  .filter((b) => b.category === 'poppy')
+  .map((b) => ({ who: b.name, give: valuer.basket({ [b.name]: 1 }), ...rewardOf(b.items, b.coins) }));
+const animalRows: ValueRow[] = bounties
+  .filter((b) => b.category === 'animal' && isAnimal(b.name))
+  .map((b) => {
+    const a = valuer.animal(b.name as AnimalType, b.level ?? 0);
+    return {
+      who: `${b.name} ур. ${b.level}`,
+      give: { lines: [], missing: a.total == null ? [b.name] : [], known: a.total ?? 0, total: a.total },
+      giveNote: a.total == null ? undefined : `покупка ${fmtF(a.buy)} + корм ${fmtF(a.feed)}`,
+      ...rewardOf(b.items, b.coins),
+    };
+  });
+const choreRows: ValueRow[] = chores.map((c, i) => ({
+  who: `${c.npc}: ${c.task}`,
+  give: choreSpends[i].items ? valuer.basket(choreSpends[i].items!) : null,
+  giveNote: choreSpends[i].note,
+  ...rewardOf(c.reward?.items, c.reward?.coins),
+}));
+
+/** Flower за 1 билет (за вычетом прочей награды) или окупаемость, если билетов нет. */
+function metric(r: ValueRow): { perTicket: number | null; ratio: number | null; lower: boolean } {
+  // Часть сдачи без цены → по оценённой части: цена билета — нижняя граница.
+  const lower = r.give != null && r.give.total == null && r.give.known > 0;
+  const cost = r.give?.total ?? (lower ? r.give!.known : null);
+  if (cost == null || r.other == null) return { perTicket: null, ratio: null, lower: false };
+  if (r.tickets > 0) return { perTicket: Math.max(0, cost - r.other) / r.tickets, ratio: null, lower };
+  return { perTicket: null, ratio: cost > 0 && !lower ? r.other / cost : null, lower };
+}
+const byValue = (rows: ValueRow[]) =>
+  [...rows].sort((a, b) => {
+    const ma = metric(a), mb = metric(b);
+    const ka = ma.perTicket ?? (ma.ratio != null ? -ma.ratio : Infinity);
+    const kb = mb.perTicket ?? (mb.ratio != null ? -mb.ratio : Infinity);
+    return ka - kb;
+  });
+
+const valueTables = [
+  { title: 'Доставки за билеты', note: 'Самый частый заказ у топа. Билеты — база NPC: +2 с VIP и +1 за каждый бонусный предмет главы.', rows: byValue(deliveryRows) },
+  { title: 'Баунти Поппи', note: 'Сдаётся 1 шт. предмета — цена по рынку (или по рецепту).', rows: byValue(poppyRows) },
+  { title: 'Баунти животных', note: 'Животное удаляется: покупка нового за монеты + корм с 0 до уровня (любимый корм, 2 поглаживания за сон, без бустов).', rows: byValue(animalRows) },
+  { title: 'Задания недели', note: 'Расход — только там, где он прямой: инструменты на действия, ингредиенты блюд, крафт инструментов. Сбор и урожай — «без прямого расхода».', rows: byValue(choreRows) },
+].filter((t) => t.rows.length);
+
+function fmtN(n: number): string {
+  return n.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
+}
+function fmtF(n: number | null | undefined): string {
+  if (n == null) return '—';
+  const digits = n >= 100 ? 0 : n >= 1 ? 2 : n >= 0.01 ? 3 : 5;
+  return n.toLocaleString('ru-RU', { maximumFractionDigits: digits });
+}
+const SOURCE_RU: Record<string, string> = { market: 'рынок', recipe: 'рецепт', compost: 'компостер', coins: 'монеты', tool: 'инструмент', food: 'рецепт блюда' };
 
 const MAX_ROWS = 15;
 
@@ -123,6 +236,74 @@ const chipText = (r: CollectorResult) =>
         <button type="submit" class="gc-btn-secondary">Проверить</button>
       </form>
     </header>
+
+    {valueTables.length > 0 && (
+      <section class="gc-card gc-col-block">
+        <h2>Выгодность: цена сдачи и Flower за {ticketName}</h2>
+        <p class="gc-col-note">
+          Цены — floor маркетплейса (если предмета на рынке нет — себестоимость по рецепту), монеты по курсу
+          {coinRate ? ` ${fmtN(Math.round(coinRate))} монет за 1 Flower` : ' — курса нет'}, без личных бустов.
+          «Flower за {ticketName}» = (цена сдачи − прочая награда) ÷ число {ticketName}; меньше — выгоднее.
+          Если в награде только монеты — окупаемость: награда ÷ цена сдачи.
+        </p>
+        {valueTables.map((t) => (
+          <div class="gc-col-value">
+            <h3>{t.title}</h3>
+            <p class="gc-col-note">{t.note}</p>
+            <div class="gc-col-table-wrap">
+              <table class="gc-col-table">
+                <thead>
+                  <tr>
+                    <th>Заказ</th>
+                    <th>Сдаёшь</th>
+                    <th>Цена, Flower</th>
+                    <th>Награда</th>
+                    <th>Flower за {ticketName}</th>
+                    <th>Окупаемость</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {t.rows.map((r) => {
+                    const m = metric(r);
+                    return (
+                      <tr>
+                        <td>{r.who}</td>
+                        <td>
+                          {r.give?.lines.map((l) => (
+                            <div title={l.unit != null ? `${fmtF(l.unit)} Flower/шт · ${SOURCE_RU[l.source ?? ''] ?? ''}` : 'нет цены'}>
+                              {fmtN(l.amount)} {l.name === 'coins' ? 'монет' : l.name}
+                              {l.unit == null && <span class="gc-col-miss"> · нет цены</span>}
+                            </div>
+                          ))}
+                          {r.giveNote && <div class="gc-col-note">{r.giveNote}</div>}
+                        </td>
+                        <td>
+                          {r.give?.total != null
+                            ? fmtF(r.give.total)
+                            : r.give && r.give.known > 0
+                              ? <span title="часть предметов без цены — нижняя граница">≥ {fmtF(r.give.known)}</span>
+                              : '—'}
+                        </td>
+                        <td>
+                          {r.tickets > 0 && <div>{r.tickets} {ticketName}</div>}
+                          {r.otherLabel && <div>{r.otherLabel}{r.other != null && r.other > 0 ? ` ≈ ${fmtF(r.other)} Flower` : ''}</div>}
+                        </td>
+                        <td><b>{m.perTicket != null && m.lower ? '≥ ' : ''}{fmtF(m.perTicket)}</b></td>
+                        <td>{m.ratio != null ? `×${fmtN(m.ratio)}` : '—'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+        <p class="gc-col-note">
+          Доставки за монеты и Flower у каждой фермы свои; в статистике коллектора (ниже) есть только список предметов без количеств,
+          поэтому их цену сдачи посчитать нельзя — нужны количества в <code>delivery_stats_daily</code>.
+        </p>
+      </section>
+    )}
 
     {blocks.map((b, i) => {
       const r = results[i];
@@ -224,6 +405,9 @@ const chipText = (r: CollectorResult) =>
   }
   .gc-col-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; max-width: 320px; word-break: break-word; }
   .gc-col-table tr:last-child td { border-bottom: none; }
+  .gc-col-value { margin-top: 16px; }
+  .gc-col-value h3 { font-size: 15px; margin: 0; }
+  .gc-col-miss { color: #e57373; }
   .gc-col-raw { margin-top: 10px; font-size: 13px; }
   .gc-col-raw summary { cursor: pointer; color: var(--text-sec); }
   .gc-col-raw pre {
