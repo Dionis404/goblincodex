@@ -193,11 +193,13 @@ export default function FermentationRecipes() {
           <div className="ref-food-boost-checks">
             <Check
               label={`Astrolabe — ${ASTROLABE_DOUBLE_CHANCE}% шанс удвоить выход`}
+              icon="Astrolabe"
               checked={boosts.astrolabe}
               onChange={(v) => set('astrolabe', v)}
             />
             <Check
               label="Salt Bottle Onesie — +1 на стойке специй"
+              icon="Salt Bottle Onesie"
               checked={boosts.saltBottleOnesie}
               onChange={(v) => set('saltBottleOnesie', v)}
             />

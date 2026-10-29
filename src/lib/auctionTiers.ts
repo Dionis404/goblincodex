@@ -92,6 +92,13 @@ async function flowerRateSeries(keys: Map<string, string>): Promise<{ t: number;
   return data;
 }
 
+/** Текущий курс Flower в $ (последний снимок) или null, если истории нет. */
+export async function flowerRateNow(): Promise<number | null> {
+  const keys = await priceKeys().catch(() => new Map<string, string>());
+  const series = await flowerRateSeries(keys).catch(() => []);
+  return series.length ? series[series.length - 1].usd : null;
+}
+
 /** Курс Flower на момент t: ближайший снимок (раньше начала истории — самый ранний известный). */
 function rateAt(series: { t: number; usd: number }[], t: number): number | null {
   if (!series.length) return null;

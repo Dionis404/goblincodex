@@ -5,6 +5,7 @@ import ToolCostCalculator from './tools/ToolCostCalculator';
 import FishCatalog from './tools/FishCatalog';
 import ComposterCosts from './tools/ComposterCosts';
 import FermentationRecipes from './tools/FermentationRecipes';
+import AnimalsCalculator from './tools/AnimalsCalculator';
 import FlowerRecipes from './tools/FlowerRecipes';
 import NpcGifts from './tools/NpcGifts';
 import CrustaceanCosts from './tools/CrustaceanCosts';
@@ -1491,6 +1492,35 @@ function FermentationSection() {
   );
 }
 
+function AnimalsSection() {
+  return (
+    <section className="ref-section">
+      <p className="ref-section-desc">
+        Куры живут в <strong>Hen House</strong>, коровы и овцы — в <strong>Barn</strong>, свиньи — в{' '}
+        <strong>Pigpen</strong>. Цикл у всех одинаковый: после сбора продукции животное спит (база 24 ч), во сне его
+        можно погладить два раза — после первой и второй трети сна, а проснувшись, оно съедает столько порций
+        любимого корма, сколько нужно до следующего уровня, и даёт продукцию нового уровня. На 15-м уровне цикл —
+        один «круг» опыта последнего уровня.
+      </p>
+      <p className="ref-section-desc">
+        <strong>Поглаживания</strong> тоже дают опыт и экономят корм. Чем гладить, животное выбирает случайно:
+        Petting Hand, Brush или Music Box, и с уровнем растёт шанс на инструменты дороже. Поэтому опыт за
+        поглаживание считается средним по шансам уровня (инструменты не тратятся). Если гладить некогда, поставьте
+        0 или 1. Порции корма — тоже среднее: лишний опыт не сгорает, а переходит в следующий цикл. Цена корма — по
+        floor ингредиентов (Kernel Blend = Corn, Hay = Wheat, NutriBarley = Barley, Mixed Grain = все три),
+        помои для свиней — самый дешёвый по рынку вариант из списка. Omnifeed даёт столько же опыта, сколько
+        любимый корм, и стоит 1 Gem — цена гема считается по выбранному паку (по умолчанию 15 500 за $129,99, можно
+        учесть скидку 20% за оплату Flower) и текущему курсу Flower.
+        Лакомства из стойки специй считаются по себестоимости рецепта, делённой на число сборов, которое они
+        держатся. Бад засчитывается один — лучший (тип Retreat, стебель Egg Head, множитель ауры). Шанс
+        Buckaroo (двойной сбор) бросает сервер, поэтому его нужно указать самому. Не учтены болезни (шанс тоже
+        решает сервер; лечение — 1 Barn Delight).
+      </p>
+      <AnimalsCalculator />
+    </section>
+  );
+}
+
 function FlowerSection() {
   return (
     <section className="ref-section">
@@ -1532,6 +1562,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'crustaceans', icon: '🦀', label: 'Раки', Content: CrustaceanSection },
   { id: 'compost', icon: '🪱', label: 'Компостер', Content: CompostSection },
   { id: 'fermentation', icon: '🫙', label: 'Ферментация и специи', Content: FermentationSection },
+  { id: 'animals', icon: '🐔', label: 'Животные', Content: AnimalsSection },
   { id: 'flowers', icon: '🌸', label: 'Цветы', Content: FlowerSection },
   { id: 'npcgifts', icon: '🎁', label: 'Подарки NPC', Content: NpcGiftSection },
   { id: 'upgrades', icon: '⛏️', label: 'Улучшение ресурсных нод', Content: ResourceUpgradeSection },

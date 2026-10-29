@@ -18,5 +18,10 @@
   "Goblin Medallion": "/sprites/wearables/389.webp",
   "Nightshade Medallion": "/sprites/wearables/390.webp",
   "Sunflorian Medallion": "/sprites/wearables/391.webp",
-  "Salt Sculpture": "/sprites/sculptures/salt_sculpture_01.webp"
+  "Salt Sculpture": "/sprites/sculptures/salt_sculpture_01.webp",
+  "Astrolabe": "/sprites/sfts/astrolabe.webp",
+  "Salt Bottle Onesie": "/sprites/wearables/578.webp",
+  "Grain Grinder": "/sprites/sfts/grain_grinder.png",
+  "Oil": "/sprites/resources/oil.webp",
+  "VIP": "/sprites/icons/vip.webp"
 }

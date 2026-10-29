@@ -1,0 +1,99 @@
+/* Животные (src/components/tools/AnimalsCalculator.tsx). Панель бустов и чипы ресурсов —
+   общие стили .ref-marvel-boost-*, .ref-resource-chip* (ReferenceCatalog.css), таблица — SortableTable.css. */
+.ac-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ac-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ac-tab img {
+  image-rendering: pixelated;
+}
+.ac-tab--active {
+  border-color: var(--green-mid);
+  background: var(--green-pale);
+}
+.ac-facts {
+  margin-bottom: 10px;
+}
+.ac-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-bottom: 12px;
+}
+.ac-summary {
+  padding: 14px 16px;
+  margin: 14px 0;
+}
+.ac-summary-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.ac-summary-head img {
+  image-rendering: pixelated;
+}
+.ac-summary-head > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ac-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: 12px 18px;
+}
+.ac-summary-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.ac-summary-label {
+  font-size: 12px;
+  color: var(--text-sec);
+}
+.ac-food {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ac-food > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ac-neg {
+  color: var(--red);
+}
+.ac-row-max td {
+  background: var(--green-pale);
+}
+.ac-foot {
+  display: block;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.ac-extra {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.ac-num-input {
+  width: 70px;
+}

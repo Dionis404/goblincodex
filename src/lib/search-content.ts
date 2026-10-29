@@ -6,6 +6,7 @@ import { CRUSTACEAN_LOOKUP, FISH_RECORDS, GUARANTEED_CATCH, WATER_TRAPS } from '
 import { COMPOSTERS, COMPOST_RECIPES, COMPOSTER_BUILDINGS, WORM_AMOUNTS } from './composterData.generated';
 import { BAIT_FAMILIES, FERMENTATION_RECIPES, SPICE_RACK_RECIPES } from './fermentationData.generated';
 import { FLOWER_SEEDS, FLOWER_RECIPES, CROSSBREED_AMOUNTS } from './flowerData.generated';
+import { ANIMAL_DROPS, ANIMAL_LEVELS, LOVE_ITEM_XP, PIG_FEEDS, REQUIRED_FOOD_QTY } from './animalData.generated';
 import { FLOWER_POINTS, NPC_FLOWER_BONUSES, NPC_GIFTS } from './npcGiftData.generated';
 
 // Общая логика чтения контента для индексации (scripts/index-search.ts) и для
@@ -185,6 +186,21 @@ export const REFERENCE_ENTRIES: ReferenceEntry[] = [
         `${r.name} (${Object.entries(r.ingredients).map(([i, n]) => `${n} ${i}`).join(' + ')} → ${Object.entries(r.outputs).map(([i, n]) => `${n} ${i}`).join(' + ')}, ${r.seconds / 60} мин)`,
       ).join('; ') +
       '. Бусты: Ager ×2/×3/×4 к выходу и расходу, Refiner шанс +1 Refined Salt, Bacalhau +1/+2/+3 к наживке, Astrolabe 15% удвоить выход, Salt Bottle Onesie +1 на стойке специй.',
+  },
+  {
+    id: 'animals',
+    title: 'Животные',
+    summary:
+      'животные, куры, коровы, овцы, свиньи, Hen House, Barn, Pigpen, кормление, корм, Kernel Blend, Hay, NutriBarley, Mixed Grain, Omnifeed, помои, Basic Slop, Hearty Slop, Rich Slop, Gourmet Slop, поглаживания, Petting Hand, Brush, Music Box, уровни животных, продукция, яйца, перья, молоко, кожа, шерсть, Merino Wool, трюфели, щетина, Pig Bristles, грязь, Mud, Salt Lick, Honey Treat, Truffle Seasoning, бусты животных, цена кормления',
+    context:
+      'Цикл животного: сон 24 ч, два поглаживания во сне (после первой и второй трети), затем кормление любимым кормом до следующего уровня и сбор продукции. ' +
+      `Порция корма: ${Object.entries(REQUIRED_FOOD_QTY).map(([a, q]) => `${a} ${q} шт`).join(', ')}. ` +
+      `Опыт поглаживания: ${Object.entries(LOVE_ITEM_XP).map(([i, xp]) => `${i} ${xp}`).join(', ')}; инструмент выпадает случайно, на высоких уровнях чаще Music Box. ` +
+      `Опыт до 15 уровня: ${Object.entries(ANIMAL_LEVELS).map(([a, l]) => `${a} ${(l as Record<number, number>)[15]}`).join(', ')}. ` +
+      `Продукция на 15 уровне: ${Object.entries(ANIMAL_DROPS).map(([a, d]) => `${a} — ${Object.entries((d as Record<number, Record<string, number>>)[15]).map(([r, n]) => `${n} ${r}`).join(' + ')}`).join('; ')}. ` +
+      'Любимый корм кур, коров и овец: уровни 0–2 Kernel Blend, 3–5 Hay, 6–9 NutriBarley, 10–15 Mixed Grain. Свиньи едят помои: ' +
+      Object.entries(PIG_FEEDS).map(([n, f]) => `${n} (уровень ${f.tier}, одно из: ${Object.entries(f.ingredients).slice(0, 6).map(([i, q]) => `${q} ${i}`).join(', ')}…)`).join('; ') +
+      '. Грязь у свиньи: +25% опыта за корм. Лакомства: Honey Treat корм ×0,75, Salt Lick продукция ×1,05 (3 сбора), Truffle Seasoning сон ×0,5 (1 сон).',
   },
   {
     id: 'flowers',

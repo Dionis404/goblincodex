@@ -161,5 +161,7 @@
   "Ember-Roasted Truffle Potatoes": "/sprites/food/ember_roasted_truffle_potatoes.webp",
   "Truffle Cake": "/sprites/food/truffle_cake.webp",
   "Creamy Truffle Risotto": "/sprites/food/creamy_truffle_risotto.webp",
-  "Goblin’s Treat": "/sprites/food/goblins_treat.png"
+  "Goblin’s Treat": "/sprites/food/goblins_treat.png",
+  "Truffle": "/sprites/resources/truffle.webp",
+  "Onion": "/sprites/crops/onion/crop.png"
 }

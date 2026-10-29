@@ -77,6 +77,7 @@ export function TimeBoostsPanel({ boosts, onChange }: { boosts: TimeBoosts; onCh
         <div className="ref-food-boost-checks">
           <Check
             label="Масло залито в здание"
+            icon="Oil"
             checked={boosts.oilFilled}
             onChange={(v) => onChange({ ...boosts, oilFilled: v })}
           />
@@ -183,7 +184,7 @@ export function XpBoostsPanel({ boosts, onChange }: { boosts: XpBoosts; onChange
             checked={boosts.pan}
             onChange={(v) => onChange({ ...boosts, pan: v })}
           />
-          <Check label="VIP Access (+10%)" checked={boosts.vip} onChange={(v) => onChange({ ...boosts, vip: v })} />
+          <Check label="VIP Access (+10%)" icon="VIP" checked={boosts.vip} onChange={(v) => onChange({ ...boosts, vip: v })} />
           <Check
             label="Observatory (+5%)"
             icon="Observatory"
@@ -198,6 +199,7 @@ export function XpBoostsPanel({ boosts, onChange }: { boosts: XpBoosts; onChange
           />
           <Check
             label="Grain Grinder (+20%, торты)"
+            icon="Grain Grinder"
             checked={boosts.grainGrinder}
             onChange={(v) => onChange({ ...boosts, grainGrinder: v })}
           />
