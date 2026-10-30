@@ -17,6 +17,7 @@ import {
   ANIMAL_SKILL_EFFECTS,
   ANIMAL_SLEEP_HOURS,
   FEED_BUFF_HARVESTS,
+  MUD_HARVESTS,
   LOVE_ITEM_CHANCES,
   LOVE_ITEM_XP,
   MUD_PER_APPLICATION,
@@ -345,9 +346,9 @@ export function boostedDrop(a: AnimalType, resource: string, base: number, b: An
   return Math.round(amount * 100) / 100;
 }
 
-/** Сколько сборов держится лакомство или грязь (getAnimalHarvests, Vibraphone ×2). */
+/** Сколько сборов держится лакомство (getAnimalHarvests) или грязь (getMudHarvests); Vibraphone ×2. */
 export function buffHarvests(item: FeedBuff | 'Mud', b: AnimalBoosts): number {
-  const base = item === 'Truffle Seasoning' ? 1 : FEED_BUFF_HARVESTS;
+  const base = item === 'Mud' ? MUD_HARVESTS : item === 'Truffle Seasoning' ? 1 : FEED_BUFF_HARVESTS;
   return base * (has(b, 'Vibraphone') ? 2 : 1);
 }
 

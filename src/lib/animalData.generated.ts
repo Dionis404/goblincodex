@@ -1069,17 +1069,19 @@ export const LOVE_ITEM_CHANCES = {
 } as const;
 
 export const BEETLE_FEEDING_XP = {
-  "Green Beetle": 80,
-  "Blue Beetle": 160,
-  "Pink Beetle": 320,
-  "Amber Beetle": 640
+  "Green Beetle": 100,
+  "Blue Beetle": 200,
+  "Pink Beetle": 400,
+  "Amber Beetle": 800
 } as const;
 
-export const MUD_PER_APPLICATION = 10 as const;
+export const MUD_PER_APPLICATION = 25 as const;
 
 export const MUD_XP_MULTIPLIER = 1.25 as const;
 
 export const FEED_BUFF_HARVESTS = 3 as const;
+
+export const MUD_HARVESTS = 1 as const;
 
 export const ANIMAL_SKILL_EFFECTS = {
   "Efficient Feeding": {
@@ -1275,7 +1277,7 @@ export const ANIMAL_ICONS = {
   "Barn Manager": "/sprites/skills/barn_manager.png",
   "Barnacle": "/sprites/crustaceans/barnacle.webp",
   "Barred Knifejaw": "/sprites/fish/barred_knifejaw.png",
-  "Basic Slop": "/sprites/animals/foods/kernel_blend_v2.webp",
+  "Basic Slop": "/sprites/animals/food/basic_slop.webp",
   "Beetle Sheep": "/sprites/sfts/beetle_sheep.webp",
   "Beetroot": "/sprites/crops/beetroot/crop.png",
   "Black Sheep Onesie": "/sprites/wearables/402.webp",
@@ -1327,14 +1329,14 @@ export const ANIMAL_ICONS = {
   "Gold Egg": "/sprites/sfts/gold_egg.png",
   "Golden Cow": "/sprites/sfts/golden_cow.webp",
   "Golden Sheep": "/sprites/sfts/golden_sheep.webp",
-  "Gourmet Slop": "/sprites/animals/foods/mixed_grain_v2.webp",
+  "Gourmet Slop": "/sprites/animals/food/gourmet_slop.webp",
   "Grape": "/sprites/greenhouse/grape.webp",
   "Green Beetle": "/sprites/resources/beetles/green_beetle.webp",
   "Halibut": "/sprites/fish/halibut.png",
   "Hammerhead shark": "/sprites/fish/hammerhead_shark.png",
   "Hay": "/sprites/animals/foods/hay.webp",
   "Heartwarming Instruments": "/sprites/icons/skill_icons/heartwarming_instruments.png",
-  "Hearty Slop": "/sprites/animals/foods/hay.webp",
+  "Hearty Slop": "/sprites/animals/food/hearty_slop.webp",
   "Hermit Crab": "/sprites/crustaceans/hermit_crab.webp",
   "Honey": "/sprites/resources/honey.png",
   "Honey Treat": "/sprites/food/honey_treat.webp",
@@ -1396,7 +1398,7 @@ export const ANIMAL_ICONS = {
   "Rhubarb": "/sprites/crops/rhubarb/crop.png",
   "Rice": "/sprites/greenhouse/rice.webp",
   "Rich Chicken": "/sprites/animals/chickens/rich_chicken.webp",
-  "Rich Slop": "/sprites/animals/foods/nutri_barley_v2.webp",
+  "Rich Slop": "/sprites/animals/food/rich_slop.webp",
   "Rock Blackfish": "/sprites/fish/rock_blackfish.png",
   "Salt Lick": "/sprites/food/salt_lick.webp",
   "Saw Shark": "/sprites/fish/saw_shark.png",

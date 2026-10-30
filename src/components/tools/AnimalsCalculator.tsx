@@ -8,6 +8,7 @@ import { useItemPrices } from '../../lib/useItemPrices';
 import { useCoinRate } from '../../lib/useCoinRate';
 import { FERMENTATION_PRICE_NAMES, NO_AGING_BOOSTS, createPricer } from '../../lib/fermentation';
 import { DEFAULT_GEM_PACK, FLOWER_PAYMENT_DISCOUNT, GEM_PACKS, gemUsd } from '../../lib/gemPacks';
+import { pluralRu } from '../../lib/formatRelativeTime';
 import {
   ANIMALS,
   ANIMAL_LABEL,
@@ -318,7 +319,7 @@ export default function AnimalsCalculator() {
             <input type="checkbox" checked={boosts.mud} onChange={(e) => set('mud', e.target.checked)} />
             <Icon name="Mud" />
             <span>
-              Грязь — опыт за корм ×1,25 ({MUD_PER_APPLICATION} Mud на {buffHarvests('Mud', boosts)} сбора, цена не учитывается)
+              Грязь — опыт за корм ×1,25 ({MUD_PER_APPLICATION} Mud на {buffHarvests('Mud', boosts)} {pluralRu(buffHarvests('Mud', boosts), 'сбор', 'сбора', 'сборов')}, цена не учитывается)
             </span>
           </label>
         )}

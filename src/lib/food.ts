@@ -52,7 +52,7 @@ export const FIRE_PIT: Recipe[] = [
   { name: 'Pizza Margherita', building: 'Fire Pit', experience: 25000, cookingSeconds: 72000, ingredients: [['Tomato', 30], ['Cheese', 5], ['Wheat', 20]] },
   { name: 'Furikake Sprinkle', building: 'Fire Pit', experience: 1000, cookingSeconds: 0, ingredients: [['Fish Flake', 1], ['Seaweed', 1]], isFish: true },
   // Блюда Главы 16 — ещё не в игре. Числа по PR #7810 (ребаланс трюфельных рецептов, на момент записи не влит); названия — как в коде игры.
-  { name: 'Ember-Roasted Truffle Potatoes', building: 'Fire Pit', experience: 800, cookingSeconds: 1 * 3600, ingredients: [['Truffle', 1], ['Potato', 30]], upcoming: true },
+  { name: 'Ember-Roasted Truffle Potatoes', building: 'Fire Pit', experience: 1000, cookingSeconds: 1 * 3600, ingredients: [['Truffle', 1], ['Potato', 30]], upcoming: true },
 ];
 
 export const KITCHEN: Recipe[] = [
@@ -76,7 +76,7 @@ export const KITCHEN: Recipe[] = [
   { name: 'Surimi Rice Bowl', building: 'Kitchen', experience: 3000, cookingSeconds: 0, ingredients: [['Fish Stick', 1], ['Rice', 1], ['Onion', 1]], isFish: true },
   { name: 'Creamy Crab Bite', building: 'Kitchen', experience: 10000, cookingSeconds: 0, ingredients: [['Crab Stick', 1], ['Cheese', 3]], isFish: true },
   { name: 'Crimstone Infused Fish Oil', building: 'Kitchen', experience: 18000, cookingSeconds: 0, ingredients: [['Fish Oil', 1], ['Crimstone', 1]], isFish: true },
-  { name: 'Creamy Truffle Risotto', building: 'Kitchen', experience: 28000, cookingSeconds: 48 * 3600, ingredients: [['Truffle', 8], ['Rice', 3], ['Wild Mushroom', 5]], upcoming: true },
+  { name: 'Creamy Truffle Risotto', building: 'Kitchen', experience: 32000, cookingSeconds: 48 * 3600, ingredients: [['Truffle', 8], ['Rice', 3], ['Wild Mushroom', 5]], upcoming: true },
 ];
 
 export const BAKERY: Recipe[] = [
@@ -97,7 +97,7 @@ export const BAKERY: Recipe[] = [
   { name: 'Wheat Cake', building: 'Bakery', experience: 1100, cookingSeconds: 86400, ingredients: [['Wheat', 35], ['Egg', 30]], isCake: true },
   { name: 'Honey Cake', building: 'Bakery', experience: 4000, cookingSeconds: 28800, ingredients: [['Honey', 10], ['Wheat', 10], ['Egg', 20]], isCake: true, isHoney: true },
   { name: 'Lemon Cheesecake', building: 'Bakery', experience: 30000, cookingSeconds: 108000, ingredients: [['Lemon', 20], ['Cheese', 5], ['Egg', 40]], isCake: true },
-  { name: 'Truffle Cake', building: 'Bakery', experience: 25000, cookingSeconds: 26 * 3600, ingredients: [['Truffle', 15], ['Wheat', 30], ['Egg', 30], ['Honey', 5]], isCake: true, isHoney: true, upcoming: true },
+  { name: 'Truffle Cake', building: 'Bakery', experience: 30000, cookingSeconds: 26 * 3600, ingredients: [['Truffle', 15], ['Wheat', 30], ['Egg', 30], ['Honey', 5]], isCake: true, isHoney: true, upcoming: true },
 ];
 
 export const DELI: Recipe[] = [

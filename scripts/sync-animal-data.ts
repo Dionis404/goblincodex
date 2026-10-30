@@ -96,6 +96,7 @@ const loveChances = evalLiteral(constBlock(loveAnimalTs, "ANIMAL_ITEM_CHANCES"))
 const mudPerApplication = constNumber(libAnimalsTs, "MUD_PER_APPLICATION");
 const mudXpMultiplier = constNumber(libAnimalsTs, "MUD_XP_MULTIPLIER");
 const feedBuffHarvests = constNumber(feedBuffTs, "BASE_FEED_BUFF_HARVESTS");
+const mudHarvests = constNumber(feedBuffTs, "MUD_HARVESTS");
 const beetleXp = evalLiteral(constBlock(beetlesTs, "BEETLE_FEEDING_XP")) as Num;
 
 // Ранги навыков ветки «Животные», которые влияют на корм, опыт, сон и продукцию.
@@ -207,6 +208,7 @@ const out = {
   MUD_PER_APPLICATION: mudPerApplication,
   MUD_XP_MULTIPLIER: mudXpMultiplier,
   FEED_BUFF_HARVESTS: feedBuffHarvests,
+  MUD_HARVESTS: mudHarvests,
   ANIMAL_SKILL_EFFECTS: skillEffects,
   ANIMAL_ICONS: icons,
 };
