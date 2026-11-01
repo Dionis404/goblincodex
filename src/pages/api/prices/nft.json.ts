@@ -22,7 +22,8 @@ const SCAN_TTL_DONE_MS = 15 * 60 * 1000;
 const SCAN_TTL_PARTIAL_MS = 30 * 1000;
 const DEADLINE_MS = 20 * 1000;
 const CONCURRENCY = 10;
-const MAX_ITEMS = 1500;
+// С запасом под границу обрыва ответов (~19 КБ на проводе).
+const MAX_ITEMS = 150;
 
 interface SoldScan { activeIds: number[]; total: number; checked: number; done: boolean }
 
@@ -96,9 +97,14 @@ function soldScan(category: 'buds' | 'pets', ids: number[]): Promise<SoldScan> {
 export const GET: APIRoute = async ({ url }) => {
   const categoryParam = url.searchParams.get('category');
   const category = categoryParam === 'pets' ? 'pets' : 'buds';
+  // Тайминги этапов — в лог контейнера; запрос извне периодически висит
+  // непойманно долго, без цифр это не диагностируется.
+  const t0 = Date.now();
+  const timed = (step: string) => console.error(`[api/prices/nft] ${step}: ${Date.now() - t0}ms (category=${category})`);
 
   try {
     const resources = await fetchPriceResources(category);
+    timed('resources');
     const now = Date.now();
     const ids = [
       ...new Set(
@@ -112,26 +118,31 @@ export const GET: APIRoute = async ({ url }) => {
     const eligible = category === 'pets' ? ids.filter((id) => isPetTradeable(id, now)) : ids;
 
     const scan = await soldScan(category, eligible);
+    timed(`scan (checked=${scan.checked}/${scan.total}, done=${scan.done})`);
 
     const instances = category === 'pets'
       ? await getPetNftInstancesByIds(scan.activeIds)
       : await getBudInstancesByIds(scan.activeIds);
+    timed(`db (${instances.length} instances)`);
 
+    // Кап с запасом под границу обрыва ответов (~19 КБ): image_url тянет
+    // основной вес, 150 карточек ≈ 18 КБ. item_key не дублируем — клиент
+    // собирает его из category + id.
     const items = instances
       .slice(0, MAX_ITEMS)
       .map((i) => {
         const id = category === 'pets' ? (i as { petId: number }).petId : (i as { budId: number }).budId;
         return {
           id,
-          item_key: `${category}-${id}`,
           image_url: i.imageUrl,
           title: category === 'pets' ? `Pet #${id}` : `Bud #${id}`,
           subtitle: i.type,
         };
       });
 
+    timed('done');
     return cachedJsonResponse(
-      { category, items, total: eligible.length, checked: scan.checked, done: scan.done },
+      { category, items, truncated: instances.length > MAX_ITEMS, total: eligible.length, checked: scan.checked, done: scan.done },
       scan.done,
       scan.done ? 300 : 0,
     );

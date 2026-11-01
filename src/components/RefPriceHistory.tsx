@@ -130,7 +130,6 @@ interface ChartResponse {
 
 interface NftItem {
   id: number;
-  item_key: string;
   image_url: string;
   title: string;
   subtitle: string;
@@ -339,7 +338,7 @@ function NftGrid({ category, onSelect, selectedKey }: {
   const [state, setState] = useState<
     | { status: 'loading' }
     | { status: 'error' }
-    | { status: 'ready'; items: NftItem[]; total: number; checked: number; done: boolean }
+    | { status: 'ready'; items: NftItem[]; total: number; checked: number; done: boolean; truncated: boolean }
   >({ status: 'loading' });
   const [filter, setFilter] = useState('');
   const [idLookup, setIdLookup] = useState<
@@ -358,7 +357,7 @@ function NftGrid({ category, onSelect, selectedKey }: {
       fetch(`/api/prices/nft.json?category=${category}`)
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json() as Promise<{ items: NftItem[]; total: number; checked: number; done: boolean }>;
+          return res.json() as Promise<{ items: NftItem[]; total: number; checked: number; done: boolean; truncated: boolean }>;
         })
         .then((data) => {
           if (cancelled) return;
@@ -406,8 +405,7 @@ function NftGrid({ category, onSelect, selectedKey }: {
           status: 'found',
           item: {
             id: foundId,
-            item_key: `${category}-${foundId}`,
-            image_url: inst.imageUrl,
+                        image_url: inst.imageUrl,
             title: category === 'pets' ? `Pet #${foundId}` : `Bud #${foundId}`,
             subtitle: inst.type,
           },
@@ -440,7 +438,7 @@ function NftGrid({ category, onSelect, selectedKey }: {
         />
         <span className="rph-progress">
           {state.done
-            ? `Продавались за 7 дней: ${state.items.length}${state.total !== state.items.length ? ` из ${state.total}` : ''}${category === 'pets' ? ' (питомцы открываются по расписанию глав)' : ''}`
+            ? `Продавались за 7 дней: ${state.items.length}${state.total !== state.items.length ? ` из ${state.total}` : ''}${state.truncated ? ' — показаны первые 150, уточните поиском по номеру' : ''}${category === 'pets' ? ' (питомцы открываются по расписанию глав)' : ''}`
             : `Проверка продаж: ${state.checked}/${state.total} — показаны уже проверенные`}
         </span>
       </div>
@@ -450,8 +448,8 @@ function NftGrid({ category, onSelect, selectedKey }: {
           <span className="rph-progress">Номер есть в игре, сделок на маркетплейсе не было — всё равно можно посмотреть:</span>
           <button
             type="button"
-            className={`rph-card rph-card--nft${selectedKey === idLookup.item.item_key ? ' active' : ''}`}
-            onClick={() => onSelect({ key: idLookup.item.item_key, name: `${idLookup.item.title} · ${idLookup.item.subtitle}`, icon: idLookup.item.image_url })}
+            className={`rph-card rph-card--nft${selectedKey === `${category}-${idLookup.item.id}` ? ' active' : ''}`}
+            onClick={() => onSelect({ key: `${category}-${idLookup.item.id}`, name: `${idLookup.item.title} · ${idLookup.item.subtitle}`, icon: idLookup.item.image_url })}
           >
             <img src={idLookup.item.image_url} alt={idLookup.item.title} className="rph-nft-img" loading="lazy" />
             <span className="rph-card-title">{idLookup.item.title}</span>
@@ -475,10 +473,10 @@ function NftGrid({ category, onSelect, selectedKey }: {
         <div className="rph-grid rph-grid--nft">
           {items.map((i) => (
             <button
-              key={i.item_key}
+              key={i.id}
               type="button"
-              className={`rph-card rph-card--nft${selectedKey === i.item_key ? ' active' : ''}`}
-              onClick={() => onSelect({ key: i.item_key, name: `${i.title} · ${i.subtitle}`, icon: i.image_url })}
+              className={`rph-card rph-card--nft${selectedKey === `${category}-${i.id}` ? ' active' : ''}`}
+              onClick={() => onSelect({ key: `${category}-${i.id}`, name: `${i.title} · ${i.subtitle}`, icon: i.image_url })}
             >
               <img src={i.image_url} alt={i.title} className="rph-nft-img" loading="lazy" />
               <span className="rph-card-title">{i.title}</span>
