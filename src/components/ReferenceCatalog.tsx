@@ -1311,21 +1311,21 @@ function MarvelsSection() {
 
         <details className="ref-accordion">
           <summary className="ref-accordion-summary">
-            Марвелы прошлой главы — Ascension Age
-            <span className="ref-accordion-count">{new Set(PREVIOUS_CHAPTER_MARVELS.map((r) => r.marvel)).size} марвела</span>
-          </summary>
-          <div className="ref-accordion-body">
-            <MarvelTable rows={PREVIOUS_CHAPTER_MARVELS} multiplier={multiplier} />
-          </div>
-        </details>
-
-        <details className="ref-accordion">
-          <summary className="ref-accordion-summary">
             Базовые марвелы (доступны постоянно)
             <span className="ref-accordion-count">{BASE_MARVELS.length / 2} марвелов</span>
           </summary>
           <div className="ref-accordion-body">
             <MarvelTable rows={BASE_MARVELS} multiplier={multiplier} />
+          </div>
+        </details>
+
+        <details className="ref-accordion">
+          <summary className="ref-accordion-summary">
+            Марвелы прошлой главы — Ascension Age
+            <span className="ref-accordion-count">{new Set(PREVIOUS_CHAPTER_MARVELS.map((r) => r.marvel)).size} марвела</span>
+          </summary>
+          <div className="ref-accordion-body">
+            <MarvelTable rows={PREVIOUS_CHAPTER_MARVELS} multiplier={multiplier} />
           </div>
         </details>
 
