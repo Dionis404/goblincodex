@@ -1104,6 +1104,16 @@ interface MarvelRow {
 }
 
 const CURRENT_CHAPTER_MARVELS: MarvelRow[] = [
+  { marvel: 'Macropinna', marvelIcon: '/sprites/sfts/macropinna.webp', fish: 'Moray Eel', fishIcon: '/sprites/fish/moray_eel.png', odds: 0.015 },
+  { marvel: 'Macropinna', marvelIcon: '/sprites/sfts/macropinna.webp', fish: 'Coelacanth', fishIcon: '/sprites/fish/coelacanth.png', odds: 0.01 },
+  { marvel: 'Betta', marvelIcon: '/sprites/sfts/betta.webp', fish: 'Zebra Turkeyfish', fishIcon: '/sprites/fish/zebra_turkeyfish.png', odds: 0.01 },
+  { marvel: 'Betta', marvelIcon: '/sprites/sfts/betta.webp', fish: 'Muskellunge', fishIcon: '/sprites/fish/muskellunge.png', odds: 0.02 },
+  { marvel: 'Betta', marvelIcon: '/sprites/sfts/betta.webp', fish: 'Blowfish', fishIcon: '/sprites/fish/blowfish.png', odds: 0.01 },
+  { marvel: 'Manatee', marvelIcon: '/sprites/sfts/manatee.webp', fish: 'Whale Shark', fishIcon: '/sprites/fish/whale_shark.png', odds: 0.004 },
+  { marvel: 'Manatee', marvelIcon: '/sprites/sfts/manatee.webp', fish: 'Sea Bass', fishIcon: '/sprites/fish/sea_bass.png', odds: 0.002 },
+];
+
+const PREVIOUS_CHAPTER_MARVELS: MarvelRow[] = [
   { marvel: 'Crocodile', marvelIcon: '/sprites/sfts/crocodile.webp', fish: 'Red Snapper', fishIcon: '/sprites/fish/red_snapper.png', odds: 0.5 },
   { marvel: 'Crocodile', marvelIcon: '/sprites/sfts/crocodile.webp', fish: 'Moray Eel', fishIcon: '/sprites/fish/moray_eel.png', odds: 1.5 },
   { marvel: 'Dumbo Octopus', marvelIcon: '/sprites/sfts/dumbo_octopus.webp', fish: 'Olive Flounder', fishIcon: '/sprites/fish/olive_flounder.png', odds: 0.5 },
@@ -1112,14 +1122,7 @@ const CURRENT_CHAPTER_MARVELS: MarvelRow[] = [
   { marvel: 'Seahorse Dad', marvelIcon: '/sprites/sfts/seahorse_dad.webp', fish: 'Porgy', fishIcon: '/sprites/fish/porgy.png', odds: 1 },
 ];
 
-/** Марвелы главы 16 (Cave Dwellers): уже есть в коде игры, но триггерных рыб и шансов пока нет. */
-const NEXT_CHAPTER_MARVELS: { name: string; icon: string; difficulty: number; note: string }[] = [
-  { name: 'Manatee', icon: '/sprites/sfts/manatee.webp', difficulty: 4, note: 'Предварительно — марвел-талисман главы. Способностей пока нет.' },
-  { name: 'Betta', icon: '/sprites/sfts/betta.webp', difficulty: 3, note: 'Способностей пока нет.' },
-  { name: 'Macropinna', icon: '/sprites/sfts/macropinna.webp', difficulty: 3, note: '+0,1 Obsidian при сборе в Lava Pit.' },
-];
-
-const PREVIOUS_CHAPTER_MARVELS: MarvelRow[] = [
+const SALT_AWAKENING_MARVELS: MarvelRow[] = [
   { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Tuna', fishIcon: '/sprites/fish/tuna.png', odds: 0.8 },
   { marvel: 'Crystal Shrimp', marvelIcon: '/sprites/fish/crystal_shrimp.webp', fish: 'Sea Bass', fishIcon: '/sprites/fish/sea_bass.png', odds: 3 },
   { marvel: 'Deep Sea Slug', marvelIcon: '/sprites/fish/deep_sea_slug.webp', fish: 'Surgeonfish', fishIcon: '/sprites/fish/surgeonfish.png', odds: 0.1 },
@@ -1294,43 +1297,19 @@ function MarvelsSection() {
       <div className="ref-accordion-list">
         <details className="ref-accordion" open>
           <summary className="ref-accordion-summary">
-            Марвелы текущей главы — Ascension Age
-            <span className="ref-accordion-count">{CURRENT_CHAPTER_MARVELS.length / 2} марвела</span>
+            Марвелы текущей главы — Cave Dwellers
+            <span className="ref-accordion-count">{new Set(CURRENT_CHAPTER_MARVELS.map((r) => r.marvel)).size} марвела</span>
           </summary>
           <div className="ref-accordion-body">
-            <p className="ref-section-desc">Марвел-талисман главы — <strong>Seahorse Dad</strong>.</p>
+            <p className="ref-section-desc">Марвел-талисман главы — <strong>Manatee</strong>.</p>
             <MarvelTable rows={CURRENT_CHAPTER_MARVELS} multiplier={multiplier} />
           </div>
         </details>
 
         <details className="ref-accordion">
           <summary className="ref-accordion-summary">
-            Скоро: марвелы главы 16 — Cave Dwellers
-            <span className="ref-accordion-count">{NEXT_CHAPTER_MARVELS.length} марвела</span>
-          </summary>
-          <div className="ref-accordion-body">
-            <p className="ref-section-desc">
-              Глава стартует 2 ноября 2026. Три марвела — <strong>Manatee</strong>, <strong>Betta</strong> и{' '}
-              <strong>Macropinna</strong> — уже добавлены в код игры, но триггерных рыб и шансов дропа
-              фрагментов карты там пока нет (у прошлых глав они появлялись в коде ближе к старту), так что
-              на какую рыбу они ловятся, пока неизвестно. Сложность головоломки карты — число в таблице
-              (чем больше, тем сложнее; у Seahorse Dad — 4). Таблицу пополним, как только данные появятся.
-            </p>
-            <div className="ref-bait-fish">
-              {NEXT_CHAPTER_MARVELS.map((m) => (
-                <span className="ref-fish-chip" key={m.name} title={m.note}>
-                  <img className="ref-marvel-icon" src={m.icon} alt="" />
-                  {m.name} · сложность {m.difficulty} · {m.note}
-                </span>
-              ))}
-            </div>
-          </div>
-        </details>
-
-        <details className="ref-accordion">
-          <summary className="ref-accordion-summary">
-            Марвелы прошлой главы — Salt Awakening
-            <span className="ref-accordion-count">{PREVIOUS_CHAPTER_MARVELS.length / 2} марвела</span>
+            Марвелы прошлой главы — Ascension Age
+            <span className="ref-accordion-count">{new Set(PREVIOUS_CHAPTER_MARVELS.map((r) => r.marvel)).size} марвела</span>
           </summary>
           <div className="ref-accordion-body">
             <MarvelTable rows={PREVIOUS_CHAPTER_MARVELS} multiplier={multiplier} />
@@ -1344,6 +1323,15 @@ function MarvelsSection() {
           </summary>
           <div className="ref-accordion-body">
             <MarvelTable rows={BASE_MARVELS} multiplier={multiplier} />
+          </div>
+        </details>
+
+        <details className="ref-accordion">
+          <summary className="ref-accordion-summary">
+            Марвелы прошлых глав: Salt Awakening
+          </summary>
+          <div className="ref-accordion-body">
+            <MarvelTable rows={SALT_AWAKENING_MARVELS} multiplier={multiplier} />
           </div>
         </details>
 
