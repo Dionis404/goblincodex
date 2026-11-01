@@ -1302,6 +1302,9 @@ function MarvelsSection() {
           </summary>
           <div className="ref-accordion-body">
             <p className="ref-section-desc">Марвел-талисман главы — <strong>Manatee</strong>.</p>
+            <p className="ref-section-desc">
+              <strong>Macropinna</strong> — марвел с бустом: +0,1 Obsidian при сборе в Lava Pit.
+            </p>
             <MarvelTable rows={CURRENT_CHAPTER_MARVELS} multiplier={multiplier} />
           </div>
         </details>
