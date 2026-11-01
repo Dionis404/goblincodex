@@ -47,15 +47,15 @@ export const GET: APIRoute = async ({ params, url }) => {
   const hoursParam = url.searchParams.get('hours');
   // Клампим на диапазон, который реально понимает sfl-price-service (макс 90 дней).
   const hours = Math.min(Math.max(Number(hoursParam) || 24 * 30, 1), 2160);
-  // sfl-price-service валидирует limit (30000 отклоняет мгновенно) — параметр
-  // вынесен, чтобы подбирать рабочее значение без пересборки.
+  // Максимум, который принимает sfl-price-service (21000 уже отклоняет).
+  // При 5-минутных снапшотах 90 дней ≈ 10–26 тыс. точек — 20000 покрывает
+  // полный период (проверено на проде: hours=2160 отдаёт все 10009 точек
+  // с краями 27.09–01.11).
   const limitParam = url.searchParams.get('limit');
-  const limit = Math.min(Math.max(Number(limitParam) || 2000, 1), 30000);
+  const limit = Math.min(Math.max(Number(limitParam) || 20000, 1), 20000);
 
   try {
     const { data } = await withTtlCache(`price-chart:${itemKey}:${hours}:${limit}`, 5 * 60 * 1000, async (): Promise<ChartData> => {
-      // limit завышен намеренно: снапшоты каждые ~5 минут, за 90 дней до ~26 тыс.
-      // точек — дефолтные 2000 обрезали бы историю до ~последних 7 дней.
       const points = await fetchPriceHistory(itemKey, hours, limit);
       const values = points
         .map((p) => p.floor ?? p.latest_sale)
