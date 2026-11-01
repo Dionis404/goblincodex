@@ -292,6 +292,28 @@ export async function getBudInstances(): Promise<BudInstance[]> {
   }));
 }
 
+/** Батч-версия для страницы истории цен: картинки конкретных Bud'ов по id. */
+export async function getBudInstancesByIds(ids: number[]): Promise<BudInstance[]> {
+  if (ids.length === 0) return [];
+  const pool = getPool();
+  const { rows } = await pool.query(
+    `SELECT bud_id, type, colour, stem, aura, ears, image_url
+     FROM sfl_bud_instances
+     WHERE bud_id = ANY($1) AND is_active = TRUE
+     ORDER BY bud_id`,
+    [ids],
+  );
+  return rows.map(r => ({
+    budId: r.bud_id,
+    type: r.type,
+    colour: r.colour,
+    stem: r.stem,
+    aura: r.aura,
+    ears: r.ears,
+    imageUrl: r.image_url,
+  }));
+}
+
 export interface BudFilterOptions {
   types: string[];
   colours: string[];
@@ -498,6 +520,28 @@ export async function getPetNftInstances(): Promise<PetNftInstance[]> {
     WHERE is_active = TRUE
     ORDER BY pet_id
   `);
+  return rows.map(r => ({
+    petId: r.pet_id,
+    type: r.type,
+    fur: r.fur,
+    accessory: r.accessory,
+    bib: r.bib,
+    aura: r.aura,
+    imageUrl: r.image_url,
+  }));
+}
+
+/** Батч-версия для страницы истории цен: картинки конкретных питомцев по id. */
+export async function getPetNftInstancesByIds(ids: number[]): Promise<PetNftInstance[]> {
+  if (ids.length === 0) return [];
+  const pool = getPool();
+  const { rows } = await pool.query(
+    `SELECT pet_id, type, fur, accessory, bib, aura, image_url
+     FROM sfl_pet_nft_instances
+     WHERE pet_id = ANY($1) AND is_active = TRUE
+     ORDER BY pet_id`,
+    [ids],
+  );
   return rows.map(r => ({
     petId: r.pet_id,
     type: r.type,

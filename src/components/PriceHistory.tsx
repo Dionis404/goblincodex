@@ -45,8 +45,9 @@ function formatPrice(n: number | null): string {
   return n.toLocaleString('ru-RU', { maximumFractionDigits: 4 });
 }
 
-/** Лёгкий SVG-график floor-цены во времени — без сторонних зависимостей. */
-function PriceChart({ points }: { points: PricePoint[] }) {
+/** Лёгкий SVG-график floor-цены во времени — без сторонних зависимостей.
+ *  Экспортируется ещё и для секции «История цен» Справочника (RefPriceHistory). */
+export function PriceChart({ points }: { points: PricePoint[] }) {
   const width = 720;
   const height = 220;
   const padding = { top: 12, right: 12, bottom: 24, left: 48 };
@@ -87,6 +88,40 @@ function PriceChart({ points }: { points: PricePoint[] }) {
       <path d={areaPath} className="ph-area" />
       <path d={linePath} className="ph-line" />
     </svg>
+  );
+}
+
+/** Таблица точек истории — новые сверху. Общая с RefPriceHistory (Справочник). */
+export function PriceTable({ points }: { points: PricePoint[] }) {
+  return (
+    <div className="ph-table-wrap">
+      <table className="ph-table">
+        <thead>
+          <tr>
+            <th>Время</th>
+            <th>Floor</th>
+            <th>Low</th>
+            <th>High</th>
+            <th>Последняя продажа</th>
+            <th>Объём</th>
+            <th>Сделок</th>
+          </tr>
+        </thead>
+        <tbody>
+          {[...points].reverse().map(p => (
+            <tr key={p.captured_at}>
+              <td>{formatDate(p.captured_at)}</td>
+              <td>{formatPrice(p.floor)}</td>
+              <td>{formatPrice(p.low)}</td>
+              <td>{formatPrice(p.high)}</td>
+              <td>{formatPrice(p.latest_sale)}</td>
+              <td>{formatPrice(p.volume)}</td>
+              <td>{p.trades ?? '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -253,35 +288,7 @@ export default function PriceHistory() {
         {state.status === 'ready' && state.points.length > 0 && (
           <>
             <PriceChart points={state.points} />
-
-            <div className="ph-table-wrap">
-              <table className="ph-table">
-                <thead>
-                  <tr>
-                    <th>Время</th>
-                    <th>Floor</th>
-                    <th>Low</th>
-                    <th>High</th>
-                    <th>Последняя продажа</th>
-                    <th>Объём</th>
-                    <th>Сделок</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...state.points].reverse().map(p => (
-                    <tr key={p.captured_at}>
-                      <td>{formatDate(p.captured_at)}</td>
-                      <td>{formatPrice(p.floor)}</td>
-                      <td>{formatPrice(p.low)}</td>
-                      <td>{formatPrice(p.high)}</td>
-                      <td>{formatPrice(p.latest_sale)}</td>
-                      <td>{formatPrice(p.volume)}</td>
-                      <td>{p.trades ?? '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <PriceTable points={state.points} />
           </>
         )}
       </div>

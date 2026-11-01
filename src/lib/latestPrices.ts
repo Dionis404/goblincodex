@@ -31,8 +31,9 @@ async function priceForName(name: string, keyByName: Map<string, string>): Promi
 
 // Список collectibles (до 20 000 записей) раньше тянулся заново на каждый
 // запрос. fetchPriceResources глотает ошибки и возвращает [] — пустой список
-// считаем ошибкой, чтобы не закэшировать его на весь TTL.
-async function getKeyByName(): Promise<Map<string, string>> {
+// считаем ошибкой, чтобы не закэшировать его на весь TTL. Экспортируется ещё
+// и для /api/prices/lookup.json (резолв имён ресурсов в item_key).
+export async function getKeyByName(): Promise<Map<string, string>> {
   try {
     const { data } = await withTtlCache('price-resources:collectibles', CACHE_TTL_MS, async () => {
       const resources = await fetchPriceResources('collectibles');

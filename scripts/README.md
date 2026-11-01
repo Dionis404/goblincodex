@@ -70,6 +70,16 @@ npx tsx scripts/sync-skill-icons.ts [--sfl-dir ./_sfl_temp] [--target-dir ./publ
 
 Generates `src/lib/flowerData.generated.ts` (seeds, crossbreed item amounts, flower recipes) for the «Цветы» section. Seed price/level/growth time, seasonality and item amounts come from the game source clone (`types/flowers.ts`, `types/seeds.ts`). The recipe table itself (which flower you get from a seed + item) is **not** in the open game code — the server picks the result — so it lives in `scripts/data/flower-recipes.json`, copied by hand from the community calculator (sfl-calculator.com/en/flower-recipes; the data sits in the page's client script). The generator fails if that table disagrees with the game code (unknown/extra item, missing recipe, wrong set). Run `npm run sfl:clone` first, then `npm run sfl:sync-flowers`; when new flowers or crossbreed items appear, refresh the JSON from the calculator and re-run.
 
+### `sync-tradeable-data.ts`
+
+Generates `src/lib/tradeableData.generated.ts` — what the game code allows to trade on the marketplace. Used by the «История цен» section (Справочник) to hide items that are closed for trading:
+
+- `TRADE_RESOURCE_LIMITS` — tradeable resources (`actions/tradeLimits.ts`: TRADE_LIMITS + EMBLEM_TRADE_LIMITS), name → listing limit. Obsidian, Oil, Sunstone etc. are **excluded** there explicitly — they don't trade.
+- `TRADEABLE_COLLECTIBLES` / `TRADEABLE_WEARABLES` — items with a trade release date (`types/withdrawables.ts`: INVENTORY_RELEASES / WEARABLE_RELEASES); `tradeAt` in the future means "not yet".
+- `PET_NFT_TRADE_WINDOWS` — pet trade windows by id range (`types/petRevealConfig.ts`); `tradeAt` references like `CHAPTERS["..."].endDate` are resolved against `types/chapters.ts`. Buds trade without restrictions.
+
+Run `npm run sfl:clone` first (the script reads `tradeLimits.ts`, which the sparse checkout fetches on demand), then `npm run sfl:sync-tradeable` and commit the regenerated file together with the other `*.generated.ts` updates.
+
 ### `index-search.ts`
 
 Builds the semantic-search index: computes embeddings (via routerai.ru, model `qwen/qwen3-embedding-4b`) for every non-draft `guides`/`mechanics`/`news` article and every hand-written Справочник section, and upserts them into the `search_embeddings` table. This is what powers the site's neuropoisk (semantic search) — one combined index across guides, mechanics, Справочник, and the news/blog archive. Requires the `migrate-add-search-embeddings.sql` migration applied first (needs the `pgvector` Postgres extension).

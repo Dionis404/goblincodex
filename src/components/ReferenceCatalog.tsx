@@ -10,6 +10,7 @@ import FlowerRecipes from './tools/FlowerRecipes';
 import NpcGifts from './tools/NpcGifts';
 import CrustaceanCosts from './tools/CrustaceanCosts';
 import CoinRateTable from './tools/CoinRateTable';
+import RefPriceHistory from './RefPriceHistory';
 import CoinRateNote from './CoinRateNote';
 import { useCoinRate } from '../lib/useCoinRate';
 import { useOilPrice } from '../lib/useOilPrice';
@@ -1557,6 +1558,7 @@ const REF_SECTIONS: RefSection[] = [
   { id: 'expansions', icon: '🌋', label: 'Стоимость расширений', Content: ExpansionTablesSection },
   { id: 'tools', icon: '🪓', label: 'Стоимость инструментов', Content: ToolsSection },
   { id: 'coins', icon: '🪙', label: 'Курс монет', Content: CoinRateSection },
+  { id: 'prices', icon: '📈', label: 'История цен', Content: RefPriceHistory },
   { id: 'levels', icon: '⭐', label: 'Опыт и Возвышение', Content: LevelsAndAscensionSection },
   { id: 'bait', icon: '🎣', label: 'Рыбалка', Content: BaitFishSection },
   { id: 'crustaceans', icon: '🦀', label: 'Раки', Content: CrustaceanSection },

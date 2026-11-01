@@ -17,6 +17,7 @@ const RULES: Record<string, Rule> = {
   '/api/search-answer.json':   { limit: 15, windowMs: 60_000 },
   '/api/search-feedback.json': { limit: 10, windowMs: 60_000 },
   '/api/prices/latest.json':   { limit: 30, windowMs: 60_000 },
+  '/api/prices/nft.json':      { limit: 30, windowMs: 60_000 },
 };
 
 // Фиксированное окно: на ключ — счётчик и момент сброса.

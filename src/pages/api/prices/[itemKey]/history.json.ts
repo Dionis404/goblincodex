@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { fetchPriceHistory } from '../../../../lib/priceApi';
+import { withTtlCache } from '../../../../lib/cache';
 
 export const prerender = false;
 
@@ -15,6 +16,9 @@ export const GET: APIRoute = async ({ params, url }) => {
   // Клампим на диапазон, который реально понимает sfl-price-service (макс 90 дней).
   const hours = Math.min(Math.max(Number(hoursParam) || 24 * 30, 1), 2160);
 
-  const points = await fetchPriceHistory(itemKey, hours);
+  // Историю дёргают и график, и сетка ресурсов, и проверки активности —
+  // без кэша каждый просмотр графика бил бы в sfl-price-service. Ошибки
+  // withTtlCache помнит коротко (см. cache.ts).
+  const { data: points } = await withTtlCache(`price-history:${itemKey}:${hours}`, 5 * 60 * 1000, () => fetchPriceHistory(itemKey, hours));
   return json({ item_key: itemKey, hours, points });
 };
