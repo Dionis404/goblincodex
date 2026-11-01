@@ -115,6 +115,19 @@ interface ResourceEntry {
   price: number | null;
 }
 
+interface ChartResponse {
+  points: { t: string; f: number | null; s: number | null }[];
+  summary: {
+    first: number | null;
+    last: number | null;
+    min: number | null;
+    max: number | null;
+    change: number | null;
+    changePct: number | null;
+  } | null;
+  totalPoints: number;
+}
+
 interface NftItem {
   id: number;
   item_key: string;
@@ -127,7 +140,7 @@ type FetchState =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'error' }
-  | { status: 'ready'; points: PricePoint[] };
+  | { status: 'ready'; chart: ChartResponse };
 
 // ─── Ресурсы: сетка с иконками и текущей ценой ──────────────────────────────
 
@@ -150,20 +163,21 @@ function ResourcesGrid({ onSelect, selectedName }: {
       if (!lookupRes.ok) throw new Error(`HTTP ${lookupRes.status}`);
       const { keys }: { keys: Record<string, string | null> } = await lookupRes.json();
 
-      // Одним запросом на ресурс: последняя известная цена. Торговля ресурсом
-      // определяется кодом игры (TRADE_LIMITS); цены на маркетплейсе при этом
-      // может не быть — карточка показывается с пометкой «нет торгов».
+      // Одним запросом на ресурс: последняя известная цена (компактный
+      // chart.json — большие ответы истории обрываются на пути к клиенту).
+      // Торговля ресурсом определяется кодом игры (TRADE_LIMITS); цены на
+      // маркетплейсе при этом может не быть — карточка показывается с пометкой
+      // «нет торгов».
       const entries = (await Promise.all(
         RESOURCES.map(async (r) => {
           // Obsidian в TRADE_LIMITS исключён, но оставлен по запросу (цена есть).
           if (!isTradeResource(r.name) && r.name !== 'Obsidian') return null;
           const key = keys[r.name];
           if (!key) return { key: '', name: r.name, icon: r.icon, price: null as number | null };
-          const res = await fetch(`/api/prices/${encodeURIComponent(key)}/history.json?hours=${LAST_PRICE_HOURS}`);
+          const res = await fetch(`/api/prices/${encodeURIComponent(key)}/chart.json?hours=${LAST_PRICE_HOURS}`);
           if (!res.ok) return { key, name: r.name, icon: r.icon, price: null as number | null };
-          const { points }: { points: PricePoint[] } = await res.json();
-          const last = [...points].reverse().find((p) => p.floor != null || p.latest_sale != null);
-          return { key, name: r.name, icon: r.icon, price: last ? (last.floor ?? last.latest_sale!) : null };
+          const chart: ChartResponse = await res.json();
+          return { key, name: r.name, icon: r.icon, price: chart.summary?.last ?? null };
         }),
       )).filter((e): e is ResourceEntry => e != null);
 
@@ -477,24 +491,21 @@ function NftGrid({ category, onSelect, selectedKey }: {
   );
 }
 
-/** Динамика цены за выбранный период: первая → последняя точка. */
-function PriceChange({ points }: { points: PricePoint[] }) {
-  const series = points.map((p) => p.floor ?? p.latest_sale).filter((v): v is number => v != null);
-  if (series.length < 2) return null;
+/** Динамика цены за выбранный период — из серверной сводки (по полным
+ *  точкам до прореживания, чтобы семплинг не портил цифры). */
+function PriceChange({ summary }: { summary: NonNullable<ChartResponse['summary']> }) {
+  const { last, change, changePct } = summary;
+  if (last == null || change == null) return null;
 
-  const first = series[0];
-  const last = series[series.length - 1];
-  const diff = last - first;
-  const pct = first !== 0 ? (diff / first) * 100 : null;
-  const up = diff > 0;
-  const flat = diff === 0;
+  const up = change > 0;
+  const flat = change === 0;
 
   return (
     <div className={`rph-change${flat ? ' rph-change--flat' : up ? ' rph-change--up' : ' rph-change--down'}`}>
       <span className="rph-change-price"><FlowerAmount compact value={last} /></span>
       <span className="rph-change-badge">
-        {flat ? '—' : up ? '▲' : '▼'} {diff > 0 ? '+' : ''}{diff.toLocaleString('ru-RU', { maximumFractionDigits: 4 })}
-        {pct != null && ` (${pct > 0 ? '+' : ''}${pct.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}%)`}
+        {flat ? '—' : up ? '▲' : '▼'} {change > 0 ? '+' : ''}{change.toLocaleString('ru-RU', { maximumFractionDigits: 4 })}
+        {changePct != null && ` (${changePct > 0 ? '+' : ''}${changePct.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}%)`}
       </span>
       <span className="rph-progress">за период</span>
     </div>
@@ -519,25 +530,49 @@ export default function RefPriceHistory() {
     // Ключ пустой = предмет торгуется по коду игры, но price-service его не
     // знает (сделок не было) — сразу показываем «мёртв на рынке», без запроса.
     if (!selected.key) {
-      setState({ status: 'ready', points: [] });
+      setState({ status: 'ready', chart: { points: [], summary: null, totalPoints: 0 } });
       return;
     }
     const id = ++requestId.current;
     setState({ status: 'loading' });
-    fetch(`/api/prices/${encodeURIComponent(selected.key)}/history.json?hours=${hours}`)
+    fetch(`/api/prices/${encodeURIComponent(selected.key)}/chart.json?hours=${hours}`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<{ points: PricePoint[] }>;
+        return res.json() as Promise<ChartResponse>;
       })
-      .then((data) => {
+      .then((chart) => {
         if (requestId.current !== id) return;
-        setState({ status: 'ready', points: data.points });
+        setState({ status: 'ready', chart });
       })
       .catch(() => {
         if (requestId.current !== id) return;
         setState({ status: 'error' });
       });
   }, [selected, hours]);
+
+  // PriceChart ждёт PricePoint[] — маппим slim-точки на лету.
+  const chartPoints = useMemo<PricePoint[]>(() => {
+    if (state.status !== 'ready') return [];
+    return state.chart.points.map((p) => ({
+      item_key: '',
+      item_name: '',
+      captured_at: p.t,
+      snapshot_date: '',
+      floor: p.f,
+      low: null,
+      high: null,
+      latest_sale: p.s,
+      best_offer: null,
+      volume: null,
+      trades: null,
+      quantity: null,
+      listing_count: null,
+      offer_count: null,
+      flower_price: null,
+      floor_usd: null,
+      latest_sale_usd: null,
+    }));
+  }, [state]);
 
   return (
     <section className="ref-section">
@@ -590,19 +625,19 @@ export default function RefPriceHistory() {
                 ? <img src={selected.icon} alt="" className="rph-title-icon" />
                 : <span className="rph-title-emoji">{selected.icon}</span>)}
               <span>{selected.name}</span>
-              {state.status === 'ready' && <PriceChange points={state.points} />}
+              {state.status === 'ready' && state.chart.summary && <PriceChange summary={state.chart.summary} />}
             </div>
             {state.status === 'loading' && <div className="ph-status">Загрузка истории...</div>}
             {state.status === 'error' && <div className="ph-status ph-status--error">Не удалось загрузить историю цены.</div>}
-            {state.status === 'ready' && state.points.length === 0 && (
+            {state.status === 'ready' && state.chart.points.length === 0 && (
               <div className="ph-status">
                 {selected.key
                   ? 'История цены за этот период не найдена — предмет мог не торговаться.'
                   : 'Предмет торгуется, но сделок на маркетплейсе по нему ещё не было — мёртв на рынке.'}
               </div>
             )}
-            {state.status === 'ready' && state.points.length > 0 && (
-              <PriceChart points={state.points} />
+            {state.status === 'ready' && state.chart.points.length > 0 && (
+              <PriceChart points={chartPoints} />
             )}
           </>
         )}
