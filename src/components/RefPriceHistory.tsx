@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { PriceChart, PriceTable } from './PriceHistory';
+import { PriceChart } from './PriceHistory';
 import { FlowerAmount } from './ResourceIcon';
 import { TOOL_RESOURCE_ICONS } from '../lib/toolCosts';
-import { isPetTradeable, isTradeResource, isWearableTradeable, petTradeAt, tradeableCollectibleNames } from '../lib/tradeable';
+import { CHUM_ICONS } from '../lib/crustaceans';
+import { isTradeResource, isWearableTradeable, petTradeAt, tradeableCollectibleNames } from '../lib/tradeable';
 import { WEARABLE_NAMES } from '../lib/wearableNames';
 import type { PricePoint, PriceResource } from '../lib/priceApi';
 import './PriceHistory.css';
@@ -29,8 +30,11 @@ const RANGE_OPTIONS = [
   { hours: 2160, label: '90 дней' },
 ];
 
-// Торгующиеся ресурсы маркетплейса (Oil не торгуется — как и в toolCosts).
-// Иконки — те же, что в калькуляторах; Obsidian добавлен отдельно.
+// Торгующиеся ресурсы маркетплейса — весь список из TRADE_LIMITS игры:
+// базовые ресурсы, урожай (культуры, фрукты, теплица), продукты животных
+// и лесные находки. Иконки — спрайты проекта; где чистой иконки нет
+// (молоко, яйцо, часть фруктов) — эмодзи-фолбэк. Obsidian в TRADE_LIMITS
+// исключён, но оставлен по запросу.
 const RESOURCES: { name: string; icon: string }[] = [
   { name: 'Wood', icon: TOOL_RESOURCE_ICONS.Wood },
   { name: 'Stone', icon: TOOL_RESOURCE_ICONS.Stone },
@@ -38,10 +42,63 @@ const RESOURCES: { name: string; icon: string }[] = [
   { name: 'Gold', icon: TOOL_RESOURCE_ICONS.Gold },
   { name: 'Crimstone', icon: TOOL_RESOURCE_ICONS.Crimstone },
   { name: 'Obsidian', icon: '/sprites/resources/obsidian.webp' },
+  { name: 'Salt', icon: '🧂' },
+  // Урожай — культуры
+  { name: 'Sunflower', icon: '/sprites/crops/sunflower/crop.png' },
+  { name: 'Potato', icon: '/sprites/crops/potato/crop.png' },
+  { name: 'Rhubarb', icon: '/sprites/crops/rhubarb/crop.png' },
+  { name: 'Pumpkin', icon: '/sprites/crops/pumpkin/crop.png' },
+  { name: 'Zucchini', icon: '/sprites/crops/zucchini/crop.png' },
+  { name: 'Carrot', icon: '/sprites/crops/carrot/crop.png' },
+  { name: 'Yam', icon: '/sprites/crops/yam/crop.png' },
+  { name: 'Cabbage', icon: '/sprites/crops/cabbage/crop.png' },
+  { name: 'Broccoli', icon: '/sprites/crops/brocolli/crop.png' },
+  { name: 'Soybean', icon: '/sprites/crops/soybean/crop.png' },
+  { name: 'Beetroot', icon: '/sprites/crops/beetroot/crop.png' },
+  { name: 'Pepper', icon: '/sprites/crops/pepper/crop.png' },
+  { name: 'Cauliflower', icon: '/sprites/crops/cauliflower/crop.png' },
+  { name: 'Parsnip', icon: '/sprites/crops/parsnip/crop.png' },
+  { name: 'Eggplant', icon: '/sprites/crops/eggplant/crop.png' },
+  { name: 'Corn', icon: '/sprites/crops/corn/crop.png' },
+  { name: 'Onion', icon: '/sprites/crops/onion/crop.png' },
+  { name: 'Radish', icon: '/sprites/crops/radish/crop.png' },
+  { name: 'Wheat', icon: '/sprites/crops/wheat/crop.png' },
+  { name: 'Turnip', icon: '/sprites/crops/turnip/crop.png' },
+  { name: 'Kale', icon: '/sprites/crops/kale/crop.png' },
+  { name: 'Artichoke', icon: '/sprites/crops/artichoke/crop.png' },
+  { name: 'Barley', icon: '/sprites/crops/barley/crop.png' },
+  { name: 'Saltwort', icon: '/sprites/crops/saltwort/crop.png' },
+  { name: 'Crystal Leaf', icon: '🌿' },
+  // Урожай — фрукты и теплица
+  { name: 'Tomato', icon: '/sprites/fruit/tomato/tomato.webp' },
+  { name: 'Apple', icon: '🍎' },
+  { name: 'Lemon', icon: '🍋' },
+  { name: 'Blueberry', icon: '🫐' },
+  { name: 'Orange', icon: '🍊' },
+  { name: 'Banana', icon: '🍌' },
+  { name: 'Celestine', icon: '/sprites/fruit/celestine/celestine.webp' },
+  { name: 'Lunara', icon: '/sprites/fruit/lunara/lunara.webp' },
+  { name: 'Duskberry', icon: '/sprites/fruit/duskberry/duskberry.webp' },
+  { name: 'Grape', icon: '/sprites/greenhouse/grape.webp' },
+  { name: 'Rice', icon: '/sprites/greenhouse/rice.webp' },
+  { name: 'Olive', icon: '/sprites/greenhouse/olive.webp' },
+  // Продукты животных
+  { name: 'Egg', icon: '🥚' },
+  { name: 'Feather', icon: TOOL_RESOURCE_ICONS.Feather },
+  { name: 'Honey', icon: '🍯' },
+  { name: 'Milk', icon: '🥛' },
   { name: 'Leather', icon: TOOL_RESOURCE_ICONS.Leather },
   { name: 'Wool', icon: TOOL_RESOURCE_ICONS.Wool },
   { name: 'Merino Wool', icon: TOOL_RESOURCE_ICONS['Merino Wool'] },
-  { name: 'Feather', icon: TOOL_RESOURCE_ICONS.Feather },
+  // Лесные находки
+  { name: 'Ruffroot', icon: CHUM_ICONS.Ruffroot },
+  { name: 'Chewed Bone', icon: CHUM_ICONS['Chewed Bone'] },
+  { name: 'Heart leaf', icon: CHUM_ICONS['Heart leaf'] },
+  { name: 'Frost Pebble', icon: CHUM_ICONS['Frost Pebble'] },
+  { name: 'Wild Grass', icon: CHUM_ICONS['Wild Grass'] },
+  { name: 'Ribbon', icon: CHUM_ICONS.Ribbon },
+  { name: 'Dewberry', icon: CHUM_ICONS.Dewberry },
+  { name: 'Moonfur', icon: CHUM_ICONS.Moonfur },
 ];
 
 interface Selected {
@@ -74,15 +131,16 @@ type FetchState =
 
 // ─── Ресурсы: сетка с иконками и текущей ценой ──────────────────────────────
 
-function ResourcesGrid({ onSelect, selectedKey }: {
+function ResourcesGrid({ onSelect, selectedName }: {
   onSelect: (s: Selected) => void;
-  selectedKey: string | null;
+  selectedName: string | null;
 }) {
   const [state, setState] = useState<
     | { status: 'loading' }
     | { status: 'error' }
     | { status: 'ready'; entries: ResourceEntry[] }
   >({ status: 'loading' });
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -122,23 +180,40 @@ function ResourcesGrid({ onSelect, selectedKey }: {
   if (state.status === 'error') return <div className="ph-status ph-status--error">Не удалось загрузить цены ресурсов.</div>;
   if (state.entries.length === 0) return <div className="ph-status">Ни один из ресурсов сейчас не торгуется.</div>;
 
+  const q = search.toLowerCase().trim();
+  const entries = q ? state.entries.filter((e) => e.name.toLowerCase().includes(q)) : state.entries;
+
   return (
-    <div className="rph-grid">
-      {state.entries.map((e) => (
-        <button
-          key={e.key}
-          type="button"
-          className={`rph-card${selectedKey === e.key ? ' active' : ''}`}
-          onClick={() => onSelect({ key: e.key, name: e.name, icon: e.icon })}
-        >
-          <img src={e.icon} alt="" className="rph-card-icon" loading="lazy" />
-          <span className="rph-card-title">{e.name}</span>
-          <span className="rph-card-price">
-            {e.price != null ? <FlowerAmount compact value={e.price} /> : <span className="rph-progress">нет торгов</span>}
-          </span>
-        </button>
-      ))}
-    </div>
+    <>
+      <div className="rph-toolbar">
+        <input
+          type="text"
+          className="ph-search rph-search-sm"
+          placeholder="Найти ресурс..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          autoComplete="off"
+        />
+      </div>
+      <div className="rph-grid">
+        {entries.map((e) => (
+          <button
+            key={e.name}
+            type="button"
+            className={`rph-card${selectedName === e.name ? ' active' : ''}`}
+            onClick={() => onSelect({ key: e.key, name: e.name, icon: e.icon })}
+          >
+            {e.icon.startsWith('/')
+              ? <img src={e.icon} alt="" className="rph-card-icon" loading="lazy" />
+              : <span className="rph-card-emoji">{e.icon}</span>}
+            <span className="rph-card-title">{e.name}</span>
+            <span className="rph-card-price">
+              {e.price != null ? <FlowerAmount compact value={e.price} /> : <span className="rph-progress">нет торгов</span>}
+            </span>
+          </button>
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -250,7 +325,7 @@ function NftGrid({ category, onSelect, selectedKey }: {
   const [state, setState] = useState<
     | { status: 'loading' }
     | { status: 'error' }
-    | { status: 'ready'; items: NftItem[] }
+    | { status: 'ready'; items: NftItem[]; total: number; checked: number; done: boolean }
   >({ status: 'loading' });
   const [filter, setFilter] = useState('');
   const [idLookup, setIdLookup] = useState<
@@ -261,23 +336,28 @@ function NftGrid({ category, onSelect, selectedKey }: {
     | { status: 'not-found' }
   >({ status: 'idle' });
 
+  // Показываем только продавшихся за 7 дней — проверка идёт на сервере
+  // порциями, доспрашиваем прогресс, пока done.
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/prices/nft.json?category=${category}`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<{ items: NftItem[] }>;
-      })
-      .then((data) => {
-        if (cancelled) return;
-        // Питомцы по коду игры открываются для торговли по расписанию глав
-        // (petRevealConfig) — сервер уже отфильтровал, тут страховка.
-        const items = category === 'pets' ? data.items.filter((i) => isPetTradeable(i.id)) : data.items;
-        setState({ status: 'ready', items });
-      })
-      .catch(() => {
-        if (!cancelled) setState({ status: 'error' });
-      });
+    const poll = () =>
+      fetch(`/api/prices/nft.json?category=${category}`)
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json() as Promise<{ items: NftItem[]; total: number; checked: number; done: boolean }>;
+        })
+        .then((data) => {
+          if (cancelled) return;
+          setState({ status: 'ready', ...data });
+          if (!data.done) {
+            setTimeout(() => {
+              if (!cancelled) poll().catch(() => { if (!cancelled) setState({ status: 'error' }); });
+            }, 4000);
+          }
+        });
+    poll().catch(() => {
+      if (!cancelled) setState({ status: 'error' });
+    });
     return () => { cancelled = true; };
   }, [category]);
 
@@ -344,10 +424,10 @@ function NftGrid({ category, onSelect, selectedKey }: {
           onChange={(e) => setFilter(e.target.value)}
           autoComplete="off"
         />
-        <span className="rph-progress rph-progress--done">
-          {category === 'pets'
-            ? `Торгуются: ${state.items.length} (питомцы открываются по расписанию глав)`
-            : `Торгуются: ${state.items.length}`}
+        <span className="rph-progress">
+          {state.done
+            ? `Продавались за 7 дней: ${state.items.length}${state.total !== state.items.length ? ` из ${state.total}` : ''}${category === 'pets' ? ' (питомцы открываются по расписанию глав)' : ''}`
+            : `Проверка продаж: ${state.checked}/${state.total} — показаны уже проверенные`}
         </span>
       </div>
 
@@ -394,6 +474,30 @@ function NftGrid({ category, onSelect, selectedKey }: {
         </div>
       )}
     </>
+  );
+}
+
+/** Динамика цены за выбранный период: первая → последняя точка. */
+function PriceChange({ points }: { points: PricePoint[] }) {
+  const series = points.map((p) => p.floor ?? p.latest_sale).filter((v): v is number => v != null);
+  if (series.length < 2) return null;
+
+  const first = series[0];
+  const last = series[series.length - 1];
+  const diff = last - first;
+  const pct = first !== 0 ? (diff / first) * 100 : null;
+  const up = diff > 0;
+  const flat = diff === 0;
+
+  return (
+    <div className={`rph-change${flat ? ' rph-change--flat' : up ? ' rph-change--up' : ' rph-change--down'}`}>
+      <span className="rph-change-price"><FlowerAmount compact value={last} /></span>
+      <span className="rph-change-badge">
+        {flat ? '—' : up ? '▲' : '▼'} {diff > 0 ? '+' : ''}{diff.toLocaleString('ru-RU', { maximumFractionDigits: 4 })}
+        {pct != null && ` (${pct > 0 ? '+' : ''}${pct.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}%)`}
+      </span>
+      <span className="rph-progress">за период</span>
+    </div>
   );
 }
 
@@ -471,7 +575,7 @@ export default function RefPriceHistory() {
           </div>
         </div>
 
-        {block === 'resources' && <ResourcesGrid onSelect={handleSelect} selectedKey={selected?.key ?? null} />}
+        {block === 'resources' && <ResourcesGrid onSelect={handleSelect} selectedName={selected?.name ?? null} />}
         {block === 'items' && <ItemsBlock onSelect={handleSelect} selected={selected} />}
         {block === 'pets' && <NftGrid category="pets" onSelect={handleSelect} selectedKey={selected?.key ?? null} />}
         {block === 'buds' && <NftGrid category="buds" onSelect={handleSelect} selectedKey={selected?.key ?? null} />}
@@ -482,8 +586,11 @@ export default function RefPriceHistory() {
         {selected && (
           <>
             <div className="ph-card-title rph-card-title-row">
-              {selected.icon && <img src={selected.icon} alt="" className="rph-title-icon" />}
+              {selected.icon && (selected.icon.startsWith('/')
+                ? <img src={selected.icon} alt="" className="rph-title-icon" />
+                : <span className="rph-title-emoji">{selected.icon}</span>)}
               <span>{selected.name}</span>
+              {state.status === 'ready' && <PriceChange points={state.points} />}
             </div>
             {state.status === 'loading' && <div className="ph-status">Загрузка истории...</div>}
             {state.status === 'error' && <div className="ph-status ph-status--error">Не удалось загрузить историю цены.</div>}
@@ -495,10 +602,7 @@ export default function RefPriceHistory() {
               </div>
             )}
             {state.status === 'ready' && state.points.length > 0 && (
-              <>
-                <PriceChart points={state.points} />
-                <PriceTable points={state.points} />
-              </>
+              <PriceChart points={state.points} />
             )}
           </>
         )}

@@ -37,6 +37,9 @@
 }
 
 .rph-card-icon { width: 36px; height: 36px; object-fit: contain; }
+.rph-card-emoji { font-size: 30px; line-height: 1; }
+
+.rph-search-sm { max-width: 280px; }
 
 .rph-card-title {
   font-size: 13px;
@@ -83,3 +86,18 @@
   object-fit: contain;
   border-radius: 6px;
 }
+.rph-title-emoji { font-size: 24px; line-height: 1; }
+
+/* Динамика цены за период: текущая цена + бейдж прироста/падения */
+.rph-change {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-left: 8px;
+  font-size: 14px;
+}
+.rph-change-price { font-weight: 700; color: var(--text); }
+.rph-change-badge { font-weight: 700; }
+.rph-change--up .rph-change-badge { color: var(--green-dark); }
+.rph-change--down .rph-change-badge { color: #B91C1C; }
+.rph-change--flat .rph-change-badge { color: var(--text-sec); }
