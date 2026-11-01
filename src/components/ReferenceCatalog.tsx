@@ -1104,13 +1104,13 @@ interface MarvelRow {
 }
 
 const CURRENT_CHAPTER_MARVELS: MarvelRow[] = [
-  { marvel: 'Macropinna', marvelIcon: '/sprites/sfts/macropinna.webp', fish: 'Moray Eel', fishIcon: '/sprites/fish/moray_eel.png', odds: 0.015 },
-  { marvel: 'Macropinna', marvelIcon: '/sprites/sfts/macropinna.webp', fish: 'Coelacanth', fishIcon: '/sprites/fish/coelacanth.png', odds: 0.01 },
-  { marvel: 'Betta', marvelIcon: '/sprites/sfts/betta.webp', fish: 'Zebra Turkeyfish', fishIcon: '/sprites/fish/zebra_turkeyfish.png', odds: 0.01 },
-  { marvel: 'Betta', marvelIcon: '/sprites/sfts/betta.webp', fish: 'Muskellunge', fishIcon: '/sprites/fish/muskellunge.png', odds: 0.02 },
-  { marvel: 'Betta', marvelIcon: '/sprites/sfts/betta.webp', fish: 'Blowfish', fishIcon: '/sprites/fish/blowfish.png', odds: 0.01 },
-  { marvel: 'Manatee', marvelIcon: '/sprites/sfts/manatee.webp', fish: 'Whale Shark', fishIcon: '/sprites/fish/whale_shark.png', odds: 0.004 },
-  { marvel: 'Manatee', marvelIcon: '/sprites/sfts/manatee.webp', fish: 'Sea Bass', fishIcon: '/sprites/fish/sea_bass.png', odds: 0.002 },
+  { marvel: 'Macropinna', marvelIcon: '/sprites/sfts/macropinna.webp', fish: 'Moray Eel', fishIcon: '/sprites/fish/moray_eel.png', odds: 1.5 },
+  { marvel: 'Macropinna', marvelIcon: '/sprites/sfts/macropinna.webp', fish: 'Coelacanth', fishIcon: '/sprites/fish/coelacanth.png', odds: 1 },
+  { marvel: 'Betta', marvelIcon: '/sprites/sfts/betta.webp', fish: 'Zebra Turkeyfish', fishIcon: '/sprites/fish/zebra_turkeyfish.png', odds: 1 },
+  { marvel: 'Betta', marvelIcon: '/sprites/sfts/betta.webp', fish: 'Muskellunge', fishIcon: '/sprites/fish/muskellunge.png', odds: 2 },
+  { marvel: 'Betta', marvelIcon: '/sprites/sfts/betta.webp', fish: 'Blowfish', fishIcon: '/sprites/fish/blowfish.png', odds: 1 },
+  { marvel: 'Manatee', marvelIcon: '/sprites/sfts/manatee.webp', fish: 'Whale Shark', fishIcon: '/sprites/fish/whale_shark.png', odds: 0.4 },
+  { marvel: 'Manatee', marvelIcon: '/sprites/sfts/manatee.webp', fish: 'Sea Bass', fishIcon: '/sprites/fish/sea_bass.png', odds: 0.2 },
 ];
 
 const PREVIOUS_CHAPTER_MARVELS: MarvelRow[] = [
