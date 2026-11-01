@@ -12,7 +12,6 @@ import { WATER_TRAPS } from '../../lib/fishData.generated';
 import BoostPanel from '../BoostPanel';
 import {
   CHUM_ICONS,
-  CHUM_PRICE_NAMES,
   NO_CRUSTACEAN_BOOSTS,
   POTS,
   POT_ICONS,

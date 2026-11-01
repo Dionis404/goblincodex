@@ -4,8 +4,6 @@ import pg from 'pg';
 const { Pool } = pg;
 
 let pool: InstanceType<typeof Pool> | null = null;
-let telegramPostsTableReady: Promise<void> | null = null;
-let telegramStatsTableReady: Promise<void> | null = null;
 
 function getPool(): InstanceType<typeof Pool> {
   if (!pool) {
@@ -30,34 +28,6 @@ function getPool(): InstanceType<typeof Pool> {
     });
   }
   return pool;
-}
-
-function ensureTelegramPostsTable(pool: InstanceType<typeof Pool>): Promise<void> {
-  if (!telegramPostsTableReady) {
-    telegramPostsTableReady = pool.query(`
-      CREATE TABLE IF NOT EXISTS telegram_posts (
-        id           BIGINT PRIMARY KEY,
-        message_date TIMESTAMPTZ NOT NULL,
-        text         TEXT NOT NULL,
-        image_url    TEXT,
-        created_at   TIMESTAMPTZ DEFAULT now()
-      );
-    `).then(() => undefined);
-  }
-  return telegramPostsTableReady;
-}
-
-function ensureTelegramStatsTable(pool: InstanceType<typeof Pool>): Promise<void> {
-  if (!telegramStatsTableReady) {
-    telegramStatsTableReady = pool.query(`
-      CREATE TABLE IF NOT EXISTS telegram_stats (
-        channel      TEXT PRIMARY KEY,
-        subscribers  INTEGER NOT NULL,
-        updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
-      );
-    `).then(() => undefined);
-  }
-  return telegramStatsTableReady;
 }
 
 interface SflBuff {
@@ -184,7 +154,6 @@ export interface TelegramPost {
 
 export async function saveTelegramPost(post: TelegramPost): Promise<void> {
   const pool = getPool();
-  await ensureTelegramPostsTable(pool);
   await pool.query(
     `INSERT INTO telegram_posts (id, message_date, text, image_url)
      VALUES ($1, $2, $3, $4)
@@ -198,7 +167,6 @@ export async function saveTelegramPost(post: TelegramPost): Promise<void> {
 
 export async function getTelegramPosts(limit: number): Promise<TelegramPost[]> {
   const pool = getPool();
-  await ensureTelegramPostsTable(pool);
   const { rows } = await pool.query<{
     id: string;
     message_date: Date;
@@ -222,7 +190,6 @@ export async function getTelegramPosts(limit: number): Promise<TelegramPost[]> {
 
 export async function saveTelegramSubscriberCount(channel: string, memberCount: number): Promise<void> {
   const pool = getPool();
-  await ensureTelegramStatsTable(pool);
   await pool.query(
     `INSERT INTO telegram_stats (channel, subscribers, updated_at)
      VALUES ($1, $2, now())
@@ -235,7 +202,6 @@ export async function saveTelegramSubscriberCount(channel: string, memberCount: 
 
 export async function getTelegramSubscriberCount(channel: string): Promise<number | null> {
   const pool = getPool();
-  await ensureTelegramStatsTable(pool);
   const { rows } = await pool.query<{ subscribers: number }>(
     `SELECT subscribers FROM telegram_stats WHERE channel = $1`,
     [channel]

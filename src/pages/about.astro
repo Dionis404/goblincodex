@@ -1,16 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
-
-// Гайды + механики из контент-коллекции
-const allGuides    = await getCollection('guides');
-const allMechanics = await getCollection('mechanics').catch(() => []);
-const guidesCount  = allGuides.length + allMechanics.length;
-
-// Инструменты — считаем страницы в /tools/
-const toolPages  = import.meta.glob('./tools/*.astro');
-const toolsCount = Object.keys(toolPages).length;
-
 ---
 
 <BaseLayout
@@ -38,19 +27,6 @@ const toolsCount = Object.keys(toolPages).length;
         сделано руками участников сообщества 💚
       </p>
     </div>
-
-    {/* ── Статистика (скрыто, может вернём позже) ──
-    <div class="gc-about-stats">
-      <div class="gc-stat-item">
-        <div class="gc-stat-big">{guidesCount}</div>
-        <div class="gc-stat-lbl">Статей в Кодексе</div>
-      </div>
-      <div class="gc-stat-item">
-        <div class="gc-stat-big">{toolsCount}</div>
-        <div class="gc-stat-lbl">Инструментов</div>
-      </div>
-    </div>
-    */}
 
     <!-- ── 4 карточки ── -->
     <div class="gc-about-grid gc-grid-4">
