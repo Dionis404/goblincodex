@@ -13,8 +13,11 @@ services:
       - NODE_ENV=production
     networks:
       - shared-net
+      - web 
     restart: unless-stopped
 
 networks:
   shared-net:
+    external: true
+  web:                 
     external: true

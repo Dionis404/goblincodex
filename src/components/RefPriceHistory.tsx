@@ -520,7 +520,11 @@ export default function RefPriceHistory() {
   const requestId = useRef(0);
 
   const handleSelect = useCallback((s: Selected) => {
-    setSelected((prev) => prev ?? s);
+    // Выбор должен переводиться в новое значение при КАЖДОМ клике/авто-селекте —
+    // иначе после первой установки (авто-селект первого ресурса сетки) все
+    // клики по карточкам игнорируются и график/цена «застревают» на старом
+    // предмете: визуально — «цены не отображаются».
+    setSelected(s);
   }, []);
 
   useEffect(() => {
