@@ -83,7 +83,7 @@ export const GET: APIRoute = async ({ params, url }) => {
         summary,
         totalPoints: points.length,
       };
-    });
+    }, { swr: true });
     return json({ item_key: itemKey, hours, ...data });
   } catch (err) {
     console.error('[api/prices/chart] error:', err);

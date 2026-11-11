@@ -73,7 +73,7 @@ export async function fetchUpcomingAuctions(): Promise<UiAuction[]> {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json: ApiAuction[] = await res.json();
       return json.map(mapAuction);
-    });
+    }, { swr: true });
     return data;
   } catch (e) {
     console.error('[auctionsApi] fetchUpcomingAuctions error:', e);
@@ -117,7 +117,7 @@ export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
 
   try {
     if (limit <= 100) return await load();
-    const { data } = await withTtlCache(`past-auctions-${limit}`, AUCTIONS_TTL_MS, load);
+    const { data } = await withTtlCache(`past-auctions-${limit}`, AUCTIONS_TTL_MS, load, { swr: true });
     return data;
   } catch (e) {
     console.error('[auctionsApi] fetchPastAuctions error:', e);

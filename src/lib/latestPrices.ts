@@ -39,7 +39,7 @@ export async function getKeyByName(): Promise<Map<string, string>> {
       const resources = await fetchPriceResources('collectibles');
       if (resources.length === 0) throw new Error('empty collectibles list');
       return new Map(resources.map((r) => [r.item_name.toLowerCase(), r.item_key]));
-    });
+    }, { swr: true });
     return data;
   } catch {
     return new Map();

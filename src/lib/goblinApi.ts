@@ -25,6 +25,6 @@ export async function fetchGoblinJsonCached<T = any>(path: string): Promise<T> {
     const res = await fetchWithTimeout(`${GOBLIN_API_BASE}${path}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return res.json() as Promise<T>;
-  });
+  }, { swr: true });
   return data;
 }

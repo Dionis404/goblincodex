@@ -17,18 +17,24 @@ const inflight = new Map<string, Promise<unknown>>();
 // catch-деградацию, а не ждут таймаут на каждом запросе.
 const FAILURE_TTL_MS = 30 * 1000;
 
-export async function withTtlCache<T>(
-  key: string,
-  ttlMs: number,
-  fetcher: () => Promise<T>,
-): Promise<{ data: T; cached: boolean }> {
-  const hit = store.get(key);
-  if (hit) {
-    const age = Date.now() - hit.ts;
-    if (hit.ok && age < ttlMs) return { data: hit.data as T, cached: true };
-    if (!hit.ok && age < FAILURE_TTL_MS) throw hit.error;
-  }
+export interface CacheOptions {
+  /**
+   * Stale-while-revalidate: если запись протухла, но данные есть — отдаём
+   * протухшее немедленно и обновляем в фоне. Без флага все запросы в момент
+   * протухания TTL ждут свежий fetch (до таймаута fetchWithTimeout).
+   */
+  swr?: boolean;
+}
 
+export interface CacheResult<T> {
+  data: T;
+  cached: boolean;
+  /** true — отданы протухшие данные, фоновое обновление запущено. */
+  stale?: boolean;
+}
+
+/** Один запрос на ключ для всех ждущих + stale-if-error при ошибке. */
+function fetchFresh<T>(key: string, ttlMs: number, fetcher: () => Promise<T>): Promise<T> {
   let pending = inflight.get(key) as Promise<T> | undefined;
   if (!pending) {
     pending = fetcher()
@@ -50,8 +56,31 @@ export async function withTtlCache<T>(
       .finally(() => inflight.delete(key));
     inflight.set(key, pending);
   }
+  return pending;
+}
 
-  return { data: await pending, cached: false };
+export async function withTtlCache<T>(
+  key: string,
+  ttlMs: number,
+  fetcher: () => Promise<T>,
+  opts: CacheOptions = {},
+): Promise<CacheResult<T>> {
+  const hit = store.get(key);
+  if (hit) {
+    const age = Date.now() - hit.ts;
+    if (hit.ok) {
+      if (age < ttlMs) return { data: hit.data as T, cached: true };
+      if (opts.swr) {
+        fetchFresh(key, ttlMs, fetcher).catch(error => {
+          console.warn(`[cache] SWR-refresh failed for "${key}":`, error);
+        });
+        return { data: hit.data as T, cached: true, stale: true };
+      }
+    }
+    if (!hit.ok && age < FAILURE_TTL_MS) throw hit.error;
+  }
+
+  return { data: await fetchFresh(key, ttlMs, fetcher), cached: false };
 }
 
 /** Shared response shape for /api/*.json routes serving withTtlCache() data. */

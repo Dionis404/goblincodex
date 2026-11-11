@@ -63,7 +63,7 @@ async function priceKeys(): Promise<Map<string, string>> {
     const map = new Map<string, string>(collectibles.map((r) => [r.item_name.toLowerCase(), r.item_key]));
     for (const [id, name] of Object.entries(WEARABLE_NAMES)) map.set(name.toLowerCase(), `wearables-${id}`);
     return map;
-  });
+  }, { swr: true });
   return data;
 }
 
@@ -88,7 +88,7 @@ async function flowerRateSeries(keys: Map<string, string>): Promise<{ t: number;
       if (series.length && Date.now() - series[series.length - 1].t < 2 * 86_400_000) return series;
     }
     throw new Error('нет истории курса Flower');
-  });
+  }, { swr: true });
   return data;
 }
 
@@ -128,7 +128,7 @@ async function marketPrice(name: string, keys: Map<string, string>): Promise<Mar
       if (usd != null && usd > 0) return { usd, flower, at: p.captured_at };
     }
     return null;
-  });
+  }, { swr: true });
   return data;
 }
 
@@ -227,7 +227,7 @@ export async function analyzeAuctionTiers(
 
   const ended = auctions.filter((a) => a.endAt <= now);
   const results = await mapLimit(ended, CONCURRENCY, async (a) => {
-    const { data } = await withTtlCache(`auction-tiers:results:${a.auctionId}`, TTL_MS, () => fetchAuctionResults(a.auctionId));
+    const { data } = await withTtlCache(`auction-tiers:results:${a.auctionId}`, TTL_MS, () => fetchAuctionResults(a.auctionId), { swr: true });
     return { auction: a, results: data };
   });
 

@@ -8,7 +8,8 @@ export const prerender = false;
 export const GET: APIRoute = async () => {
   try {
     const { data, cached } = await withTtlCache('prng-chances', 3600_000, () =>
-      getPrngChances(dbLookupNames())
+      getPrngChances(dbLookupNames()),
+      { swr: true }
     );
     return cachedJsonResponse(data, cached, 3600);
   } catch (e) {
