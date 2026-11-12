@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/ea/b0/eab096c9-01e6-45fd-8ea5-431d242aba4e.png"
+image: "/blog-images/ea/b0/eab096c9-01e6-45fd-8ea5-431d242aba4e.jpg"
 title: "🐾 Питомцы и Святилища в Sunflower Land"
 shortId: 86
 slug: "2025-08-24-pitomtsy-i-svyatilischa-v"
@@ -40,7 +40,7 @@ originalUrl: "https://teletype.in/@urg/iI4-SA3FimJ"
 - ❄️ **Snowkins** — приносят *Frost Pebble*
 - 🍓 **Foragers** — приносят *Dewberry*
 
-![](/blog-images/ea/b0/eab096c9-01e6-45fd-8ea5-431d242aba4e.png)
+![](/blog-images/ea/b0/eab096c9-01e6-45fd-8ea5-431d242aba4e.jpg)
 
 👉 При открытии яйца вы получите питомца из категории, которой у вас ещё нет.
 
@@ -108,7 +108,7 @@ originalUrl: "https://teletype.in/@urg/iI4-SA3FimJ"
 - 🐻 **Bear Shrine** — +50% производство мёда
 - 🌟 **Legendary Shrine** — +1 к урожаю (растения, фрукты, деревья, камни)
 
-![](/blog-images/2b/27/2b27845f-4541-4414-aa15-570b65782d59.png)
+![](/blog-images/2b/27/2b27845f-4541-4414-aa15-570b65782d59.webp)
 
 👉 Чем больше питомцев и Acorns — тем больше Святилищ можно построить.
 

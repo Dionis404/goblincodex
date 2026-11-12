@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/yakkamon/devchat-battles-2026-09-17/preview.png"
+image: "/blog-images/yakkamon/devchat-battles-2026-09-17/preview.jpg"
 title: "Дев-чат Yakkamon: итоги фри-минта на Ronin, охота на мультиаккаунтеров и первый взгляд на бои"
 shortId: 172
 slug: "2026-09-17-devchat-yakkamon-fri-mint-multiakkaunty-boi"

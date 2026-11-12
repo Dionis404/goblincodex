@@ -26,11 +26,15 @@
     "search:index": "tsx scripts/index-search.ts",
     "news:import": "tsx scripts/import-teletype-news.ts",
     "news:sync-images": "tsx scripts/sync-news-images.ts",
+    "news:optimize-images": "tsx scripts/optimize-blog-images.ts",
     "sfl:clone": "git clone --depth 1 --filter=blob:none --sparse https://github.com/sunflower-land/sunflower-land.git _sfl_temp && cd _sfl_temp && git sparse-checkout set src/features/game/types src/lib/i18n/dictionaries src/assets src/features/game/events/landExpansion src/features/game/expansion/lib src/features/game/lib src/lib/buds src/features/pets/data src/features/island/plots src/features/game/actions/tradeLimits.ts"
   },
   "dependencies": {
     "@astrojs/node": "^10.1.1",
     "@astrojs/react": "^5.0.5",
+    "@fontsource/golos-text": "^5.3.0",
+    "@fontsource/press-start-2p": "^5.3.0",
+    "@fontsource/unbounded": "^5.3.0",
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
@@ -45,6 +49,7 @@
     "@astrojs/check": "^0.9.4",
     "@astrojs/sitemap": "^3.7.3",
     "@types/node": "^22.0.0",
+    "sharp": "^0.34.5",
     "tsx": "^4.19.0",
     "typescript": "^5.9.3"
   }

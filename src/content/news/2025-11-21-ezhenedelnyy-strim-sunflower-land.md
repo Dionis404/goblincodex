@@ -1,4 +1,5 @@
 ---
+image: "/blog-images/ff/e3/ffe3dab1-a8c8-4410-892d-c714679bf032.jpg"
 title: "Еженедельный стрим Sunflower Land - обновления, Rarecrows и рыбалка будущего"
 shortId: 109
 slug: "2025-11-21-ezhenedelnyy-strim-sunflower-land"
@@ -120,7 +121,7 @@ originalUrl: "https://teletype.in/@urg/N8PokOlX__d"
 - Команда нанимает нового гейм-дизайнера, который также будет заниматься Sunflower Land.
 - Art-команда расширяется, чтобы поддерживать темп разработки.
 
-![](https://img4.teletype.media/files/ff/e3/ffe3dab1-a8c8-4410-892d-c714679bf032.png)
+![](/blog-images/ff/e3/ffe3dab1-a8c8-4410-892d-c714679bf032.jpg)
 
 ---
 

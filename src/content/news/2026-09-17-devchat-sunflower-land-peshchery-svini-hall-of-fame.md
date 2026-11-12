@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/sfl/devchat-caves-pigs-2026-09-17/preview.png"
+image: "/blog-images/sfl/devchat-caves-pigs-2026-09-17/preview.jpg"
 title: "Дев-чат Sunflower Land: пещеры, свиньи и почищенный Hall of Fame"
 shortId: 171
 slug: "2026-09-17-devchat-sunflower-land-peshchery-svini-hall-of-fame"

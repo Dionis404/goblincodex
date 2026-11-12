@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/ea/eb/eaebfb1e-3537-4dc2-bae2-a1a31508ccdd.png"
+image: "/blog-images/ea/eb/eaebfb1e-3537-4dc2-bae2-a1a31508ccdd.jpg"
 title: "Новости недели."
 shortId: 7
 slug: "2024-06-28-novosti-nedeli"
@@ -12,7 +12,7 @@ originalUrl: "https://teletype.in/@urg/NewsWeek"
 
 Дома фракции будут открыты 8 июля, Адам показал дома Ночных теней на стриме. А я заглянул в дом гоблинов в тестнете.
 
-![Дом гоблинов](/blog-images/ea/eb/eaebfb1e-3537-4dc2-bae2-a1a31508ccdd.png)
+![Дом гоблинов](/blog-images/ea/eb/eaebfb1e-3537-4dc2-bae2-a1a31508ccdd.jpg)
 
 *Дом гоблинов*
 

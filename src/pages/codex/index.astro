@@ -12,9 +12,8 @@ import ChapterMechanicModal from '../../components/ChapterMechanicModal.astro';
 import ChapterTimer from '../../components/ChapterTimer.tsx';
 import FishAgingTable from '../../components/tools/FishAgingTable.tsx';
 import SearchWidget from '../../components/SearchWidget.tsx';
-import type { getCatalogItems, getBudTraits, getBudFilterOptions, getPetNftBreeds, getPetNftTraits, getPetNftFilterOptions, getPetsCommon, getPetResources, getPetFetches } from '../../lib/db';
+import type { getBudTraits, getBudFilterOptions, getPetNftBreeds, getPetNftTraits, getPetNftFilterOptions, getPetsCommon, getPetResources, getPetFetches } from '../../lib/db';
 import {
-  getCachedCatalogItems,
   getCachedBuds,
   getCachedPetsNft,
   getCachedPetsCommon,
@@ -23,7 +22,6 @@ import {
 import { fetchGoblinJsonCached } from '../../lib/goblinApi';
 import { getCurrentChapter } from '../../lib/chapters';
 
-let catalogItems: Awaited<ReturnType<typeof getCatalogItems>> = [];
 let budTraits: Awaited<ReturnType<typeof getBudTraits>> = [];
 let budFilterOptions: Awaited<ReturnType<typeof getBudFilterOptions>> = { types: [], colours: [], stems: [], auras: [], ears: [] };
 let petNftBreeds: Awaited<ReturnType<typeof getPetNftBreeds>> = [];
@@ -33,22 +31,18 @@ let petsCommon: Awaited<ReturnType<typeof getPetsCommon>> = [];
 let petResources: Awaited<ReturnType<typeof getPetResources>> = [];
 let petFetches: Awaited<ReturnType<typeof getPetFetches>> = [];
 
-// Пять независимых источников (каталог, буды, NFT-питомцы, обычные питомцы,
+// Четыре независимых источника (буды, NFT-питомцы, обычные питомцы,
 // механики питомцев) — грузим параллельно вместо последовательных await,
 // иначе время ответа страницы складывается из времени ВСЕХ запросов подряд.
-const [catalogResult, budsResult, petsNftResult, petsCommonResult, petMechanicsResult] = await Promise.allSettled([
-  getCachedCatalogItems(),
+// Каталог предметов (самый большой, ~600K JSON) намеренно НЕ грузим: вкладка
+// NFT тянет его с /api/nft-catalog.json сама, когда реально открыта —
+// иначе весь каталог ехал в HTML каждого просмотра /codex.
+const [budsResult, petsNftResult, petsCommonResult, petMechanicsResult] = await Promise.allSettled([
   getCachedBuds(),
   getCachedPetsNft(),
   getCachedPetsCommon(),
   getCachedPetMechanics(),
 ]);
-
-if (catalogResult.status === 'fulfilled') {
-  catalogItems = catalogResult.value.data;
-} else {
-  console.error('[codex] DB fetch error:', catalogResult.reason);
-}
 
 if (budsResult.status === 'fulfilled') {
   budTraits = budsResult.value.data.traits;
@@ -399,7 +393,7 @@ function formatUpdatedAgo(iso: string | null): string | null {
           <span class="gc-boosts-hint-icon">💡</span>
           <span><strong>Как пользоваться:</strong> выбери тип ресурса → смотри какие NFT-предметы дают бонус к нему. Клик по карточке — подробности.</span>
         </div>
-        <BoostsCatalog client:load items={catalogItems} />
+        <BoostsCatalog client:visible />
       </div>
 
       <div id="nftSubBuds" style="display:none">
@@ -481,7 +475,7 @@ function formatUpdatedAgo(iso: string | null): string | null {
           ⚠️ Данные временно недоступны. Попробуйте позже.
         </div>
       ) : (
-        <CommunityPage client:load farmers={communityFarmers} guidesByUser={guidesByUser} />
+        <CommunityPage client:visible farmers={communityFarmers} guidesByUser={guidesByUser} />
       )}
     </div>
 

@@ -28,9 +28,9 @@ description: "📅 Дата: 14 Октября 2026 Свиньи и трюфел
 
 У свиней будет собственная постройка — свинарник размером **3×3**. Команда учла жалобы на то, что здания стали занимать слишком много места, поэтому свинарник сделали компактнее. Внешне система похожа на других животных, но работает она совсем иначе.
 
-<img src="/blog-images/sfl/stream-2026-10-14/pig-house.png" alt="Свинарник на ферме" width="226" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/pig-house.webp" alt="Свинарник на ферме" width="226" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
-<img src="/blog-images/sfl/stream-2026-10-14/pigs-inside.png" alt="Свинки внутри свинарника" width="855" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/pigs-inside.webp" alt="Свинки внутри свинарника" width="855" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
 
 ##### Чем кормить
 
@@ -43,7 +43,7 @@ description: "📅 Дата: 14 Октября 2026 Свиньи и трюфел
 - И так далее по уровням
 - Помимо урожая, в помои идут и другие ресурсы, например **рыба**
 
-<img src="/blog-images/sfl/stream-2026-10-14/slop-mixer.png" alt="Миксер корма: базовые помои из любой культуры первого тира" width="855" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/slop-mixer.webp" alt="Миксер корма: базовые помои из любой культуры первого тира" width="855" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
 
 Идея в том, что выгоднее всего будет скармливать свиньям ту культуру, которая сейчас дешевле всего. Это создаёт новый «сток» для экономики в самом её низу — и оптимальный корм будет меняться от сезона к сезону и вслед за рынком.
 
@@ -70,9 +70,9 @@ description: "📅 Дата: 14 Октября 2026 Свиньи и трюфел
 - Сколько щетины дадут, зависит от уровня свиньи: **от 1 до 12 штук**
 - Баунти на свиней тоже будут
 
-<img src="/blog-images/sfl/stream-2026-10-14/pig-trade-in.png" alt="Вкладка продажи: обмен свиньи на щетину" width="855" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/pig-trade-in.webp" alt="Вкладка продажи: обмен свиньи на щетину" width="855" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
 
-<img src="/blog-images/sfl/stream-2026-10-14/pig-bristles.png" alt="Над свиньями видно, сколько щетины за них дадут" width="855" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/pig-bristles.webp" alt="Над свиньями видно, сколько щетины за них дадут" width="855" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
 
 И важный совет на будущее: щетина понадобится в обновлённой системе погоды, и спрос на неё, по словам разработчиков, будет высоким. Так что **копить её заранее имеет смысл**.
 
@@ -86,11 +86,11 @@ description: "📅 Дата: 14 Октября 2026 Свиньи и трюфел
 
 У каждого навыка по три ранга. Это тестовая версия, так что цифры ещё могут поменяться.
 
-<img src="/blog-images/sfl/stream-2026-10-14/skill-swill-savvy.png" alt="Навык Swill Savvy" width="322" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/skill-swill-savvy.webp" alt="Навык Swill Savvy" width="322" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
-<img src="/blog-images/sfl/stream-2026-10-14/skill-bristle-payout.png" alt="Навык Bristle Payout" width="322" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/skill-bristle-payout.webp" alt="Навык Bristle Payout" width="322" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
-<img src="/blog-images/sfl/stream-2026-10-14/skill-truffle-yield.png" alt="Навык Truffle Yield" width="322" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/skill-truffle-yield.webp" alt="Навык Truffle Yield" width="322" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 #### Пещеры: раскопки в духе «Сапёра»
 
@@ -98,9 +98,9 @@ description: "📅 Дата: 14 Октября 2026 Свиньи и трюфел
 
 Пещера — новое здание, которое открывается на острове **Petal Paradise** (во внутреннем коде он до сих пор называется Spring, поэтому разработчики иногда так его и зовут). Арт самой пещеры нарисовал Little Ainz.
 
-<img src="/blog-images/sfl/stream-2026-10-14/cave-entrance.png" alt="Вход в пещеру" width="322" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/cave-entrance.webp" alt="Вход в пещеру" width="322" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
-<img src="/blog-images/sfl/stream-2026-10-14/cave-inside.png" alt="Пещера изнутри: пять участков для раскопок" width="2877" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/cave-inside.webp" alt="Пещера изнутри: пять участков для раскопок" width="2877" style="display:block;width:auto;max-width:100%;height:auto;margin:20px 0 6px">
 
 ##### Как это работает
 
@@ -111,11 +111,11 @@ description: "📅 Дата: 14 Октября 2026 Свиньи и трюфел
 - Копаете в удобное для себя время
 - Головоломку можно в любой момент сбросить и отправить в компост, не раскапывая всё поле
 
-<img src="/blog-images/sfl/stream-2026-10-14/dig-not-ready.png" alt="Пока участок «растёт», над микобоксом виден таймер" width="394" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/dig-not-ready.webp" alt="Пока участок «растёт», над микобоксом виден таймер" width="394" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
-<img src="/blog-images/sfl/stream-2026-10-14/dig-ready.png" alt="Участок готов к раскопкам" width="394" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/dig-ready.webp" alt="Участок готов к раскопкам" width="394" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
-<img src="/blog-images/sfl/stream-2026-10-14/dig-progress.png" alt="Раскопки в процессе: найдены жуки и грибы" width="414" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/dig-progress.webp" alt="Раскопки в процессе: найдены жуки и грибы" width="414" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 Для раскопок используются **песчаный бур и лопата** — те же, что и на пляже.
 
@@ -123,7 +123,7 @@ description: "📅 Дата: 14 Октября 2026 Свиньи и трюфел
 
 От того, что вы положите в микобоксы, зависит результат. В микобоксе выбирается смесь — грибная, жучиная или грязевая:
 
-<img src="/blog-images/sfl/stream-2026-10-14/myco-bin.png" alt="Микобокс: выбор смеси, таймер 12 часов" width="630" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/myco-bin.webp" alt="Микобокс: выбор смеси, таймер 12 часов" width="630" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 - **Грязь** → даёт свиньям бонусный опыт и используется в других цепочках
 - **Грибы** → ингредиент для новых рецептов
@@ -153,9 +153,9 @@ description: "📅 Дата: 14 Октября 2026 Свиньи и трюфел
 
 На скриншотах торговец сидит прямо в пещере и меняет жуков на полезные вещи — например, на песчаные буры, трюфели и кожу. Набор сделок периодически обновляется, а новые предложения открываются с ростом уровня пещеры.
 
-<img src="/blog-images/sfl/stream-2026-10-14/goblin-merchant-room.png" alt="Гоблин-торговец в пещере" width="550" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/goblin-merchant-room.webp" alt="Гоблин-торговец в пещере" width="550" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
-<img src="/blog-images/sfl/stream-2026-10-14/goblin-merchant-trades.png" alt="Сделки Гоблина-торговца" width="669" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-14/goblin-merchant-trades.webp" alt="Сделки Гоблина-торговца" width="669" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 #### Погода: переработка задерживается
 

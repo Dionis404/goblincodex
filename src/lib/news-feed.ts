@@ -15,7 +15,10 @@ export type NewsItem = {
   source: 'news' | 'telegram' | 'fallback';
   game: NewsGame;
   slug?: string;
-  fullText?: string;
+  /** Numeric message id Telegram-поста (source==='telegram') — для модалки,
+   *  чтобы тянуть полный текст с /api/telegram-posts/{tgId}.json по клику,
+   *  а не вшивать тексты всех постов в HTML страницы. */
+  tgId?: number;
 };
 
 const TELEGRAM_CHANNEL = 'URGSFL';
@@ -95,9 +98,9 @@ async function fetchTelegramNews(limit: number): Promise<NewsItem[]> {
         // posts/[id]/image.ts) — используем как есть, без прокси-обёртки.
         image: post.imageUrl ?? '',
         desc: truncate(post.text, 120),
-        fullText: post.text,
         source: 'telegram' as const,
         game: detectTelegramGame(post.text),
+        tgId: post.id,
       };
     });
   } catch (e) {

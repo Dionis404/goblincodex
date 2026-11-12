@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/ee/b6/eeb61f16-04e6-4741-9cec-8ba91e59772a.png"
+image: "/blog-images/ee/b6/eeb61f16-04e6-4741-9cec-8ba91e59772a.jpg"
 title: "Yakkamon Live #4: фри-минт на Ronin, легендарки и свежие новости разработки"
 shortId: 169
 slug: "2026-09-01-yakkamon-live-4-fri-mint-na-ronin"

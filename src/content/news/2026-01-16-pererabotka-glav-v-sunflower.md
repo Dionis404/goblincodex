@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/ec/09/ec091f09-3848-4776-9b2a-4a58b979c9a0.png"
+image: "/blog-images/ec/09/ec091f09-3848-4776-9b2a-4a58b979c9a0.jpg"
 title: "Переработка глав в Sunflower Land вызвала бурю эмоций в сообществе"
 shortId: 127
 slug: "2026-01-16-pererabotka-glav-v-sunflower"
@@ -13,7 +13,7 @@ originalUrl: "https://teletype.in/@urg/Rxoo_WH-xGZ"
 
 Новое [предложение разработчиков](https://github.com/sunflower-land/sunflower-land/discussions/6796) по изменению системы глав стало одной из самых горячих тем последних дней. Обсуждение получилось эмоциональным и насыщенным: от поддержки и осторожного оптимизма до жёсткой критики и опасений за будущее игры.
 
-![](/blog-images/ec/09/ec091f09-3848-4776-9b2a-4a58b979c9a0.png)
+![](/blog-images/ec/09/ec091f09-3848-4776-9b2a-4a58b979c9a0.jpg)
 
 #### 🔥 Что предлагают изменить
 

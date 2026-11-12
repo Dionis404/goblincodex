@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/9f/6a/9f6a63a1-980c-4aa1-b866-cdeb793e7dca.png"
+image: "/blog-images/9f/6a/9f6a63a1-980c-4aa1-b866-cdeb793e7dca.jpg"
 title: "Обновления Sunflower Land: NFT Rare Crows, Raffle-механика и Chapter Track"
 shortId: 129
 slug: "2026-01-23-obnovleniya-sunflower-land-nft"
@@ -60,7 +60,7 @@ NFT появляются в кошельке игрока и отображаю�
 
 Эти вороны появятся в будущих главах и будут частью коллекций.
 
-![](/blog-images/9f/6a/9f6a63a1-980c-4aa1-b866-cdeb793e7dca.png)
+![](/blog-images/9f/6a/9f6a63a1-980c-4aa1-b866-cdeb793e7dca.jpg)
 
 ---
 

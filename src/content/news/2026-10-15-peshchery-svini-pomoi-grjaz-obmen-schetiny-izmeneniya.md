@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/sfl/caves-pigs-balance-2026-10-07/preview.png"
+image: "/blog-images/sfl/caves-pigs-balance-2026-10-07/preview.jpg"
 title: "Пещеры и свиньи: что изменилось в предложении после реализации — помои, грязь и обмен на щетину"
 shortId: 179
 slug: "2026-10-15-peshchery-svini-pomoi-grjaz-obmen-schetiny-izmeneniya"

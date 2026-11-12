@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/e9/ec/e9ecb861-48b8-4e2a-a356-f9a00085fbca.png"
+image: "/blog-images/e9/ec/e9ecb861-48b8-4e2a-a356-f9a00085fbca.jpg"
 title: "Прокачка с нуля День 3"
 shortId: 24
 slug: "2024-09-10-prokachka-s-nulya-den"
@@ -11,7 +11,7 @@ originalUrl: "https://teletype.in/@urg/ZeroToHero_day3"
 
 Сегодня я допустил первую ошибку, купил 3 удочки для того что бы поймать 3 анчоуса для Chowder.
 
-![](/blog-images/e9/ec/e9ecb861-48b8-4e2a-a356-f9a00085fbca.png)
+![](/blog-images/e9/ec/e9ecb861-48b8-4e2a-a356-f9a00085fbca.jpg)
 
 Но я совсем забыл что для рыбалки нужна наживка.
 
@@ -29,4 +29,4 @@ originalUrl: "https://teletype.in/@urg/ZeroToHero_day3"
 - Block Buck - 3
 - Инвентарь:
 
-![](/blog-images/30/e1/30e12dd4-df3b-4852-8750-39d5e4cb78dc.png)
+![](/blog-images/30/e1/30e12dd4-df3b-4852-8750-39d5e4cb78dc.webp)

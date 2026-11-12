@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/1b/d9/1bd9b8af-d576-46a5-9dbe-4bd4b2d00ef3.png"
+image: "/blog-images/1b/d9/1bd9b8af-d576-46a5-9dbe-4bd4b2d00ef3.jpg"
 title: "Пул ликвидности FLOWER ERC20"
 shortId: 62
 slug: "2025-05-08-pul-likvidnosti-flower-erc20"
@@ -16,7 +16,7 @@ originalUrl: "https://teletype.in/@urg/PoolFLOWERERC20"
 
 Обязательно выбирайте V3 position и Full Range
 
-![](/blog-images/c9/67/c967dc2a-9d95-4d8f-8586-b0d61c0956d1.png)
+![](/blog-images/c9/67/c967dc2a-9d95-4d8f-8586-b0d61c0956d1.webp)
 
 В поиск лучше всего вставить адрес контракта что бы выбрать точно нужный токен.
 
@@ -26,33 +26,33 @@ originalUrl: "https://teletype.in/@urg/PoolFLOWERERC20"
 
 Выбрать нужно Токен у которого значок Base
 
-![](https://img4.teletype.media/files/31/c3/31c326de-9412-4f28-a83a-6cf4db4346f2.png)
+![](/blog-images/31/c3/31c326de-9412-4f28-a83a-6cf4db4346f2.jpg)
 
 Во втором окне выбираем USDC
 
-![](/blog-images/d5/41/d5417697-964d-43ad-aa74-c668e392ad92.png)
+![](/blog-images/d5/41/d5417697-964d-43ad-aa74-c668e392ad92.webp)
 
 Токен появляется сразу при открытии модального окна.
 
-![](/blog-images/1b/d9/1bd9b8af-d576-46a5-9dbe-4bd4b2d00ef3.png)
+![](/blog-images/1b/d9/1bd9b8af-d576-46a5-9dbe-4bd4b2d00ef3.jpg)
 
 Далее проверяем(выбираем) Fee tier Основной пул лежит в 0.3% После выбора жмем "Continue"
 
-![](/blog-images/ff/83/ff8365d7-596a-461b-b937-f15102779d61.png)
+![](/blog-images/ff/83/ff8365d7-596a-461b-b937-f15102779d61.webp)
 
 На следующей странице выбираем сколько USDC или Flower сложить в пул. Указать достаточно одно из. И нажимаем "Review"
 
 Необходимо иметь на балансе и USDC и Flower
 
-![](/blog-images/e7/a8/e7a86ca7-0b67-4334-8b6c-f46e1313e1dd.png)
+![](/blog-images/e7/a8/e7a86ca7-0b67-4334-8b6c-f46e1313e1dd.webp)
 
 Подтверждаем нажатием на "Create"
 
-![](https://img4.teletype.media/files/7c/b7/7cb7d971-cabb-4ac0-ae73-7fe885922f9d.png)
+![](/blog-images/7c/b7/7cb7d971-cabb-4ac0-ae73-7fe885922f9d.webp)
 
 Следить за пулом тут: [https://app.uniswap.org/positions/](https://app.uniswap.org/positions/) Провалившись в пул. Можно увидеть всю статистику и забрать заработанное.
 
-![](/blog-images/5c/9b/5c9b3bef-41c5-4520-824e-999deec16b88.png)
+![](/blog-images/5c/9b/5c9b3bef-41c5-4520-824e-999deec16b88.webp)
 
 Возникли вопросы? Давай к нам в чат: [https://t.me/URGSFL](https://t.me/URGSFL)
 
@@ -60,4 +60,4 @@ originalUrl: "https://teletype.in/@urg/PoolFLOWERERC20"
 
 Если у вас возникает ошибка поиска токенов, необходимо использовать VPN
 
-![](/blog-images/de/49/de49a858-2981-430b-8a92-8d4c4a3e23da.png)
+![](/blog-images/de/49/de49a858-2981-430b-8a92-8d4c4a3e23da.webp)

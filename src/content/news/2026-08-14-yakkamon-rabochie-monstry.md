@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/11/aa/11aac94a-b1b9-454c-b78a-d0c6a1923c07.png"
+image: "/blog-images/11/aa/11aac94a-b1b9-454c-b78a-d0c6a1923c07.jpg"
 title: "🐾 Yakkamon: рабочие монстры"
 shortId: 166
 slug: "2026-08-14-yakkamon-rabochie-monstry"
@@ -14,7 +14,7 @@ originalUrl: "https://teletype.in/@urg/tZBwz--Gdip"
 
 Кстати, само имя **Yakkamon** происходит от австралийского сленгового «yakka» — тяжёлый физический труд. И это не просто красивое слово: ваши монстры будут не только сражаться, но и пахать по хозяйству 💪
 
-![](/blog-images/11/aa/11aac94a-b1b9-454c-b78a-d0c6a1923c07.png)
+![](/blog-images/11/aa/11aac94a-b1b9-454c-b78a-d0c6a1923c07.jpg)
 
 Как это устроено:
 

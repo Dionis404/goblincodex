@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/sfl/stream-2026-10-09/preview.png"
+image: "/blog-images/sfl/stream-2026-10-09/preview.jpg"
 title: "Sunflower Land: стрим от 9 октября — взлом Discord, пещеры, свиньи и тестирование PR прямо в игре"
 shortId: 176
 slug: "2026-10-09-strim-vzlom-discord-peshchery-svini-testirovanie-pr"
@@ -54,26 +54,26 @@ description: "📅 Дата: 9 Октября 2026 Адам провёл стр�
 - Размер пещеры — 3×3. Если места на острове мало, расширяться ради неё не обязательно.
 - Команда сейчас смещает фокус на механики, доступные всем игрокам уже в первые недели игры. Для сравнения: Ascensions были скорее для тех, кто играет годами.
 
-<img src="/blog-images/sfl/stream-2026-10-09/01_cave.png" alt="Концепт пещеры: каменный свод с деревянным входом" width="638" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-09/01_cave.webp" alt="Концепт пещеры: каменный свод с деревянным входом" width="638" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 *Концепт пещеры: каменный свод с деревянным входом.*
 
 - В пещерной системе вас ждёт NPC-гоблин. Адам сравнил его с торговцем из Sunflower Farmers, который распахивал куртку и продавал товары. Что именно он будет продавать, пока неизвестно, но предметы обещаны интересные.
 - Брин любит идею доступа к магазинам по прогрессу: когда вы продвинулись достаточно глубоко, открывается особый торговый магазин. Эту идею сейчас прорабатывают.
 
-<img src="/blog-images/sfl/stream-2026-10-09/02_goblin.png" alt="Гоблин, которого можно встретить в пещерной системе" width="545" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-09/02_goblin.webp" alt="Гоблин, которого можно встретить в пещерной системе" width="545" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 *Гоблин, которого можно встретить в пещерной системе.*
 
 - Команда пробует соединить идеи для мутантов с пещерной темой: в работе грибы и жуки. Магические грибы в пещерах, судя по всему, тоже останутся, но будет ли у них применение, Адам подтвердить не мог. Грибы, по его словам, станут одним из самых востребованных ресурсов.
 
-<img src="/blog-images/sfl/stream-2026-10-09/05_mutants.png" alt="Работа над мутантами: идеи про грибы и жуков" width="820" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-09/05_mutants.webp" alt="Работа над мутантами: идеи про грибы и жуков" width="820" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 *Работа над мутантами: идеи про грибы и жуков смешивают с пещерной темой.*
 
 - Показали идеи кроваток для бамкинов в теме главы, то есть пещер. Адам отдельно похвалил художников, а в чате особенно оценили кроватку-корову.
 
-<img src="/blog-images/sfl/stream-2026-10-09/04_beds.png" alt="Кроватки для бамкинов в теме главы" width="523" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-09/04_beds.webp" alt="Кроватки для бамкинов в теме главы" width="523" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 *Кроватки для бамкинов в теме главы: корова, грибы и другие варианты. Часть слотов пока пустая.*
 
@@ -81,19 +81,19 @@ description: "📅 Дата: 9 Октября 2026 Адам провёл стр�
 
 - В Town Hall будет тема со свиньями, по аналогии с солью в прошлой главе. Адам ожидает на плазе множество поросят и называет эту механику очень «мемной».
 
-<img src="/blog-images/sfl/stream-2026-10-09/03_pig_wearable.png" alt="Свиной костюм" width="362" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-09/03_pig_wearable.webp" alt="Свиной костюм" width="362" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 *Свиной костюм: игроки в чате уже оценили.*
 
 - Показали три домика, отдельные от самих свинарников. Игроки в чате быстро узнали сюжет «Трёх поросят», так что в главе не исключено появление Большого Злого Волка.
 
-<img src="/blog-images/sfl/stream-2026-10-09/06_pig_houses.png" alt="Три домика из сказки о трёх поросятах" width="836" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-09/06_pig_houses.webp" alt="Три домика из сказки о трёх поросятах" width="836" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 *Три домика из сказки о трёх поросятах.*
 
 - Свиньи будут жить в своих свинарниках, а не в амбарах. На вопрос из чата, будет ли работать Infernal Bullwhip (кнут, который вдвое снижает расход корма при кормлении амбарных животных) со свиньями, Адам ответил отрицательно: он действует только на двух амбарных животных, а свиньи, как и курицы, живут в своих свинарниках, а не в амбарах.
 
-<img src="/blog-images/sfl/stream-2026-10-09/07_pigpen.png" alt="Свинарники" width="754" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
+<img src="/blog-images/sfl/stream-2026-10-09/07_pigpen.webp" alt="Свинарники" width="754" style="display:block;width:auto;max-width:100%;height:auto;image-rendering:pixelated;margin:20px 0 6px">
 
 *Свинарники: домики отдельно, свиньи живут здесь, а не в амбарах.*
 

@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/92/d0/92d0a446-bb34-4ea2-81ed-6c4b0085cd3c.png"
+image: "/blog-images/92/d0/92d0a446-bb34-4ea2-81ed-6c4b0085cd3c.jpg"
 title: "Новая эра с Flower, Love Rush и реферальной программой"
 shortId: 54
 slug: "2025-03-25-novaya-era-s-flower"
@@ -33,19 +33,19 @@ Sunflower Land находится в процессе миграции с ток
 
 Количество Love Charms (LC) будет зависеть от сложности заданий. Вот примеры наград от некоторых NPC:
 
-![](/blog-images/ab/07/ab07004e-7b12-41be-be81-1da80211ddd3.png)
+![](/blog-images/ab/07/ab07004e-7b12-41be-be81-1da80211ddd3.webp)
 
 Особенности кампании:
 
 - Выполнение доставок для одного и того же NPC каждый день увеличивает награды. Например, с Tywin можно получить от 10 Love Charms в первый день до 35 Love Charms на пятый день, если не пропускать ни дня. Пропустите день — и стрик сбрасывается.
 
-![](/blog-images/99/7c/997c05d1-5ba0-4b9f-b166-7a0c14a4abbc.png)
+![](/blog-images/99/7c/997c05d1-5ba0-4b9f-b166-7a0c14a4abbc.webp)
 
 - Бонусы за доставки: Завершение всей доски доставок принесет дополнительные 100 Love Charms .
 
 Вот как выглядит интерфейс доставок с Love Charms:
 
-![](https://img4.teletype.media/files/30/37/3037d0cb-47d7-4702-ada1-8ca289a68fdc.png)
+![](/blog-images/30/37/3037d0cb-47d7-4702-ada1-8ca289a68fdc.jpg)
 
 На скриншоте показаны задания от NPC с наградами в виде Love Charms и монет. Например, Betty просит собрать урожай в Pumpkin Plaza и дает 3 Love Charms за доставку.
 
@@ -64,7 +64,7 @@ Love Charms можно заработать через активности в T
 
 Бампкины ценят вашу активность в сообществе, и вот как можно получить награды:
 
-![](/blog-images/92/d0/92d0a446-bb34-4ea2-81ed-6c4b0085cd3c.png)
+![](/blog-images/92/d0/92d0a446-bb34-4ea2-81ed-6c4b0085cd3c.jpg)
 
 Как это работает?
 

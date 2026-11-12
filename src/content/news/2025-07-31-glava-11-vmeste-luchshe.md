@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/a1/9b/a19b10a8-2a8c-4bab-9e55-33e19f603d1c.png"
+image: "/blog-images/a1/9b/a19b10a8-2a8c-4bab-9e55-33e19f603d1c.jpg"
 title: "🌸 Глава 11: Вместе лучше"
 shortId: 79
 slug: "2025-07-31-glava-11-vmeste-luchshe"
@@ -12,7 +12,7 @@ originalUrl: "https://teletype.in/@urg/SYR16qNBCOg"
 
 Готовьтесь к самой красивой, дружелюбной и радостной главе в истории **Sunflower Land**! Создавайте кукол, украшайте свою землю, объединяйтесь с друзьями — этот сезон посвящён **связи, креативу и командным наградам**.
 
-![](/blog-images/e3/3b/e33bb8c3-889d-416a-afd8-a65dbf9e33c7.png)
+![](/blog-images/e3/3b/e33bb8c3-889d-416a-afd8-a65dbf9e33c7.webp)
 
 ---
 
@@ -28,7 +28,7 @@ originalUrl: "https://teletype.in/@urg/SYR16qNBCOg"
 
 ❗ **Важно:** только с помощью нескольких друзей можно завершить такие проекты!
 
-![](/blog-images/8d/45/8d4536ac-a036-410e-b52c-a2b8ffd2949a.png)
+![](/blog-images/8d/45/8d4536ac-a036-410e-b52c-a2b8ffd2949a.webp)
 
 ---
 
@@ -42,7 +42,7 @@ originalUrl: "https://teletype.in/@urg/SYR16qNBCOg"
 
 **Соберите команду, стройте, готовьте и растите вместе!**
 
-![](/blog-images/27/e0/27e025ab-10f4-4d56-86fa-45b544dfb2c9.png)
+![](/blog-images/27/e0/27e025ab-10f4-4d56-86fa-45b544dfb2c9.webp)
 
 ---
 
@@ -55,7 +55,7 @@ originalUrl: "https://teletype.in/@urg/SYR16qNBCOg"
 
 Вы зарабатываете: **монеты, Cheers и Love Charms**, а друзья поднимаются в рейтинге! Также предметы уборки можно **обменивать на дополнительные Cheers**!
 
-![](/blog-images/9e/72/9e72a9a3-c569-480c-9c40-b9c2eb9edc18.png)
+![](/blog-images/9e/72/9e72a9a3-c569-480c-9c40-b9c2eb9edc18.webp)
 
 ---
 
@@ -68,7 +68,7 @@ originalUrl: "https://teletype.in/@urg/SYR16qNBCOg"
 - 🧑‍🍳 **Новые рецепты от NPC** — подружитесь с персонажами и узнайте секреты
 - 🪆 **Начало крафта Кукол!**
 
-![](/blog-images/4b/8d/4b8d9a35-1f17-4749-9748-d77956846b1a.png)
+![](/blog-images/4b/8d/4b8d9a35-1f17-4749-9748-d77956846b1a.webp)
 
 ---
 
@@ -80,7 +80,7 @@ originalUrl: "https://teletype.in/@urg/SYR16qNBCOg"
 - Нужно **экспериментировать** — комбинируйте материалы и кукол для открытия новых
 - Используются для:
 
-![](/blog-images/6b/e9/6be930a8-61d8-4be7-b5d9-49520068bb4f.png)
+![](/blog-images/6b/e9/6be930a8-61d8-4be7-b5d9-49520068bb4f.webp)
 
 ---
 
@@ -93,7 +93,7 @@ originalUrl: "https://teletype.in/@urg/SYR16qNBCOg"
 - ⛏️ **Редактирование узлов** — перемещайте или убирайте без штрафов
 - 🔁 **Поворот SFT** для стильного оформления
 
-![](/blog-images/a1/9b/a19b10a8-2a8c-4bab-9e55-33e19f603d1c.png)
+![](/blog-images/a1/9b/a19b10a8-2a8c-4bab-9e55-33e19f603d1c.jpg)
 
 ---
 

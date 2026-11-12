@@ -226,6 +226,15 @@
   font-size: 14px;
 }
 
+/* Loading state — данные аукционов и каталога тянутся с API на клиенте
+   (вкладка главы на /codex), SSR показывает этот загрузчик. */
+.ca-loading {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-sec);
+  font-size: 14px;
+}
+
 /* ── Groups ── */
 .ca-groups {
   display: flex;

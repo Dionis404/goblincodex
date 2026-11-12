@@ -1,4 +1,5 @@
 ---
+image: "/blog-images/b2/90/b2906654-4f25-49d4-be31-48e0bd9ed7bb.jpg"
 title: "Руководство для новичков по сезонам в Sunflower Land"
 shortId: 52
 slug: "2025-03-21-rukovodstvo-dlya-novichkov-po"
@@ -37,7 +38,7 @@ originalUrl: "https://teletype.in/@urg/seasons"
 
 Чтобы защититься от Цунами, Торнадо, Большого мороза или Чумы насекомых, тебе нужны специальные тотемы: Mangrove для Цунами, Tornado Pinwheel для Торнадо, Thermal Stone для мороза или Protective Pesticide для насекомых. Их можно купить на Плазе у торговца за собранные ресурсы. Но учти: каждый тотем одноразовый — после того как он сработает и защитит ферму, его нужно покупать заново. Так что запасай ресурсы и держи защиту наготове, ведь сюрприз может прийти в любой момент!
 
-![](https://img4.teletype.media/files/b2/90/b2906654-4f25-49d4-be31-48e0bd9ed7bb.png)
+![](/blog-images/b2/90/b2906654-4f25-49d4-be31-48e0bd9ed7bb.jpg)
 
 ---
 

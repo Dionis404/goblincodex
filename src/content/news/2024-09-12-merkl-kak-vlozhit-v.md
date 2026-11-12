@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/c8/9a/c89af119-3b4d-4960-9e33-bf26d27ae44f.png"
+image: "/blog-images/c8/9a/c89af119-3b4d-4960-9e33-bf26d27ae44f.jpg"
 title: "Merkl как вложить в Pool"
 shortId: 25
 slug: "2024-09-12-merkl-kak-vlozhit-v"
@@ -19,31 +19,31 @@ originalUrl: "https://teletype.in/@urg/Pool"
 
 Вам нужно выбрать диапазон, чем меньше диапазон тем выше риск но больше выгода.
 
-![](https://img4.teletype.media/files/39/2e/392eddc8-378c-42d6-bbe0-89dc11819d20.png)
+![](/blog-images/39/2e/392eddc8-378c-42d6-bbe0-89dc11819d20.jpg)
 
 Далее мы указываем сумму которую хотим вложить в пул. Вкладывая 5 USDC.e система автоматически выставляет кол-во SFL необходимое для вклада в Pool.
 
-![](/blog-images/c8/9a/c89af119-3b4d-4960-9e33-bf26d27ae44f.png)
+![](/blog-images/c8/9a/c89af119-3b4d-4960-9e33-bf26d27ae44f.jpg)
 
 Возможно потребуется выполнить Approved для токена USDC.e и SFL.
 
 Выставив все параметры нажимаем кнопку "Preview"
 
-![](https://img4.teletype.media/files/bc/d4/bcd41669-1adb-4982-be19-845dc6492ade.png)
+![](/blog-images/bc/d4/bcd41669-1adb-4982-be19-845dc6492ade.webp)
 
 Ознакомившись с информацией в окне, подтверждаем нажимая "Confirm" и подписываем транзакцию в кошельке. Ваш вклад в Pool будет отображаться в блоке My Pools.
 
-![](/blog-images/9a/9c/9a9c58eb-27a3-4a22-8185-7fa5d4827b49.png)
+![](/blog-images/9a/9c/9a9c58eb-27a3-4a22-8185-7fa5d4827b49.webp)
 
 ### Награды
 
 Проверить и забрать свое вы можете на Merkl открыв свой Dashboard: [https://merkl.angle.money/user](https://merkl.angle.money/user)
 
-![](/blog-images/a5/d4/a5d46cbe-6bbd-415b-aa27-3b70c7005032.png)
+![](/blog-images/a5/d4/a5d46cbe-6bbd-415b-aa27-3b70c7005032.webp)
 
 Или QuickSwap перейдя в раздел Earn - Farm [https://quickswap.exchange/#/farm?tab=farms](https://quickswap.exchange/#/farm?tab=farms)
 
-![](/blog-images/e1/1c/e11cd42f-c9e5-4517-a0da-9739363ce90b.png)
+![](/blog-images/e1/1c/e11cd42f-c9e5-4517-a0da-9739363ce90b.webp)
 
 Награду можно завтра только в одном месте!
 

@@ -188,6 +188,30 @@ export async function getTelegramPosts(limit: number): Promise<TelegramPost[]> {
   }));
 }
 
+/** Один пост по id — для /api/telegram-posts/[id].json (модалка на /news). */
+export async function getTelegramPostById(id: number): Promise<TelegramPost | null> {
+  const pool = getPool();
+  const { rows } = await pool.query<{
+    id: string;
+    message_date: Date;
+    text: string;
+    image_url: string | null;
+  }>(
+    `SELECT id, message_date, text, image_url
+     FROM telegram_posts
+     WHERE id = $1`,
+    [id]
+  );
+  const r = rows[0];
+  if (!r) return null;
+  return {
+    id: Number(r.id),
+    date: r.message_date,
+    text: r.text,
+    imageUrl: r.image_url,
+  };
+}
+
 export async function saveTelegramSubscriberCount(channel: string, memberCount: number): Promise<void> {
   const pool = getPool();
   await pool.query(

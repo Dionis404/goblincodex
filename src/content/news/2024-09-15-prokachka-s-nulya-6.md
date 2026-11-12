@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/cc/6f/cc6f2acd-cdef-47a0-9119-da0260e8e7c5.png"
+image: "/blog-images/cc/6f/cc6f2acd-cdef-47a0-9119-da0260e8e7c5.jpg"
 title: "Прокачка с нуля 6-8 день"
 shortId: 28
 slug: "2024-09-15-prokachka-s-nulya-6"
@@ -21,7 +21,7 @@ originalUrl: "https://teletype.in/@urg/ZeroToHero_day6-8"
 
 Goblin's Treat приготовился и я взял 6 уровень, прокачал навык Cultivator. Открылся ежедневный сундук, в моем понимании данная механика не является донатом. И дает неплохой буст для прокачки, открытие сундука стоит меньше цента, 1$ доллара где-то на дней 100.
 
-![Открыл свой первый сундук.](/blog-images/cc/6f/cc6f2acd-cdef-47a0-9119-da0260e8e7c5.png)
+![Открыл свой первый сундук.](/blog-images/cc/6f/cc6f2acd-cdef-47a0-9119-da0260e8e7c5.jpg)
 
 *Открыл свой первый сундук.*
 
@@ -29,17 +29,17 @@ Goblin's Treat приготовился и я взял 6 уровень, про�
 
 Забрал несколько ачивок, получив 30 топоров и Club Sandwich.
 
-![](/blog-images/84/00/84008684-8ac0-4404-97c7-9c3064fac106.png)
+![](/blog-images/84/00/84008684-8ac0-4404-97c7-9c3064fac106.webp)
 
 День 8
 
 Открыв сундук на 8 день мне дали наживку для рыбалки, теперь я могу потратить свои удочки которые сделал по ошибке.
 
-![](/blog-images/b8/43/b843aa1b-84ae-4d0a-a3ed-ea6747c30a2b.png)
+![](/blog-images/b8/43/b843aa1b-84ae-4d0a-a3ed-ea6747c30a2b.webp)
 
 В награду за доставки получил от Бетти 1 Block Buck
 
-![](/blog-images/e7/22/e722bd7a-51c1-414c-909d-880695d00402.png)
+![](/blog-images/e7/22/e722bd7a-51c1-414c-909d-880695d00402.webp)
 
 ### Итоги трех дней:
 
@@ -49,6 +49,6 @@ Goblin's Treat приготовился и я взял 6 уровень, про�
 - Block Buck - 4
 - Инвентарь:
 
-![](/blog-images/b8/10/b810cfbe-cfc0-4043-8129-efa2d264bcbb.png)
+![](/blog-images/b8/10/b810cfbe-cfc0-4043-8129-efa2d264bcbb.webp)
 
-![](/blog-images/7b/33/7b33369f-3fa7-4542-9e84-43be2e11052a.png)
+![](/blog-images/7b/33/7b33369f-3fa7-4542-9e84-43be2e11052a.webp)

@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/db/c1/dbc1cb05-17af-452a-8e46-ec80fe182a06.png"
+image: "/blog-images/db/c1/dbc1cb05-17af-452a-8e46-ec80fe182a06.jpg"
 title: "🧑‍🌾 Sunflower Land — итоги еженедельного стрима разработчиков"
 shortId: 117
 slug: "2025-12-12-sunflower-land-itogi-ezhenedelnogo"
@@ -98,9 +98,9 @@ Rare Crows уже:
 
 ⚠️ Поддерживается только Base, Ronin — без планов на ближайшее время Куда нужно жмакнуть что бы получать награды:
 
-![](/blog-images/65/9f/659fe0d8-707a-4731-a2f2-97825146b2ae.png)
+![](/blog-images/65/9f/659fe0d8-707a-4731-a2f2-97825146b2ae.webp)
 
-![](/blog-images/db/c1/dbc1cb05-17af-452a-8e46-ec80fe182a06.png)
+![](/blog-images/db/c1/dbc1cb05-17af-452a-8e46-ec80fe182a06.jpg)
 
 ---
 
@@ -114,7 +114,7 @@ Rare Crows уже:
 - 📜 Система Treasure Maps
 - 🐟 Рыбы будут открывать части карты
 
-![](/blog-images/13/cc/13cc4b44-3b8c-4ee1-9c25-bb1c3ddc5b1a.png)
+![](/blog-images/13/cc/13cc4b44-3b8c-4ee1-9c25-bb1c3ddc5b1a.webp)
 
 - 🧩 9 частей → доступ к Marine Marvels
 - В каждой главе:

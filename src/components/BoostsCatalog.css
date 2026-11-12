@@ -315,6 +315,14 @@
   font-size: 14px;
 }
 
+/* ── Loading state (данные тянутся с /api/nft-catalog.json на клиенте) ── */
+.bc-loading {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-sec);
+  font-size: 14px;
+}
+
 /* ── Modal ── */
 .bc-modal-overlay {
   position: fixed;

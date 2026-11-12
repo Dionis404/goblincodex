@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/5f/2c/5f2c537e-9e19-467b-b8a0-1b6d4304096e.png"
+image: "/blog-images/5f/2c/5f2c537e-9e19-467b-b8a0-1b6d4304096e.jpg"
 title: "SFL Marketplace [ПРЕДЛОЖЕНИЕ]"
 shortId: 18
 slug: "2024-08-05-sfl-marketplace-predlozhenie"
@@ -19,7 +19,7 @@ originalUrl: "https://teletype.in/@urg/SFLMarketplace"
 
 Рынок будет доступен через нашу целевую страницу, а также через внутриигровые ссылки (Trading Board). Публика сможет просматривать его, однако для покупки или продажи необходимо создать учетную запись.
 
-![](/blog-images/5f/2c/5f2c537e-9e19-467b-b8a0-1b6d4304096e.png)
+![](/blog-images/5f/2c/5f2c537e-9e19-467b-b8a0-1b6d4304096e.jpg)
 
 Разработка маркетплейса будет разделена на V1, V2 и V3.
 

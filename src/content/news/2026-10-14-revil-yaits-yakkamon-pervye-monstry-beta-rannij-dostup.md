@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/yakkamon/egg-reveal-2026-10-14/preview.png"
+image: "/blog-images/yakkamon/egg-reveal-2026-10-14/preview.jpg"
 title: "Ревил яиц Yakkamon: первые монстры, планы на бету и сроки раннего доступа"
 shortId: 177
 slug: "2026-10-14-revil-yaits-yakkamon-pervye-monstry-beta-rannij-dostup"

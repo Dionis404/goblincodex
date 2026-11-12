@@ -1,4 +1,5 @@
 ---
+image: "/blog-images/fc/7f/fc7fc2d0-7327-43c4-8235-45a722a9d3e6.jpg"
 title: "🔄 Обновление Chapter Store: Chapter Pass вместо привычного магазина"
 shortId: 125
 slug: "2026-01-15-obnovlenie-chapter-store-chapter"
@@ -29,7 +30,7 @@ originalUrl: "https://teletype.in/@urg/knJ7eKkC8z8"
 
 ### 🎫 Chapter Pass — как это работает
 
-![](https://img4.teletype.media/files/fc/7f/fc7fc2d0-7327-43c4-8235-45a722a9d3e6.png)
+![](/blog-images/fc/7f/fc7fc2d0-7327-43c4-8235-45a722a9d3e6.jpg)
 
 Если ты знаком с battle pass в других играх, концепция будет понятна сразу.
 

@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/63/65/63654aa3-eb78-4ab2-9fe9-899ad7391acd.png"
+image: "/blog-images/63/65/63654aa3-eb78-4ab2-9fe9-899ad7391acd.jpg"
 title: "Новый рынок, переработка навыков и полезные улучшения."
 shortId: 40
 slug: "2024-11-26-novyy-rynok-pererabotka-navykov"
@@ -23,7 +23,7 @@ originalUrl: "https://teletype.in/@urg/SFL261124"
 2. **Торговля на блокчейне**
 3. **Прозрачность и аналитика**
 
-![](/blog-images/63/65/63654aa3-eb78-4ab2-9fe9-899ad7391acd.png)
+![](/blog-images/63/65/63654aa3-eb78-4ab2-9fe9-899ad7391acd.jpg)
 
 ---
 
@@ -35,7 +35,7 @@ originalUrl: "https://teletype.in/@urg/SFL261124"
 2. **Новые возможности**
 3. **Ограничения**
 
-![](/blog-images/09/76/09768322-d856-4d6c-9715-acc17b2c2dee.png)
+![](/blog-images/09/76/09768322-d856-4d6c-9715-acc17b2c2dee.webp)
 
 ---
 
@@ -48,7 +48,7 @@ originalUrl: "https://teletype.in/@urg/SFL261124"
 - **Исправление багов и полировка** — устранены проблемы с тенями, текстом и переводами.
 - **Визуализация покупок** — добавлены новые графические элементы для улучшения опыта новых игроков.
 
-![](/blog-images/0e/8e/0e8ec316-cde7-4007-84ff-dee3435413bc.png)
+![](/blog-images/0e/8e/0e8ec316-cde7-4007-84ff-dee3435413bc.webp)
 
 ---
 

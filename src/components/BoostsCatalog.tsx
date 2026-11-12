@@ -25,7 +25,14 @@ interface CatalogItem {
 }
 
 interface Props {
-  items: CatalogItem[];
+  /**
+   * Источник данных — /api/nft-catalog.json, тянется на клиенте при
+   * гидратации острова. Раньше items приходил пропсом из БД на каждый SSR
+   * рендер /codex (~640K сериализованного JSON в HTML + ~700K отрисованной
+   * разметки каталога), хотя вкладка NFT по умолчанию скрыта. Проп оставлен
+   * опциональным для совместимости — если задан, fetch не выполняется.
+   */
+  items?: CatalogItem[];
 }
 
 type KindFilter = 'all' | 'item' | 'wearable' | 'misc';
@@ -217,8 +224,14 @@ function ItemModal({ item, lang, onClose }: { item: CatalogItem; lang: BoostLang
   );
 }
 
-export default function BoostsCatalog({ items }: Props) {
+export default function BoostsCatalog({ items: itemsProp }: Props) {
   const lang = useBoostLang();
+  // null — данные ещё грузятся (или проп не задан и fetch ещё не вернулся);
+  // [] — загрузка завершилась, но ничего не нашлось/упало. SSR рендерит
+  // loading-состояние с items=null → гидратация без расхождений, данные
+  // прилетают постом.
+  const [items, setItems] = useState<CatalogItem[] | null>(itemsProp ?? null);
+  const [loadError, setLoadError] = useState(false);
   const [kindFilter, setKindFilter] = useState<KindFilter>('all');
   const [boostFilter, setBoostFilter] = useState<BoostFilter>('all');
   const [tagFilter, setTagFilter] = useState<TagFilter>('all');
@@ -244,17 +257,39 @@ export default function BoostsCatalog({ items }: Props) {
     return () => window.removeEventListener('resize', update);
   }, [boostFilter, showBoostFilter]);
 
+  // Данные каталога с API — только если не пришли пропсом (см. Props).
+  useEffect(() => {
+    if (itemsProp) return;
+    let cancelled = false;
+    fetch('/api/nft-catalog.json')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((json: { items?: CatalogItem[] }) => {
+        if (!cancelled) setItems(json.items ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setItems([]);
+          setLoadError(true);
+        }
+      });
+    return () => { cancelled = true; };
+  }, [itemsProp]);
+
   // Тег доступен как фильтр только если среди предметов текущего раздела
   // (Все/Предметы/Одежда/Прочее) реально есть хоть один с этим тегом —
   // иначе, например, в "Прочее" были бы бессмысленные кнопки "Ноды"/"Монументы".
+  const list = items ?? [];
   const tagsInKind = useMemo(() => {
     const set = new Set<string>();
-    for (const item of items) {
+    for (const item of list) {
       if (!matchesKind(item, kindFilter)) continue;
       for (const t of item.tags) set.add(t);
     }
     return set;
-  }, [items, kindFilter]);
+  }, [list, kindFilter]);
 
   const availableTagFilters = useMemo(
     () => TAG_FILTERS.filter(f => f.id === 'all' || tagsInKind.has(f.id)),
@@ -279,7 +314,7 @@ export default function BoostsCatalog({ items }: Props) {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return items.filter(item => {
+    return list.filter(item => {
       if (!matchesKind(item, kindFilter)) return false;
       if (showBoostFilter && boostFilter !== 'all') {
         const hasBoost = item.boosts.length > 0;
@@ -291,7 +326,15 @@ export default function BoostsCatalog({ items }: Props) {
       if (q && !item.name.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [items, kindFilter, boostFilter, showBoostFilter, tagFilter, originFilter, search]);
+  }, [list, kindFilter, boostFilter, showBoostFilter, tagFilter, originFilter, search]);
+
+  if (items === null) {
+    return (
+      <div className="bc-root">
+        <div className="bc-loading">Загрузка каталога…</div>
+      </div>
+    );
+  }
 
   return (
     <div className="bc-root">
@@ -397,7 +440,9 @@ export default function BoostsCatalog({ items }: Props) {
 
       {filtered.length === 0 && (
         <div className="bc-empty">
-          Ничего не найдено. Попробуй другой запрос или категорию.
+          {loadError
+            ? 'Не удалось загрузить каталог. Попробуй позже.'
+            : 'Ничего не найдено. Попробуй другой запрос или категорию.'}
         </div>
       )}
 

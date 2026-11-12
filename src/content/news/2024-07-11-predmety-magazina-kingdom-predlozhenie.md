@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/ef/ca/efcaf272-f119-40e0-9368-45ab60eac840.png"
+image: "/blog-images/ef/ca/efcaf272-f119-40e0-9368-45ab60eac840.jpg"
 title: "Предметы магазина Kingdom [Предложение]"
 shortId: 16
 slug: "2024-07-11-predmety-magazina-kingdom-predlozhenie"
@@ -11,7 +11,7 @@ originalUrl: "https://teletype.in/@urg/KingdomShopItems"
 
 Дисклеймер - данная информация является предложением взятым с GitHub, статья несет исключительно информационный характер, конечная версия данной механики может быть сильно изменена. Оригинал: [https://github.com/sunflower-land/sunflower-land/discussions/4010](https://github.com/sunflower-land/sunflower-land/discussions/4010) Если вы ходите оставить свой отзыв, напишите об этом на GitHub.
 
-![](/blog-images/bf/0b/bf0b7790-dab4-4506-82a3-3e9e08d2294c.png)
+![](/blog-images/bf/0b/bf0b7790-dab4-4506-82a3-3e9e08d2294c.webp)
 
 ### Цель
 
@@ -36,17 +36,17 @@ originalUrl: "https://teletype.in/@urg/KingdomShopItems"
 
 ### Одежда
 
-![](/blog-images/86/27/8627c0c3-542e-482b-9c3d-4e45b8852e70.jpeg)
+![](/blog-images/86/27/8627c0c3-542e-482b-9c3d-4e45b8852e70.webp)
 
 Одежда которая возможно будет.
 
-![](/blog-images/c2/93/c2938e4b-fb0c-43f1-b92c-043d5ce6ddb1.png)
+![](/blog-images/c2/93/c2938e4b-fb0c-43f1-b92c-043d5ce6ddb1.webp)
 
 ### Ключ от королевства
 
 Игроки также смогут обменять Знаки на Ключ Королевства. Он будет использоваться для открытия Сундука Королевства.
 
-![](/blog-images/ef/ca/efcaf272-f119-40e0-9368-45ab60eac840.png)
+![](/blog-images/ef/ca/efcaf272-f119-40e0-9368-45ab60eac840.jpg)
 
 Ключ от королевства - 1 неделя геймплея (10 000 баллов)
 

@@ -7,6 +7,12 @@
  * the local path, and backfills each article's frontmatter `image` field
  * from its first successfully-downloaded image (used for card thumbnails).
  *
+ * Every downloaded image is compressed in place via
+ * scripts/lib/optimize-image.ts: resized to <=1600px and re-encoded — the
+ * first (frontmatter/og:image candidate) as JPEG (Telegram/WhatsApp
+ * previews don't render WebP), the rest as WebP. CDN originals are 2-4 MB
+ * PNGs; the site displays them at ~400-1000px, so this saves ~90% of bytes.
+ *
  * Skips images that already exist locally — a given Teletype uuid's content
  * never changes, so this is safe to re-run after adding new articles.
  *
@@ -19,6 +25,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Agent, fetch as undiciFetch } from "undici";
+import { optimizeImage, unlinkWithRetry, withFormatExt, type OptimizedFormat } from "./lib/optimize-image";
 
 // Некоторые CDN (в т.ч. img*.teletype.media) периодически подвешивают чтение
 // тела ответа через обычный global fetch/undici при keep-alive + пайплайнинге
@@ -131,17 +138,37 @@ async function main() {
     for (const m of matches) {
       const [url, p1, p2, filenamePart] = m;
       const subpath = localSubpath(p1, p2, filenamePart);
-      const destFile = path.join(targetDir, subpath);
-      const webPath = `/blog-images/${subpath.replace(/\\/g, "/")}`;
+      // Первая успешно обработанная картинка статьи — кандидат в превью
+      // карточки и og:image: жмём в JPEG (Telegram/WhatsApp WebP в OG не
+      // рендерят), остальные — WebP.
+      const format: OptimizedFormat = firstLocalWebPath ? "webp" : "jpg";
+      const destFile = withFormatExt(path.join(targetDir, subpath), format);
+      const webPath = `/blog-images/${destFile.slice(targetDir.length + 1).split(path.sep).join("/")}`;
 
       if (fs.existsSync(destFile)) {
         alreadyPresent++;
       } else {
+        // Качаем оригинал во временный файл с CDN-расширением, затем жмём в
+        // destFile и удаляем временный — raw PNG с CDN на прод не попадает.
+        const rawFile = path.join(targetDir, subpath);
         process.stdout.write(`  downloading ${subpath}... `);
-        const result = await downloadTo(url, destFile);
-        console.log(result.ok ? 'ok' : `FAILED (${result.reason})`);
+        const result = await downloadTo(url, rawFile);
         if (!result.ok) {
+          console.log(`FAILED (${result.reason})`);
           failed.push(`${filename}: ${url} (${result.reason})`);
+          continue;
+        }
+        try {
+          const outcome = await optimizeImage(rawFile, format);
+          try {
+            unlinkWithRetry(rawFile);
+          } catch {
+            console.warn(`warn: could not delete raw ${path.basename(rawFile)} (busy)`);
+          }
+          console.log(`ok ${(outcome.beforeBytes / 1024).toFixed(0)}K -> ${(outcome.afterBytes / 1024).toFixed(0)}K`);
+        } catch (e) {
+          console.log(`OPTIMIZE FAILED (${e instanceof Error ? e.message : String(e)})`);
+          failed.push(`${filename}: ${url} (optimize: ${e instanceof Error ? e.message : String(e)})`);
           continue;
         }
         downloaded++;

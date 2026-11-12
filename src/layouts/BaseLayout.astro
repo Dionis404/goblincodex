@@ -1,5 +1,19 @@
 ---
 import '../styles/global.css';
+// Шрифты self-hosted через Fontsource — те же семейства/начертания, что
+// раньше тянулись с Google Fonts, но без render-blocking запроса к внешнему
+// CDN (preconnect+stylesheet уводили первый рендер на лишние DNS/TLS-RTT).
+// CSS Fontsource держит @font-face на woff2 с unicode-range — браузер качает
+// только нужные сабсеты (кириллица/латиница). Имена семейств прежние:
+// 'Press Start 2P', 'Unbounded', 'Golos Text'.
+import '@fontsource/press-start-2p';
+import '@fontsource/unbounded/400.css';
+import '@fontsource/unbounded/500.css';
+import '@fontsource/unbounded/600.css';
+import '@fontsource/unbounded/700.css';
+import '@fontsource/golos-text/400.css';
+import '@fontsource/golos-text/500.css';
+import '@fontsource/golos-text/600.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import SEO from '../components/SEO.astro';
@@ -42,9 +56,6 @@ const cookieTheme = Astro.request.headers.get('cookie')?.match(/(?:^|; )gc_theme
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Unbounded:wght@400;500;600;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet" />
     <!-- Yandex.Metrika counter — грузится только после согласия в CookieBanner
          (gc_cookie_consent=1 в localStorage). <noscript>-пиксель убран: без JS
          согласие дать нельзя, значит и считать такого посетителя нельзя. -->

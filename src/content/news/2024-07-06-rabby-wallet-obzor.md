@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/c7/2a/c72ad833-8254-40b9-82ba-7f7143551c9d.png"
+image: "/blog-images/c7/2a/c72ad833-8254-40b9-82ba-7f7143551c9d.jpg"
 title: "Rabby Wallet Обзор"
 shortId: 11
 slug: "2024-07-06-rabby-wallet-obzor"
@@ -23,17 +23,17 @@ originalUrl: "https://teletype.in/@urg/RabbyWallet"
 - Удобный сброс транзакий
 - Отображение активов во всех сетях сразу (Очень удобно смотреть общий баланс)
 
-![](/blog-images/c7/2a/c72ad833-8254-40b9-82ba-7f7143551c9d.png)
+![](/blog-images/c7/2a/c72ad833-8254-40b9-82ba-7f7143551c9d.jpg)
 
 - Просмотр NFT в кошельке
 - Пометки скам транзакций
 
-![](/blog-images/84/9d/849d104f-8e7d-40f5-83e4-f2f7020d3c81.png)
+![](/blog-images/84/9d/849d104f-8e7d-40f5-83e4-f2f7020d3c81.webp)
 
 - Просмотр Апрувов (Можно отвязать кошель от разных сервисов и контрактов)
 - Удобный обмен токенов
 
-![](/blog-images/15/85/1585ce42-5bf8-4d95-99de-369f532466d9.png)
+![](/blog-images/15/85/1585ce42-5bf8-4d95-99de-369f532466d9.webp)
 
 - Добавление адреса для просмотра
 
@@ -43,6 +43,6 @@ originalUrl: "https://teletype.in/@urg/RabbyWallet"
 
 Ссылка: [https://rabby.io/](https://rabby.io/) После перехода, нужно будет включить эту настройку.
 
-![](/blog-images/20/4e/204e2b7a-5a87-4aa3-ab83-a8e3e2282ded.png)
+![](/blog-images/20/4e/204e2b7a-5a87-4aa3-ab83-a8e3e2282ded.webp)
 
 Особая благодарнасть Anatolii U, за то что показал это чудо.

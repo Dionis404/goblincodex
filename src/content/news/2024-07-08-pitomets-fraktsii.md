@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/e3/9b/e39ba483-e94e-4a0c-ae20-4a426a6df4ff.png"
+image: "/blog-images/e3/9b/e39ba483-e94e-4a0c-ae20-4a426a6df4ff.jpg"
 title: "Питомец фракции"
 shortId: 13
 slug: "2024-07-08-pitomets-fraktsii"
@@ -10,7 +10,7 @@ originalUrl: "https://teletype.in/@urg/Factionpet"
 
 У каждой фракции в доме есть питомец, откормив которого ваша фракция получит бонус к получению опыта.
 
-![](/blog-images/e3/9b/e39ba483-e94e-4a0c-ae20-4a426a6df4ff.png)
+![](/blog-images/e3/9b/e39ba483-e94e-4a0c-ae20-4a426a6df4ff.jpg)
 
 Каждую неделю питомец будет запрашивать 3 вида пищи.
 

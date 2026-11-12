@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/53/39/53396b0e-4feb-49c2-8b78-cedb18027d79.png"
+image: "/blog-images/53/39/53396b0e-4feb-49c2-8b78-cedb18027d79.jpg"
 title: "Sunflower Land: кастомизация Bumpkin, Project 2 и рекордная экономика"
 shortId: 137
 slug: "2026-02-27-sunflower-land-kastomizatsiya-bumpkin"
@@ -55,7 +55,7 @@ originalUrl: "https://teletype.in/@urg/BENkttwOUH5"
 
 ### ⚔️ Project 2 — первые прототипы
 
-![](/blog-images/53/39/53396b0e-4feb-49c2-8b78-cedb18027d79.png)
+![](/blog-images/53/39/53396b0e-4feb-49c2-8b78-cedb18027d79.jpg)
 
 Команда активно работает над **новой игрой во вселенной Sunflower Land**.
 

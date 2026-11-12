@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/sfl/devchat-caves-pigs-2026-09-17/preview.png"
+image: "/blog-images/sfl/devchat-caves-pigs-2026-09-17/preview.jpg"
 title: "Пещеры, свиньи и погода: подробное предложение по Главе 16"
 shortId: 173
 slug: "2026-09-30-peshchery-svini-pogoda-glava-16-predlozhenie"

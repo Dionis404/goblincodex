@@ -1587,12 +1587,25 @@ interface ReferenceCatalogProps {
 // прячет весь ref-content целиком через CSS).
 export default function ReferenceCatalog({ initialRef }: ReferenceCatalogProps) {
   const [activeId, setActiveId] = useState(() => resolveInitialId(initialRef));
+  // Таблицы рендерим только после монтирования на клиенте. SSR раньше отдавал
+  // дефолтную секцию ("Навыки") целиком — ~210K HTML на каждый просмотр
+  // /codex, хотя таблица видна только если открыть вкладку "Справочник".
+  // SSR и первый клиентский рендер — пустой контейнер, гидратация без
+  // расхождений, таблица появляется сразу после монтирования.
+  const [mounted, setMounted] = useState(false);
   const active = REF_SECTIONS.find((s) => s.id === activeId) ?? REF_SECTIONS[0];
   const ActiveContent = active.Content;
 
   // Слушаем клики по общему сайдбару страницы (data-ref-id) — так внешняя
   // Astro-навигация может переключать таблицу без прямого доступа к стейту.
   useEffect(() => {
+    setMounted(true);
+    // gc:ref-select мог прилететь ДО гидратации этого острова (клик по
+    // сайдбару сразу после открытия вкладки) — синхронизируемся с URL, который
+    // страница уже успела обновить через history.replaceState.
+    const ref = new URLSearchParams(window.location.search).get('ref');
+    if (ref && REF_SECTIONS.some((s) => s.id === ref)) setActiveId(ref);
+
     function onRefSelect(e: Event) {
       const id = (e as CustomEvent<string>).detail;
       if (REF_SECTIONS.some((s) => s.id === id)) setActiveId(id);
@@ -1603,7 +1616,7 @@ export default function ReferenceCatalog({ initialRef }: ReferenceCatalogProps) 
 
   return (
     <div className="ref-content">
-      <ActiveContent />
+      {mounted ? <ActiveContent /> : null}
     </div>
   );
 }

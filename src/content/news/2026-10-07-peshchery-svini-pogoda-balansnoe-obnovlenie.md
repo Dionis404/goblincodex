@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/sfl/caves-pigs-balance-2026-10-07/preview.png"
+image: "/blog-images/sfl/caves-pigs-balance-2026-10-07/preview.jpg"
 title: "Пещеры, свиньи и погода: балансное обновление предложения по Главе 16"
 shortId: 175
 slug: "2026-10-07-peshchery-svini-pogoda-balansnoe-obnovlenie"

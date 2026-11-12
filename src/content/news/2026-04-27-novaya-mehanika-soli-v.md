@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/f1/43/f1431296-d71e-4c85-a82b-181f14bd3b1c.png"
+image: "/blog-images/f1/43/f1431296-d71e-4c85-a82b-181f14bd3b1c.jpg"
 title: "🧂 Новая механика соли в Sunflower Land — что уже известно"
 shortId: 147
 slug: "2026-04-27-novaya-mehanika-soli-v"
@@ -34,7 +34,7 @@ originalUrl: "https://teletype.in/@urg/fWeup9URvVZ"
 
 Для достижения максимального уровня потребуется:
 
-![](/blog-images/f1/43/f1431296-d71e-4c85-a82b-181f14bd3b1c.png)
+![](/blog-images/f1/43/f1431296-d71e-4c85-a82b-181f14bd3b1c.jpg)
 
 ---
 
@@ -42,6 +42,6 @@ originalUrl: "https://teletype.in/@urg/fWeup9URvVZ"
 
 Новая постройка, усиливающая механику соли и Aging:
 
-![](/blog-images/b3/d6/b3d67408-716f-40b9-8739-d2d80b944c04.png)
+![](/blog-images/b3/d6/b3d67408-716f-40b9-8739-d2d80b944c04.webp)
 
 Ожидается, что механика добавит больше глубины в mid/late-game и усилит ценность оптимизации ресурсов.

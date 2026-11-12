@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/85/8f/858f2b50-064b-43fc-b7e7-3fca139c0e9d.png"
+image: "/blog-images/85/8f/858f2b50-064b-43fc-b7e7-3fca139c0e9d.jpg"
 title: "Прокачка с нуля День 5"
 shortId: 26
 slug: "2024-09-12-prokachka-s-nulya-den-2"
@@ -11,13 +11,13 @@ originalUrl: "https://teletype.in/@urg/ZeroToHero_day5"
 
 Сегодня наконец-то построил Kitchen, хотел начать готовить блюда но увы свекла которая была выращена на Bumpkin Salad ушла сегодня в доставку для Betty.
 
-![](https://img4.teletype.media/files/b3/b5/b3b578e6-7755-4c80-b496-93207b6a0a5d.png)
+![](/blog-images/b3/b5/b3b578e6-7755-4c80-b496-93207b6a0a5d.jpg)
 
 Завтра уже дорастет редиска и свекла и буду готовить еду для 6 уровня.
 
 Следующий шаг после поднятия уровня это открытие новой территории. Как оказалось несмотря на замок на локации королевства туда можно зайти пешком через плазу или пляж. Теперь планирую фармить марки в мини играть и покупать еду за них. Хотел присоединится к фракции но это оказалось платно. Понял что не хочу тратить SFL на это.
 
-![](https://img4.teletype.media/files/b4/b2/b4b2de62-e71a-4ee3-90b1-49413c5e2881.png)
+![](/blog-images/b4/b2/b4b2de62-e71a-4ee3-90b1-49413c5e2881.webp)
 
 ### Итог дня:
 
@@ -27,4 +27,4 @@ originalUrl: "https://teletype.in/@urg/ZeroToHero_day5"
 - Block Buck - 3
 - Инвентарь:
 
-![](/blog-images/85/8f/858f2b50-064b-43fc-b7e7-3fca139c0e9d.png)
+![](/blog-images/85/8f/858f2b50-064b-43fc-b7e7-3fca139c0e9d.jpg)

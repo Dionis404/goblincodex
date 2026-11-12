@@ -5,7 +5,6 @@
 // остальных глав целиком живёт на /codex/chapter/[slug].
 import { getCollection } from 'astro:content';
 import ChapterAuctions from './ChapterAuctions.tsx';
-import { fetchAuctionsInRange } from '../lib/auctionsApi';
 import { getCurrentChapter, getUpcomingChapter } from '../lib/chapters';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
@@ -20,6 +19,9 @@ const upcomingChapter = getUpcomingChapter();
 // становятся абсолютными на sfl.* — иначе это просто /codex того же домена.
 const codexHref = sectionHref(Astro.request.headers.get('host'), 'sfl', '/codex');
 
+// Каталог нужен только для блока "Предметы главы" — аукционы теперь тянут
+// свои данные сами (см. ChapterAuctions, /api/auctions/chapter.json), чтобы
+// расписание + itemCatalog не ехали пропсами в HTML каждого просмотра /codex.
 let itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
 try {
   const { data: items } = await getCachedCatalogItems();
@@ -33,11 +35,6 @@ const chapterGuides = await getCollection(
   ({ data }) => !data.draft && data.chapter === currentChapter?.order
 );
 chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
-
-const auctions = currentChapter
-  ? await fetchAuctionsInRange(new Date(currentChapter.startDate).getTime(), new Date(currentChapter.endDate).getTime())
-  : [];
-const now = Date.now();
 
 const itemsOf = (slug: string) =>
   Object.values(itemCatalog)
@@ -166,7 +163,7 @@ const MECHANIC_CARDS = [
 <!-- ── Расписание аукционов ── -->
 <section class="gc-chapter-section">
   <h2 class="gc-block-title-lg">🔨 Аукционы</h2>
-  <ChapterAuctions client:load auctions={auctions} chapterName={currentChapter?.name ?? 'текущей главы'} itemCatalog={itemCatalog} initialNow={now} />
+  <ChapterAuctions client:visible chapterName={currentChapter?.name ?? 'текущей главы'} />
 </section>
 
 <style>

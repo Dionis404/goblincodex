@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/c7/35/c73560f3-ef6a-4712-84ce-b22c5ac8cafc.png"
+image: "/blog-images/c7/35/c73560f3-ef6a-4712-84ce-b22c5ac8cafc.jpg"
 title: "🌸 Love Island, тикеты и антиботы: что нового в Sunflower Land?"
 shortId: 56
 slug: "2025-04-15-love-island-tikety-i"
@@ -8,7 +8,7 @@ description: "15 апреля прошёл масштабный девчат, н
 originalUrl: "https://teletype.in/@urg/devchat15.04"
 ---
 
-![](/blog-images/c7/35/c73560f3-ef6a-4712-84ce-b22c5ac8cafc.png)
+![](/blog-images/c7/35/c73560f3-ef6a-4712-84ce-b22c5ac8cafc.jpg)
 
 15 апреля прошёл масштабный девчат, на котором команда Sunflower Land рассказала, что ждёт игроков в ближайшее время. Делимся ключевыми новостями: от новой главы и механик до ответов на важные вопросы сообщества.
 

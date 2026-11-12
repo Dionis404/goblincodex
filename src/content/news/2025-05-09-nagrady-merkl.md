@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/9d/62/9d62665e-3177-40b0-80a7-de0b62d9d288.png"
+image: "/blog-images/9d/62/9d62665e-3177-40b0-80a7-de0b62d9d288.jpg"
 title: "Награды Merkl"
 shortId: 63
 slug: "2025-05-09-nagrady-merkl"
@@ -21,18 +21,18 @@ originalUrl: "https://teletype.in/@urg/FlowerMerkl"
 
 Здесь вы можете увидеть всю статистику.
 
-![](/blog-images/c3/de/c3de2553-7766-445d-acbe-f1814a7d0d31.png)
+![](/blog-images/c3/de/c3de2553-7766-445d-acbe-f1814a7d0d31.webp)
 
 Что бы увидеть свою статистику и награды зайдите в Dashdoard
 
-![](/blog-images/9d/62/9d62665e-3177-40b0-80a7-de0b62d9d288.png)
+![](/blog-images/9d/62/9d62665e-3177-40b0-80a7-de0b62d9d288.jpg)
 
 После необходимо выбрать нужную сеть (по умолчанию сеть не выбрана)
 
-![](/blog-images/4b/f6/4bf68588-b968-4f1d-b3a4-f71cd287d451.png)
+![](/blog-images/4b/f6/4bf68588-b968-4f1d-b3a4-f71cd287d451.webp)
 
 В этом окне будут отображаться ваши награды.
 
-![](/blog-images/16/10/16109f9a-b7c0-4025-99a9-ff88a35c29cc.png)
+![](/blog-images/16/10/16109f9a-b7c0-4025-99a9-ff88a35c29cc.webp)
 
 Забрать награду можно в любой момент. P.S награда появляется не сразу, может потребоваться более 4х часов до отображения награды.

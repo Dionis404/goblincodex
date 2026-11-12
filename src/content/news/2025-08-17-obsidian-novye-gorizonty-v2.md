@@ -1,4 +1,5 @@
 ---
+image: "/blog-images/b2/12/b2121565-42ed-443f-956c-1e250f7a5284.jpg"
 title: "🪨 Обсидиан : новые горизонты v2"
 shortId: 83
 slug: "2025-08-17-obsidian-novye-gorizonty-v2"
@@ -69,7 +70,7 @@ originalUrl: "https://teletype.in/@urg/6DIKAQROpLj"
 
 #### 4. 🪓 Улучшение нод (Node Forging)
 
-![](https://img4.teletype.media/files/b2/12/b2121565-42ed-443f-956c-1e250f7a5284.png)
+![](/blog-images/b2/12/b2121565-42ed-443f-956c-1e250f7a5284.jpg)
 
 Наконец-то решение для экономии места на карте!
 

@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/sfl/devchat-caves-pigs-2026-09-30/preview.png"
+image: "/blog-images/sfl/devchat-caves-pigs-2026-09-30/preview.jpg"
 title: "Дев-стрим: что поменяли в предложении по свиньям, пещерам и погоде"
 shortId: 174
 slug: "2026-09-30-devchat-svini-peshchery-pogoda-izmeneniya"

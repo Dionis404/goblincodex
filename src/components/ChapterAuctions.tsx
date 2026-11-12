@@ -33,7 +33,16 @@ interface CatalogEntry {
 }
 
 interface Props {
-  auctions: Auction[];
+  /**
+   * Аукционы и каталог предметов. Оба опциональны: страницы архива
+   * (codex/chapter/[slug], auctions-history) передают их пропсами — там
+   * расписание и есть контент страницы. Вкладка главы на /codex НЕ передаёт
+   * ничего: раньше аукционы + itemCatalog ехали в HTML каждого просмотра
+   * (~740K сериализованного JSON), теперь компонент тянет
+   * /api/auctions/chapter.json + /api/nft-catalog.json сам, когда остров
+   * смонтировался.
+   */
+  auctions?: Auction[];
   chapterName?: string;
   itemCatalog?: Record<string, CatalogEntry>;
   initialNow?: number;
@@ -281,7 +290,45 @@ function SpriteImg({ sprite, name, size = 40 }: { sprite: string | null; name: s
   );
 }
 
-export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awakening', itemCatalog, initialNow, defaultStatusFilter = 'upcoming', showStatusFilter = true }: Props) {
+export default function ChapterAuctions({ auctions: auctionsProp, chapterName: chapterNameProp, itemCatalog: itemCatalogProp, initialNow, defaultStatusFilter = 'upcoming', showStatusFilter = true }: Props) {
+  // Режим самозагрузки (вкладка главы на /codex): данные с двух API доезжают
+  // после монтирования, SSR и первый клиентский рендер показывают loader —
+  // расхождений гидратации нет. initialNow в этом режиме не нужен (loader не
+  // зависит от времени), оставлен для пропс-режима.
+  const [fetched, setFetched] = useState<{
+    auctions: Auction[];
+    catalog: Record<string, CatalogEntry>;
+    chapterName?: string;
+  } | null>(null);
+
+  const auctions = auctionsProp ?? fetched?.auctions ?? [];
+  const itemCatalog = itemCatalogProp ?? fetched?.catalog ?? {};
+  const chapterName = chapterNameProp ?? fetched?.chapterName ?? 'текущей главы';
+
+  useEffect(() => {
+    if (auctionsProp) return;
+    let cancelled = false;
+    Promise.all([
+      fetch('/api/auctions/chapter.json')
+        .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); }),
+      fetch('/api/nft-catalog.json')
+        .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); }),
+    ])
+      .then(([chapterJson, catalogJson]: [{ auctions?: Auction[]; chapterName?: string }, { items?: Array<CatalogEntry & { name: string }> }]) => {
+        if (cancelled) return;
+        setFetched({
+          auctions: chapterJson.auctions ?? [],
+          chapterName: chapterJson.chapterName ?? undefined,
+          catalog: Object.fromEntries((catalogJson.items ?? []).map(i => [i.name, i])),
+        });
+      })
+      .catch(() => {
+        // Пустой результат — компонент покажет "не найдено"; не роняем вкладку.
+        if (!cancelled) setFetched({ auctions: [], catalog: {} });
+      });
+    return () => { cancelled = true; };
+  }, [auctionsProp]);
+
   // initialNow приходит с сервера и совпадает с тем, что отрендерил SSR — если
   // здесь заново вызвать Date.now(), время разъедется на пару секунд и React
   // словит hydration mismatch (текст вроде "Через N мин" не совпадёт).
@@ -445,6 +492,10 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
 
   return (
     <div className="ca-root">
+      {!auctionsProp && fetched === null ? (
+        <div className="ca-loading">Загрузка расписания…</div>
+      ) : (
+      <>
       <div className="ca-widget-header">
         <span className="ca-widget-icon">⏰</span>
         <div>
@@ -666,6 +717,8 @@ export default function ChapterAuctions({ auctions, chapterName = 'The Salt Awak
           </div>
         </div>,
         document.body
+      )}
+      </>
       )}
     </div>
   );

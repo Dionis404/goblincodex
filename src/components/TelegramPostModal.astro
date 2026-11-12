@@ -1,14 +1,21 @@
 ---
 // Модалка с полным текстом Telegram-поста, открываемая кликом по карточке
-// с source==='telegram' на /news или главной. Все посты уже загружены на
-// сервере (fetchMergedNews), поэтому просто рендерим их все в скрытые
-// блоки и переключаем видимость по клику — тот же паттерн, что и в
-// ChapterMechanicModal.astro. Рендерится ОТДЕЛЬНО от .gc-content, чтобы
+// с source==='telegram' на /news. Полный текст поста НЕ вшивается в страницу
+// (раньше тексты всех ~60 постов ленты ехали в HTML каждого просмотра) —
+// сюда приходят только id/дата/картинка, а текст модалка тянет с
+// /api/telegram-posts/{tgId}.json по клику и вставляет через textContent
+// (plain text, без HTML-инъекций). Рендерится ОТДЕЛЬНО от .gc-content, чтобы
 // position:fixed overlay гарантированно считался от вьюпорта.
-import type { NewsItem } from '../lib/news-feed';
+interface TgPostLite {
+  tgId: number;
+  /** Ключ для сопоставления с gc:open-tg-modal — это href карточки. */
+  link: string;
+  dateLabel: string;
+  image: string;
+}
 
 interface Props {
-  posts: NewsItem[];
+  posts: TgPostLite[];
 }
 
 const { posts } = Astro.props;
@@ -18,10 +25,10 @@ const { posts } = Astro.props;
   <div class="gc-modal-box gc-tg-modal-box" id="tgModalBox">
     <button type="button" class="gc-modal-close" id="tgModalClose" aria-label="Закрыть">✕</button>
     {posts.map(post => (
-      <div class="gc-tg-modal-post" data-tg-post={post.link} style="display:none">
+      <div class="gc-tg-modal-post" data-tg-post={post.link} data-tg-id={post.tgId} style="display:none">
         {post.image && <img src={post.image} alt="" class="gc-tg-modal-img" loading="lazy" />}
         <div class="gc-tg-modal-date">{post.dateLabel}</div>
-        <div class="gc-tg-modal-text">{post.fullText ?? post.desc}</div>
+        <div class="gc-tg-modal-text">Загрузка…</div>
         <a href="https://t.me/URGSFL" target="_blank" rel="noopener" class="gc-btn-telegram gc-btn-telegram--full">Подписаться</a>
       </div>
     ))}
@@ -64,12 +71,53 @@ const { posts } = Astro.props;
   const tgClose   = document.getElementById('tgModalClose');
   const tgPosts   = document.querySelectorAll<HTMLElement>('[data-tg-post]');
 
+  // Текст поста догружается с API по клику и кэшируется на сессию —
+  // повторное открытие того же поста не ходит в сеть.
+  const textCache = new Map<number, string | null>();
+
+  async function loadPostText(tgId: number): Promise<string | null> {
+    if (textCache.has(tgId)) return textCache.get(tgId) ?? null;
+    try {
+      const res = await fetch(`/api/telegram-posts/${tgId}.json`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json() as { text?: string };
+      const text = data.text ?? null;
+      textCache.set(tgId, text);
+      return text;
+    } catch {
+      textCache.set(tgId, null);
+      return null;
+    }
+  }
+
   function openTgModal(link: string) {
+    let opened = false;
     tgPosts.forEach(p => {
-      p.style.display = p.dataset.tgPost === link ? 'block' : 'none';
+      const match = p.dataset.tgPost === link;
+      p.style.display = match ? 'block' : 'none';
+      if (match) {
+        opened = true;
+        const textEl = p.querySelector<HTMLElement>('.gc-tg-modal-text');
+        const tgId = Number(p.dataset.tgId);
+        if (textEl && Number.isInteger(tgId)) {
+          const cached = textCache.get(tgId);
+          textEl.textContent = cached !== undefined
+            ? (cached ?? 'Не удалось загрузить текст поста.')
+            : 'Загрузка…';
+          if (cached === undefined) {
+            loadPostText(tgId).then(text => {
+              // Пост могли закрыть/переключить, пока шёл запрос — пишем
+              // только если этот блок всё ещё виден.
+              if (p.style.display !== 'none') {
+                textEl.textContent = text ?? 'Не удалось загрузить текст поста.';
+              }
+            });
+          }
+        }
+      }
     });
-    if (tgOverlay) tgOverlay.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    if (opened && tgOverlay) tgOverlay.style.display = 'flex';
+    if (opened) document.body.style.overflow = 'hidden';
   }
 
   function closeTgModal() {

@@ -6,8 +6,16 @@ import SearchWidget from '../components/SearchWidget.tsx';
 import { fetchMergedNews } from '../lib/news-feed';
 import { getEntryByShortId } from '../lib/news-lookup';
 
-const { items: news, tagsByGame } = await fetchMergedNews({ telegramLimit: 100 });
-const telegramPosts = news.filter(n => n.source === 'telegram');
+// telegramLimit=60: дальше лента редко кем листается, а каждый пост — это
+// карточка с картинкой в HTML. Старые посты остаются доступны в канале
+// (t.me/URGSFL). Тексты постов сюда не приезжают — модалка тянет их с
+// /api/telegram-posts/{id}.json по клику.
+const { items: news, tagsByGame } = await fetchMergedNews({ telegramLimit: 60 });
+// В модалку — только лёгкие поля (id/дата/картинка); полный текст поста
+// раньше вшивался сюда для всех постов разом и раздувал HTML страницы.
+const telegramPosts = news
+  .filter(n => n.source === 'telegram')
+  .map(n => ({ tgId: n.tgId!, link: n.link, dateLabel: n.dateLabel, image: n.image }));
 
 const GAME_LABELS: Record<string, string> = {
   sunflower: 'Sunflower Land',

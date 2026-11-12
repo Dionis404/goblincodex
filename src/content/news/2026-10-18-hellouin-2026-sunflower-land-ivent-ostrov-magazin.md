@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/sfl/halloween-2026/preview.png"
+image: "/blog-images/sfl/halloween-2026/preview.jpg"
 title: "Хэллоуин 2026 в Sunflower Land: остров ивента, мини-игра и магазин из 29 позиций"
 shortId: 180
 slug: "2026-10-18-hellouin-2026-sunflower-land-ivent-ostrov-magazin"
@@ -21,7 +21,7 @@ originalUrl: "https://github.com/sunflower-land/sunflower-land/pull/7820"
 - Ивент включается флагом **с 22 октября по 2 ноября 2026** (00:00 UTC).
 - На острове ивента нужно попасть через **карту мира** — на время ивента там появляется новая точка в нижней части карты. Путешествовать туда можно **со 2 уровня** бампкина.
 
-![Карта мира на время ивента — остров Хэллоуина в нижней части карты](/blog-images/sfl/halloween-2026/world-map.png)
+![Карта мира на время ивента — остров Хэллоуина в нижней части карты](/blog-images/sfl/halloween-2026/world-map.webp)
 
 На острове вас ждут два NPC — **Vampire Jim** и **Skelly Joe** (они полностью одеты в новые вещи ивента), доска объявлений, магазин и портал в мини-игру. Vampire Jim один раз вручает небольшой подарок — ворону **Cultist Crow**: «Here is a small reward, don't tell anyone about it...».
 

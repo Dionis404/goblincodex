@@ -1,5 +1,5 @@
 ---
-image: "/blog-images/98/ee/98ee7e23-0898-4a69-9501-27c10537840e.png"
+image: "/blog-images/98/ee/98ee7e23-0898-4a69-9501-27c10537840e.jpg"
 title: "Devchat Sunflower Land: новый мини-гейм на Лав Айленд, апгрейд серверов и подарок для фанатов Rare Crows"
 shortId: 170
 slug: "2026-09-03-devchat-sunflower-land-novyy-mini-geym-servera-rare-crows"
