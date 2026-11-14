@@ -13,8 +13,8 @@ try {
   console.error('[codex/chapter/auctions-history] DB fetch error:', err);
 }
 
-// limit=100 (дефолт) показывал только маленькое окно истории вместо всех
-// прошлых глав — см. fetchAuctionsInRange в auctionsApi.ts, та же причина.
+// Архиву нужна вся история, но goblin-api отдаёт максимум 100 последних
+// завершённых аукционов (см. fetchPastAuctions: API жёстко кэпит limit).
 const pastAuctions = await fetchPastAuctions(5000);
 const now = Date.now();
 ---

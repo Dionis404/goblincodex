@@ -85,19 +85,28 @@ const AUCTIONS_TTL_MS = 10 * 60 * 1000; // 10 мин — та же полити�
 
 /**
  * История завершённых аукционов главы — read-only витрина auctioneer-bot.
- * Большие лимиты (страницы глав/архива тянут тысячи записей разом) кэшируем
- * на 10 мин: сами данные — уже прошедшие аукционы, они не меняются, а без
- * кэша каждый рендер страницы главы заново гонял бы весь запрос в goblin-api
- * и рисковал упереться в 5-секундный таймаут fetchWithTimeout. Маленькие
- * разовые запросы (лимит по умолчанию) не кэшируем — не нагружают бэкенд.
+ * Страницы глав/архива просят limit с запасом (до 5000), но API отдаёт максимум
+ * API_HISTORY_LIMIT_MAX записей за раз — большие запросы кэшируем на 10 мин:
+ * сами данные — уже прошедшие аукционы, они не меняются, а без кэша каждый
+ * рендер страницы главы заново гонял бы запрос в goblin-api и рисковал упереться
+ * в таймаут fetchWithTimeout. Маленькие разовые запросы (лимит по умолчанию)
+ * не кэшируем — не нагружают бэкенд.
  */
+// goblin-api жёстко ограничивает limit сверху значением 100 (FastAPI Query(le=100)):
+// на больший лимит отвечает 422 с detail[].ctx.le = 100. Раньше запрашивали 5000
+// и каждый раз сжигали первую попытку на гарантированный 422 плюс warning в лог;
+// фактически данные всё равно обрезались до последних 100 записей.
+const API_HISTORY_LIMIT_MAX = 100;
+
 export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
   const load = async () => {
-    const timeoutMs = limit > 100 ? 15000 : 5000;
-    // goblin-api ограничивает limit сверху и на слишком большой отвечает 422
-    // (так история целиком пропадала с сайта). Берём допустимый максимум из
-    // ответа FastAPI (detail[].ctx.le), а если его там нет — уменьшаем лимит.
-    let current = limit;
+    const timeoutMs = limit > API_HISTORY_LIMIT_MAX ? 15000 : 5000;
+    // Запрашиваем сразу допустимый максимум, а не исходный limit. Цикл ниже —
+    // страховка на случай, если бэкенд снизит лимит ещё сильнее: берём
+    // допустимый максимум из ответа FastAPI (detail[].ctx.le), а если его там
+    // нет — уменьшаем лимит.
+    const initial = Math.min(limit, API_HISTORY_LIMIT_MAX);
+    let current = initial;
     for (let attempt = 0; attempt < 6; attempt++) {
       const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?history=true&limit=${current}`, timeoutMs);
       if (res.status === 422 && current > 100) {
@@ -109,7 +118,7 @@ export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: ApiAuction[] = await res.json();
       if (!Array.isArray(data)) throw new Error('unexpected response shape');
-      if (current !== limit) console.warn(`[auctionsApi] history limit ${limit} отклонён API, использован ${current}`);
+      if (current !== initial) console.warn(`[auctionsApi] history limit ${initial} отклонён API, использован ${current}`);
       return data.map(mapAuction);
     }
     throw new Error('HTTP 422: limit не принят API');
@@ -129,16 +138,14 @@ export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
  * Аукционы, чей startAt попадает в [startMs, endMs) — для страницы конкретной
  * главы (src/lib/chapters.ts). API не умеет фильтровать по датам напрямую
  * (см. docs/goblin-api — только item_name/limit/history), поэтому тянем
- * достаточно большую историю и фильтруем на своей стороне.
+ * историю и фильтруем на своей стороне.
  *
- * limit=500 раньше обрезал старые главы: аукционов ~5/день, глава идёт
- * ~90 дней — это уже ~450 записей на ОДНУ главу, а history=true отдаёт
- * последние N по всей игре разом (не по главе), так что чем старше глава,
- * тем быстрее её начало вытесняется более новыми записями других глав.
- * Например Salt Awakening (04.05–03.08) на limit=500 показывал данные
- * только с 10.05 по 10.07 — начало и конец главы обрезаны. Подняли лимит
- * с большим запасом на всю прожитую историю игры; при дальнейшем росте
- * числа глав стоит поднять ещё.
+ * ВАЖНО: goblin-api отдаёт не больше API_HISTORY_LIMIT_MAX (100) последних
+ * завершённых аукционов по всей игре разом — не по главе (см. fetchPastAuctions).
+ * Аукционов ~5/день, поэтому окно истории ≈ 20 дней: у главы старше ~3 недель
+ * начало обрезано более новыми записями других глав, а глава старше ~100
+ * аукционов не покажет ничего. Это ограничение бэкенда, не этого кода; если
+ * goblin-api заведёт offset/пагинацию — можно будет вытянуть историю целиком.
  *
  * Включает и завершённые (fetchPastAuctions), и предстоящие/активные
  * (fetchUpcomingAuctions) — нужно для текущей главы, где часть аукционов уже
