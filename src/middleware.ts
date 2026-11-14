@@ -1,6 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
 import { getEntry } from 'astro:content';
-import { SECTIONS, sectionForHost, subdomainFor } from './lib/subdomains';
+import { SECTIONS, sectionForHost, subdomainFor, isTestHost, isLocalHost, testSubdomainFor, mainDomainFor } from './lib/subdomains';
 import { checkRateLimit, clientIp } from './lib/rate-limit';
 
 // Каждый раздел (blog/sfl/yakk) живёт на своём поддомене и отдаёт туда
@@ -42,6 +42,30 @@ export const onRequest = defineMiddleware(async (context, next) => {
       return context.rewrite(currentSection.path);
     }
     return next();
+  }
+
+  // Тестовый поддомен: корень показывает тестовую страницу /test (rewrite,
+  // как у разделов), всё остальное — только на основном домене: уводим
+  // туда же путём. Статика (_astro, images и т.п.) тоже пропускаем —
+  // без неё страница не отрендерится.
+  if (isTestHost(host)) {
+    const path = context.url.pathname;
+    if (path === '/') return context.rewrite('/test');
+    if (path === '/test'
+      || path.startsWith('/_astro/')
+      || path.startsWith('/images/')
+      || path.startsWith('/sprites/')
+      || path.startsWith('/blog-images/')
+      || path.match(/^\/(?:favicon|apple-touch-icon|og-default|robots)/)) {
+      return next();
+    }
+    return context.redirect(`https://${mainDomainFor(host)}${path}${context.url.search}`, 302);
+  }
+
+  // Тестовая страница на основном домене не показывается — только на test.*
+  // (локальный дев-хост пропускаем, чтобы страницу можно было смотреть в dev).
+  if (context.url.pathname === '/test' && !isLocalHost(host)) {
+    return context.redirect(`https://${testSubdomainFor(host)}/test`, 302);
   }
 
   // На основном домене ни один из путей разделов больше не показывается —

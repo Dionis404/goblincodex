@@ -37,6 +37,25 @@ function tldOf(host: string | null): 'fun' | 'ru' {
   return normalizeHost(host).endsWith('.ru') ? 'ru' : 'fun';
 }
 
+// Тестовый поддомен test.* — не раздел сайта (в навигацию/карту разделов
+// не входит), живёт отдельной диагностической страницей /test.
+export function isTestHost(host: string | null): boolean {
+  const h = normalizeHost(host);
+  return h === 'test.goblincodex.fun' || h === 'test.goblincodex.ru';
+}
+
+// Локальный дев-хост — localhost/127.0.0.1 и любые *.localhost.
+// Тестовая страница /test на нём доступна напрямую, без редиректа
+// на тестовый поддомен (иначе локально её было бы не посмотреть).
+export function isLocalHost(host: string | null): boolean {
+  const h = normalizeHost(host);
+  return h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.endsWith('.localhost');
+}
+
+export function testSubdomainFor(host: string | null): string {
+  return `test.goblincodex.${tldOf(host)}`;
+}
+
 // Раздел, которому принадлежит текущий host, если это один из поддоменов
 // (любого из трёх) — иначе null (основной домен, localhost и т.п.).
 export function sectionForHost(host: string | null): SectionConfig | null {

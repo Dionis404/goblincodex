@@ -72,7 +72,7 @@ function sectionPages() {
 // Пути основного домена, которых не должно быть в sitemap: редиректы на
 // поддомены (разделы), старые /chapter* (301 на /codex) и служебные страницы.
 const EXCLUDED_MAIN_PREFIXES = ['/news', '/codex', '/yakkamon', '/chapter', '/debug/'];
-const EXCLUDED_MAIN_PAGES = ['/cookies', '/terms', '/chat-rules'];
+const EXCLUDED_MAIN_PAGES = ['/cookies', '/terms', '/chat-rules', '/test'];
 
 export default defineConfig({
   site: SITE,

@@ -1,0 +1,214 @@
+---
+export const prerender = false;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sectionHref, mainDomainFor } from '../lib/subdomains';
+
+// Диагностическая страница для тестового поддомена test.goblincodex.fun —
+// показывает, что поддомен дошёл до приложения, и даёт заодно смоук-чек
+// темы, шрифтов и кросс-доменных ссылок разделов.
+const host = Astro.request.headers.get('host') ?? '';
+const mainDomain = mainDomainFor(host);
+const newsHref = sectionHref(host, 'blog', '/news');
+const codexHref = sectionHref(host, 'sfl', '/codex');
+const yakkamonHref = sectionHref(host, 'yakk', '/yakkamon');
+
+const cookieHeader = Astro.request.headers.get('cookie') ?? '';
+const themeCookie = cookieHeader.match(/(?:^|; )gc_theme=(dark|light)/)?.[1] ?? 'не задана';
+const userAgent = Astro.request.headers.get('user-agent') ?? '—';
+const serverTime = new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Yekaterinburg', dateStyle: 'long', timeStyle: 'medium' });
+
+const rows: { name: string; value: string }[] = [
+  { name: 'Host запроса', value: host || '—' },
+  { name: 'Время сервера (Екатеринбург)', value: serverTime },
+  { name: 'Тема (cookie gc_theme)', value: themeCookie },
+  { name: 'User-Agent', value: userAgent },
+];
+---
+
+<BaseLayout
+  currentPage="test"
+  title="Test — GoblinCodex"
+  description="Тестовая страница поддомена test.goblincodex.fun."
+  noindex={true}
+>
+  <div class="gc-content">
+
+    <section class="gc-test-hero gc-page-enter">
+      <div class="gc-test-hero-icon">🧪</div>
+      <div class="gc-test-hero-eyebrow">Тестовый поддомен</div>
+      <h1 class="gc-test-hero-h1">test.goblincodex.fun работает</h1>
+      <p class="gc-test-hero-desc">
+        Эта страница отдаётся приложением GoblinCodex — значит DNS и роутинг поддомена
+        настроены верно, а SSR-рендер доходит до браузера.
+      </p>
+    </section>
+
+    <section class="gc-card gc-test-block">
+      <h2>Диагностика запроса</h2>
+      <div class="gc-test-table-wrap">
+        <table class="gc-test-table">
+          <tbody>
+            {rows.map((row) => (
+              <tr>
+                <td class="gc-test-name">{row.name}</td>
+                <td class="gc-test-value">{row.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="gc-test-note">
+        Если Host совпадает с адресом в адресной строке — nginx/Caddy и middleware
+        проксировали запрос без подмены.
+      </p>
+    </section>
+
+    <section class="gc-card gc-test-block">
+      <h2>Что проверить на этой странице</h2>
+      <ul class="gc-test-checklist">
+        <li>Шапка и подвал отрендерились, логотип ведёт на основной домен.</li>
+        <li>Переключатель темы (иконка в шапке) меняет светлую/тёмную тему.</li>
+        <li>Заголовки набраны шрифтом Unbounded, текст — Golos Text.</li>
+        <li>Ссылки ниже ведут на поддомены разделов (blog./sfl./yakk.), а не на пути основного домена.</li>
+      </ul>
+      <div class="gc-test-links">
+        <a href={codexHref} class="gc-test-link gc-test-link--sfl">Sunflower Land →</a>
+        <a href={yakkamonHref} class="gc-test-link gc-test-link--yk">Yakkamon →</a>
+        <a href={newsHref} class="gc-test-link gc-test-link--news">Новости и блог →</a>
+        <a href={`https://${mainDomain}`} class="gc-test-link gc-test-link--main">Основной домен →</a>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .gc-test-hero {
+    max-width: 620px;
+    margin: 0 auto 40px;
+    padding: 40px 20px 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .gc-test-hero-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    background: var(--amber-pale);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .gc-test-hero-eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--amber);
+    background: var(--amber-pale);
+    padding: 4px 11px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+  }
+  .gc-test-hero-h1 {
+    font-family: var(--font-head);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin: 0 0 12px;
+    color: var(--text);
+  }
+  .gc-test-hero-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-sec);
+    margin: 0;
+  }
+
+  .gc-test-block {
+    max-width: 720px;
+    margin: 0 auto 20px;
+    padding: 22px 24px;
+  }
+  .gc-test-block h2 {
+    font-family: var(--font-head);
+    font-size: 17px;
+    margin: 0 0 14px;
+  }
+  .gc-test-table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .gc-test-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .gc-test-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    word-break: break-word;
+  }
+  .gc-test-table tr:last-child td { border-bottom: none; }
+  .gc-test-name { color: var(--text-sec); width: 45%; }
+  .gc-test-value { color: var(--text); }
+  .gc-test-note {
+    font-size: 12.5px;
+    color: var(--text-ter);
+    margin: 10px 0 0;
+  }
+
+  .gc-test-checklist {
+    list-style: none;
+    margin: 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .gc-test-checklist li {
+    position: relative;
+    padding-left: 24px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-sec);
+  }
+  .gc-test-checklist li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--green-dark);
+    font-weight: 700;
+  }
+  .gc-test-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .gc-test-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-sec);
+    border: 1.5px solid var(--border);
+    padding: 9px 16px;
+    border-radius: 9px;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+  .gc-test-link:hover {
+    border-color: var(--green-mid);
+    background: var(--green-pale);
+    color: var(--green-dark);
+  }
+
+  @media (max-width: 640px) {
+    .gc-test-hero-h1 { font-size: 24px; }
+    .gc-test-name { width: 40%; }
+  }
+</style>
