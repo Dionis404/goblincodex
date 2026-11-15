@@ -16,6 +16,11 @@
  * - src/lib/skills.ts — ранги скиллов дерева Cooking (уже нормализованы в проекте).
  * Синхронизировано с кодом игры на 2026-11-15 (включая ребаланс трюфельных
  * рецептов от 2026-10-30: 1 000 / 2 000 / 4 000 XP за трюфель).
+ *
+ * НЕ ДОБАВЛЯТЬ, хотя лежат в записях игры: Gumbo, Chowder, Fish Burger,
+ * Fried Calamari, Fish Omelette, Seafood Basket — записи в consumables.ts
+ * остались (мертвые), но из игры блюда убраны. При сверке с кодом игры
+ * пропускать их.
  */
 import { BAITS, averageBaitCost, baitCosts } from './baitCosts';
 import { CHUM_PRICE_NAMES } from './crustaceans';
@@ -81,11 +86,7 @@ export const KITCHEN: Recipe[] = [
   { name: 'Surimi Rice Bowl', building: 'Kitchen', experience: 3000, cookingSeconds: 0, ingredients: [['Fish Stick', 1], ['Rice', 1], ['Onion', 1]], isFish: true },
   { name: 'Creamy Crab Bite', building: 'Kitchen', experience: 10000, cookingSeconds: 0, ingredients: [['Crab Stick', 1], ['Cheese', 3]], isFish: true },
   { name: 'Crimstone Infused Fish Oil', building: 'Kitchen', experience: 18000, cookingSeconds: 0, ingredients: [['Fish Oil', 1], ['Crimstone', 1]], isFish: true },
-  { name: 'Fried Calamari', building: 'Kitchen', experience: 1500, cookingSeconds: 18000, ingredients: [['Sunflower', 200], ['Wheat', 15], ['Squid', 1]], isFish: true },
-  { name: 'Fish Burger', building: 'Kitchen', experience: 1300, cookingSeconds: 7200, ingredients: [['Beetroot', 10], ['Wheat', 10], ['Horse Mackerel', 1]], isFish: true },
-  { name: 'Fish Omelette', building: 'Kitchen', experience: 1500, cookingSeconds: 18000, ingredients: [['Egg', 40], ['Surgeonfish', 1], ['Butterflyfish', 2]], isFish: true },
   { name: 'Ocean’s Olive', building: 'Kitchen', experience: 2000, cookingSeconds: 7200, ingredients: [['Olive Flounder', 1], ['Olive', 2]], isFish: true },
-  { name: 'Seafood Basket', building: 'Kitchen', experience: 2200, cookingSeconds: 18000, ingredients: [['Blowfish', 2], ['Napoleanfish', 2], ['Sunfish', 2]], isFish: true },
   { name: 'Fish n Chips', building: 'Kitchen', experience: 2000, cookingSeconds: 14400, ingredients: [['Fancy Fries', 1], ['Halibut', 1]], isFish: true },
   { name: 'Sushi Roll', building: 'Kitchen', experience: 2000, cookingSeconds: 3600, ingredients: [['Angelfish', 1], ['Seaweed', 1], ['Rice', 2]], isFish: true },
   { name: 'Creamy Truffle Risotto', building: 'Kitchen', experience: 32000, cookingSeconds: 48 * 3600, ingredients: [['Truffle', 8], ['Rice', 3], ['Wild Mushroom', 5]] },
