@@ -21,6 +21,7 @@
  * ниже. Источник чисел — `upgrade.effect` у каждого навыка в
  * BUMPKIN_REVAMP_SKILL_TREE и формулы стоимости getSkillUpgradeCost /
  * getSkillUpgradeTierRequirement там же (см. costForSkillRank ниже).
+ * Синхронизировано с кодом игры на 2026-11-15 (дерево Пещер/Cave Главы 16).
  */
 
 import { formatDuration } from './expansions';
@@ -31,6 +32,7 @@ export type SkillTree =
   | 'Trees'
   | 'Fishing'
   | 'Animals'
+  | 'Cave'
   | 'Greenhouse'
   | 'Mining'
   | 'Cooking'
@@ -50,6 +52,7 @@ export const SKILL_TREE_ORDER: SkillTree[] = [
   'Fishing',
   'Fruit Patch',
   'Animals',
+  'Cave',
   'Bees & Flowers',
   'Greenhouse',
   'Machinery',
@@ -61,6 +64,7 @@ export const SKILL_TREE_LABELS: Record<SkillTree, string> = {
   Trees: 'Деревья',
   Fishing: 'Рыбалка',
   Animals: 'Животные',
+  Cave: 'Пещеры',
   Greenhouse: 'Теплица',
   Mining: 'Добыча',
   Cooking: 'Готовка',
@@ -103,6 +107,8 @@ export type SkillRankEffect =
   | { kind: 'multiplier'; ranks: readonly [number, number, number] }
   | { kind: 'dailyLimit'; ranks: readonly [number, number, number] }
   | { kind: 'xpBonus'; ranks: readonly [number, number, number] }
+  | { kind: 'yieldBonus'; ranks: readonly [number, number, number] }
+  | { kind: 'beetleRarity'; ranks: readonly [Record<string, number>, Record<string, number>, Record<string, number>] }
   | { kind: 'timeReduction'; ranks: readonly [number, number, number] }
   | { kind: 'flatDebuff'; ranks: readonly [number, number, number] }
   | { kind: 'oilReduction'; ranks: readonly [number, number, number] }
@@ -211,6 +217,7 @@ const BASE_SKILLS: Skill[] = [
   { name: 'Heartwarming Instruments', tree: 'Animals', tier: 2, points: 2, island: 'spring', description: '+50% опыта животным от инструментов для ухода' },
   { name: 'Kale Mix', tree: 'Animals', tier: 2, points: 2, island: 'spring', description: 'Зерновой микс требует 3 кейла вместо базового рецепта' },
   { name: 'Alternate Medicine', tree: 'Animals', tier: 2, points: 2, island: 'spring', description: 'Амбарное лакомство требует на 1 лимон и мёд меньше' },
+  { name: 'Truffle Yield', tree: 'Animals', tier: 2, points: 2, island: 'spring', description: 'x1.1 урожая трюфелей' },
   { name: 'Healthy Livestock', tree: 'Animals', tier: 2, points: 2, island: 'spring', description: 'x0.5 chance of sickness' },
   { name: 'Merino Whisperer', tree: 'Animals', tier: 2, points: 2, island: 'spring', description: '+0.35 шерсть мериноса', debuffDescription: '-0.1 кожа и перо' },
   { name: 'Clucky Grazing', tree: 'Animals', tier: 3, points: 3, island: 'spring', description: 'x0.75 feed to feed Chickens', debuffDescription: '+50% затрат корма для других животных' },
@@ -218,7 +225,21 @@ const BASE_SKILLS: Skill[] = [
   { name: 'Cow-Smart Nutrition', tree: 'Animals', tier: 3, points: 3, island: 'spring', description: 'x0.75 feed to feed Cows', debuffDescription: '+50% затрат корма для других животных' },
   { name: 'Chonky Feed', tree: 'Animals', tier: 3, points: 3, island: 'spring', description: '2x опыта животным при кормлении', debuffDescription: '+50% затрат корма для всех животных' },
   { name: 'Leathercraft Mastery', tree: 'Animals', tier: 3, points: 3, island: 'spring', description: '+0.35 кожа', debuffDescription: '-0.1 перо и шерсть мериноса' },
+  { name: 'Bristle Payout', tree: 'Animals', tier: 3, points: 3, island: 'spring', description: 'x1.1 свиной щетины за сдачу свиней' },
+  { name: 'Swill Savvy', tree: 'Animals', tier: 3, points: 3, island: 'spring', description: 'Расход корма на свиней: x0.75', debuffDescription: '+50% расхода корма для остальных животных' },
   { name: 'Barnyard Rouse', tree: 'Animals', tier: 3, points: 3, island: 'spring', description: 'Возможность мгновенно разбудить всех животных', cooldownSeconds: 120 * 3600 },
+
+  { name: 'Lean Compost', tree: 'Cave', tier: 1, points: 1, island: 'spring', description: 'Ингредиенты монотуба: x0.95' },
+  { name: 'Rapid Mycelium', tree: 'Cave', tier: 1, points: 1, island: 'spring', description: 'Время роста в монотубе: x0.95' },
+  { name: 'Mushroom Bloom', tree: 'Cave', tier: 1, points: 1, island: 'spring', description: 'Клеток с грибами на каждом участке Пещеры: +1' },
+  { name: 'Muddy Bounty', tree: 'Cave', tier: 1, points: 1, island: 'spring', description: 'x1.1 грязи с участков в Пещере' },
+  { name: 'Sturdy Shovel', tree: 'Cave', tier: 1, points: 1, island: 'spring', description: 'Шанс 10%, что при раскопках в Пещере лопата не расходуется' },
+  { name: 'Fungal Harvest', tree: 'Cave', tier: 2, points: 2, island: 'spring', description: 'Грибов с каждой клетки с грибом в Пещере: +0.2' },
+  { name: 'Beetle Nest', tree: 'Cave', tier: 2, points: 2, island: 'spring', description: 'Клеток с жуками на каждом участке Пещеры: +1' },
+  { name: 'Sturdy Drill', tree: 'Cave', tier: 2, points: 2, island: 'spring', description: 'Шанс 20%, что при бурении в Пещере бур не расходуется' },
+  { name: 'Tool Hoarder', tree: 'Cave', tier: 2, points: 2, island: 'spring', description: 'Увеличенный запас: песчаные лопаты +25, песчаные буры +5' },
+  { name: 'Rare Breeds', tree: 'Cave', tier: 3, points: 3, island: 'spring', description: 'Шансы на жуков: 35% зелёный, 35% синий, 15% розовый, 15% янтарный' },
+  { name: 'Twin Beetles', tree: 'Cave', tier: 3, points: 3, island: 'spring', description: 'Шанс 5% на +1 жука при добыче жука в Пещере' },
 
   { name: 'Glass Room', tree: 'Greenhouse', tier: 1, points: 1, island: 'desert', description: '+0.1 к урожаю тепличных культур' },
   { name: 'Seedy Business', tree: 'Greenhouse', tier: 1, points: 1, island: 'desert', description: 'x0.85 Greenhouse seeds cost' },
@@ -318,7 +339,7 @@ const BASE_SKILLS: Skill[] = [
 
 /**
  * Ранговые эффекты — по одному объекту на каждый навык, у которого в игре
- * есть `upgrade` (143 из 153; см. BASE_SKILLS выше). Числа взяты напрямую из
+ * есть `upgrade` (157 из 167; см. BASE_SKILLS выше). Числа взяты напрямую из
  * BUMPKIN_REVAMP_SKILL_TREE[name].upgrade в bumpkinSkills.ts (maxLevel везде
  * равен 3 — в текущей версии игры других значений нет).
  */
@@ -384,6 +405,9 @@ const SKILL_UPGRADES: Record<string, SkillUpgrade> = {
   'Cow-Smart Nutrition': { maxLevel: 3, effect: { kind: 'costWithDebuff', buff: [0.75, 0.65, 0.5], debuff: [1.5, 1.55, 1.65] } },
   'Chonky Feed': { maxLevel: 3, effect: { kind: 'xpWithFeedDebuff', xp: [2, 2.5, 3], feed: [1.5, 1.75, 2] } },
   'Leathercraft Mastery': { maxLevel: 3, effect: { kind: 'yieldWithDebuff', buff: [0.35, 0.6, 0.8], debuff: [0.1, 0.15, 0.2] } },
+  'Truffle Yield': { maxLevel: 3, effect: { kind: 'yieldBonus', ranks: [0.1, 0.2, 0.3] } },
+  'Bristle Payout': { maxLevel: 3, effect: { kind: 'yieldBonus', ranks: [0.1, 0.2, 0.3] } },
+  'Swill Savvy': { maxLevel: 3, effect: { kind: 'costWithDebuff', buff: [0.75, 0.65, 0.5], debuff: [1.5, 1.55, 1.65] } },
   'Barnyard Rouse': { maxLevel: 3, effect: { kind: 'cooldown', ranks: [432000000, 345600000, 302400000] } },
   'Glass Room': { maxLevel: 3, effect: { kind: 'additiveYield', ranks: [0.1, 0.15, 0.2] } },
   'Seedy Business': { maxLevel: 3, effect: { kind: 'costMultiplier', ranks: [0.85, 0.8, 0.75] } },
@@ -466,6 +490,27 @@ const SKILL_UPGRADES: Record<string, SkillUpgrade> = {
   'Sea Blessed': { maxLevel: 3, effect: { kind: 'chance', ranks: [5, 6.5, 8] } },
   Ager: { maxLevel: 3, effect: { kind: 'multiplier', ranks: [2, 3, 4] } },
   'Salt Surge': { maxLevel: 3, effect: { kind: 'cooldown', ranks: [259200000, 216000000, 172800000] } },
+  'Lean Compost': { maxLevel: 3, effect: { kind: 'costMultiplier', ranks: [0.95, 0.9, 0.85] } },
+  'Rapid Mycelium': { maxLevel: 3, effect: { kind: 'growthMultiplier', ranks: [0.95, 0.9, 0.85] } },
+  'Mushroom Bloom': { maxLevel: 3, effect: { kind: 'flatBonus', ranks: [1, 2, 3] } },
+  'Muddy Bounty': { maxLevel: 3, effect: { kind: 'yieldBonus', ranks: [0.1, 0.2, 0.3] } },
+  'Sturdy Shovel': { maxLevel: 3, effect: { kind: 'chance', ranks: [10, 20, 30] } },
+  'Fungal Harvest': { maxLevel: 3, effect: { kind: 'additiveYield', ranks: [0.2, 0.3, 0.4] } },
+  'Beetle Nest': { maxLevel: 3, effect: { kind: 'flatBonus', ranks: [1, 2, 3] } },
+  'Sturdy Drill': { maxLevel: 3, effect: { kind: 'chance', ranks: [20, 30, 40] } },
+  'Tool Hoarder': { maxLevel: 3, effect: { kind: 'stockBonus', ranks: { 'Sand Shovel': [25, 50, 100], 'Sand Drill': [5, 10, 20] } } },
+  'Rare Breeds': {
+    maxLevel: 3,
+    effect: {
+      kind: 'beetleRarity',
+      ranks: [
+        { 'Green Beetle': 35, 'Blue Beetle': 35, 'Pink Beetle': 15, 'Amber Beetle': 15 },
+        { 'Green Beetle': 30, 'Blue Beetle': 30, 'Pink Beetle': 20, 'Amber Beetle': 20 },
+        { 'Green Beetle': 25, 'Blue Beetle': 25, 'Pink Beetle': 25, 'Amber Beetle': 25 },
+      ],
+    },
+  },
+  'Twin Beetles': { maxLevel: 3, effect: { kind: 'chance', ranks: [5, 10, 15] } },
 };
 
 /**
@@ -633,6 +678,20 @@ export const SKILL_ICONS: Record<string, string> = {
   'Sea Blessed': '/sprites/icons/skill_icons/sea_blessed.webp',
   'Ager': '/sprites/icons/skill_icons/ager.webp',
   'Salt Surge': '/sprites/icons/skill_icons/salt_surge.webp',
+  'Truffle Yield': '/sprites/resources/truffle.webp',
+  'Swill Savvy': '/sprites/animals/pigs/idle.webp',
+  'Bristle Payout': '/sprites/resources/pig_bristles.webp',
+  'Lean Compost': '/sprites/icons/skill_icons/lean_compost.webp',
+  'Rapid Mycelium': '/sprites/icons/skill_icons/rapid_mycelium.webp',
+  'Mushroom Bloom': '/sprites/icons/skill_icons/mushroom_bloom.webp',
+  'Muddy Bounty': '/sprites/icons/skill_icons/muddy_bounty.webp',
+  'Sturdy Shovel': '/sprites/icons/skill_icons/sturdy_shovel.webp',
+  'Fungal Harvest': '/sprites/icons/skill_icons/fungal_harvest.webp',
+  'Beetle Nest': '/sprites/icons/skill_icons/beetle_nest.webp',
+  'Sturdy Drill': '/sprites/icons/skill_icons/sturdy_drill.webp',
+  'Tool Hoarder': '/sprites/icons/skill_icons/tool_hoarder.webp',
+  'Rare Breeds': '/sprites/icons/skill_icons/rare_breeds.webp',
+  'Twin Beetles': '/sprites/icons/skill_icons/twin_beetles.webp',
 };
 
 /** Эмодзи-заглушка по дереву — для навыков без своего спрайта (SKILL_ICONS). */
@@ -642,6 +701,7 @@ export const SKILL_TREE_EMOJI: Record<SkillTree, string> = {
   Trees: '🌳',
   Fishing: '🎣',
   Animals: '🐔',
+  Cave: '🕳️',
   Greenhouse: '🌿',
   Mining: '⛏️',
   Cooking: '🍳',
@@ -697,6 +757,7 @@ export const SKILL_POINTS_PER_TIER: Record<SkillTree, Record<2 | 3, number>> = {
   Compost: { 2: 3, 3: 7 },
   'Fruit Patch': { 2: 2, 3: 5 },
   Animals: { 2: 4, 3: 8 },
+  Cave: { 2: 3, 3: 6 },
   'Bees & Flowers': { 2: 2, 3: 5 },
   Greenhouse: { 2: 2, 3: 5 },
   Machinery: { 2: 2, 3: 5 },
@@ -886,6 +947,7 @@ export function describeSkillRank(effect: SkillRankEffect, i: 0 | 1 | 2): SkillR
       return { text: fmtNegative(effect.ranks[i]) };
     case 'coinBonus':
     case 'xpBonus':
+    case 'yieldBonus':
     case 'productionRate':
       return { text: fmtPercentFraction(effect.ranks[i]) };
     case 'timeReduction':
@@ -905,6 +967,8 @@ export function describeSkillRank(effect: SkillRankEffect, i: 0 | 1 | 2): SkillR
         .map(([item, arr]) => `+${arr[i]} ${item}`);
       return { text: parts.join(', ') };
     }
+    case 'beetleRarity':
+      return { text: Object.entries(effect.ranks[i]).map(([beetle, pct]) => `${pct}% ${beetle}`).join(', ') };
     case 'aoe': {
       const extent = effect.ranks[i];
       const size = `${extent.xLeft + extent.xRight + 1}×${extent.depth}`;
@@ -975,6 +1039,9 @@ function literalRankNumbers(effect: SkillRankEffect, i: 0 | 1 | 2): { primary: n
     case 'oilReduction':
     case 'dropChance':
       return { primary: effect.ranks[i] * 100, debuff: null };
+    case 'yieldBonus':
+      // В тексте формат «x1.1 урожая» — литерал это 1 + доля, не проценты.
+      return { primary: 1 + effect.ranks[i], debuff: null };
     case 'yieldWithDebuff':
       return { primary: effect.buff[i], debuff: effect.debuff[i] };
     case 'growthWithDebuff':
