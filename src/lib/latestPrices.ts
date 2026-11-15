@@ -33,6 +33,21 @@ async function priceForName(name: string, keyByName: Map<string, string>): Promi
 // запрос. fetchPriceResources глотает ошибки и возвращает [] — пустой список
 // считаем ошибкой, чтобы не закэшировать его на весь TTL. Экспортируется ещё
 // и для /api/prices/lookup.json (резолв имён ресурсов в item_key).
+// Предметы, которые sfl-price-service отслеживает по item_key (в БД есть
+// сделки), но не называет: его справочник имён ещё не обновлён на Главу 16.
+// id — KNOWN_ITEMS из кода игры (types/index.ts). Список сервиса имеет
+// приоритет: как только имя там появится, оно победит оверрайд.
+const ITEM_KEY_OVERRIDES: Record<string, string> = {
+  'green beetle': 'collectibles-3084',
+  'blue beetle': 'collectibles-3085',
+  'pink beetle': 'collectibles-3086',
+  'amber beetle': 'collectibles-3087',
+  'pig bristles': 'collectibles-3089',
+  truffle: 'collectibles-3090',
+  'crystal leaf': 'collectibles-3091',
+  'truffle seasoning': 'collectibles-3101',
+};
+
 export async function getKeyByName(): Promise<Map<string, string>> {
   try {
     const { data } = await withTtlCache('price-resources:collectibles', CACHE_TTL_MS, async () => {
@@ -40,9 +55,13 @@ export async function getKeyByName(): Promise<Map<string, string>> {
       if (resources.length === 0) throw new Error('empty collectibles list');
       return new Map(resources.map((r) => [r.item_name.toLowerCase(), r.item_key]));
     }, { swr: true });
-    return data;
+    const merged = new Map(data);
+    for (const [name, key] of Object.entries(ITEM_KEY_OVERRIDES)) {
+      if (!merged.has(name)) merged.set(name, key);
+    }
+    return merged;
   } catch {
-    return new Map();
+    return new Map(Object.entries(ITEM_KEY_OVERRIDES));
   }
 }
 
