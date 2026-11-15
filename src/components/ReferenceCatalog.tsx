@@ -1046,10 +1046,6 @@ function SkillsSection() {
         Возвышения — жмите +/- на карточке. Ниже сразу видно, сколько очков и осколков потребует ваша
         сборка, по каждой ветке отдельно и в сумме.
       </p>
-      <div className="ref-skills-beta-note">
-        ⚠️ Бонусы от прокачанных рангов навыков (2 и 3) сейчас в бета-тестировании и
-        после релиза могут измениться.
-      </div>
       <div className="ref-skills-summary">
         <div className="ref-skills-summary-total">
           <span>Выбрано очков навыков</span>
