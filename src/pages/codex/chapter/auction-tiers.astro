@@ -112,6 +112,7 @@ const spriteOf = (name: string) => itemCatalog[name]?.sprite ?? NFT_SPRITES[name
           <tbody>
             {analysis.rows.map((r) => {
               const sprite = spriteOf(r.name);
+              const boosts = itemCatalog[r.name]?.boosts ?? [];
               return (
                 <tr>
                   <td data-label="Тир"><span class={`gc-tier-badge ${r.tier <= 3 ? 'gc-tier-badge--top' : ''}`}>{r.tier}</span></td>
@@ -120,6 +121,13 @@ const spriteOf = (name: string) => itemCatalog[name]?.sprite ?? NFT_SPRITES[name
                       {sprite ? <img src={`/sprites/${sprite}`} alt="" loading="lazy" /> : <span class="gc-tiers-type">{TYPE_ICON[r.type]}</span>}
                       {r.name}
                     </span>
+                    {boosts.length > 0 && (
+                      <span class="gc-tiers-boosts">
+                        {boosts.map((b) => (
+                          <span class={`gc-boost-badge gc-boost--${b.labelType}`}>{b.shortDescriptionRu || b.shortDescription}</span>
+                        ))}
+                      </span>
+                    )}
                   </td>
                   <td data-label="Саплай" class="gc-num">
                     {num(r.supply)}
@@ -185,12 +193,20 @@ const spriteOf = (name: string) => itemCatalog[name]?.sprite ?? NFT_SPRITES[name
         <ul class="gc-tiers-pending">
           {analysis.pending.map((p) => {
             const sprite = spriteOf(p.name);
+            const boosts = itemCatalog[p.name]?.boosts ?? [];
             return (
               <li class="gc-card">
                 <span class="gc-tier-badge gc-tier-badge--prelim" title="Предварительный тир">{p.prelimTier ?? '—'}</span>
                 {sprite ? <img src={`/sprites/${sprite}`} alt="" loading="lazy" /> : <span>{TYPE_ICON[p.type]}</span>}
                 <span>
                   {p.name}
+                  {boosts.length > 0 && (
+                    <span class="gc-tiers-boosts">
+                      {boosts.map((b) => (
+                        <span class={`gc-boost-badge gc-boost--${b.labelType}`}>{b.shortDescriptionRu || b.shortDescription}</span>
+                      ))}
+                    </span>
+                  )}
                   <span class="gc-tiers-hint">
                     {p.boost ? 'бонус' : 'декор'} ·
                     {p.ticket
@@ -263,6 +279,23 @@ const spriteOf = (name: string) => itemCatalog[name]?.sprite ?? NFT_SPRITES[name
   flex-shrink: 0;
 }
 .gc-tiers-type { font-size: 22px; }
+.gc-tiers-boosts { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.gc-boost-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.gc-boost--success { background: var(--green-pale); color: var(--green-dark); }
+.gc-boost--info     { background: #DBEAFE; color: #1D4ED8; }
+.gc-boost--vibrant  { background: #FFF7ED; color: #C2410C; }
+.gc-boost--danger   { background: #FEE2E2; color: #B91C1C; }
+[data-theme="dark"] .gc-boost--info    { background: #172554; color: #93C5FD; }
+[data-theme="dark"] .gc-boost--vibrant { background: #431407; color: #FDBA74; }
+[data-theme="dark"] .gc-boost--danger  { background: #450a0a; color: #FCA5A5; }
 .gc-tiers-empty { padding: 32px; text-align: center; color: var(--text-sec); }
 .gc-tiers-pending {
   list-style: none;
@@ -280,6 +313,6 @@ const spriteOf = (name: string) => itemCatalog[name]?.sprite ?? NFT_SPRITES[name
   .gc-tiers-table tr { padding: 10px 12px; border-bottom: 1px solid var(--border); }
   .gc-tiers-table td { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border: none; text-align: right; }
   .gc-tiers-table td::before { content: attr(data-label); color: var(--text-sec); font-size: 12px; text-align: left; }
-  .gc-tiers-table td[data-label='Предмет'] { text-align: left; }
+  .gc-tiers-table td[data-label='Предмет'] { flex-direction: column; align-items: flex-start; }
 }
 </style>
