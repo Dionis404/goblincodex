@@ -8,16 +8,13 @@ import ChapterAuctions from './ChapterAuctions.tsx';
 import { getCurrentChapter, getUpcomingChapter } from '../lib/chapters';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
-import { sectionHref } from '../lib/subdomains';
 
 const currentChapter = getCurrentChapter();
 // За две недели до старта следующей главы показываем её предметы отдельным блоком.
 const upcomingChapter = getUpcomingChapter();
 
 // Компонент подключается и на /chapter основного домена, и внутри /codex.
-// Когда поддомены включены (см. src/lib/subdomains.ts), ссылки на гайды
-// становятся абсолютными на sfl.* — иначе это просто /codex того же домена.
-const codexHref = sectionHref(Astro.request.headers.get('host'), 'sfl', '/codex');
+const codexHref = '/codex';
 
 // Каталог нужен только для блока "Предметы главы" — аукционы теперь тянут
 // свои данные сами (см. ChapterAuctions, /api/auctions/chapter.json), чтобы

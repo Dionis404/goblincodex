@@ -1,14 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { sectionHref } from '../lib/subdomains';
 import { getCollection } from 'astro:content';
 
-// Ссылки на разделы — абсолютные на поддомен, когда поддомены включены
-// (см. src/lib/subdomains.ts), иначе обычные относительные пути.
-const host = Astro.request.headers.get('host');
-const newsHref = sectionHref(host, 'blog', '/news');
-const codexHref = sectionHref(host, 'sfl', '/codex');
-const yakkamonHref = sectionHref(host, 'yakk', '/yakkamon');
+const newsHref = '/news';
+const codexHref = '/codex';
+const yakkamonHref = '/yakkamon';
 
 const latestGuides = await getCollection('guides', ({ data }) => !data.draft);
 latestGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());

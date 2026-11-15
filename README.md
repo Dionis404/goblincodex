@@ -6,23 +6,23 @@
 
 🔗 **[goblincodex.fun](https://goblincodex.fun)** · **[goblincodex.ru](https://goblincodex.ru)**
 
-Сайт разделён на три раздела, каждый живёт на своём поддомене (`src/lib/subdomains.ts`, маршрутизация в `src/middleware.ts` — поддомен отдаёт содержимое своего раздела по корню, с основного домена пути уводят 302-редиректом):
+Сайт разделён на три раздела, все живут на основном домене по своим путям:
 
-| Раздел | Поддомен | Что внутри |
+| Раздел | Путь | Что внутри |
 |---|---|---|
-| **Sunflower Land** | [sfl.goblincodex.fun](https://sfl.goblincodex.fun) | Кодекс: гайды и механики, справочник, каталоги Bud'ов и питомцев, лидерборды сообщества, история аукционов, цены с маркетплейса |
-| **Новости и блог** | [blog.goblincodex.fun](https://blog.goblincodex.fun) | Новости (перенесены с Телетайпа на сайт), посты Telegram-канала |
-| **Yakkamon** | [yakk.goblincodex.fun](https://yakk.goblincodex.fun) | Раздел по игре Yakkamon (`src/content/yakkamon`) |
+| **Sunflower Land** | [`/codex`](https://goblincodex.fun/codex) | Кодекс: гайды и механики, справочник, каталоги Bud'ов и питомцев, лидерборды сообщества, история аукционов, цены с маркетплейса |
+| **Новости и блог** | [`/news`](https://goblincodex.fun/news) | Новости (перенесены с Телетайпа на сайт), посты Telegram-канала |
+| **Yakkamon** | [`/yakkamon`](https://goblincodex.fun/yakkamon) | Раздел по игре Yakkamon (`src/content/yakkamon`) |
 
-На основном домене остаются главная, страницы `/about`, `/tools`, `/donate`, `/profile/[username]`, `/terms`, `/cookies`, `/chat-rules` и API-эндпоинты.
+Рядом на основном домене — главная, страницы `/about`, `/tools`, `/donate`, `/profile/[username]`, `/terms`, `/cookies`, `/chat-rules` и API-эндпоинты.
 
 ## ✨ Основные разделы
 
-- **Кодекс** (`/codex` на sfl-поддомене) — статьи-гайды и разборы игровых механик (`src/content/guides`, `src/content/mechanics`) с фильтрацией по трейтам, плюс Справочник с игровыми константами
+- **Кодекс** (`/codex`) — статьи-гайды и разборы игровых механик (`src/content/guides`, `src/content/mechanics`) с фильтрацией по трейтам, плюс Справочник с игровыми константами
 - **Каталог NFT** — Bud'ы и NFT/обычные питомцы с переключателем RU/EN и сравнением до 3 Bud'ов (в т.ч. по прямой ссылке `?compare=id-id`)
 - **История аукционов и цены** (`/codex/auctions-history`, `/codex/prices`) — результаты аукционов по главам, история и текущие цены с маркетплейса, курс монет к Flower
 - **Лидерборды сообщества** (`/codex/community`) — рейтинги фермеров (LP, тикеты)
-- **Новости** (`/news` на blog-поддомене) — статьи в `src/content/news` (импортированы с Телетайпа) и посты Telegram-канала `@URGSFL`
+- **Новости** (`/news`) — статьи в `src/content/news` (импортированы с Телетайпа) и посты Telegram-канала `@URGSFL`
 - **Инструменты** (`/tools`) — калькулятор расширений (`/tools/expansion-calculator`), калькулятор опыта (`/tools/xp-calculator`), проверка шансов PRNG (`/tools/prng-checker`)
 - **Калькулятор стоимости инструментов** — встроен в Справочник Кодекса (`src/components/tools/ToolCostCalculator.tsx`, данные — `src/lib/toolCosts.ts`)
 - **Профили** — публичные страницы фермеров (`/profile/[username]`)
@@ -86,16 +86,16 @@ npm run dev        # http://localhost:4321
 /
 ├── src/
 │   ├── pages/          # маршруты (Astro), включая API-эндпоинты в pages/api
-│   │   ├── codex/      # Кодекс SFL (sfl-поддомен): гайды, аукционы, цены, рейтинги
-│   │   ├── news/       # новости (blog-поддомен)
-│   │   ├── yakkamon/   # раздел Yakkamon (yakk-поддомен)
+│   │   ├── codex/      # Кодекс SFL: гайды, аукционы, цены, рейтинги
+│   │   ├── news/       # новости
+│   │   ├── yakkamon/   # раздел Yakkamon
 │   │   ├── tools/      # калькуляторы и утилиты
 │   │   └── profile/    # публичные профили фермеров
 │   ├── components/     # Astro/React-компоненты
 │   ├── content/        # коллекции контента: guides, mechanics, news, yakkamon
 │   ├── layouts/        # общие лэйауты
-│   ├── lib/            # данные и утилиты (subdomains.ts, auctionsApi.ts, goblinApi.ts …)
-│   ├── middleware.ts   # роутинг поддоменов + rate-limit на /api/*
+│   ├── lib/            # данные и утилиты (auctionsApi.ts, goblinApi.ts …)
+│   ├── middleware.ts   # rate-limit на /api/* + редирект старых диплинков /news
 │   ├── data/           # статические данные
 ├── scripts/            # синхронизация игровых данных из SFL в PostgreSQL
 ├── public/             # статика, спрайты

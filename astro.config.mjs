@@ -9,13 +9,12 @@ import sitemap from '@astrojs/sitemap';
 const SITE = 'https://goblincodex.fun';
 
 // В output: 'server' интеграция sitemap видит только статические маршруты —
-// ни одной статьи/гайда туда не попадало. Плюс разделы /news, /codex,
-// /yakkamon на основном домене отдают 302 на поддомены (src/middleware.ts),
-// так что в sitemap должны быть именно поддоменные URL. Собираем их сами из
-// markdown-файлов коллекций. Хосты держим в синхроне с src/lib/subdomains.ts.
-const BLOG = 'https://blog.goblincodex.fun';
-const SFL = 'https://sfl.goblincodex.fun';
-const YAKK = 'https://yakk.goblincodex.fun';
+// ни одной статьи/гайда туда не попадало. Разделы (/news, /codex, /yakkamon)
+// живут на основном домене, поэтому страницы коллекций собираем сами из
+// markdown-файлов на SITE.
+const BLOG = SITE;
+const SFL = SITE;
+const YAKK = SITE;
 
 /** @param {string} file */
 function readFrontmatter(file) {
@@ -69,9 +68,9 @@ function sectionPages() {
   ];
 }
 
-// Пути основного домена, которых не должно быть в sitemap: редиректы на
-// поддомены (разделы), старые /chapter* (301 на /codex) и служебные страницы.
-const EXCLUDED_MAIN_PREFIXES = ['/news', '/codex', '/yakkamon', '/chapter', '/debug/'];
+// Пути основного домена, которых не должно быть в sitemap: старые /chapter*
+// (301 на /codex) и служебные страницы.
+const EXCLUDED_MAIN_PREFIXES = ['/chapter', '/debug/'];
 const EXCLUDED_MAIN_PAGES = ['/cookies', '/terms', '/chat-rules', '/test'];
 
 export default defineConfig({

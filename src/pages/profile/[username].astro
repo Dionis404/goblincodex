@@ -3,12 +3,11 @@ export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProfileCard from '../../components/ProfileCard.tsx';
 import { getCollection } from 'astro:content';
-import { sectionHref } from '../../lib/subdomains';
 import { fetchGoblinJsonCached } from '../../lib/goblinApi';
 
 // sflBase — база без завершающего "/codex": ProfileCard сам добавляет
 // "/codex/{id}" к каждой ссылке на гайд.
-const sflBase = sectionHref(Astro.request.headers.get('host'), 'sfl', '');
+const sflBase = '';
 
 const { username } = Astro.params;
 const lowerUsername = username!.toLowerCase();

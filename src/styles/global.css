@@ -29,7 +29,7 @@
   --text-ter:      #7C8591;
   /* remap green tokens → sflAccentMid (фиолетовый, см. README design tokens) —
      весь сайт пока на одном акценте; разделение на нейтральный accentMid
-     и sflAccentMid per-раздел — отдельная задача (см. src/lib/subdomains.ts). */
+     и sflAccentMid per-раздел — отдельная задача. */
   --green-dark:    #9C8EDB;
   --green-mid:     #9C8EDB;
   --green-light:   #C9BEF0;

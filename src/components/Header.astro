@@ -1,53 +1,47 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
-import { sectionForHost, resolveNavHref, type NavLink } from '../lib/subdomains';
 
 interface Props {
   currentPage?: string;
 }
 const { currentPage = 'home' } = Astro.props;
 
-const host = Astro.request.headers.get('host');
-// На поддомене раздела (sfl./yakk./blog.) подсвечиваем активный пункт по
-// текущему хосту, а не по currentPage prop — на основном домене как раньше.
-const currentSection = sectionForHost(host);
-
 // Pill-сегмент в шапке — только 3 раздела, как в макете. Остальные пункты
 // (Главная — через логотип, Сообщество/Инструменты) переехали на главную
 // и в футер, в шапке больше не дублируются.
-const pillLinkDefs: NavLink[] = [
-  { slug: 'codex',    targetSection: 'sfl', path: '/codex',    label: 'Sunflower Land' },
-  { slug: 'yakkamon', targetSection: 'yakk',path: '/yakkamon', label: 'Yakkamon'       },
-  { slug: 'news',     targetSection: 'blog',path: '/news',     label: 'Новости и блог' },
+const pillLinkDefs = [
+  { slug: 'codex',    path: '/codex',    label: 'Sunflower Land' },
+  { slug: 'yakkamon', path: '/yakkamon', label: 'Yakkamon'       },
+  { slug: 'news',     path: '/news',     label: 'Новости и блог' },
 ];
 
 const pillLinks = pillLinkDefs.map(link => ({
   slug: link.slug,
   label: link.label,
-  href: resolveNavHref(host, link),
-  active: currentSection?.id === link.targetSection,
+  href: link.path,
+  active: currentPage === link.slug,
 }));
 
-const logoHref = resolveNavHref(host, { slug: 'home', targetSection: null, path: '/', label: 'Главная' });
+const logoHref = '/';
 
 // Мобильное меню — полный список, ширина экрана здесь не ограничивает
 // количество пунктов так, как в десктопном pill-сегменте.
 // "Сообщество" как самостоятельная страница удалена — фермеры и лидерборды
 // переехали во вкладку "Рейтинги" внутри /codex (см. src/pages/codex/index.astro).
-const mobileLinkDefs: NavLink[] = [
-  { slug: 'home',      targetSection: null,  path: '/',          label: 'Главная'        },
-  { slug: 'codex',     targetSection: 'sfl', path: '/codex',     label: 'Sunflower Land' },
-  { slug: 'yakkamon',  targetSection: 'yakk',path: '/yakkamon',  label: 'Yakkamon'       },
-  { slug: 'news',      targetSection: 'blog',path: '/news',      label: 'Новости и блог' },
-  { slug: 'tools',     targetSection: null,  path: '/tools',     label: 'Инструменты'    },
-  { slug: 'about',     targetSection: null,  path: '/about',     label: 'О проекте'      },
+const mobileLinkDefs = [
+  { slug: 'home',      path: '/',          label: 'Главная'        },
+  { slug: 'codex',     path: '/codex',     label: 'Sunflower Land' },
+  { slug: 'yakkamon',  path: '/yakkamon',  label: 'Yakkamon'       },
+  { slug: 'news',      path: '/news',      label: 'Новости и блог' },
+  { slug: 'tools',     path: '/tools',     label: 'Инструменты'    },
+  { slug: 'about',     path: '/about',     label: 'О проекте'      },
 ];
 
 const mobileLinks = mobileLinkDefs.map(link => ({
   slug: link.slug,
   label: link.label,
-  href: resolveNavHref(host, link),
-  active: currentSection ? link.targetSection === currentSection.id : currentPage === link.slug,
+  href: link.path,
+  active: currentPage === link.slug,
 }));
 ---
 

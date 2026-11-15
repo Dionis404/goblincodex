@@ -4,15 +4,13 @@
 // рендерит по одной на десктоп/мобилку) и работает с любым их набором.
 //
 // Тема хранится в cookie (не localStorage) с Domain=.goblincodex.fun/.ru —
-// localStorage скоупится per-origin, а SFL/Yakkamon/Новости теперь живут
-// на отдельных поддоменах (sfl./yakk./blog.), так что localStorage не
-// расшарился бы между ними при переходе.
+// так она переживает переходы между основным доменом и зеркалом .ru.
 
 function rootDomain(): string | null {
   const host = location.hostname;
   const parts = host.split('.');
   if (parts.length < 2) return null; // localhost, IP и т.п. — cookie без Domain (per-host)
-  return parts.slice(-2).join('.'); // sfl.goblincodex.fun -> goblincodex.fun
+  return parts.slice(-2).join('.'); // www.goblincodex.fun -> goblincodex.fun
 }
 
 function readThemeCookie(): string | null {

@@ -1,16 +1,13 @@
 ---
 export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { sectionHref, mainDomainFor } from '../lib/subdomains';
 
-// Диагностическая страница для тестового поддомена test.goblincodex.fun —
-// показывает, что поддомен дошёл до приложения, и даёт заодно смоук-чек
-// темы, шрифтов и кросс-доменных ссылок разделов.
+// Диагностическая страница — показывает, что SSR дошёл до браузера,
+// и даёт заодно смоук-чек темы, шрифтов и ссылок разделов.
 const host = Astro.request.headers.get('host') ?? '';
-const mainDomain = mainDomainFor(host);
-const newsHref = sectionHref(host, 'blog', '/news');
-const codexHref = sectionHref(host, 'sfl', '/codex');
-const yakkamonHref = sectionHref(host, 'yakk', '/yakkamon');
+const newsHref = '/news';
+const codexHref = '/codex';
+const yakkamonHref = '/yakkamon';
 
 const cookieHeader = Astro.request.headers.get('cookie') ?? '';
 const themeCookie = cookieHeader.match(/(?:^|; )gc_theme=(dark|light)/)?.[1] ?? 'не задана';
@@ -28,18 +25,18 @@ const rows: { name: string; value: string }[] = [
 <BaseLayout
   currentPage="test"
   title="Test — GoblinCodex"
-  description="Тестовая страница поддомена test.goblincodex.fun."
+  description="Тестовая диагностическая страница GoblinCodex."
   noindex={true}
 >
   <div class="gc-content">
 
     <section class="gc-test-hero gc-page-enter">
       <div class="gc-test-hero-icon">🧪</div>
-      <div class="gc-test-hero-eyebrow">Тестовый поддомен</div>
-      <h1 class="gc-test-hero-h1">test.goblincodex.fun работает</h1>
+      <div class="gc-test-hero-eyebrow">Диагностика</div>
+      <h1 class="gc-test-hero-h1">SSR GoblinCodex работает</h1>
       <p class="gc-test-hero-desc">
-        Эта страница отдаётся приложением GoblinCodex — значит DNS и роутинг поддомена
-        настроены верно, а SSR-рендер доходит до браузера.
+        Эту страницу отдаёт приложение GoblinCodex — значит роутинг настроен верно,
+        а SSR-рендер доходит до браузера.
       </p>
     </section>
 
@@ -66,16 +63,15 @@ const rows: { name: string; value: string }[] = [
     <section class="gc-card gc-test-block">
       <h2>Что проверить на этой странице</h2>
       <ul class="gc-test-checklist">
-        <li>Шапка и подвал отрендерились, логотип ведёт на основной домен.</li>
+        <li>Шапка и подвал отрендерились, логотип ведёт на главную.</li>
         <li>Переключатель темы (иконка в шапке) меняет светлую/тёмную тему.</li>
         <li>Заголовки набраны шрифтом Unbounded, текст — Golos Text.</li>
-        <li>Ссылки ниже ведут на поддомены разделов (blog./sfl./yakk.), а не на пути основного домена.</li>
+        <li>Ссылки ниже ведут на разделы сайта (/news, /codex, /yakkamon).</li>
       </ul>
       <div class="gc-test-links">
         <a href={codexHref} class="gc-test-link gc-test-link--sfl">Sunflower Land →</a>
         <a href={yakkamonHref} class="gc-test-link gc-test-link--yk">Yakkamon →</a>
         <a href={newsHref} class="gc-test-link gc-test-link--news">Новости и блог →</a>
-        <a href={`https://${mainDomain}`} class="gc-test-link gc-test-link--main">Основной домен →</a>
       </div>
     </section>
 
