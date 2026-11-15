@@ -34,11 +34,30 @@ export function getCachedBuds() {
   }), { swr: true });
 }
 
+// Meta-only версии для SSR-страниц: полные выборки instances (тысячи строк
+// каждая) нужны только API-роутам, а в HTML /codex уезжают лишь
+// traits/filterOptions — раньше страница ждала два лишних full scan на
+// каждый промах кэша.
+export function getCachedBudsMeta() {
+  return withTtlCache('buds-meta', TTL_MS, async () => ({
+    traits: await getBudTraits(),
+    filterOptions: await getBudFilterOptions(),
+  }), { swr: true });
+}
+
 export function getCachedPetsNft() {
   return withTtlCache('pets-nft', TTL_MS, async () => ({
     breeds: await getPetNftBreeds(),
     traits: await getPetNftTraits(),
     instances: await getPetNftInstances(),
+    filterOptions: await getPetNftFilterOptions(),
+  }), { swr: true });
+}
+
+export function getCachedPetsNftMeta() {
+  return withTtlCache('pets-nft-meta', TTL_MS, async () => ({
+    breeds: await getPetNftBreeds(),
+    traits: await getPetNftTraits(),
     filterOptions: await getPetNftFilterOptions(),
   }), { swr: true });
 }

@@ -1,8 +1,17 @@
 import { defineMiddleware } from 'astro:middleware';
 import { getEntry } from 'astro:content';
 import { checkRateLimit, clientIp } from './lib/rate-limit';
+import { warmupCaches } from './lib/warmup';
+
+// Прогрев кэшей один раз на процесс — см. src/lib/warmup.ts.
+let cacheWarmupStarted = false;
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  if (!cacheWarmupStarted) {
+    cacheWarmupStarted = true;
+    warmupCaches();
+  }
+
   const host = context.request.headers.get('host');
 
   if (context.url.pathname.startsWith('/api/')) {

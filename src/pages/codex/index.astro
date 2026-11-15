@@ -12,12 +12,13 @@ import ChapterMechanicModal from '../../components/ChapterMechanicModal.astro';
 import ChapterTimer from '../../components/ChapterTimer.tsx';
 import FishAgingTable from '../../components/tools/FishAgingTable.tsx';
 import SearchWidget from '../../components/SearchWidget.tsx';
-import type { getBudTraits, getBudFilterOptions, getPetNftBreeds, getPetNftTraits, getPetNftFilterOptions, getPetsCommon, getPetResources, getPetFetches } from '../../lib/db';
+import type { getBudTraits, getBudFilterOptions, getPetNftBreeds, getPetNftTraits, getPetNftFilterOptions, getPetsCommon, getPetResources, getPetFetches, getCatalogItems } from '../../lib/db';
 import {
-  getCachedBuds,
-  getCachedPetsNft,
+  getCachedBudsMeta,
+  getCachedPetsNftMeta,
   getCachedPetsCommon,
   getCachedPetMechanics,
+  getCachedCatalogItems,
 } from '../../lib/catalog-cache';
 import { fetchGoblinJsonCached } from '../../lib/goblinApi';
 import { getCurrentChapter } from '../../lib/chapters';
@@ -31,17 +32,34 @@ let petsCommon: Awaited<ReturnType<typeof getPetsCommon>> = [];
 let petResources: Awaited<ReturnType<typeof getPetResources>> = [];
 let petFetches: Awaited<ReturnType<typeof getPetFetches>> = [];
 
-// Четыре независимых источника (буды, NFT-питомцы, обычные питомцы,
-// механики питомцев) — грузим параллельно вместо последовательных await,
-// иначе время ответа страницы складывается из времени ВСЕХ запросов подряд.
-// Каталог предметов (самый большой, ~600K JSON) намеренно НЕ грузим: вкладка
-// NFT тянет его с /api/nft-catalog.json сама, когда реально открыта —
-// иначе весь каталог ехал в HTML каждого просмотра /codex.
-const [budsResult, petsNftResult, petsCommonResult, petMechanicsResult] = await Promise.allSettled([
-  getCachedBuds(),
-  getCachedPetsNft(),
+// ВСЕ внешние источники страницы — буды, NFT-питомцы, обычные питомцы,
+// механики питомцев, каталог предметов (для вкладки "Глава") и три вызова
+// goblin-api (фермеры, тикеты, ликвидность) — грузим ОДНИМ параллельным
+// батчем. Раньше это были три последовательных раунда (DB → goblin-api →
+// каталог в ChapterContent), и на холодном кэше страница ждала сумму всех
+// трёх — отсюда SSR >40 с при медленном бэкенде.
+// Каталог предметов (самый большой, ~600K JSON) намеренно НЕ грузим в HTML:
+// вкладка NFT тянет его с /api/nft-catalog.json сама, когда реально открыта.
+// Бады/питомцы — meta-версии (без instances): полные выборки нужны только
+// API-роутам, а в HTML уезжают traits/filterOptions.
+const [
+  budsResult,
+  petsNftResult,
+  petsCommonResult,
+  petMechanicsResult,
+  catalogResult,
+  farmersResult,
+  ticketsResult,
+  lpResult,
+] = await Promise.allSettled([
+  getCachedBudsMeta(),
+  getCachedPetsNftMeta(),
   getCachedPetsCommon(),
   getCachedPetMechanics(),
+  getCachedCatalogItems(),
+  fetchGoblinJsonCached('/community/farmers'),
+  fetchGoblinJsonCached('/api/tickets/top500'),
+  fetchGoblinJsonCached('/lp/leaderboard'),
 ]);
 
 if (budsResult.status === 'fulfilled') {
@@ -72,21 +90,24 @@ if (petMechanicsResult.status === 'fulfilled') {
   console.error('[codex] Pet mechanics fetch error:', petMechanicsResult.reason);
 }
 
+// Каталог предметов для блока "Предметы главы" — в виде мапы, как его ждёт
+// ChapterContent (раньше он добывался отдельным последовательным запросом
+// уже при рендере компонента).
+const itemCatalog: Record<string, Awaited<ReturnType<typeof getCatalogItems>>[number]> = {};
+if (catalogResult.status === 'fulfilled') {
+  for (const item of catalogResult.value.data) itemCatalog[item.name] = item;
+} else {
+  console.error('[codex] Catalog items fetch error:', catalogResult.reason);
+}
+
 const allGuides = await getCollection('guides', ({ data }) => !data.draft);
 allGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new Date(a.data.publishDate ?? '').getTime());
 
 // Фермеры сообщества + карта автор/контрибьютор → его гайды — раньше жило
 // на отдельной странице /community (удалена, перенесено во вкладку
-// "Рейтинги" вместе с лидербордами тикетов/ликвидности).
-// Три независимых запроса к goblin-api (фермеры, тикеты, ликвидность) —
-// параллельно и с кэшем: раньше шли подряд с таймаутом 5 с каждый, и при
-// лежащем бэкенде страница рендерилась 15+ секунд на каждый просмотр.
-const [farmersResult, ticketsResult, lpResult] = await Promise.allSettled([
-  fetchGoblinJsonCached('/community/farmers'),
-  fetchGoblinJsonCached('/api/tickets/top500'),
-  fetchGoblinJsonCached('/lp/leaderboard'),
-]);
-
+// "Рейтинги" вместе с лидербордами тикетов/ликвидности). Сами запросы к
+// goblin-api (фермеры, тикеты, ликвидность) ушли в общий параллельный батч
+// в начале файла — здесь только разбор результата.
 let communityFarmers: any[] = [];
 let communityApiError = false;
 if (farmersResult.status === 'fulfilled') {
@@ -418,7 +439,7 @@ function formatUpdatedAgo(iso: string | null): string | null {
          ГЛАВА
          ═══════════════════════════════════════════════ -->
     <div id="chapterPanel" style="display:none">
-      <ChapterContent />
+      <ChapterContent itemCatalog={itemCatalog} />
     </div>
 
     <!-- ═══════════════════════════════════════════════
