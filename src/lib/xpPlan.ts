@@ -154,7 +154,7 @@ export function buildDishes(ctx: DishContext): Dish[] {
   const dishes: Dish[] = [];
   for (const group of BUILDINGS) {
     for (const recipe of group.recipes) {
-      if (recipe.upcoming || NO_PRICE_RECIPES.has(recipe.name)) continue;
+      if (NO_PRICE_RECIPES.has(recipe.name)) continue;
       const price = recipeCost(recipe.name, prices);
       if (price.cost == null || price.missing.length > 0) continue;
       const xp = foodXp(recipe, xpBoosts);

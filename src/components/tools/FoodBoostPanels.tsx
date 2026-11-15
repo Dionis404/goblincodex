@@ -210,6 +210,18 @@ export function XpBoostsPanel({ boosts, onChange }: { boosts: XpBoosts; onChange
             onChange={(v) => onChange({ ...boosts, swissWhiskers: v })}
           />
           <Check
+            label="Giant Truffle (×1.3 еда, ×1.6 Shack/Deli)"
+            icon="Giant Truffle"
+            checked={boosts.giantTruffle}
+            onChange={(v) => onChange({ ...boosts, giantTruffle: v })}
+          />
+          <Check
+            label="Hungry Hare (×2 к Fermented Carrots)"
+            icon="Hungry Hare"
+            checked={boosts.hungryHare}
+            onChange={(v) => onChange({ ...boosts, hungryHare: v })}
+          />
+          <Check
             label="Luminous Anglerfish Topper (+50%, рыба)"
             icon="Luminous Anglerfish Topper"
             checked={boosts.luminousAnglerfishTopper}

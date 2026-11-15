@@ -10,7 +10,12 @@
  *   getFoodExpBoost (бусты опыта).
  * - features/game/events/landExpansion/cook.ts — BUILDING_OIL_BOOSTS (буст от
  *   масла, зависит от здания и от ранга Swift Sizzle/Turbo Fry/Fry Frenzy).
+ * - features/game/expansion/lib/boosts.ts — getFoodExpBoost: Giant Truffle
+ *   (×1.3 еда, ×1.6 Smoothie Shack/Deli, не для рыбы) и Hungry Hare (×2 к
+ *   Fermented Carrots).
  * - src/lib/skills.ts — ранги скиллов дерева Cooking (уже нормализованы в проекте).
+ * Синхронизировано с кодом игры на 2026-11-15 (включая ребаланс трюфельных
+ * рецептов от 2026-10-30: 1 000 / 2 000 / 4 000 XP за трюфель).
  */
 import { BAITS, averageBaitCost, baitCosts } from './baitCosts';
 import { CHUM_PRICE_NAMES } from './crustaceans';
@@ -27,8 +32,6 @@ export interface Recipe {
   ingredients: [string, number][];
   isCake?: boolean;
   isHoney?: boolean;
-  /** Блюдо из предложения Главы 16 — ещё не в игре (см. новость 175), числа могут измениться. */
-  upcoming?: boolean;
   /** Входит в FISH_CONSUMABLES игры — получает бусты типа Luminous Anglerfish Topper. */
   isFish?: boolean;
 }
@@ -51,8 +54,10 @@ export const FIRE_PIT: Recipe[] = [
   { name: 'Antipasto', building: 'Fire Pit', experience: 3000, cookingSeconds: 10800, ingredients: [['Olive', 2], ['Grape', 2]] },
   { name: 'Pizza Margherita', building: 'Fire Pit', experience: 25000, cookingSeconds: 72000, ingredients: [['Tomato', 30], ['Cheese', 5], ['Wheat', 20]] },
   { name: 'Furikake Sprinkle', building: 'Fire Pit', experience: 1000, cookingSeconds: 0, ingredients: [['Fish Flake', 1], ['Seaweed', 1]], isFish: true },
-  // Блюда Главы 16 — ещё не в игре. Числа по PR #7810 (ребаланс трюфельных рецептов, на момент записи не влит); названия — как в коде игры.
-  { name: 'Ember-Roasted Truffle Potatoes', building: 'Fire Pit', experience: 1000, cookingSeconds: 1 * 3600, ingredients: [['Truffle', 1], ['Potato', 30]], upcoming: true },
+  // Трюфельная лестница Главы 16 (баланс от 2026-10-30): 1 000 / 2 000 / 4 000 XP за трюфель.
+  { name: 'Ember-Roasted Truffle Potatoes', building: 'Fire Pit', experience: 1000, cookingSeconds: 1 * 3600, ingredients: [['Truffle', 1], ['Potato', 30]] },
+  { name: 'Saltbite', building: 'Fire Pit', experience: 3000, cookingSeconds: 14400, ingredients: [['Saltwort', 10]] },
+  { name: 'Crystal Cookie', building: 'Fire Pit', experience: 6000, cookingSeconds: 14400, ingredients: [['Crystal Leaf', 10]] },
 ];
 
 export const KITCHEN: Recipe[] = [
@@ -76,7 +81,14 @@ export const KITCHEN: Recipe[] = [
   { name: 'Surimi Rice Bowl', building: 'Kitchen', experience: 3000, cookingSeconds: 0, ingredients: [['Fish Stick', 1], ['Rice', 1], ['Onion', 1]], isFish: true },
   { name: 'Creamy Crab Bite', building: 'Kitchen', experience: 10000, cookingSeconds: 0, ingredients: [['Crab Stick', 1], ['Cheese', 3]], isFish: true },
   { name: 'Crimstone Infused Fish Oil', building: 'Kitchen', experience: 18000, cookingSeconds: 0, ingredients: [['Fish Oil', 1], ['Crimstone', 1]], isFish: true },
-  { name: 'Creamy Truffle Risotto', building: 'Kitchen', experience: 32000, cookingSeconds: 48 * 3600, ingredients: [['Truffle', 8], ['Rice', 3], ['Wild Mushroom', 5]], upcoming: true },
+  { name: 'Fried Calamari', building: 'Kitchen', experience: 1500, cookingSeconds: 18000, ingredients: [['Sunflower', 200], ['Wheat', 15], ['Squid', 1]], isFish: true },
+  { name: 'Fish Burger', building: 'Kitchen', experience: 1300, cookingSeconds: 7200, ingredients: [['Beetroot', 10], ['Wheat', 10], ['Horse Mackerel', 1]], isFish: true },
+  { name: 'Fish Omelette', building: 'Kitchen', experience: 1500, cookingSeconds: 18000, ingredients: [['Egg', 40], ['Surgeonfish', 1], ['Butterflyfish', 2]], isFish: true },
+  { name: 'Ocean’s Olive', building: 'Kitchen', experience: 2000, cookingSeconds: 7200, ingredients: [['Olive Flounder', 1], ['Olive', 2]], isFish: true },
+  { name: 'Seafood Basket', building: 'Kitchen', experience: 2200, cookingSeconds: 18000, ingredients: [['Blowfish', 2], ['Napoleanfish', 2], ['Sunfish', 2]], isFish: true },
+  { name: 'Fish n Chips', building: 'Kitchen', experience: 2000, cookingSeconds: 14400, ingredients: [['Fancy Fries', 1], ['Halibut', 1]], isFish: true },
+  { name: 'Sushi Roll', building: 'Kitchen', experience: 2000, cookingSeconds: 3600, ingredients: [['Angelfish', 1], ['Seaweed', 1], ['Rice', 2]], isFish: true },
+  { name: 'Creamy Truffle Risotto', building: 'Kitchen', experience: 32000, cookingSeconds: 48 * 3600, ingredients: [['Truffle', 8], ['Rice', 3], ['Wild Mushroom', 5]] },
 ];
 
 export const BAKERY: Recipe[] = [
@@ -97,7 +109,7 @@ export const BAKERY: Recipe[] = [
   { name: 'Wheat Cake', building: 'Bakery', experience: 1100, cookingSeconds: 86400, ingredients: [['Wheat', 35], ['Egg', 30]], isCake: true },
   { name: 'Honey Cake', building: 'Bakery', experience: 4000, cookingSeconds: 28800, ingredients: [['Honey', 10], ['Wheat', 10], ['Egg', 20]], isCake: true, isHoney: true },
   { name: 'Lemon Cheesecake', building: 'Bakery', experience: 30000, cookingSeconds: 108000, ingredients: [['Lemon', 20], ['Cheese', 5], ['Egg', 40]], isCake: true },
-  { name: 'Truffle Cake', building: 'Bakery', experience: 30000, cookingSeconds: 26 * 3600, ingredients: [['Truffle', 15], ['Wheat', 30], ['Egg', 30], ['Honey', 5]], isCake: true, isHoney: true, upcoming: true },
+  { name: 'Truffle Cake', building: 'Bakery', experience: 30000, cookingSeconds: 26 * 3600, ingredients: [['Truffle', 15], ['Wheat', 30], ['Egg', 30], ['Honey', 5]], isCake: true, isHoney: true },
 ];
 
 export const DELI: Recipe[] = [
@@ -109,6 +121,7 @@ export const DELI: Recipe[] = [
   { name: 'Fancy Fries', building: 'Deli', experience: 1000, cookingSeconds: 86400, ingredients: [['Sunflower', 500], ['Potato', 500]] },
   { name: 'Blue Cheese', building: 'Deli', experience: 6000, cookingSeconds: 10800, ingredients: [['Cheese', 2], ['Blueberry', 10]] },
   { name: 'Honey Cheddar', building: 'Deli', experience: 15000, cookingSeconds: 43200, ingredients: [['Cheese', 3], ['Honey', 5]], isHoney: true },
+  { name: 'Fermented Fish', building: 'Deli', experience: 3000, cookingSeconds: 86400, ingredients: [['Tuna', 6]], isFish: true },
 ];
 
 export const SMOOTHIE_SHACK: Recipe[] = [
@@ -276,6 +289,8 @@ export interface XpBoosts {
   factionPetRank: 0 | 1 | 2 | 3 | 4; // Faction Pet: ×1.1/1.2/1.3/1.5 (недели подряд 2–3 / 4–5 / 6–7 / 8+), все блюда и рыба
   grainGrinder: boolean; // +20%, торты
   swissWhiskers: boolean; // +500 к блюдам с Cheese
+  giantTruffle: boolean; // ×1.3 не-рыбным блюдам, ×1.6 Smoothie Shack/Deli (не стакается между собой)
+  hungryHare: boolean; // ×2 к Fermented Carrots
 }
 
 export const FACTION_PET_MULTIPLIERS = [1.1, 1.2, 1.3, 1.5];
@@ -316,7 +331,11 @@ export function xpMultiplier(recipe: Recipe, b: XpBoosts): number {
     if (b.fishyFeastRank > 0) mult *= 1 + FISHY_FEAST_RANKS[b.fishyFeastRank - 1];
     if (b.luminousAnglerfishTopper) mult *= 1.5;
     if (b.skillShrimpy) mult *= 1.2;
+  } else if (b.giantTruffle) {
+    // Giant Truffle: ×1.6 на еду Smoothie Shack и Deli, ×1.3 на прочую не-рыбную.
+    mult *= recipe.building === 'Smoothie Shack' || recipe.building === 'Deli' ? 1.6 : 1.3;
   }
+  if (b.hungryHare && recipe.name === 'Fermented Carrots') mult *= 2;
   return mult;
 }
 
@@ -379,6 +398,8 @@ export const NO_XP_BOOSTS: XpBoosts = {
   factionPetRank: 0,
   grainGrinder: false,
   swissWhiskers: false,
+  giantTruffle: false,
+  hungryHare: false,
 };
 
 /**

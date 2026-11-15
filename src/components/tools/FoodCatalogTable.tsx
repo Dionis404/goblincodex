@@ -280,11 +280,6 @@ function BuildingTable({
               <td className="gc-sortable-name" data-label="Блюдо">
                 <FoodIcon name={r.name} />
                 {r.name}
-                {r.upcoming && (
-                  <span className="ref-upcoming-badge" title="Блюдо из предложения Главы 16 — ещё не добавлено в игру">
-                    Ещё не в игре
-                  </span>
-                )}
               </td>
               <td
                 data-label="Опыт"
@@ -608,17 +603,6 @@ export default function FoodCatalogTable() {
       {activeGroup ? (
         <>
           <BuildingTable recipes={activeGroup.recipes} timeBoosts={timeBoosts} xpBoosts={xpBoosts} prices={prices} />
-          {activeGroup.recipes.some((r) => r.upcoming) && (
-            <p className="ref-section-desc ref-section-desc--spaced">
-              <strong>Ещё не в игре:</strong> блюда с этой пометкой взяты из{' '}
-              <a href="/news/175">балансного обновления предложения Главы 16</a>, а числа
-              обновлены по <a href="https://github.com/sunflower-land/sunflower-land/pull/7810">PR #7810</a> —
-              ребалансу трюфельных рецептов, который на момент написания ещё не влит. Это стартовая
-              конфигурация для тестирования, числа могут измениться. Трюфелей на маркете нет, поэтому
-              цена таких блюд считается без них (значок «i»). Бусты к ним применены по типу блюда
-              (торт, мёд) — как у существующих блюд, в игре это пока не подтверждено.
-            </p>
-          )}
           <p className="ref-section-desc ref-section-desc--spaced">
             Цена — сумма ингредиентов по текущему floor на маркете (промежуточные блюда раскрыты до
             сырых ингредиентов). Рыбные наживки (Fish Flake, Fish Stick, Fish Oil, Crab Stick) на

@@ -163,5 +163,7 @@
   "Creamy Truffle Risotto": "/sprites/food/creamy_truffle_risotto.webp",
   "Goblin’s Treat": "/sprites/food/goblins_treat.png",
   "Truffle": "/sprites/resources/truffle.webp",
-  "Onion": "/sprites/crops/onion/crop.png"
+  "Onion": "/sprites/crops/onion/crop.png",
+  "Crystal Cookie": "/sprites/food/crystal_cookie.png",
+  "Crystal Leaf": "/sprites/crops/crystal_leaf/crop.png"
 }

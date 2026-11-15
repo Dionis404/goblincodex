@@ -23,5 +23,7 @@
   "Salt Bottle Onesie": "/sprites/wearables/578.webp",
   "Grain Grinder": "/sprites/sfts/grain_grinder.png",
   "Oil": "/sprites/resources/oil.webp",
-  "VIP": "/sprites/icons/vip.webp"
+  "VIP": "/sprites/icons/vip.webp",
+  "Giant Truffle": "/sprites/sfts/giant_truffle.webp",
+  "Hungry Hare": "/sprites/sfts/hungryHare.png"
 }
