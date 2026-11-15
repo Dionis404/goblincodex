@@ -19,8 +19,9 @@
  *
  * НЕ ДОБАВЛЯТЬ, хотя лежат в записях игры: Gumbo, Chowder, Fish Burger,
  * Fried Calamari, Fish Omelette, Seafood Basket — записи в consumables.ts
- * остались (мертвые), но из игры блюда убраны. При сверке с кодом игры
- * пропускать их.
+ * остались (мертвые), но из игры блюда убраны. Saltbite и Crystal Cookie —
+ * ивентовые блюда (ограниченное событие), из игры убраны. При сверке с кодом
+ * игры пропускать их.
  */
 import { BAITS, averageBaitCost, baitCosts } from './baitCosts';
 import { CHUM_PRICE_NAMES } from './crustaceans';
@@ -61,8 +62,6 @@ export const FIRE_PIT: Recipe[] = [
   { name: 'Furikake Sprinkle', building: 'Fire Pit', experience: 1000, cookingSeconds: 0, ingredients: [['Fish Flake', 1], ['Seaweed', 1]], isFish: true },
   // Трюфельная лестница Главы 16 (баланс от 2026-10-30): 1 000 / 2 000 / 4 000 XP за трюфель.
   { name: 'Ember-Roasted Truffle Potatoes', building: 'Fire Pit', experience: 1000, cookingSeconds: 1 * 3600, ingredients: [['Truffle', 1], ['Potato', 30]] },
-  { name: 'Saltbite', building: 'Fire Pit', experience: 3000, cookingSeconds: 14400, ingredients: [['Saltwort', 10]] },
-  { name: 'Crystal Cookie', building: 'Fire Pit', experience: 6000, cookingSeconds: 14400, ingredients: [['Crystal Leaf', 10]] },
 ];
 
 export const KITCHEN: Recipe[] = [
