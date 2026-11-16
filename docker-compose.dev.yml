@@ -11,6 +11,7 @@ services:
       - ROUTERAI_API_KEY=${ROUTERAI_API_KEY}
       - ADMIN_TELEGRAM_ID=${ADMIN_TELEGRAM_ID}
       - NODE_ENV=production
+      - DEV_STAND=true
     networks:
       - shared-net
       - web
