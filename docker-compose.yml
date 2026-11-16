@@ -1,6 +1,6 @@
 services:
   astro:
-    image: ghcr.io/dionis404/goblincodex:v1.42.0
+    image: ghcr.io/dionis404/goblincodex:v1.43.0
     pull_policy: always
     ports:
       - "127.0.0.1:4321:4321"
