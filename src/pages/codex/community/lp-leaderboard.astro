@@ -2,14 +2,14 @@
 export const prerender = false;
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import LpLeaderboardPage from '../../../components/LpLeaderboardPage.jsx';
-import { fetchGoblinJsonCached } from '../../../lib/goblinApi';
+import { fetchSflJsonCached } from '../../../lib/sflApi';
 
 let leaderboard: any[] = [];
 let meta: any = null;
 let apiError = false;
 
 try {
-  const json = await fetchGoblinJsonCached('/lp/leaderboard');
+  const json = await fetchSflJsonCached('/lp/leaderboard');
   leaderboard = json.leaderboard ?? [];
   meta = json.meta ?? null;
 } catch (e) {

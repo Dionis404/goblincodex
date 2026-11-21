@@ -2,14 +2,14 @@
 export const prerender = false;
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import TicketsLeaderboardPage from '../../../components/TicketsLeaderboardPage.jsx';
-import { fetchGoblinJsonCached } from '../../../lib/goblinApi';
+import { fetchSflJsonCached } from '../../../lib/sflApi';
 
 let leaderboard: any[] = [];
 let updatedAt: string | null = null;
 let apiError = false;
 
 try {
-  const json = await fetchGoblinJsonCached('/api/tickets/top500');
+  const json = await fetchSflJsonCached('/api/tickets/top500');
   leaderboard = json.leaderboard ?? [];
   updatedAt = json.updated_at ?? null;
 } catch (e) {

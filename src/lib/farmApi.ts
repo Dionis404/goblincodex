@@ -1,8 +1,8 @@
 /**
- * Клиент к внутреннему goblin-api (данные ферм SFL).
+ * Клиент к внутреннему sfl-api (данные ферм SFL).
  * Единственный реальный роут — GET /api/farms?ids=1,2,3 (батч, query-параметр,
  * список ID через запятую) — нет отдельных /farm/:id или /farm/:id/refresh.
- * goblin-api сам гарантирует строку в БД (farm_cache) и в фоне обновляет её из
+ * sfl-api сам гарантирует строку в БД (farm_cache) и в фоне обновляет её из
  * api.sunflower-land.com — ответ отдаётся сразу с тем, что есть в кэше на
  * данный момент, поэтому первый запрос по новому ID может вернуть null, а
  * повторный запрос через несколько секунд — уже реальные данные ("обновление"
@@ -22,7 +22,7 @@ export type FarmResponse = {
 export class FarmApiError extends Error {}
 
 async function parseJsonOrThrow<T>(res: Response): Promise<T> {
-  if (!res.ok) throw new FarmApiError(`goblin-api responded with ${res.status}`);
+  if (!res.ok) throw new FarmApiError(`sfl-api responded with ${res.status}`);
   return res.json() as Promise<T>;
 }
 

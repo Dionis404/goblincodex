@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { fetchPriceHistory } from '../../../../lib/priceApi';
+import { fetchPriceHistory } from '../../../../lib/sflApi';
 import { withTtlCache } from '../../../../lib/cache';
 
 export const prerender = false;

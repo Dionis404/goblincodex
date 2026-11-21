@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { fetchPriceResources, type PriceCategory } from '../../../lib/priceApi';
+import { fetchPriceResources, type PriceCategory } from '../../../lib/sflApi';
 
 export const prerender = false;
 

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { GOBLIN_API_BASE, fetchWithTimeout } from '../../../../../lib/goblinApi';
+import { SFL_API_BASE, fetchWithTimeout } from '../../../../../lib/sflApi';
 
 export const prerender = false;
 
@@ -22,7 +22,7 @@ export const GET: APIRoute = async ({ params }) => {
   }
 
   try {
-    const upstream = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/community/posts/${id}/image`);
+    const upstream = await fetchWithTimeout(`${SFL_API_BASE}/api/community/posts/${id}/image`);
     if (!upstream.ok || !upstream.body) {
       return new Response('not found', { status: upstream.status || 502 });
     }

@@ -1,9 +1,9 @@
 /**
- * SSR-клиент к goblin-api для расписания аукционов главы.
+ * SSR-клиент к sfl-api для расписания аукционов главы.
  * Эндпоинты разрабатываются параллельно в goblin-bot — формат ответа может
  * ещё измениться, тогда донастроим mapAuction ниже.
  */
-import { GOBLIN_API_BASE, fetchWithTimeout } from './goblinApi';
+import { SFL_API_BASE, fetchWithTimeout } from './sflApi';
 import { withTtlCache } from './cache';
 
 /** Форма, которую ожидает компонент ChapterAuctions (см. src/components/ChapterAuctions.tsx). */
@@ -69,7 +69,7 @@ export async function fetchUpcomingAuctions(): Promise<UiAuction[]> {
     // Короткий TTL: расписание меняется редко, а без кэша этот запрос шёл на
     // каждый рендер вкладки главы.
     const { data } = await withTtlCache('upcoming-auctions', 60 * 1000, async () => {
-      const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?upcoming=true`);
+      const res = await fetchWithTimeout(`${SFL_API_BASE}/api/auctions?upcoming=true`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json: ApiAuction[] = await res.json();
       return json.map(mapAuction);
@@ -88,11 +88,11 @@ const AUCTIONS_TTL_MS = 10 * 60 * 1000; // 10 мин — та же полити�
  * Страницы глав/архива просят limit с запасом (до 5000), но API отдаёт максимум
  * API_HISTORY_LIMIT_MAX записей за раз — большие запросы кэшируем на 10 мин:
  * сами данные — уже прошедшие аукционы, они не меняются, а без кэша каждый
- * рендер страницы главы заново гонял бы запрос в goblin-api и рисковал упереться
+ * рендер страницы главы заново гонял бы запрос в sfl-api и рисковал упереться
  * в таймаут fetchWithTimeout. Маленькие разовые запросы (лимит по умолчанию)
  * не кэшируем — не нагружают бэкенд.
  */
-// goblin-api жёстко ограничивает limit сверху значением 100 (FastAPI Query(le=100)):
+// sfl-api жёстко ограничивает limit сверху значением 100 (FastAPI Query(le=100)):
 // на больший лимит отвечает 422 с detail[].ctx.le = 100. Раньше запрашивали 5000
 // и каждый раз сжигали первую попытку на гарантированный 422 плюс warning в лог;
 // фактически данные всё равно обрезались до последних 100 записей.
@@ -108,7 +108,7 @@ export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
     const initial = Math.min(limit, API_HISTORY_LIMIT_MAX);
     let current = initial;
     for (let attempt = 0; attempt < 6; attempt++) {
-      const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions?history=true&limit=${current}`, timeoutMs);
+      const res = await fetchWithTimeout(`${SFL_API_BASE}/api/auctions?history=true&limit=${current}`, timeoutMs);
       if (res.status === 422 && current > 100) {
         const body = (await res.json().catch(() => null)) as { detail?: { ctx?: { le?: number } }[] } | null;
         const le = body?.detail?.find((d) => typeof d.ctx?.le === 'number')?.ctx?.le;
@@ -137,15 +137,15 @@ export async function fetchPastAuctions(limit = 100): Promise<UiAuction[]> {
 /**
  * Аукционы, чей startAt попадает в [startMs, endMs) — для страницы конкретной
  * главы (src/lib/chapters.ts). API не умеет фильтровать по датам напрямую
- * (см. docs/goblin-api — только item_name/limit/history), поэтому тянем
+ * (см. docs/sfl-api — только item_name/limit/history), поэтому тянем
  * историю и фильтруем на своей стороне.
  *
- * ВАЖНО: goblin-api отдаёт не больше API_HISTORY_LIMIT_MAX (100) последних
+ * ВАЖНО: sfl-api отдаёт не больше API_HISTORY_LIMIT_MAX (100) последних
  * завершённых аукционов по всей игре разом — не по главе (см. fetchPastAuctions).
  * Аукционов ~5/день, поэтому окно истории ≈ 20 дней: у главы старше ~3 недель
  * начало обрезано более новыми записями других глав, а глава старше ~100
  * аукционов не покажет ничего. Это ограничение бэкенда, не этого кода; если
- * goblin-api заведёт offset/пагинацию — можно будет вытянуть историю целиком.
+ * sfl-api заведёт offset/пагинацию — можно будет вытянуть историю целиком.
  *
  * Включает и завершённые (fetchPastAuctions), и предстоящие/активные
  * (fetchUpcomingAuctions) — нужно для текущей главы, где часть аукционов уже
@@ -170,7 +170,7 @@ export async function fetchAllAuctions(): Promise<UiAuction[]> {
 /** null означает "результатов пока нет" (404) — это не ошибка. */
 export async function fetchAuctionResults(auctionId: string): Promise<AuctionResults | null> {
   try {
-    const res = await fetchWithTimeout(`${GOBLIN_API_BASE}/api/auctions/${encodeURIComponent(auctionId)}/results`);
+    const res = await fetchWithTimeout(`${SFL_API_BASE}/api/auctions/${encodeURIComponent(auctionId)}/results`);
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return (await res.json()) as AuctionResults;

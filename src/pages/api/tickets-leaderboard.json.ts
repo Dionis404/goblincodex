@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { GOBLIN_API_BASE, fetchWithTimeout } from '../../lib/goblinApi';
+import { SFL_API_BASE, fetchWithTimeout } from '../../lib/sflApi';
 
 export const prerender = false;
 
@@ -12,7 +12,7 @@ export const GET: APIRoute = async ({ url }) => {
 
   const at = url.searchParams.get('at');
   // Без кэша: ?at=<дата> — произвольный пользовательский ввод, не для ключа кэша.
-  const target = new URL(`${GOBLIN_API_BASE}/api/tickets/top500`);
+  const target = new URL(`${SFL_API_BASE}/api/tickets/top500`);
   if (at) target.searchParams.set('at', at);
 
   try {

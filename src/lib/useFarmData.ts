@@ -17,7 +17,7 @@ export type FarmDataState = {
   retry: () => void;
 };
 
-/** Подгружает данные фермы по ID через goblin-api и умеет форс-обновлять их с поллингом. */
+/** Подгружает данные фермы по ID через sfl-api и умеет форс-обновлять их с поллингом. */
 export function useFarmData(farmId: number | string | null): FarmDataState {
   const [farm, setFarm] = useState<FarmResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -78,7 +78,7 @@ export function useFarmData(farmId: number | string | null): FarmDataState {
   }, [farmId, load]);
 
   /**
-   * Нет отдельного refresh-эндпоинта — goblin-api обновляет запись в фоне при
+   * Нет отдельного refresh-эндпоинта — sfl-api обновляет запись в фоне при
    * каждом запросе GET /farms. "Обновить" здесь означает: перезапросить и
    * подождать, пока updated_at не станет новее момента клика (фон успевает
    * за несколько секунд), либо сдаться по таймауту.

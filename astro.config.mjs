@@ -58,7 +58,6 @@ function sectionPages() {
     `${SFL}/codex/prices`,
     `${SFL}/codex/chapter/past`,
     `${SFL}/codex/chapter/auctions-history`,
-    `${SFL}/codex/community/lp-leaderboard`,
     `${SFL}/codex/community/tickets-leaderboard`,
     ...guides,
     ...chapters,

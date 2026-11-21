@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { fetchGoblinJsonCached } from '../../../lib/goblinApi';
+import { fetchSflJsonCached } from '../../../lib/sflApi';
 
 export const prerender = false;
 
@@ -12,7 +12,7 @@ export const GET: APIRoute = async ({ params }) => {
     });
 
   try {
-    const farmers: any[] = await fetchGoblinJsonCached('/community/farmers');
+    const farmers: any[] = await fetchSflJsonCached('/community/farmers');
     const farmer = farmers.find(f => f.game_username?.toLowerCase() === username) ?? null;
     return json(farmer);
   } catch {

@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro';
-import { fetchWithTimeout } from '../../../lib/goblinApi';
-import { PRICE_API_BASE, fetchPriceResources } from '../../../lib/priceApi';
+import { SFL_API_BASE, fetchWithTimeout, fetchPriceResources } from '../../../lib/sflApi';
 import { getBudInstancesByIds, getPetNftInstancesByIds } from '../../../lib/db';
 import { isPetTradeable } from '../../../lib/tradeable';
 import { cachedJsonResponse, errorJsonResponse } from '../../../lib/cache';
@@ -37,7 +36,7 @@ async function wasSoldRecently(id: number, itemKey: string): Promise<boolean | n
   if (hit && Date.now() - hit.at < ITEM_TTL_MS) return hit.sold;
 
   try {
-    const url = new URL(`${PRICE_API_BASE}/prices/${encodeURIComponent(itemKey)}/history`);
+    const url = new URL(`${SFL_API_BASE}/sfl/prices/${encodeURIComponent(itemKey)}/history`);
     url.searchParams.set('hours', String(RECENT_HOURS));
     url.searchParams.set('limit', '500');
     const res = await fetchWithTimeout(url.toString(), 10000);

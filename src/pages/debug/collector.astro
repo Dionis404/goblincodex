@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { COLLECTOR_BASE, collectorGet, type CollectorResult } from '../../lib/sflCollector';
+import { SFL_API_BASE, collectorGet, type CollectorResult } from '../../lib/sflApi';
 import { latestPrices } from '../../lib/latestPrices';
 import { getCurrentChapter } from '../../lib/chapters';
 import { VALUER_PRICE_NAMES, choreSpend, coinRateFrom, createValuer, isAnimal, type Basket } from '../../lib/rewardValue';
@@ -226,7 +226,7 @@ const chipText = (r: CollectorResult) =>
       <h1>sfl-collector: какие данные мы видим</h1>
       <p>
         Служебная страница вне навигации. Сервер сайта читает публичные эндпоинты
-        <code>{COLLECTOR_BASE}</code> (только чтение) и показывает ответ как есть.
+        <code>{SFL_API_BASE}</code> (только чтение) и показывает ответ как есть.
         <b class={`gc-col-chip gc-col-chip--${chip(health)}`}>health: {chipText(health)}</b>
       </p>
       <form method="get" class="gc-col-form">

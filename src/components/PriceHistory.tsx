@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { PriceCategory, PricePoint, PriceResource } from '../lib/priceApi';
+import type { PriceCategory, PricePoint, PriceResource } from '../lib/sflApi';
 import './PriceHistory.css';
 
 type NamedCategory = Extract<PriceCategory, 'collectibles' | 'wearables'>;

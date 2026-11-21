@@ -10,6 +10,8 @@ services:
       - ROUTERAI_API_KEY=${ROUTERAI_API_KEY}
       - ADMIN_TELEGRAM_ID=${ADMIN_TELEGRAM_ID}
       - NODE_ENV=production
+      # Единый API данных SFL (фермеры, лидерборды, аукционы, цены, кэш ферм)
+      - SFL_API_URL=${SFL_API_URL:-http://sfl-api:8000}
     networks:
       - shared-net
       - web 

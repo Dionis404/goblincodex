@@ -20,7 +20,7 @@ import {
   getCachedPetMechanics,
   getCachedCatalogItems,
 } from '../../lib/catalog-cache';
-import { fetchGoblinJsonCached } from '../../lib/goblinApi';
+import { fetchSflJsonCached } from '../../lib/sflApi';
 import { getCurrentChapter } from '../../lib/chapters';
 
 let budTraits: Awaited<ReturnType<typeof getBudTraits>> = [];
@@ -50,16 +50,14 @@ const [
   catalogResult,
   farmersResult,
   ticketsResult,
-  lpResult,
 ] = await Promise.allSettled([
   getCachedBudsMeta(),
   getCachedPetsNftMeta(),
   getCachedPetsCommon(),
   getCachedPetMechanics(),
   getCachedCatalogItems(),
-  fetchGoblinJsonCached('/community/farmers'),
-  fetchGoblinJsonCached('/api/tickets/top500'),
-  fetchGoblinJsonCached('/lp/leaderboard'),
+  fetchSflJsonCached('/community/farmers'),
+  fetchSflJsonCached('/api/tickets/top500'),
 ]);
 
 if (budsResult.status === 'fulfilled') {
@@ -196,8 +194,6 @@ const categoryTagClass: Record<string, string> = {
 
 const currentChapter = getCurrentChapter();
 
-const shortAddr = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
-
 let ticketsTop5: Array<{ farm_id: number; game_username?: string; tickets: number }> = [];
 let ticketsUpdatedAt: string | null = null;
 if (ticketsResult.status === 'fulfilled') {
@@ -205,15 +201,6 @@ if (ticketsResult.status === 'fulfilled') {
   ticketsUpdatedAt = ticketsResult.value.updated_at ?? null;
 } else {
   console.error('[codex] Tickets top-5 fetch error:', ticketsResult.reason);
-}
-
-let lpTop5: Array<{ owner: string; value_usd: number }> = [];
-let lpUpdatedAt: string | null = null;
-if (lpResult.status === 'fulfilled') {
-  lpTop5 = (lpResult.value.leaderboard ?? []).slice(0, 5);
-  lpUpdatedAt = lpResult.value.meta?.updated_at ?? null;
-} else {
-  console.error('[codex] LP top-5 fetch error:', lpResult.reason);
 }
 
 // "5 минут назад" / "2 часа назад" / "3 дня назад" — простое относительное
@@ -464,27 +451,6 @@ function formatUpdatedAgo(iso: string | null): string | null {
             <a href="/codex/community/tickets-leaderboard" class="gc-codex-leaderboard-more">Смотреть полный рейтинг →</a>
             {formatUpdatedAgo(ticketsUpdatedAt) && (
               <span class="gc-codex-leaderboard-updated">{formatUpdatedAgo(ticketsUpdatedAt)}</span>
-            )}
-          </div>
-        </div>
-
-        <div class="gc-card gc-codex-leaderboard-card">
-          <div class="gc-codex-leaderboard-title">💧 Лидерборд ликвидности</div>
-          {lpTop5.length === 0 ? (
-            <div class="gc-guides-empty" style="padding:24px 0;">Данные временно недоступны</div>
-          ) : (
-            lpTop5.map((entry, i) => (
-              <div class="gc-codex-leaderboard-row">
-                <span class="gc-codex-leaderboard-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
-                <span class="gc-codex-leaderboard-name">{shortAddr(entry.owner)}</span>
-                <span class="gc-codex-leaderboard-score">{entry.value_usd.toLocaleString('ru-RU', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</span>
-              </div>
-            ))
-          )}
-          <div class="gc-codex-leaderboard-footer">
-            <a href="/codex/community/lp-leaderboard" class="gc-codex-leaderboard-more">Смотреть полный рейтинг →</a>
-            {formatUpdatedAgo(lpUpdatedAt) && (
-              <span class="gc-codex-leaderboard-updated">{formatUpdatedAgo(lpUpdatedAt)}</span>
             )}
           </div>
         </div>

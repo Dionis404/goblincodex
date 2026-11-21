@@ -1,7 +1,6 @@
 /**
  * Анализатор тиров предметов аукционов будущей (а после старта — идущей) главы.
- * Только SSR: ходит в goblin-api (аукционы и ставки) и sfl-price-service
- * (рынок и курс Flower).
+ * Только SSR: ходит в sfl-api (аукционы и ставки, рынок и курс Flower).
  *
  * Цена предмета в $:
  *  - если предмет торгуется на маркетплейсе — floor в $ (последняя точка);
@@ -14,7 +13,7 @@
  * чем меньше штук разыграно на аукционах, тем выше поправка.
  */
 import { fetchAuctionResults, fetchAuctionsInRange, type UiAuction } from './auctionsApi';
-import { fetchPriceHistory, fetchPriceResources, type PricePoint } from './priceApi';
+import { fetchFlowerRate, fetchPriceHistory, fetchPriceResources, type PricePoint } from './sflApi';
 import { WEARABLE_NAMES } from './wearableNames';
 import { withTtlCache } from './cache';
 
@@ -68,34 +67,25 @@ async function priceKeys(): Promise<Map<string, string>> {
 }
 
 /**
- * Курс Flower в $ по времени: каждый снимок цены несёт flower_price. Нужен
- * предмет с редкими (раз в час) снимками: история отдаётся от старых точек к
- * новым и режется лимитом, а у ресурсов вроде Wood снимок каждые 5 минут —
- * 2000 точек заканчиваются за пару недель до сегодня. Берём первый предмет,
- * чья история доходит до последних двух суток.
+ * Курс Flower в $ по времени — первоклассная история flower_price_history
+ * в sfl-api (снимок при каждом опросе маркетплейса), без перебора историй
+ * отдельных предметов.
  */
-const FLOWER_RATE_ITEMS = ['Nancy', 'Quarry', 'Gnome', 'Kuebiko', 'Rooster', 'Obie'];
-
-async function flowerRateSeries(keys: Map<string, string>): Promise<{ t: number; usd: number }[]> {
+async function flowerRateSeries(): Promise<{ t: number; usd: number }[]> {
   const { data } = await withTtlCache('auction-tiers:flower-rate', TTL_MS, async () => {
-    for (const name of FLOWER_RATE_ITEMS) {
-      const key = keys.get(name.toLowerCase());
-      if (!key) continue;
-      const points = await fetchPriceHistory(key, 2160, 2000);
-      const series = points
-        .filter((p) => p.flower_price != null && p.flower_price > 0)
-        .map((p) => ({ t: new Date(p.captured_at).getTime(), usd: p.flower_price! }));
-      if (series.length && Date.now() - series[series.length - 1].t < 2 * 86_400_000) return series;
-    }
-    throw new Error('нет истории курса Flower');
+    const points = await fetchFlowerRate(2160);
+    const series = points
+      .filter((p) => p.usd != null && p.usd > 0)
+      .map((p) => ({ t: new Date(p.captured_at).getTime(), usd: p.usd }));
+    if (!series.length) throw new Error('нет истории курса Flower');
+    return series;
   }, { swr: true });
   return data;
 }
 
 /** Текущий курс Flower в $ (последний снимок) или null, если истории нет. */
 export async function flowerRateNow(): Promise<number | null> {
-  const keys = await priceKeys().catch(() => new Map<string, string>());
-  const series = await flowerRateSeries(keys).catch(() => []);
+  const series = await flowerRateSeries().catch(() => []);
   return series.length ? series[series.length - 1].usd : null;
 }
 
@@ -223,7 +213,7 @@ export async function analyzeAuctionTiers(
   const now = Date.now();
   const auctions = await fetchAuctionsInRange(startMs, endMs);
   const keys = await priceKeys().catch(() => new Map<string, string>());
-  const series = await flowerRateSeries(keys).catch(() => []);
+  const series = await flowerRateSeries().catch(() => []);
 
   const ended = auctions.filter((a) => a.endAt <= now);
   const results = await mapLimit(ended, CONCURRENCY, async (a) => {

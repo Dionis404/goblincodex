@@ -5,7 +5,7 @@ import { TOOL_RESOURCE_ICONS } from '../lib/toolCosts';
 import { CHUM_ICONS } from '../lib/crustaceans';
 import { isTradeResource, isWearableTradeable, petTradeAt, tradeableCollectibleNames } from '../lib/tradeable';
 import { WEARABLE_NAMES } from '../lib/wearableNames';
-import type { PricePoint, PriceResource } from '../lib/priceApi';
+import type { PricePoint, PriceResource } from '../lib/sflApi';
 import './PriceHistory.css';
 import './RefPriceHistory.css';
 

@@ -52,7 +52,7 @@ export default function FarmApiDebug() {
       label: `GET /farms?ids=${activeFarmId} (повтор)`,
       ms: 0,
       ok: true,
-      detail: 'ждём, пока фон goblin-api обновит запись',
+      detail: 'ждём, пока фон sfl-api обновит запись',
     });
     refresh();
   }
@@ -136,7 +136,7 @@ export default function FarmApiDebug() {
 
         {activeFarmId && !loading && !error && farm === null && (
           <p className="gc-debug-status gc-debug-status--warn">
-            Ферма ещё не в кэше (null) — goblin-api запустил фоновую загрузку из SFL API,
+            Ферма ещё не в кэше (null) — sfl-api запустил фоновую загрузку из SFL API,
             подождите пару секунд и нажмите «Получить» ещё раз.
           </p>
         )}

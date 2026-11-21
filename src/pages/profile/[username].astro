@@ -3,7 +3,7 @@ export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProfileCard from '../../components/ProfileCard.tsx';
 import { getCollection } from 'astro:content';
-import { fetchGoblinJsonCached } from '../../lib/goblinApi';
+import { fetchSflJsonCached } from '../../lib/sflApi';
 
 // sflBase — база без завершающего "/codex": ProfileCard сам добавляет
 // "/codex/{id}" к каждой ссылке на гайд.
@@ -15,7 +15,7 @@ const lowerUsername = username!.toLowerCase();
 // Fetch farmer list, find matching entry
 let farmer = null;
 try {
-  const all: any[] = await fetchGoblinJsonCached('/community/farmers');
+  const all: any[] = await fetchSflJsonCached('/community/farmers');
   farmer = all.find((f) => f.game_username?.toLowerCase() === lowerUsername) ?? null;
 } catch (e) {
   console.error('Community API error:', e);
