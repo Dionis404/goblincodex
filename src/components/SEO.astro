@@ -25,7 +25,19 @@ const {
 // HTTP (Astro.url.protocol видит "http:"), а http:// в og:image/og:url
 // не по всем сайтам грузится в превью Telegram/соцсетей.
 const requestHost = Astro.request.headers.get('host');
-const canonicalHost = requestHost;
+// Разделы живут на своих поддоменах: canonical страницы раздела всегда
+// указывает на поддомен, независимо от того, через какой хост её открыли —
+// иначе goblincodex.fun/codex/* и sfl.goblincodex.fun/codex/* конкурируют
+// в выдаче как дубли.
+const SECTION_HOSTS: [prefix: string, host: string][] = [
+  ['/codex', 'sfl.goblincodex.fun'],
+  ['/yakkamon', 'yakk.goblincodex.fun'],
+  ['/news', 'blog.goblincodex.fun'],
+];
+const sectionHost = SECTION_HOSTS.find(([prefix]) =>
+  Astro.url.pathname === prefix || Astro.url.pathname.startsWith(`${prefix}/`),
+)?.[1];
+const canonicalHost = sectionHost ?? requestHost;
 // goblincodex.ru — запасное зеркало: сайт там полностью
 // работает и ссылки остаются на .ru, но для поисковиков главный адрес
 // всегда на .fun, иначе .ru и .fun конкурируют в выдаче как дубли.
