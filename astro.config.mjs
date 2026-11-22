@@ -9,12 +9,13 @@ import sitemap from '@astrojs/sitemap';
 const SITE = 'https://goblincodex.fun';
 
 // В output: 'server' интеграция sitemap видит только статические маршруты —
-// ни одной статьи/гайда туда не попадало. Разделы (/news, /codex, /yakkamon)
-// живут на основном домене, поэтому страницы коллекций собираем сами из
-// markdown-файлов на SITE.
-const BLOG = SITE;
-const SFL = SITE;
-const YAKK = SITE;
+// ни одной статьи/гайда туда не попадало. Разделы живут на своих поддоменах:
+// blog. — новости, sfl. — Sunflower Land (codex), yakk. — Yakkamon.
+// Caddy проксирует поддомены на тот же astro, canonical строится из Host
+// запроса (src/components/SEO.astro), поэтому в sitemap кладём поддомены.
+const BLOG = 'https://blog.goblincodex.fun';
+const SFL = 'https://sfl.goblincodex.fun';
+const YAKK = 'https://yakk.goblincodex.fun';
 
 /** @param {string} file */
 function readFrontmatter(file) {
