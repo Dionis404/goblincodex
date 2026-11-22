@@ -1,10 +1,17 @@
 ---
-const navLinks = [
-  { label: 'Гайды',      href: '/codex'    },
-  { label: 'Yakkamon',   href: '/yakkamon' },
-  { label: 'Новости',    href: '/news'     },
-  { label: 'Поддержать', href: '/donate'   },
+import { resolveNavHref, type NavLink } from '../lib/subdomains';
+
+const host = Astro.request.headers.get('host');
+
+const navLinkDefs: NavLink[] = [
+  { slug: 'codex',     targetSection: 'sfl', path: '/codex',     label: 'Гайды'      },
+  { slug: 'yakkamon',  targetSection: 'yakk',path: '/yakkamon',  label: 'Yakkamon'   },
+  { slug: 'news',      targetSection: 'blog',path: '/news',      label: 'Новости'    },
+  { slug: 'donate',    targetSection: null,  path: '/donate',    label: 'Поддержать' },
 ];
+
+const navLinks = navLinkDefs.map(link => ({ label: link.label, href: resolveNavHref(host, link) }));
+const logoHref = resolveNavHref(host, { slug: 'home', targetSection: null, path: '/', label: 'Главная' });
 
 // Маркер дев-стенда — только когда переменная задана в окружении контейнера
 // (docker-compose.dev.yml); на проде её нет, маркер не рендерится вообще.
@@ -15,7 +22,7 @@ const isDevStand = process.env.DEV_STAND === 'true';
   <div class="gc-footer-inner">
 
     <div class="gc-footer-brand">
-      <a href="/" class="gc-logo">
+      <a href={logoHref} class="gc-logo">
         <div class="gc-logo-icon">🧙</div>
         <div>
           <span class="gc-logo-text">Goblin<span>Codex</span></span>

@@ -1,4 +1,6 @@
 ---
+import { SECTIONS, sectionForHost, subdomainFor, mainDomainFor } from '../lib/subdomains';
+
 interface Props {
   title: string;
   description: string;
@@ -25,19 +27,17 @@ const {
 // HTTP (Astro.url.protocol видит "http:"), а http:// в og:image/og:url
 // не по всем сайтам грузится в превью Telegram/соцсетей.
 const requestHost = Astro.request.headers.get('host');
-// Разделы живут на своих поддоменах: canonical страницы раздела всегда
-// указывает на поддомен, независимо от того, через какой хост её открыли —
-// иначе goblincodex.fun/codex/* и sfl.goblincodex.fun/codex/* конкурируют
-// в выдаче как дубли.
-const SECTION_HOSTS: [prefix: string, host: string][] = [
-  ['/codex', 'sfl.goblincodex.fun'],
-  ['/yakkamon', 'yakk.goblincodex.fun'],
-  ['/news', 'blog.goblincodex.fun'],
-];
-const sectionHost = SECTION_HOSTS.find(([prefix]) =>
-  Astro.url.pathname === prefix || Astro.url.pathname.startsWith(`${prefix}/`),
-)?.[1];
-const canonicalHost = sectionHost ?? requestHost;
+// Разделы живут на своих поддоменах (см. src/lib/subdomains.ts):
+// 1) путь раздела (/codex, /yakkamon, /news) — canonical всегда на поддомен
+//    раздела, с какого бы хоста страницу ни открыли;
+// 2) остальные страницы, открытые на поддомене раздела (sfl.*/about и т.п.),
+//    — canonical на основной домен, иначе у каждой было бы 4 дубля.
+const pathSection = SECTIONS.find(s =>
+  Astro.url.pathname === s.path || Astro.url.pathname.startsWith(`${s.path}/`));
+const hostSection = sectionForHost(requestHost);
+const canonicalHost = pathSection
+  ? subdomainFor(requestHost, pathSection.id)
+  : (hostSection ? mainDomainFor(requestHost) : requestHost);
 // goblincodex.ru — запасное зеркало: сайт там полностью
 // работает и ссылки остаются на .ru, но для поисковиков главный адрес
 // всегда на .fun, иначе .ru и .fun конкурируют в выдаче как дубли.

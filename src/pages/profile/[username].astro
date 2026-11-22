@@ -4,10 +4,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProfileCard from '../../components/ProfileCard.tsx';
 import { getCollection } from 'astro:content';
 import { fetchSflJsonCached } from '../../lib/sflApi';
+import { subdomainFor } from '../../lib/subdomains';
 
 // sflBase — база без завершающего "/codex": ProfileCard сам добавляет
-// "/codex/{id}" к каждой ссылке на гайд.
-const sflBase = '';
+// "/codex/{id}" к каждой ссылке на гайд. Гайды живут на поддомене sfl.*,
+// поэтому ссылки кросс-доменные.
+const sflBase = `https://${subdomainFor(Astro.request.headers.get('host'), 'sfl')}`;
 
 const { username } = Astro.params;
 const lowerUsername = username!.toLowerCase();
