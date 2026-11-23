@@ -28,7 +28,7 @@ jobs:
         id: meta
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-            echo "tags=${IMAGE}:${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "tags=${IMAGE}:${GITHUB_REF_NAME},${IMAGE}:latest" >> "$GITHUB_OUTPUT"
           else
             echo "tags=${IMAGE}:dev" >> "$GITHUB_OUTPUT"
           fi
