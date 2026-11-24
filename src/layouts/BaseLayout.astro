@@ -76,6 +76,12 @@ const cookieTheme = Astro.request.headers.get('cookie')?.match(/(?:^|; )gc_theme
       } catch (e) { /* localStorage недоступен — без согласия Метрику не грузим */ }
     </script>
     <!-- /Yandex.Metrika counter -->
+    <!-- Yandex Autoplacement 20434320 (РСЯ): автоподбор мест объявлений.
+         Пока едет только на dev (main-ветка); на прод уедет со следующим
+         релизным тегом — так рекламу сначала смотрим на dev.goblincodex.fun. -->
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
+    <script data-page-id="20434320" src="https://yandex.ru/ads/system/ap-loader.js" async></script>
+    <!-- /Yandex Autoplacement -->
   </head>
   <body>
     <Header currentPage={currentPage} />
