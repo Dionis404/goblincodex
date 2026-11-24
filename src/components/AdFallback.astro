@@ -1,0 +1,92 @@
+---
+// Fallback для посетителей с блокировщиком рекламы.
+// Код вызова РСЯ не трогаем (это запрещено правилами РСЯ) — просто проверяем,
+// догрузился ли context.js, и если нет, показываем собственную плашку с
+// просьбой отключить AdBlock или поддержать проект донатом.
+// Проверка двойная: bait-элемент с «рекламными» классами (его режут
+// CSS-правила блокировщиков) + факт отсутствия window.Ya после load.
+---
+<div id="gc-ad-fallback" class="gc-ad-fallback" hidden>
+  <!-- 🥺 — временно, позже заменить на картинку грустного гоблина -->
+  <span class="gc-ad-fallback-emoji" aria-hidden="true">🥺</span>
+  <p class="gc-ad-fallback-text">
+    <strong>Гоблину нужна копеечка</strong> — на семена подсолнухов и оплату сервера.
+    Отключите AdBlock для нашего сайта или поддержите Гоблина донатом —
+    каждая копеечка уйдёт в грядки. 🌻
+  </p>
+  <a href="/donate" class="gc-ad-fallback-btn">Поддержать проект</a>
+</div>
+
+<style>
+  .gc-ad-fallback {
+    max-width: 1160px;
+    margin: 24px auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 22px;
+    background: var(--amber-pale);
+    border: 1px solid var(--amber);
+    border-radius: 12px;
+  }
+  .gc-ad-fallback[hidden] { display: none; }
+  .gc-ad-fallback-emoji {
+    font-size: 34px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .gc-ad-fallback-text {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .gc-ad-fallback-btn {
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2B1D0A;
+    background: var(--amber);
+    border: 1px solid var(--amber);
+    padding: 10px 20px;
+    border-radius: 9px;
+    text-decoration: none;
+    transition: filter 0.15s;
+    white-space: nowrap;
+  }
+  .gc-ad-fallback-btn:hover { filter: brightness(1.06); }
+
+  @media (max-width: 900px) {
+    .gc-ad-fallback { margin: 16px 20px; }
+  }
+  @media (max-width: 640px) {
+    .gc-ad-fallback { margin: 16px 12px; flex-wrap: wrap; }
+    .gc-ad-fallback-btn { width: 100%; text-align: center; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    // Bait-элемент: блокировщики прячут элементы с такими классами через
+    // CSS (display:none / height:0) — по нему определяем AdBlock надёжнее,
+    // чем по одному скрипту.
+    var bait = document.createElement('div');
+    bait.className = 'adsbox ads adsbygoogle text-ad banner-ad ad-banner';
+    bait.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:10px;height:10px;pointer-events:none;');
+    document.body.appendChild(bait);
+
+    window.addEventListener('load', function () {
+      // Даём context.js время догрузиться/отвалиться, затем проверяем.
+      setTimeout(function () {
+        var baitBlocked = bait.offsetHeight === 0 || bait.offsetParent === null;
+        var rsyaBlocked = typeof window.Ya === 'undefined' || !window.Ya.Context;
+        bait.remove();
+        if (baitBlocked || rsyaBlocked) {
+          var el = document.getElementById('gc-ad-fallback');
+          if (el) el.hidden = false;
+        }
+      }, 1500);
+    });
+  })();
+</script>
