@@ -78,3 +78,30 @@ jobs:
               -d "{\"type\":\"DeployStack\",\"params\":{\"stack\":\"$STACK\"}}"
             echo "deployed: $STACK"
           done
+
+  tg-notify:
+    # Автопостинг новых статей в ТГ-группу (ботом Гоблина).
+    # Срабатывает на пуши в main, где появились новые .md в src/content/news/.
+    needs: deploy
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Find new news articles
+        id: news
+        run: |
+          BEFORE="${{ github.event.before }}"
+          if [[ -z "$BEFORE" || "$BEFORE" =~ ^0+$ ]] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
+            echo "files=" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          FILES=$(git diff --name-only --diff-filter=A "$BEFORE" HEAD -- 'src/content/news/*.md' | tr '\n' ' ')
+          echo "new articles: $FILES"
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+      - name: Post to Telegram
+        if: steps.news.outputs.files != ''
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_NEWS_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_NEWS_CHAT_ID }}
+        run: python3 scripts/tg_news_post.py ${{ steps.news.outputs.files }}
