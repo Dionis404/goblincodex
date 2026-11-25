@@ -112,10 +112,16 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
   const byDay = useMemo(() => {
     const map = new Map<string, CalendarAuction[]>();
     auctions.forEach((a) => {
-      const key = dayKey(a.startAt);
-      const list = map.get(key) ?? [];
-      list.push(a);
-      map.set(key, list);
+      // Аукцион может идти через полночь — показываем его во всех днях,
+      // которые он затрагивает (обычно 1–2 дня; ограничение — страховка).
+      let d = dayStartMs(dayKey(a.startAt));
+      const last = dayStartMs(dayKey(a.endAt));
+      for (let i = 0; d <= last && i < 4; i++, d += 86_400_000) {
+        const key = dayKey(d);
+        const list = map.get(key) ?? [];
+        list.push(a);
+        map.set(key, list);
+      }
     });
     map.forEach((list) => list.sort((a, b) => a.startAt - b.startAt));
     return map;
