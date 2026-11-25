@@ -128,31 +128,6 @@ const MECHANIC_CARDS = [
 ];
 ---
 
-<!-- ── Архивы и аналитика — важные разделы главы, поэтому крупные карточки ── -->
-<div class="gc-chapter-archive-links">
-  <a href="/codex/chapter/past" class="gc-archive-card">
-    <span class="gc-archive-card-icon">📜</span>
-    <span class="gc-archive-card-body">
-      <span class="gc-archive-card-title">Прошлые главы</span>
-      <span class="gc-archive-card-desc">Предметы и аукционы архива</span>
-    </span>
-  </a>
-  <a href="/codex?tab=chapter&auktab=history" class="gc-archive-card">
-    <span class="gc-archive-card-icon">🕘</span>
-    <span class="gc-archive-card-body">
-      <span class="gc-archive-card-title">История аукционов</span>
-      <span class="gc-archive-card-desc">Все завершённые ставки</span>
-    </span>
-  </a>
-  <a href="/codex?tab=chapter&auktab=tiers" class="gc-archive-card">
-    <span class="gc-archive-card-icon">📊</span>
-    <span class="gc-archive-card-body">
-      <span class="gc-archive-card-title">Тиры аукционов</span>
-      <span class="gc-archive-card-desc">Медианы и разбор по тирам</span>
-    </span>
-  </a>
-</div>
-
 <!-- ── Центр аукционов: расписание / история / тиры в одном блоке ── -->
 <section class="gc-chapter-section">
   <div class="gc-auctions-card">
@@ -307,56 +282,6 @@ const MECHANIC_CARDS = [
 .gc-chapter-upcoming-desc {
   font-size: 14px;
   color: var(--text-sec);
-}
-.gc-chapter-archive-links {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 32px;
-}
-.gc-archive-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  text-decoration: none;
-  transition: border-color 0.15s, transform 0.15s;
-}
-.gc-archive-card:hover {
-  border-color: var(--green-mid);
-  transform: translateY(-2px);
-}
-.gc-archive-card-icon {
-  font-size: 24px;
-  width: 46px;
-  height: 46px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--green-pale);
-  border-radius: 10px;
-}
-.gc-archive-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-.gc-archive-card-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-}
-.gc-archive-card-desc {
-  font-size: 12px;
-  color: var(--text-sec);
-}
-@media (max-width: 640px) {
-  .gc-chapter-archive-links { grid-template-columns: 1fr; }
 }
 
 /* ── Основные механики: сворачиваемый блок для новичков ── */
