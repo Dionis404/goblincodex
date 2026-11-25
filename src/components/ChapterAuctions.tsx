@@ -55,6 +55,9 @@ interface Props {
   // «Показать всё расписание» — для вкладки главы, где будущие аукционы
   // расписаны на недели вперёд и полный список требует долгого скролла.
   maxInitialGroups?: number;
+  // Откуда самозагрузка берёт аукционы: по умолчанию расписание текущей
+  // главы; вкладка «История» центра аукционов передаёт /api/auctions/history.json.
+  dataUrl?: string;
 }
 
 interface LeaderboardEntry {
@@ -294,7 +297,7 @@ function SpriteImg({ sprite, name, size = 40 }: { sprite: string | null; name: s
   );
 }
 
-export default function ChapterAuctions({ auctions: auctionsProp, chapterName: chapterNameProp, itemCatalog: itemCatalogProp, initialNow, defaultStatusFilter = 'upcoming', showStatusFilter = true, maxInitialGroups }: Props) {
+export default function ChapterAuctions({ auctions: auctionsProp, chapterName: chapterNameProp, itemCatalog: itemCatalogProp, initialNow, defaultStatusFilter = 'upcoming', showStatusFilter = true, maxInitialGroups, dataUrl = '/api/auctions/chapter.json' }: Props) {
   // Режим самозагрузки (вкладка главы на /codex): данные с двух API доезжают
   // после монтирования, SSR и первый клиентский рендер показывают loader —
   // расхождений гидратации нет. initialNow в этом режиме не нужен (loader не
@@ -313,7 +316,7 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
     if (auctionsProp) return;
     let cancelled = false;
     Promise.all([
-      fetch('/api/auctions/chapter.json')
+      fetch(dataUrl)
         .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); }),
       fetch('/api/nft-catalog.json')
         .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); }),
@@ -331,7 +334,7 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
         if (!cancelled) setFetched({ auctions: [], catalog: {} });
       });
     return () => { cancelled = true; };
-  }, [auctionsProp]);
+  }, [auctionsProp, dataUrl]);
 
   // initialNow приходит с сервера и совпадает с тем, что отрендерил SSR — если
   // здесь заново вызвать Date.now(), время разъедется на пару секунд и React

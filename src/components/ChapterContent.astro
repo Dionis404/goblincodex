@@ -4,7 +4,7 @@
 // текущей главы (и уже прошедшие, и предстоящие/активные) — архив всех
 // остальных глав целиком живёт на /codex/chapter/[slug].
 import { getCollection } from 'astro:content';
-import ChapterAuctions from './ChapterAuctions.tsx';
+import ChapterAuctionTabs from './ChapterAuctionTabs.tsx';
 import ChapterAuctionItems from './ChapterAuctionItems.astro';
 import ChapterTicketLeaderboard from './ChapterTicketLeaderboard.tsx';
 import { getCurrentChapter, getUpcomingChapter } from '../lib/chapters';
@@ -93,14 +93,14 @@ const MECHANIC_CARDS = [
       <span class="gc-archive-card-desc">Предметы и аукционы архива</span>
     </span>
   </a>
-  <a href="/codex/chapter/auctions-history" class="gc-archive-card">
-    <span class="gc-archive-card-icon">🔨</span>
+  <a href="/codex?tab=chapter&auktab=history" class="gc-archive-card">
+    <span class="gc-archive-card-icon">🕘</span>
     <span class="gc-archive-card-body">
       <span class="gc-archive-card-title">История аукционов</span>
       <span class="gc-archive-card-desc">Все завершённые ставки</span>
     </span>
   </a>
-  <a href="/codex/chapter/auction-tiers" class="gc-archive-card">
+  <a href="/codex?tab=chapter&auktab=tiers" class="gc-archive-card">
     <span class="gc-archive-card-icon">📊</span>
     <span class="gc-archive-card-body">
       <span class="gc-archive-card-title">Тиры аукционов</span>
@@ -109,10 +109,10 @@ const MECHANIC_CARDS = [
   </a>
 </div>
 
-<!-- ── Расписание аукционов — главный рабочий блок страницы ── -->
+<!-- ── Центр аукционов: расписание / история / тиры в одном блоке ── -->
 <section class="gc-chapter-section">
   <h2 class="gc-block-title-lg">🔨 Аукционы</h2>
-  <ChapterAuctions client:visible chapterName={currentChapter?.name ?? 'текущей главы'} maxInitialGroups={3} />
+  <ChapterAuctionTabs client:visible chapterName={currentChapter?.name ?? 'текущей главы'} />
 </section>
 
 <!-- ── Лидерборд билетов с пометками о выигранных предметах ── -->
