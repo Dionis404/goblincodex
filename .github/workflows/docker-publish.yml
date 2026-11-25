@@ -30,7 +30,10 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             echo "tags=${IMAGE}:${GITHUB_REF_NAME},${IMAGE}:latest" >> "$GITHUB_OUTPUT"
           else
-            echo "tags=${IMAGE}:dev" >> "$GITHUB_OUTPUT"
+            # :latest = голова main — нужен для контентного автодеплоя на прод
+            # (статьи идут на прод без тега, прод-стек смотрит на :latest).
+            # Важно: main держим релизабельным — код, не готовый к продy, в main не льём.
+            echo "tags=${IMAGE}:dev,${IMAGE}:latest" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build & push
