@@ -7,6 +7,8 @@ backend:
   name: github
   repo: Dionis404/goblincodex
   branch: main
+  # Вход через GitHub OAuth: мини-сервис на auth.goblincodex.fun
+  base_url: https://auth.goblincodex.fun
   # Коммиты CMS не триггерят CI немедленно? Нет — триггерят, это и нужно.
   # Но помечаем, чтобы в истории было видно, откуда коммит:
   commit_messages:
