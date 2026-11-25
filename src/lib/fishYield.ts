@@ -34,6 +34,8 @@ export interface FishingBoosts {
   sunflowerRod: boolean;
   /** Trident (одежда): 20% шанс +1 рыбы. */
   trident: boolean;
+  /** Otty the Otter (коллекционный, глава 16): +1 случайная рыба каждый 15-й заброс (~+1/15 к улову). */
+  otty: boolean;
   /** Навыки: шанс +1 рыбы своего ранга (Fishy Chance — обычная, Roll — продвинутая, Gamble — экспертная). */
   fishyChance: SkillRank;
   fishyRoll: SkillRank;
@@ -53,6 +55,7 @@ export const NO_FISHING_BOOSTS: FishingBoosts = {
   alba: false,
   sunflowerRod: false,
   trident: false,
+  otty: false,
   fishyChance: 0,
   fishyRoll: 0,
   fishyGamble: 0,
@@ -87,6 +90,9 @@ export function expectedFishPerCast(tier: FishTier, season: SeasonName, b: Fishi
   if (b.alba && tier === 'basic') fish += 0.5;
   if (b.sunflowerRod) fish += 0.1;
   if (b.trident) fish += 0.2;
+  // Otty даёт случайную рыбу любого ранга — в пересчёте себестоимости конкретного
+  // ранга это ≈+1/15 рыбы к улову каждого ранга.
+  if (b.otty) fish += 1 / 15;
   if (b[SEASONAL_MARVEL[season]]) fish += 1;
   fish += skillChance(tier === 'basic' ? 'Fishy Chance' : tier === 'advanced' ? 'Fishy Roll' : 'Fishy Gamble', {
     basic: b.fishyChance,

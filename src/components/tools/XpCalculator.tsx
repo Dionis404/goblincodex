@@ -538,7 +538,7 @@ export default function XpCalculator() {
                 disabled={!fishingOn}
                 onChange={(e) => setCastsPerDay(Math.max(0, Math.floor(Number(e.target.value) || 0)))}
               />
-              <small>Дневной лимит игры — 20; он растёт от навыков Fisherman и предметов (Angler Waders, Nautilus и др.).</small>
+              <small>Дневной лимит игры — 20; он растёт от навыков Fisherman и предметов (Angler Waders, Nautilus, Otty the Otter и др.).</small>
             </label>
             <label className="gc-calc-field">
               <span>Мест под ловушки на раков</span>

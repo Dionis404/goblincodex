@@ -5,7 +5,9 @@
 // остальных глав целиком живёт на /codex/chapter/[slug].
 import { getCollection } from 'astro:content';
 import ChapterAuctions from './ChapterAuctions.tsx';
+import ChapterAuctionItems from './ChapterAuctionItems.astro';
 import { getCurrentChapter, getUpcomingChapter } from '../lib/chapters';
+import { fetchAuctionsInRange, type UiAuction } from '../lib/auctionsApi';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
 import { sectionHref } from '../lib/subdomains';
@@ -53,6 +55,17 @@ const itemsOf = (slug: string) =>
     .sort((a, b) => a.name.localeCompare(b.name));
 const chapterItems = currentChapter ? itemsOf(currentChapter.slug) : [];
 const upcomingItems = upcomingChapter ? itemsOf(upcomingChapter.slug) : [];
+
+// Расписание аукционов главы — сервером, для блока «Предметы с аукционов».
+// fetchAuctionsInRange кэширует ответ goblin-api в процессе (10 мин), при ошибке
+// сети возвращает [] — блок просто не отрисуется.
+let chapterAuctionList: UiAuction[] = [];
+if (currentChapter) {
+  chapterAuctionList = await fetchAuctionsInRange(
+    new Date(currentChapter.startDate).getTime(),
+    new Date(currentChapter.endDate).getTime(),
+  );
+}
 const upcomingStart = upcomingChapter
   ? new Date(upcomingChapter.startDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'UTC' })
   : '';
@@ -170,6 +183,9 @@ const MECHANIC_CARDS = [
     </div>
   )}
 </section>
+
+<!-- ── Предметы с аукционов ── -->
+<ChapterAuctionItems auctions={chapterAuctionList} itemCatalog={itemCatalog} />
 
 <!-- ── Расписание аукционов ── -->
 <section class="gc-chapter-section">

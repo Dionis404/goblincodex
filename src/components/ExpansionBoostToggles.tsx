@@ -54,6 +54,46 @@ export default function ExpansionBoostToggles({
           <strong>Ascension Monument</strong>
           <span>−20% времени (монумент построен и заряжен)</span>
         </label>
+        <label className="ref-boost-toggle">
+          <input
+            type="checkbox"
+            checked={boosts.brickHouse}
+            onChange={(e) => onChange({ ...boosts, brickHouse: e.target.checked })}
+          />
+          <img className="ref-boost-icon" src="/sprites/sfts/brick_house.webp" alt="" />
+          <strong>Brick House</strong>
+          <span>−25% Crimstone и −5% монет (Crimstone не стакается с Grinx's Hammer)</span>
+        </label>
+        <label className="ref-boost-toggle">
+          <input
+            type="checkbox"
+            checked={boosts.stickHouse}
+            onChange={(e) => onChange({ ...boosts, stickHouse: e.target.checked })}
+          />
+          <img className="ref-boost-icon" src="/sprites/sfts/stick_house.webp" alt="" />
+          <strong>Stick House</strong>
+          <span>−25% Oil (не стакается с Grinx's Hammer) и −10% времени</span>
+        </label>
+        <label className="ref-boost-toggle">
+          <input
+            type="checkbox"
+            checked={boosts.duendeMonument}
+            onChange={(e) => onChange({ ...boosts, duendeMonument: e.target.checked })}
+          />
+          <img className="ref-boost-icon" src="/sprites/monuments/duende_monument_stage3.webp" alt="" />
+          <strong>Duende Monument</strong>
+          <span>−10% ресурсов (кроме гемов, не стакается с Grinx's Hammer) и −10% времени</span>
+        </label>
+        <label className="ref-boost-toggle">
+          <input
+            type="checkbox"
+            checked={boosts.herculesHat}
+            onChange={(e) => onChange({ ...boosts, herculesHat: e.target.checked })}
+          />
+          <img className="ref-boost-icon" src="/sprites/wearables/594.webp" alt="" />
+          <strong>Hercules Beetle Hat</strong>
+          <span>−25% Obsidian (не стакается с Grinx's Hammer)</span>
+        </label>
       </div>
     </BoostPanel>
   );

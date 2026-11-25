@@ -39,6 +39,7 @@ const ITEM_BOOSTS: { key: FlagKey; label: string; icon: string }[] = [
   { key: 'sawFish', label: 'Saw Fish — +1 червь', icon: '/sprites/wearables/238.webp' },
   { key: 'deepSeaSlug', label: 'Deep Sea Slug — +1 червь', icon: '/sprites/fish/deep_sea_slug.webp' },
   { key: 'soilKrabby', label: 'Soil Krabby — время ×0.9', icon: '/sprites/sfts/soil_krabby.webp' },
+  { key: 'strawHouse', label: 'Straw House — база компоста и червей ×3, время ×0.9', icon: '/sprites/sfts/straw_house.webp' },
 ];
 
 const SKILL_BOOSTS: { key: RankKey; skill: string; hint: string; format: (rank: number) => string }[] = [

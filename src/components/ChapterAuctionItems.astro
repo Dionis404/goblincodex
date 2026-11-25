@@ -1,0 +1,176 @@
+---
+// Блок «Предметы с аукционов» для страницы главы: уникальные предметы из
+// расписания аукционов главы (имя, сапплай, число дропов, даты) с бустами из
+// каталога. Общий для вкладки текущей главы (/codex?tab=chapter, ChapterContent)
+// и страниц прошлых/будущих глав (/codex/chapter/[slug]).
+import type { UiAuction } from '../lib/auctionsApi';
+import type { getCatalogItems } from '../lib/db';
+
+type CatalogItem = Awaited<ReturnType<typeof getCatalogItems>>[number];
+
+interface Props {
+  auctions: UiAuction[];
+  itemCatalog: Record<string, CatalogItem>;
+}
+const { auctions, itemCatalog } = Astro.props;
+
+interface AuctionItemInfo {
+  name: string;
+  type: UiAuction['type'];
+  supply: number;
+  drops: number;
+  firstAt: number;
+  lastAt: number;
+  catalog?: CatalogItem;
+}
+
+const byName = new Map<string, AuctionItemInfo>();
+for (const a of auctions) {
+  const name = a.collectible ?? a.wearable ?? a.nft;
+  if (!name) continue;
+  const cur = byName.get(name);
+  if (cur) {
+    cur.drops += 1;
+    cur.firstAt = Math.min(cur.firstAt, a.startAt);
+    cur.lastAt = Math.max(cur.lastAt, a.endAt);
+  } else {
+    byName.set(name, { name, type: a.type, supply: a.supply, drops: 1, firstAt: a.startAt, lastAt: a.endAt });
+  }
+}
+
+// По дате первого дропа — тот же порядок, что и у самого расписания аукционов.
+const fmtDay = (ms: number) =>
+  new Date(ms).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+
+// Дропы одного предмета могут идти подряд в один день — тогда диапазон не показываем.
+const items = [...byName.values()]
+  .sort((a, b) => a.firstAt - b.firstAt)
+  .map((i) => ({ ...i, catalog: itemCatalog[i.name], day: fmtDay(i.firstAt), lastDay: fmtDay(i.lastAt) }));
+---
+
+{items.length > 0 && (
+  <section class="gc-chapter-section">
+    <h2 class="gc-block-title-lg">🔨 Предметы с аукционов ({items.length})</h2>
+    <div class="gc-chapter-items-grid">
+      {items.map((item) => (
+        <div class="gc-chapter-item-card">
+          <div class="gc-chapter-item-sprite">
+            {item.catalog?.sprite ? (
+              <img src={`/sprites/${item.catalog.sprite}`} alt={item.name} loading="lazy" />
+            ) : item.type === 'nft' ? (
+              <img src="/sprites/icons/pet_nft_egg.png" alt={item.name} loading="lazy" />
+            ) : (
+              <span class="gc-chapter-item-sprite-placeholder">🔨</span>
+            )}
+          </div>
+          <div class="gc-chapter-item-info">
+            <div class="gc-chapter-item-name">{item.name}</div>
+            {item.catalog && item.catalog.boosts.length > 0 ? (
+              <div class="gc-chapter-item-boosts">
+                {item.catalog.boosts.map((b) => (
+                  <span class={`gc-chapter-item-boost gc-chapter-item-boost--${b.labelType}`}>
+                    {b.shortDescriptionRu || b.shortDescription}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span class="gc-chapter-item-no-boost">
+                {item.catalog ? 'Без бонусов' : 'Бонусов нет или данные ещё не синкнуты'}
+              </span>
+            )}
+            <div class="gc-chapter-item-auction">
+              сапплай {item.supply} · {item.drops} дропов · {item.day}{item.lastDay !== item.day ? ` – ${item.lastDay}` : ''}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+/* Те же карточки, что у блока «Предметы главы» — стили продублированы,
+   т.к. scoped-стили страниц на разметку компонента не распространяются. */
+.gc-chapter-section { margin-bottom: 40px; }
+.gc-block-title-lg {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.gc-chapter-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.gc-chapter-item-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.gc-chapter-item-sprite {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: 8px;
+}
+.gc-chapter-item-sprite img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.gc-chapter-item-sprite-placeholder {
+  color: var(--text-ter);
+  font-size: 16px;
+}
+.gc-chapter-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.gc-chapter-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.gc-chapter-item-boosts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.gc-chapter-item-boost {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.gc-chapter-item-boost--danger {
+  background: color-mix(in srgb, var(--red, #c94b3d) 14%, transparent);
+  color: var(--red, #c94b3d);
+}
+.gc-chapter-item-boost--vibrant {
+  background: var(--amber-pale);
+  color: var(--amber);
+}
+.gc-chapter-item-no-boost {
+  font-size: 11px;
+  color: var(--text-ter);
+}
+.gc-chapter-item-auction {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-sec);
+}
+</style>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ChapterAuctions from '../../../components/ChapterAuctions.tsx';
+import ChapterAuctionItems from '../../../components/ChapterAuctionItems.astro';
 import { getChapterBySlug, CHAPTERS } from '../../../lib/chapters';
 import { fetchAuctionsInRange } from '../../../lib/auctionsApi';
 import type { getCatalogItems } from '../../../lib/db';
@@ -149,6 +150,7 @@ const now = Date.now();
     )}
 
     <h2 class="gc-chapter-section-title">🔨 Аукционы главы</h2>
+    <ChapterAuctionItems auctions={chapterAuctions} itemCatalog={itemCatalog} />
     {isUpcoming && (
       <p class="gc-chapter-tiers-link">
         <a href="/codex/chapter/auction-tiers" class="gc-btn-secondary">📊 Тиры предметов аукционов: какие самые ценные →</a>

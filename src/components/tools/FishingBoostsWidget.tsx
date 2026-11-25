@@ -23,6 +23,7 @@ const ITEM_BOOSTS: { key: FlagKey; label: string; icon: string }[] = [
   { key: 'alba', label: 'Alba — 50% шанс +1 обычной рыбы', icon: '/sprites/sfts/alba.webp' },
   { key: 'sunflowerRod', label: 'Sunflower Rod — 10% шанс +1', icon: '/sprites/wearables/240.webp' },
   { key: 'trident', label: 'Trident — 20% шанс +1', icon: '/sprites/wearables/226.webp' },
+  { key: 'otty', label: 'Otty the Otter — +1 случайная рыба каждый 15-й заброс', icon: '/sprites/sfts/otty_the_otter.webp' },
 ];
 
 const SEASONAL_BOOSTS: { key: FlagKey; label: string; icon: string }[] = [

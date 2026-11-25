@@ -61,6 +61,8 @@ export interface ComposterBoosts {
   deepSeaSlug: boolean;
   /** Коллекционный: время готовки ×0.9. */
   soilKrabby: boolean;
+  /** Коллекционный (глава 16): база компоста ×3, база червей ×3, время ×0.9. */
+  strawHouse: boolean;
   /** Навыки (ранг 0 — не выучен). */
   efficientBin: SkillRank; // +компост, только Compost Bin
   turboCharged: SkillRank; // +компост, только Turbo Composter
@@ -79,6 +81,7 @@ export const NO_COMPOSTER_BOOSTS: ComposterBoosts = {
   sawFish: false,
   deepSeaSlug: false,
   soilKrabby: false,
+  strawHouse: false,
   efficientBin: 0,
   turboCharged: 0,
   premiumWorms: 0,
@@ -104,7 +107,8 @@ const at = (skill: string, rank: SkillRank, field = 'ranks'): number =>
 
 /** Сколько компоста выдаст запуск. */
 export function compostAmount(name: ComposterName, b: ComposterBoosts): number {
-  let amount = COMPOSTERS[name].produceAmount;
+  // Straw House множит базу — применяется до аддитивных бустов (getCompostAmount в startComposter.ts).
+  let amount = COMPOSTERS[name].produceAmount * (b.strawHouse ? 3 : 1);
   if (name === 'Compost Bin') amount += at('Efficient Bin', b.efficientBin);
   if (name === 'Turbo Composter') amount += at('Turbo Charged', b.turboCharged);
   if (name === 'Premium Composter') amount += at('Premium Worms', b.premiumWorms);
@@ -131,7 +135,9 @@ export function wormStats(name: ComposterName, b: ComposterBoosts): WormStats {
     at('Composting Revamp', b.compostingRevamp, 'debuff') +
     (b.sawFish ? 1 : 0) +
     (b.deepSeaSlug ? 1 : 0);
-  const values = WORM_AMOUNTS[worm].map((a) => Math.max(0, a + delta));
+  // Straw House множит базу — применяется до аддитивной поправки (getWormBaseMultiplier в composterBait.ts).
+  const base = b.strawHouse ? 3 : 1;
+  const values = WORM_AMOUNTS[worm].map((a) => Math.max(0, a * base + delta));
   return {
     worm,
     min: Math.min(...values),
@@ -144,6 +150,7 @@ export function wormStats(name: ComposterName, b: ComposterBoosts): WormStats {
 export function composterHours(name: ComposterName, b: ComposterBoosts): number {
   let hours = COMPOSTERS[name].hours;
   if (b.soilKrabby) hours *= 0.9;
+  if (b.strawHouse) hours *= 0.9;
   if (b.swiftDecomposer > 0) hours *= at('Swift Decomposer', b.swiftDecomposer);
   return hours;
 }

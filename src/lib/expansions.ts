@@ -750,9 +750,25 @@ export interface ExpansionBoosts {
   hammer: boolean;
   /** Ascension Monument (построен и «заряжен» возгласами): время ×0.8. */
   monument: boolean;
+  /** Brick House (глава 16): Crimstone ×0.75 (не при Grinx's Hammer), монеты ×0.95. */
+  brickHouse: boolean;
+  /** Stick House (глава 16): Oil ×0.75 (не при Grinx's Hammer), время ×0.9. */
+  stickHouse: boolean;
+  /** Duende Monument (глава 16, заряжен): ресурсы ×0.9 кроме гемов (не при Grinx's Hammer), время ×0.9. */
+  duendeMonument: boolean;
+  /** Hercules Beetle Hat (одежда, глава 16): Obsidian ×0.75 (не при Grinx's Hammer). */
+  herculesHat: boolean;
 }
 
-export const NO_EXPANSION_BOOSTS: ExpansionBoosts = { vip: false, hammer: false, monument: false };
+export const NO_EXPANSION_BOOSTS: ExpansionBoosts = {
+  vip: false,
+  hammer: false,
+  monument: false,
+  brickHouse: false,
+  stickHouse: false,
+  duendeMonument: false,
+  herculesHat: false,
+};
 
 /** Ascension Monument: расширения на 20% быстрее. */
 export const MONUMENT_EXPANSION_TIME_MULTIPLIER = 0.8;
@@ -765,10 +781,16 @@ export const VIP_EXPANSION_TIME_MULTIPLIER = 0.9;
 /** Конец окна ускорения для VIP (на момент сверки — 2 ноября 2026, 00:00 UTC). */
 export const VIP_EXPANSION_TIME_BOOST_END = Date.UTC(2026, 10, 2);
 
-/** Стоимость одного расширения с учётом включённых бустов. Переходные этапы не меняются. */
+/** Стоимость одного расширения с учётом включённых бустов. Переходные этапы не меняются.
+ * Порядок применения — как в expansionRequirements (expandLand.ts): ресурсы — Grinx's
+ * Hammer ×0.5 (кроме гемов), затем Duende Monument ×0.9 (кроме гемов, не при молоте),
+ * затем домики/шляпа на «свой» ресурс (не при молоте); монеты — Brick House ×0.95,
+ * потом VIP-скидка от уже сниженной суммы; время — монументы и домик ×0.8/0.9 без
+ * округления, VIP в своём окне — с округлением до секунды. */
 export function boostedStageCost(stage: Stage, boosts: ExpansionBoosts, now = Date.now()): StageCost {
   const cost = stage.cost;
-  if (stage.isTransition || (!boosts.vip && !boosts.hammer && !boosts.monument)) return cost;
+  if (stage.isTransition) return cost;
+  if (!Object.values(boosts).some(Boolean)) return cost;
 
   let resources = cost.resources;
   if (boosts.hammer) {
@@ -777,13 +799,27 @@ export function boostedStageCost(stage: Stage, boosts: ExpansionBoosts, now = Da
       const amount = cost.resources[r];
       if (amount) resources[r] = r === 'Gem' ? amount : amount / 2;
     }
+  } else {
+    // Скидки ресурсов домиков/монумента не стакаются с Grinx's Hammer (предметы
+    // пишут об этом прямо в описании буста).
+    resources = { ...resources };
+    if (boosts.duendeMonument) {
+      for (const r of RESOURCE_ORDER) {
+        const amount = resources[r];
+        if (amount && r !== 'Gem') resources[r] = amount * 0.9;
+      }
+    }
+    if (boosts.brickHouse && resources.Crimstone) resources.Crimstone *= 0.75;
+    if (boosts.stickHouse && resources.Oil) resources.Oil *= 0.75;
+    if (boosts.herculesHat && resources.Obsidian) resources.Obsidian *= 0.75;
   }
 
   let coins = cost.coins;
   let seconds = cost.seconds;
-  // Порядок как в expansionRequirements: сначала монумент (без округления),
-  // затем VIP (с округлением до секунды).
+  if (boosts.brickHouse && coins > 0) coins *= 0.95;
   if (boosts.monument) seconds *= MONUMENT_EXPANSION_TIME_MULTIPLIER;
+  if (boosts.duendeMonument) seconds *= 0.9;
+  if (boosts.stickHouse) seconds *= 0.9;
   if (boosts.vip) {
     if (coins > 0) {
       const discount = Math.max(VIP_EXPANSION_FIXED_DISCOUNT, Math.floor(coins * VIP_EXPANSION_PERCENT_DISCOUNT));
@@ -797,7 +833,7 @@ export function boostedStageCost(stage: Stage, boosts: ExpansionBoosts, now = Da
 
 /** Копия списка этапов со стоимостью, пересчитанной под бусты (суммы sumStages/sumRange считаются уже по ним). */
 export function applyExpansionBoosts(stages: Stage[], boosts: ExpansionBoosts): Stage[] {
-  if (!boosts.vip && !boosts.hammer && !boosts.monument) return stages;
+  if (!Object.values(boosts).some(Boolean)) return stages;
   const now = Date.now();
   return stages.map((s) => ({ ...s, cost: boostedStageCost(s, boosts, now) }));
 }
