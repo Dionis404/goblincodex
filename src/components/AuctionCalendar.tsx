@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 // Календарь аукционов главы: помесячная 7-колоночная сетка с переключением
 // месяцев (глава обычно захватывает 2-3 месяца). В ячейке дня — по одному
 // спрайту на предмет (повторы дропов одного предмета не дублируются).
-// Клик по дню открывает список аукционов дня; клик по аукциону
+// Клик по дню открывает модалку со списком аукционов дня; клик по аукциону
 // пробрасывается наверх (ChapterAuctions откроет модалку с результатами).
 
 export interface CalendarAuction {
@@ -52,6 +53,8 @@ function itemSprite(a: CalendarAuction, catalog: Props['catalog']): string | nul
 // Дни и месяцы считаем в МСК — как группировка списка (formatDay там тоже МСК).
 const DAY_FMT = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
 const MONTH_FMT = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', month: 'long', year: 'numeric' });
+const MODAL_DAY_FMT = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', day: 'numeric', month: 'long', weekday: 'long' });
+const TIME_FMT = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
 
 function dayKey(ms: number): string {
   return DAY_FMT.format(ms);
@@ -180,7 +183,7 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
                   hasLive ? 'cac-cell--live' : '',
                   openDay === cell.key ? 'cac-cell--open' : '',
                 ].filter(Boolean).join(' ')}
-                onClick={() => setOpenDay(openDay === cell.key ? null : cell.key)}
+                onClick={() => { if (dayAuctions.length > 0) setOpenDay(openDay === cell.key ? null : cell.key); }}
               >
                 <span className="cac-day-num">{dayNum}</span>
                 <span className="cac-sprites">
@@ -197,26 +200,48 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
                   )}
                 </span>
               </button>
-              {openDay === cell.key && dayAuctions.length > 0 && (
-                <div className="cac-day-pop">
-                  {dayAuctions.map((a) => {
-                    const status = now < a.startAt ? 'upcoming' : now < a.endAt ? 'live' : 'ended';
-                    return (
-                      <button key={a.auctionId} type="button" className={`cac-pop-row cac-pop--${status}`} onClick={() => onSelect(a)}>
-                        <span className="cac-pop-time">
-                          {new Date(a.startAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Moscow' })}
-                        </span>
-                        <span className="cac-pop-name">{itemName(a)}</span>
-                        {status === 'live' && <span className="cac-pop-live">🔥</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           );
         })}
       </div>
+
+      {/* Модалка со списком аукционов выбранного дня */}
+      {openDay && (byDay.get(openDay)?.length ?? 0) > 0 && createPortal(
+        <div className="cac-modal-overlay" onClick={() => setOpenDay(null)}>
+          <div className="cac-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="cac-modal-head">
+              <span className="cac-modal-title">{MODAL_DAY_FMT.format(dayStartMs(openDay))}</span>
+              <button type="button" className="cac-modal-close" onClick={() => setOpenDay(null)} aria-label="Закрыть">✕</button>
+            </div>
+            <div className="cac-modal-body">
+              {(byDay.get(openDay) ?? []).map((a) => {
+                const status = now < a.startAt ? 'upcoming' : now < a.endAt ? 'live' : 'ended';
+                const sprite = itemSprite(a, catalog);
+                return (
+                  <button
+                    key={a.auctionId}
+                    type="button"
+                    className={`cac-pop-row cac-pop--${status}`}
+                    onClick={() => { setOpenDay(null); onSelect(a); }}
+                  >
+                    {sprite ? (
+                      <img className="cac-pop-sprite" src={`/sprites/${sprite}`} alt="" loading="lazy" />
+                    ) : (
+                      <span className="cac-sprite-fallback">{TYPE_ICON[a.type]}</span>
+                    )}
+                    <span className="cac-pop-time">
+                      {TIME_FMT.format(a.startAt)}–{TIME_FMT.format(a.endAt)}
+                    </span>
+                    <span className="cac-pop-name">{itemName(a)}</span>
+                    {status === 'live' && <span className="cac-pop-live">🔥</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }

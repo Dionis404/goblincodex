@@ -59,6 +59,7 @@ interface Payload {
   auctionsTotal: number;
   auctionsEnded: number;
   flowerRateNow: number | null;
+  statsReadyAt: number | null;
 }
 
 type State =
@@ -118,13 +119,16 @@ export default function AuctionTiers() {
     return <div className="ct-loading">Не удалось загрузить тиры аукционов.</div>;
   }
 
-  const { rows, pending, auctionsTotal, auctionsEnded, flowerRateNow, chapterName, chapterOrder } = state.data;
+  const { rows, pending, auctionsTotal, auctionsEnded, flowerRateNow, statsReadyAt, chapterName, chapterOrder } = state.data;
 
   return (
     <div className="ct-root">
       <p className="ct-sub">
         Глава {chapterOrder}: {chapterName} · аукционов: {auctionsTotal}, завершено: {auctionsEnded}.
         {flowerRateNow != null && ` Курс Flower сейчас: ${usd(flowerRateNow)}.`}
+        {statsReadyAt != null && (statsReadyAt > Date.now()
+          ? ` Полная статистика ставок за Flower и Gem соберётся к ${date(statsReadyAt)}.`
+          : ' Статистика ставок за Flower и Gem собрана полностью.')}
       </p>
 
       <details className="ct-how">
@@ -134,7 +138,8 @@ export default function AuctionTiers() {
             <b>Цена предмета в $.</b> Если предмет уже торгуется на маркетплейсе — его floor в $.
             Если нет — медиана ставок победителей на уже прошедших дропах за Flower и Gem: Flower по
             курсу на момент аукциона, Gem по цене пака (15 500 gems за $129,99, то есть {usd(GEM_USD * 1000)}
-            {' '}за 1000 gems). Дропы за тикеты главы в цену не входят.
+            {' '}за 1000 gems). Дропы за тикеты главы в цену не входят. Питомцы (NFT) оцениваются по
+            самому дешёвому питомцу на маркетплейсе — яйцо с аукциона может достаться любой.
           </li>
           <li>
             <b>Поправка на саплай.</b> Чем меньше штук разыграно, тем предмет ценнее:

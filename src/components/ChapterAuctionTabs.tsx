@@ -85,6 +85,7 @@ export default function ChapterAuctionTabs({ chapterName }: { chapterName: strin
           dataUrl="/api/auctions/history.json"
           defaultStatusFilter="ended"
           showStatusFilter={false}
+          maxInitialGroups={5}
         />
       )}
       {tab === 'tiers' && <AuctionTiers />}

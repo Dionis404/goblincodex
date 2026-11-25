@@ -434,8 +434,10 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
     return [{ value: 'all', label: 'Все предметы' }, ...[...names].sort().map(n => ({ value: n, label: n }))];
   }, [auctions]);
 
-  // Показываем фильтр по главе, только если в данных реально несколько глав
-  // (на странице одной главы он бесполезен — там и так всё одной главы).
+  // Показываем фильтр по главе, если в данных реально несколько глав
+  // (на странице одной главы он бесполезен — там и так всё одной главы),
+  // либо в режиме общей истории (showStatusFilter выключен — вкладка
+  // «История»), где он служит основной навигацией даже для двух глав.
   // Сортируем по игровому порядку глав (CHAPTERS.order), не по алфавиту —
   // иначе "Ascension Age" и "Bull Run" оказались бы раньше "Solar Flare".
   const chapterOptions = useMemo<DropdownOption[]>(() => {
@@ -447,7 +449,7 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
     const ordered = CHAPTERS.filter(c => names.has(c.name)).sort((a, b) => b.order - a.order);
     return [{ value: 'all', label: 'Все главы' }, ...ordered.map(c => ({ value: c.name, label: c.name }))];
   }, [auctions]);
-  const showChapterFilter = chapterOptions.length > 2;
+  const showChapterFilter = chapterOptions.length > 2 || !showStatusFilter;
 
   const isFiltered = statusFilter !== defaultStatusFilter
     || costFilter !== 'all'
@@ -723,7 +725,7 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
 
       {groupsLimited && groups.length > maxInitialGroups! && (
         <button type="button" className="ca-show-all" onClick={() => setShowAllGroups(true)}>
-          Показать всё расписание ({groups.length - maxInitialGroups!} дн. ещё)
+          Показать все дни ({groups.length - maxInitialGroups!} дн. ещё)
         </button>
       )}
       </>

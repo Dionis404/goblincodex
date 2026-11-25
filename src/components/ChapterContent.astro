@@ -5,7 +5,6 @@
 // остальных глав целиком живёт на /codex/chapter/[slug].
 import { getCollection } from 'astro:content';
 import ChapterAuctionTabs from './ChapterAuctionTabs.tsx';
-import ChapterAuctionItems from './ChapterAuctionItems.astro';
 import ChapterTicketLeaderboard from './ChapterTicketLeaderboard.tsx';
 import { getCurrentChapter, getUpcomingChapter } from '../lib/chapters';
 import { MUTANT_CRAFT_ITEMS, STELLA_ITEMS } from '../lib/chapterItemGroups';
@@ -83,7 +82,17 @@ const auctionItemNames = new Set(
 );
 const mutantItemNames = new Set(MUTANT_CRAFT_ITEMS[currentChapter?.slug ?? ''] ?? []);
 const stellaItemNames = new Set(STELLA_ITEMS[currentChapter?.slug ?? ''] ?? []);
-const auctionGroup = chapterItems.filter((i) => auctionItemNames.has(i.name));
+// Аукционные предметы — ВСЕ из живого расписания (отдельный блок «Предметы
+// с аукционов» убран как дубль): берём и тегированные предметы главы, и
+// нетегированные (новинки главы часто попадают в расписание раньше, чем в
+// теги БД). NFT-питомцев в каталоге нет — они просто не попадут в сетку.
+const auctionGroup = [
+  ...chapterItems.filter((i) => auctionItemNames.has(i.name)),
+  ...[...auctionItemNames]
+    .filter((n) => !chapterItems.some((i) => i.name === n))
+    .map((n) => itemCatalog[n])
+    .filter((i): i is NonNullable<typeof i> => Boolean(i)),
+].sort((a, b) => a.name.localeCompare(b.name));
 const mutantGroup = chapterItems.filter((i) => !auctionItemNames.has(i.name) && mutantItemNames.has(i.name));
 // Stella — по явному списку из megastore.ts кода игры: часть предметов
 // (хоургласы, Pot of Luck) в нашей БД без тега главы, поэтому берём их
@@ -218,9 +227,6 @@ const MECHANIC_CARDS = [
     </div>
   )}
 </section>
-
-<!-- ── Предметы с аукционов ── -->
-<ChapterAuctionItems auctions={chapterAuctionList} itemCatalog={itemCatalog} />
 
 <!-- ── Гайды по механике главы — показываем, только когда они есть ── -->
 {chapterGuides.length > 0 && (

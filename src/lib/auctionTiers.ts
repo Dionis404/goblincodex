@@ -13,7 +13,7 @@
  * чем меньше штук разыграно на аукционах, тем выше поправка.
  */
 import { fetchAuctionResults, fetchAuctionsInRange, type UiAuction } from './auctionsApi';
-import { fetchFlowerRate, fetchPriceHistory, fetchPriceResources, type PricePoint } from './sflApi';
+import { fetchFlowerRate, fetchLatestPrices, fetchPriceHistory, fetchPriceResources, type PricePoint } from './sflApi';
 import { WEARABLE_NAMES } from './wearableNames';
 import { withTtlCache } from './cache';
 
@@ -122,6 +122,27 @@ async function marketPrice(name: string, keys: Map<string, string>): Promise<Mar
   return data;
 }
 
+/**
+ * Минимальный floor по всем питомцам маркетплейса в $. Аукционный лот — яйцо
+ * с случайным питомцем, поэтому его рыночная цена = самый дешёвый питомец,
+ * которого можно купить прямо сейчас (худший исход для победителя).
+ */
+async function petFloorPrice(): Promise<MarketPrice | null> {
+  const { data } = await withTtlCache('auction-tiers:pet-floor', TTL_MS, async () => {
+    const pets = await fetchLatestPrices('pets');
+    let best: MarketPrice | null = null;
+    for (const p of pets) {
+      const usd = p.floor_usd ?? (p.floor != null && p.flower_price ? p.floor * p.flower_price : null);
+      if (usd != null && usd > 0 && (best == null || usd < best.usd)) {
+        best = { usd, flower: p.floor ?? null, at: p.captured_at };
+      }
+    }
+    if (!best) throw new Error('нет floor-цен питомцев');
+    return best;
+  }, { swr: true });
+  return data;
+}
+
 // ─── Анализ ───────────────────────────────────────────────────────────────────
 
 export interface TierRow {
@@ -170,6 +191,8 @@ export interface TierAnalysis {
   auctionsTotal: number;
   auctionsEnded: number;
   flowerRateNow: number | null;
+  /** Когда завершится последний дроп за Flower/Gem — к этой дате соберётся вся статистика ставок. */
+  statsReadyAt: number | null;
 }
 
 export interface PendingItem {
@@ -268,8 +291,10 @@ export async function analyzeAuctionTiers(
 
   const rows: Omit<TierRow, 'tier'>[] = [];
   const pending: PendingItem[] = [];
+  // Питомцев (NFT) на общем маркете нет — их цена = минимальный floor питомца.
+  const petFloor = await petFloorPrice().catch(() => null);
   await mapLimit([...items.entries()], CONCURRENCY, async ([name, it]) => {
-    const market = await marketPrice(name, keys).catch(() => null);
+    const market = it.type === 'nft' ? petFloor : await marketPrice(name, keys).catch(() => null);
     const bids = bidsByItem.get(name) ?? [];
     const auctionUsd = bids.length ? median(bids.map((b) => b.usd)) : null;
     const priceUsd = market?.usd ?? auctionUsd;
@@ -351,11 +376,18 @@ export async function analyzeAuctionTiers(
     i = j;
   }
 
+  // Когда соберётся полная статистика ставок: конец последнего дропа главы
+  // за Flower или Gem (дропы за тикеты в цену не входят, их конец не важен).
+  const flowerGemEnds = auctions
+    .filter((a) => a.sfl > 0 || 'Gem' in a.ingredients)
+    .map((a) => a.endAt);
+
   return {
     rows: rows as TierRow[],
     pending,
     auctionsTotal: auctions.length,
     auctionsEnded: ended.length,
     flowerRateNow: series.length ? series[series.length - 1].usd : null,
+    statsReadyAt: flowerGemEnds.length ? Math.max(...flowerGemEnds) : null,
   };
 }
