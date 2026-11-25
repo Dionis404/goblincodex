@@ -14,7 +14,8 @@
  */
 export const MUTANT_CRAFT_ITEMS: Record<string, string[]> = {
   // Cave Dwellers — chapterMutants.ts + крафт (Giant Truffle, Pig Plush,
-  // Pig Doll) + аура (Firefly Aura, bumpkin.ts ITEM_IDS).
+  // Pig Doll) + аура (Firefly Aura, bumpkin.ts ITEM_IDS) + Mining Drill
+  // (крафт за ресурсы главы, в мегасторе Стеллы его нет).
   'cave-dwellers': [
     'Mushroom Chicken',
     'Ladybug Cow',
@@ -27,5 +28,31 @@ export const MUTANT_CRAFT_ITEMS: Record<string, string[]> = {
     'Firefly Aura',
     'Pig Plush',
     'Pig Doll',
+    'Mining Drill',
+  ],
+};
+
+/**
+ * Предметы мегастора Стеллы по главам (megastore.ts в коде игры,
+ * CAVE_DWELLERS_ITEMS и т.д.). Часть предметов (хоургласы, Pot of Luck)
+ * не имеет тега chapter-* в нашей БД — поэтому список явный, а не по тегу.
+ */
+export const STELLA_ITEMS: Record<string, string[]> = {
+  'cave-dwellers': [
+    'Duende Shoes',
+    'Duende Pants',
+    'Duende Shirt',
+    'Gourmet Hourglass',
+    'Ore Hourglass',
+    'Timber Hourglass',
+    'Blossom Hourglass',
+    'Orchard Hourglass',
+    "Fisher's Hourglass",
+    'Harvest Hourglass',
+    'Duende Hat',
+    'Straw House',
+    'Double Bed',
+    'Duende Monument',
+    'Pot of Luck',
   ],
 };

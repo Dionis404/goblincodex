@@ -8,7 +8,7 @@ import ChapterAuctionTabs from './ChapterAuctionTabs.tsx';
 import ChapterAuctionItems from './ChapterAuctionItems.astro';
 import ChapterTicketLeaderboard from './ChapterTicketLeaderboard.tsx';
 import { getCurrentChapter, getUpcomingChapter } from '../lib/chapters';
-import { MUTANT_CRAFT_ITEMS } from '../lib/chapterItemGroups';
+import { MUTANT_CRAFT_ITEMS, STELLA_ITEMS } from '../lib/chapterItemGroups';
 import { fetchAuctionsInRange, type UiAuction } from '../lib/auctionsApi';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
@@ -53,7 +53,8 @@ chapterGuides.sort((a, b) => new Date(b.data.publishDate ?? '').getTime() - new 
 
 const itemsOf = (slug: string) =>
   Object.values(itemCatalog)
-    .filter((i) => i.tags?.includes(`chapter-${slug}`))
+    // Баннер главы в списке предметов не показываем — он декоративный.
+    .filter((i) => i.tags?.includes(`chapter-${slug}`) && !i.name.endsWith(' Banner'))
     .sort((a, b) => a.name.localeCompare(b.name));
 const chapterItems = currentChapter ? itemsOf(currentChapter.slug) : [];
 const upcomingItems = upcomingChapter ? itemsOf(upcomingChapter.slug) : [];
@@ -81,9 +82,24 @@ const auctionItemNames = new Set(
     .filter((n): n is string => Boolean(n))
 );
 const mutantItemNames = new Set(MUTANT_CRAFT_ITEMS[currentChapter?.slug ?? ''] ?? []);
+const stellaItemNames = new Set(STELLA_ITEMS[currentChapter?.slug ?? ''] ?? []);
 const auctionGroup = chapterItems.filter((i) => auctionItemNames.has(i.name));
 const mutantGroup = chapterItems.filter((i) => !auctionItemNames.has(i.name) && mutantItemNames.has(i.name));
-const stellaGroup = chapterItems.filter((i) => !auctionItemNames.has(i.name) && !mutantItemNames.has(i.name));
+// Stella — по явному списку из megastore.ts кода игры: часть предметов
+// (хоургласы, Pot of Luck) в нашей БД без тега главы, поэтому берём их
+// из каталога напрямую по имени. Плюс тегированные предметы главы, не
+// попавшие в аукционы/мутантов/явный список (страховка на новые добавки).
+const stellaGroup = [
+  ...[...stellaItemNames]
+    .map((n) => itemCatalog[n])
+    .filter((i): i is NonNullable<typeof i> => Boolean(i) && !auctionItemNames.has(i.name)),
+  ...chapterItems.filter(
+    (i) =>
+      !auctionItemNames.has(i.name) &&
+      !mutantItemNames.has(i.name) &&
+      !stellaItemNames.has(i.name)
+  ),
+].sort((a, b) => a.name.localeCompare(b.name));
 const itemGroups = [
   { id: 'stella', icon: '🏪', title: 'Stella — за тикеты главы', items: stellaGroup },
   { id: 'auctions', icon: '🔨', title: 'Аукционы', items: auctionGroup },

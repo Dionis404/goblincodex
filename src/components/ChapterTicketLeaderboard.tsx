@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './ChapterTicketLeaderboard.css';
 
 interface Win {
@@ -159,9 +160,14 @@ export default function ChapterTicketLeaderboard() {
         </button>
       )}
 
-      {showDropped && (dropped.length > 0 || fallen.length > 0) && (
-        <div className="ctl-changes">
-          <div className="ctl-changes-body">
+      {showDropped && (dropped.length > 0 || fallen.length > 0) && createPortal(
+        <div className="ctl-modal-overlay" onClick={() => setShowDropped(false)}>
+          <div className="ctl-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="ctl-modal-head">
+              <span className="ctl-modal-title">🔻 Изменения в топе за сутки</span>
+              <button type="button" className="ctl-modal-close" onClick={() => setShowDropped(false)} aria-label="Закрыть">✕</button>
+            </div>
+            <div className="ctl-changes-body">
               {dropped.length > 0 && (
                 <>
                   <div className="ctl-changes-caption">Выбыли из топ-500:</div>
@@ -187,7 +193,9 @@ export default function ChapterTicketLeaderboard() {
                 </>
               )}
             </div>
-        </div>
+          </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

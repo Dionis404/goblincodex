@@ -567,6 +567,8 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
         )}
       </div>
 
+      {/* Фильтры и сводка — только для списка; календарю они не нужны */}
+      {!showCalendar && (
       <div className="ca-panel">
         <div className="ca-toolbar">
           <div className="ca-search-wrap">
@@ -624,6 +626,7 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
           ))}
         </div>
       </div>
+      )}
 
       {showCalendar ? (
         <AuctionCalendar

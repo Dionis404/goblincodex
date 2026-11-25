@@ -121,6 +121,58 @@
 .ctl-expand:hover { border-color: var(--green-mid); color: var(--text); }
 
 .ctl-changes { margin-top: 14px; }
+
+/* Модалка «Кто вышел» — рендерится через portal в body */
+.ctl-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.ctl-modal {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.ctl-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.ctl-modal-title {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.ctl-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-sec);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.ctl-modal-close:hover { color: var(--text); background: var(--bg); }
+.ctl-modal .ctl-changes-body {
+  margin-top: 0;
+  padding: 8px 10px 14px;
+  overflow-y: auto;
+}
 .ctl-changes-btn {
   margin-left: auto;
   flex-shrink: 0;
