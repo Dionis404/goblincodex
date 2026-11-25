@@ -637,6 +637,7 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
           chapterStart={chapterBounds.start}
           chapterEnd={chapterBounds.end}
           now={now}
+          tz={tz}
           onSelect={(a) => {
             const full = auctions.find((x) => x.auctionId === a.auctionId);
             if (full) setSelected(full);

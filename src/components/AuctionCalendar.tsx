@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 // Календарь аукционов главы: помесячная 7-колоночная сетка с переключением
@@ -31,6 +31,10 @@ interface Props {
   chapterStart: number;
   chapterEnd: number;
   now: number;
+  /** Таймзона группировки дней — совпадает с зоной списка (сначала МСК для
+   * SSR-совпадения, после монтирования — локальная зона браузера). Иначе
+   * аукцион, идущий через полночь в зоне пользователя, «теряется» в календаре. */
+  tz: string;
   onSelect: (a: CalendarAuction) => void;
 }
 
@@ -80,14 +84,21 @@ function CurrencyBadge({ name, catalog, size = 14 }: { name: string; catalog: Pr
   return <img src={`/sprites/${sprite}`} alt={name} title={name} width={size} height={size} loading="lazy" />;
 }
 
-// Дни и месяцы считаем в МСК — как группировка списка (formatDay там тоже МСК).
-const DAY_FMT = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-const MONTH_FMT = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', month: 'long', year: 'numeric' });
-const MODAL_DAY_FMT = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', day: 'numeric', month: 'long', weekday: 'long' });
-const TIME_FMT = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
+// Дни и месяцы считаем в таймзоне пользователя — как группировка списка
+// (ChapterAuctions передаёт свой tz). Форматтеры кэшируем по зоне.
+const fmtCache = new Map<string, Intl.DateTimeFormat>();
+function fmt(tz: string, opts: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  const key = `${tz}|${JSON.stringify(opts)}`;
+  let f = fmtCache.get(key);
+  if (!f) {
+    f = new Intl.DateTimeFormat('ru-RU', { timeZone: tz, ...opts });
+    fmtCache.set(key, f);
+  }
+  return f;
+}
 
-function dayKey(ms: number): string {
-  return DAY_FMT.format(ms);
+function dayKey(ms: number, tz: string): string {
+  return fmt(tz, { year: 'numeric', month: '2-digit', day: '2-digit' }).format(ms);
 }
 
 function dayStartMs(dayKeyStr: string): number {
@@ -95,9 +106,9 @@ function dayStartMs(dayKeyStr: string): number {
   return Date.UTC(y, m - 1, d);
 }
 
-/** Ключ месяца "YYYY-MM" по московскому времени. */
-function monthKey(ms: number): string {
-  const [, m, y] = dayKey(ms).split('.').map(Number);
+/** Ключ месяца "YYYY-MM" по зоне tz. */
+function monthKey(ms: number, tz: string): string {
+  const [, m, y] = dayKey(ms, tz).split('.').map(Number);
   return `${y}-${String(m).padStart(2, '0')}`;
 }
 
@@ -106,7 +117,7 @@ function monthStartMs(mk: string): number {
   return Date.UTC(y, m - 1, 1);
 }
 
-export default function AuctionCalendar({ auctions, catalog, chapterStart, chapterEnd, now, onSelect }: Props) {
+export default function AuctionCalendar({ auctions, catalog, chapterStart, chapterEnd, now, tz, onSelect }: Props) {
   const [openDay, setOpenDay] = useState<string | null>(null);
 
   const byDay = useMemo(() => {
@@ -114,10 +125,10 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
     auctions.forEach((a) => {
       // Аукцион может идти через полночь — показываем его во всех днях,
       // которые он затрагивает (обычно 1–2 дня; ограничение — страховка).
-      let d = dayStartMs(dayKey(a.startAt));
-      const last = dayStartMs(dayKey(a.endAt));
+      let d = dayStartMs(dayKey(a.startAt, tz));
+      const last = dayStartMs(dayKey(a.endAt, tz));
       for (let i = 0; d <= last && i < 4; i++, d += 86_400_000) {
-        const key = dayKey(d);
+        const key = dayKey(d, tz);
         const list = map.get(key) ?? [];
         list.push(a);
         map.set(key, list);
@@ -125,14 +136,14 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
     });
     map.forEach((list) => list.sort((a, b) => a.startAt - b.startAt));
     return map;
-  }, [auctions]);
+  }, [auctions, tz]);
 
-  // Месяцы, которые накрывает глава (в МСК).
+  // Месяцы, которые накрывает глава (в зоне tz).
   const months = useMemo(() => {
     if (!chapterStart || !chapterEnd) return [];
     const out: string[] = [];
-    const first = monthKey(chapterStart);
-    const last = monthKey(chapterEnd - 1);
+    const first = monthKey(chapterStart, tz);
+    const last = monthKey(chapterEnd - 1, tz);
     let mk = first;
     while (mk <= last && out.length < 12) {
       out.push(mk);
@@ -140,11 +151,17 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
       mk = m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, '0')}`;
     }
     return out;
-  }, [chapterStart, chapterEnd]);
+  }, [chapterStart, chapterEnd, tz]);
 
   // Текущий месяц по умолчанию, если он внутри главы; иначе первый месяц главы.
-  const nowMonth = monthKey(now);
+  const nowMonth = monthKey(now, tz);
   const [monthCursor, setMonthCursor] = useState(() => (months.includes(nowMonth) ? nowMonth : months[0]));
+
+  // Зона определяется после монтирования — курсор мог встать на МСК-месяц.
+  useEffect(() => {
+    setMonthCursor((cur) => (months.includes(nowMonth) && cur === months[0] && months[0] !== nowMonth ? nowMonth : cur));
+    // Реагируем только на смену зоны; ручное листание месяцев не трогаем.
+  }, [tz]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const cells = useMemo(() => {
     if (!monthCursor) return [];
@@ -156,18 +173,18 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
     for (let i = 0; i < leading; i++) out.push(null);
     for (let d = 0; d < daysInMonth; d++) {
       const ms = first + d * 86_400_000;
-      out.push({ ms, inChapter: ms >= dayStartMs(dayKey(chapterStart)) && ms <= dayStartMs(dayKey(chapterEnd - 1)), key: dayKey(ms) });
+      out.push({ ms, inChapter: ms >= dayStartMs(dayKey(chapterStart, tz)) && ms <= dayStartMs(dayKey(chapterEnd - 1, tz)), key: dayKey(ms, tz) });
     }
     return out;
-  }, [monthCursor, chapterStart, chapterEnd]);
+  }, [monthCursor, chapterStart, chapterEnd, tz]);
 
   if (months.length === 0) {
     return <div className="cac-empty">Границы главы неизвестны — календарь не построить.</div>;
   }
 
-  const todayKey = dayKey(now);
+  const todayKey = dayKey(now, tz);
   const monthIdx = months.indexOf(monthCursor);
-  const monthLabel = MONTH_FMT.format(monthStartMs(monthCursor));
+  const monthLabel = fmt(tz, { month: 'long', year: 'numeric' }).format(monthStartMs(monthCursor));
 
   return (
     <div className="cac-root">
@@ -253,7 +270,7 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
         <div className="cac-modal-overlay" onClick={() => setOpenDay(null)}>
           <div className="cac-modal" onClick={(e) => e.stopPropagation()}>
             <div className="cac-modal-head">
-              <span className="cac-modal-title">{MODAL_DAY_FMT.format(dayStartMs(openDay))}</span>
+              <span className="cac-modal-title">{fmt(tz, { day: 'numeric', month: 'long', weekday: 'long' }).format(dayStartMs(openDay))}</span>
               <button type="button" className="cac-modal-close" onClick={() => setOpenDay(null)} aria-label="Закрыть">✕</button>
             </div>
             <div className="cac-modal-body">
@@ -273,7 +290,7 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
                       <span className="cac-sprite-fallback">{TYPE_ICON[a.type]}</span>
                     )}
                     <span className="cac-pop-time">
-                      {TIME_FMT.format(a.startAt)}–{TIME_FMT.format(a.endAt)}
+                      {fmt(tz, { hour: '2-digit', minute: '2-digit' }).format(a.startAt)}–{fmt(tz, { hour: '2-digit', minute: '2-digit' }).format(a.endAt)}
                     </span>
                     <span className="cac-pop-cur">
                       {currenciesOf(a).map((c) => <CurrencyBadge key={c} name={c} catalog={catalog} size={16} />)}
