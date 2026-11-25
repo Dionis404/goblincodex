@@ -5,7 +5,7 @@
    ячейка ~95px, спрайты остаются читаемыми. */
 .cac-root {
   width: 100%;
-  max-width: 720px;
+  max-width: 840px;
   margin: 0 auto;
 }
 
@@ -114,8 +114,8 @@ button.cac-month-nav:disabled { opacity: 0.35; cursor: default; }
   margin: auto 0;
 }
 .cac-sprites img {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   image-rendering: pixelated;
 }
