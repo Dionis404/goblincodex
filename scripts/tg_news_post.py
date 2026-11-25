@@ -24,8 +24,8 @@ NEWS_DIR = "src/content/news/"
 SITE = "https://blog.goblincodex.fun"
 
 GAME_META = {
-    "sunflower": {"emoji": "🌻", "tag": "#SunflowerLand"},
-    "yakkamon": {"emoji": "🧚", "tag": "#Yakkamon"},
+    "sunflower": {"emoji": "🌻", "tag": "#sunflowerLand"},
+    "yakkamon": {"emoji": "🧚", "tag": "#yakkamon"},
 }
 
 
@@ -58,7 +58,6 @@ def build_message(fm: dict, path: str) -> tuple[str, str | None] | None:
         return None
 
     meta = GAME_META.get(fm.get("game", "sunflower"), GAME_META["sunflower"])
-    category = fm.get("category", "")
     description = fm.get("description", "").strip()
     url = f"{SITE}/news/{short_id}"
 
@@ -69,9 +68,7 @@ def build_message(fm: dict, path: str) -> tuple[str, str | None] | None:
     if description:
         lines += [html.escape(description), ""]
     lines.append(f'👉 <a href="{url}">Читать на GoblinCodex</a>')
-    tags = " ".join(t for t in (meta["tag"], f"#{category}" if category else "") if t)
-    if tags:
-        lines += ["", tags]
+    lines += ["", meta["tag"]]
 
     image = fm.get("image", "").strip()
     image_url = f"{SITE}{urllib.parse.quote(image)}" if image.startswith("/") else None
