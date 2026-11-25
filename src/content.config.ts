@@ -1,6 +1,13 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+// CMS (Sveltia) пишет даты во frontmatter без кавычек — YAML парсит их
+// в Date, а схемы ждут строку "YYYY-MM-DD". Принимаем оба варианта.
+const asDateString = (v: unknown) =>
+  v instanceof Date ? v.toISOString().slice(0, 10) : v;
+const dateStr = () => z.preprocess(asDateString, z.string());
+const dateStrOpt = () => z.preprocess(asDateString, z.string().optional());
+
 const guides = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/guides' }),
   schema: z.object({
@@ -9,8 +16,8 @@ const guides = defineCollection({
     category:    z.string().default('Общее'),
     readTime:    z.number().default(5),
     icon:        z.string().default('📄'),
-    publishDate: z.string().optional(),
-    updatedDate: z.string().optional(),
+    publishDate: dateStrOpt(),
+    updatedDate: dateStrOpt(),
     draft:       z.boolean().default(false),
     section: z.enum(['guides', 'nft']).default('guides'),
     author: z.string().optional(),
@@ -27,8 +34,8 @@ const yakkamon = defineCollection({
     category:    z.string().default('Основы'),
     readTime:    z.number().default(5),
     icon:        z.string().default('📄'),
-    publishDate: z.string().optional(),
-    updatedDate: z.string().optional(),
+    publishDate: dateStrOpt(),
+    updatedDate: dateStrOpt(),
     draft:       z.boolean().default(false),
   }),
 });
@@ -55,7 +62,7 @@ const news = defineCollection({
     // среди всех .md в src/content/news/.
     shortId:     z.number().int().positive(),
     slug:        z.string(),
-    date:        z.string(),
+    date:        dateStr(),
     category:    z.string().default('Новость'),
     // Только 'sunflower'/'yakkamon' — 'telegram' в NewsGame (src/lib/news-feed.ts)
     // существует лишь для Telegram-постов из БД, статья коллекции не может

@@ -1,6 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
 import { getEntry } from 'astro:content';
-import { SECTIONS, sectionForHost, subdomainFor, isTestHost, isLocalHost, testSubdomainFor, mainDomainFor } from './lib/subdomains';
+import { SECTIONS, sectionForHost, subdomainFor, isTestHost, isLocalHost, isDevHost, testSubdomainFor, mainDomainFor } from './lib/subdomains';
 import { checkRateLimit, clientIp } from './lib/rate-limit';
 import { warmupCaches } from './lib/warmup';
 
@@ -20,6 +20,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const host = context.request.headers.get('host');
+
+  // Дев-стенд: отдаём всё как есть, без редиректов на прод-поддомены —
+  // здесь проверяем новый контент, которого на проде ещё нет.
+  if (isDevHost(host)) {
+    return next();
+  }
 
   if (context.url.pathname.startsWith('/api/')) {
     let socketIp: string | undefined;

@@ -52,6 +52,13 @@ export function isLocalHost(host: string | null): boolean {
   return h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.endsWith('.localhost');
 }
 
+// Дев-стенд dev.goblincodex.fun: полная копия сайта без редиректов на
+// прод-поддомены — иначе новые статьи с dev не открыть (улетают на прод,
+// где их ещё нет).
+export function isDevHost(host: string | null): boolean {
+  return normalizeHost(host) === 'dev.goblincodex.fun';
+}
+
 export function testSubdomainFor(host: string | null): string {
   return `test.goblincodex.${tldOf(host)}`;
 }

@@ -6,7 +6,7 @@ date: 2026-11-25
 category: Бродкаст
 game: yakkamon
 description: 'Команда Yakkamon провела открытую трансляцию перед стартом Early Access: боевая система в стиле JRPG, разделённая выносливость, 5 регионов Сафари-зоны, VIP-бонусы, маркетплейс и планы на Главу 0. Собрали всё в одном разборе.'
-image: /blog-images/Пиксельное ранчо монстров на закате.png
+image: /blog-images/yakkamon-early-access-2026-11-25.png
 originalUrl: ''
 draft: false
 ---
