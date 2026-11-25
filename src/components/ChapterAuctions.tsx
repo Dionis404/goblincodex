@@ -1,7 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CHAPTERS } from '../lib/chapters';
+import AuctionCalendar from './AuctionCalendar';
 import './ChapterAuctions.css';
+import './AuctionCalendar.css';
 
 interface Auction {
   auctionId: string;
@@ -306,11 +308,19 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
     auctions: Auction[];
     catalog: Record<string, CatalogEntry>;
     chapterName?: string;
+    startAt?: number;
+    endAt?: number;
   } | null>(null);
 
   const auctions = auctionsProp ?? fetched?.auctions ?? [];
   const itemCatalog = itemCatalogProp ?? fetched?.catalog ?? {};
   const chapterName = chapterNameProp ?? fetched?.chapterName ?? 'текущей главы';
+  // Границы главы для календаря — приходят только от /api/auctions/chapter.json
+  // (самозагрузка вкладки главы). В архивных режимах их нет, там календарь
+  // не показываем — только список.
+  const chapterBounds = fetched?.startAt && fetched?.endAt
+    ? { start: fetched.startAt, end: fetched.endAt }
+    : null;
 
   useEffect(() => {
     if (auctionsProp) return;
@@ -321,11 +331,13 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
       fetch('/api/nft-catalog.json')
         .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); }),
     ])
-      .then(([chapterJson, catalogJson]: [{ auctions?: Auction[]; chapterName?: string }, { items?: Array<CatalogEntry & { name: string }> }]) => {
+      .then(([chapterJson, catalogJson]: [{ auctions?: Auction[]; chapterName?: string; startAt?: number; endAt?: number }, { items?: Array<CatalogEntry & { name: string }> }]) => {
         if (cancelled) return;
         setFetched({
           auctions: chapterJson.auctions ?? [],
           chapterName: chapterJson.chapterName ?? undefined,
+          startAt: chapterJson.startAt ?? undefined,
+          endAt: chapterJson.endAt ?? undefined,
           catalog: Object.fromEntries((catalogJson.items ?? []).map(i => [i.name, i])),
         });
       })
@@ -504,6 +516,22 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
   const groupsLimited = maxInitialGroups != null && !showAllGroups && !isFiltered;
   const visibleGroups = groupsLimited ? groups.slice(0, maxInitialGroups) : groups;
 
+  // Календарю статусный фильтр не нужен (он показывает всю главу целиком),
+  // но поиск и остальные фильтры применяются.
+  const calendarAuctions = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return auctions
+      .filter(a => (costFilter === 'all' || costKey(a) === costFilter))
+      .filter(a => (kindFilter === 'all' || itemKind(a, itemCatalog) === kindFilter))
+      .filter(a => (nameFilter === 'all' || itemName(a) === nameFilter))
+      .filter(a => !q || itemName(a).toLowerCase().includes(q));
+  }, [auctions, itemCatalog, costFilter, kindFilter, nameFilter, search]);
+
+  // Календарь — основной вид расписания главы (когда известны её границы);
+  // список остаётся переключателем и единственным видом в архивных режимах.
+  const [view, setView] = useState<'calendar' | 'list'>('calendar');
+  const showCalendar = view === 'calendar' && chapterBounds != null;
+
   return (
     <div className="ca-root">
       {!auctionsProp && fetched === null ? (
@@ -519,6 +547,24 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
             <span className="ca-tz-badge">🕐 {utcOffsetLabel(tz)} · определён автоматически</span>
           </div>
         </div>
+        {chapterBounds && (
+          <div className="ca-view-toggle">
+            <button
+              type="button"
+              className={`ca-view-btn${showCalendar ? ' active' : ''}`}
+              onClick={() => setView('calendar')}
+            >
+              📅 Календарь
+            </button>
+            <button
+              type="button"
+              className={`ca-view-btn${!showCalendar ? ' active' : ''}`}
+              onClick={() => setView('list')}
+            >
+              📋 Список
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="ca-panel">
@@ -579,6 +625,20 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
         </div>
       </div>
 
+      {showCalendar ? (
+        <AuctionCalendar
+          auctions={calendarAuctions}
+          catalog={itemCatalog}
+          chapterStart={chapterBounds.start}
+          chapterEnd={chapterBounds.end}
+          now={now}
+          onSelect={(a) => {
+            const full = auctions.find((x) => x.auctionId === a.auctionId);
+            if (full) setSelected(full);
+          }}
+        />
+      ) : (
+      <>
       {groups.length === 0 && (
         <div className="ca-empty">Аукционов по выбранным фильтрам не найдено.</div>
       )}
@@ -662,6 +722,8 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
         <button type="button" className="ca-show-all" onClick={() => setShowAllGroups(true)}>
           Показать всё расписание ({groups.length - maxInitialGroups!} дн. ещё)
         </button>
+      )}
+      </>
       )}
 
       {selected && createPortal(

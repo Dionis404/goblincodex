@@ -121,27 +121,21 @@
 .ctl-expand:hover { border-color: var(--green-mid); color: var(--text); }
 
 .ctl-changes { margin-top: 14px; }
-.ctl-changes-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 10px 12px;
+.ctl-changes-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 8px 14px;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 9px;
   color: var(--text-sec);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
-  text-align: left;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
 }
-.ctl-changes-toggle:hover { color: var(--text); }
-.ctl-changes-arrow {
-  display: inline-block;
-  transition: transform 0.15s;
-}
-.ctl-changes-arrow.open { transform: rotate(90deg); }
+.ctl-changes-btn:hover { border-color: var(--red, #c94b3d); color: var(--text); }
 
 .ctl-changes-body {
   margin-top: 8px;

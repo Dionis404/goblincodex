@@ -8,6 +8,7 @@ import ChapterAuctionTabs from './ChapterAuctionTabs.tsx';
 import ChapterAuctionItems from './ChapterAuctionItems.astro';
 import ChapterTicketLeaderboard from './ChapterTicketLeaderboard.tsx';
 import { getCurrentChapter, getUpcomingChapter } from '../lib/chapters';
+import { MUTANT_CRAFT_ITEMS } from '../lib/chapterItemGroups';
 import { fetchAuctionsInRange, type UiAuction } from '../lib/auctionsApi';
 import type { getCatalogItems } from '../lib/db';
 import { getCachedCatalogItems } from '../lib/catalog-cache';
@@ -70,6 +71,24 @@ if (currentChapter) {
 const upcomingStart = upcomingChapter
   ? new Date(upcomingChapter.startDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'UTC' })
   : '';
+
+// Разбивка предметов главы на группы (см. src/lib/chapterItemGroups.ts):
+// аукционные — по живому расписанию аукционов, мутанты/крафт — по списку
+// из кода игры, остальные считаем магазином Стеллы (покупка за тикеты).
+const auctionItemNames = new Set(
+  chapterAuctionList
+    .map((a) => a.collectible ?? a.wearable ?? a.nft)
+    .filter((n): n is string => Boolean(n))
+);
+const mutantItemNames = new Set(MUTANT_CRAFT_ITEMS[currentChapter?.slug ?? ''] ?? []);
+const auctionGroup = chapterItems.filter((i) => auctionItemNames.has(i.name));
+const mutantGroup = chapterItems.filter((i) => !auctionItemNames.has(i.name) && mutantItemNames.has(i.name));
+const stellaGroup = chapterItems.filter((i) => !auctionItemNames.has(i.name) && !mutantItemNames.has(i.name));
+const itemGroups = [
+  { id: 'stella', icon: '🏪', title: 'Stella — за тикеты главы', items: stellaGroup },
+  { id: 'auctions', icon: '🔨', title: 'Аукционы', items: auctionGroup },
+  { id: 'mutants', icon: '🧬', title: 'Мутанты и крафт', items: mutantGroup },
+].filter((g) => g.items.length > 0);
 
 // Карточки-кнопки, открывающие гайд по механике в модалке —
 // сама модалка вынесена в отдельный ChapterMechanicModal.astro
@@ -135,35 +154,46 @@ const MECHANIC_CARDS = [
   </section>
 )}
 
-<!-- ── Предметы главы ── -->
+<!-- ── Предметы главы: аккордеон по источникам (Stella / аукционы / мутанты) ── -->
 <section class="gc-chapter-section">
   <h2 class="gc-block-title-lg">💎 Предметы главы</h2>
-  {chapterItems.length > 0 ? (
-    <div class="gc-chapter-items-grid">
-      {chapterItems.map((item) => (
-        <div class="gc-chapter-item-card">
-          <div class="gc-chapter-item-sprite">
-            {item.sprite ? (
-              <img src={`/sprites/${item.sprite}`} alt={item.name} loading="lazy" />
-            ) : (
-              <span class="gc-chapter-item-sprite-placeholder">?</span>
-            )}
-          </div>
-          <div class="gc-chapter-item-info">
-            <div class="gc-chapter-item-name">{item.name}</div>
-            {item.boosts.length > 0 ? (
-              <div class="gc-chapter-item-boosts">
-                {item.boosts.map((b) => (
-                  <span class={`gc-chapter-item-boost gc-chapter-item-boost--${b.labelType}`}>
-                    {b.shortDescriptionRu || b.shortDescription}
-                  </span>
-                ))}
+  {itemGroups.length > 0 ? (
+    <div class="gc-item-groups">
+      {itemGroups.map((group, gi) => (
+        <details class="gc-item-group" open={gi === 0}>
+          <summary class="gc-item-group-summary">
+            <span class="gc-item-group-icon">{group.icon}</span>
+            {group.title}
+            <span class="gc-item-group-count">{group.items.length}</span>
+          </summary>
+          <div class="gc-chapter-items-grid">
+            {group.items.map((item) => (
+              <div class="gc-chapter-item-card">
+                <div class="gc-chapter-item-sprite">
+                  {item.sprite ? (
+                    <img src={`/sprites/${item.sprite}`} alt={item.name} loading="lazy" />
+                  ) : (
+                    <span class="gc-chapter-item-sprite-placeholder">?</span>
+                  )}
+                </div>
+                <div class="gc-chapter-item-info">
+                  <div class="gc-chapter-item-name">{item.name}</div>
+                  {item.boosts.length > 0 ? (
+                    <div class="gc-chapter-item-boosts">
+                      {item.boosts.map((b) => (
+                        <span class={`gc-chapter-item-boost gc-chapter-item-boost--${b.labelType}`}>
+                          {b.shortDescriptionRu || b.shortDescription}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <span class="gc-chapter-item-no-boost">Без бонусов</span>
+                  )}
+                </div>
               </div>
-            ) : (
-              <span class="gc-chapter-item-no-boost">Без бонусов</span>
-            )}
+            ))}
           </div>
-        </div>
+        </details>
       ))}
     </div>
   ) : (
@@ -452,6 +482,52 @@ const MECHANIC_CARDS = [
 }
 
 /* ── Предметы главы ── */
+.gc-item-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gc-item-group {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.gc-item-group-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.gc-item-group-summary::-webkit-details-marker { display: none; }
+.gc-item-group-summary::before {
+  content: '▸';
+  display: inline-block;
+  transition: transform 0.15s;
+  color: var(--text-ter);
+}
+.gc-item-group[open] .gc-item-group-summary::before { transform: rotate(90deg); }
+.gc-item-group-icon { font-size: 20px; }
+.gc-item-group-count {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-sec);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.gc-item-group .gc-chapter-items-grid {
+  padding: 4px 16px 18px;
+}
+
 .gc-chapter-items-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

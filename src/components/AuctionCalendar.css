@@ -1,0 +1,159 @@
+/* Календарь аукционов главы (AuctionCalendar.tsx) */
+
+.cac-root { width: 100%; }
+
+.cac-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.cac-weekdays span {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-ter);
+  text-transform: uppercase;
+}
+
+.cac-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.cac-cell-wrap { position: relative; }
+
+.cac-month {
+  position: absolute;
+  top: -9px;
+  left: 6px;
+  z-index: 2;
+  padding: 0 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-sec);
+  background: var(--bg);
+  border-radius: 4px;
+  text-transform: capitalize;
+  pointer-events: none;
+}
+
+.cac-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  min-height: 74px;
+  padding: 6px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+.cac-cell--has:hover { border-color: var(--green-mid); }
+.cac-cell--outside { opacity: 0.28; cursor: default; }
+.cac-cell--today { border-color: var(--green-mid); }
+.cac-cell--live { box-shadow: 0 0 0 1px var(--amber); }
+.cac-cell--open { border-color: var(--green-dark); }
+
+.cac-day-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-sec);
+  font-variant-numeric: tabular-nums;
+}
+.cac-cell--today .cac-day-num { color: var(--green-dark); }
+[data-theme="dark"] .cac-cell--today .cac-day-num { color: var(--green-light); }
+
+.cac-sprites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+}
+.cac-sprites img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.cac-sprite-fallback { font-size: 14px; line-height: 1; }
+.cac-more {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-ter);
+}
+
+.cac-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--text-sec);
+  font-size: 14px;
+}
+
+/* Поповер со списком аукционов дня */
+.cac-day-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  min-width: 230px;
+  max-width: 300px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+/* Последние две колонки — поповер открываем влево, чтобы не уезжал за экран */
+.cac-cell-wrap:nth-child(7n) .cac-day-pop,
+.cac-cell-wrap:nth-child(7n - 1) .cac-day-pop {
+  left: auto;
+  right: 0;
+}
+
+.cac-pop-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+}
+.cac-pop-row:hover { background: var(--green-pale); }
+.cac-pop-time {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--text-sec);
+  font-variant-numeric: tabular-nums;
+}
+.cac-pop--live .cac-pop-time { color: var(--amber); }
+.cac-pop-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.cac-pop-empty { padding: 8px; font-size: 12px; color: var(--text-sec); }
+
+@media (max-width: 640px) {
+  .cac-grid, .cac-weekdays { gap: 3px; }
+  .cac-cell { min-height: 56px; padding: 4px; }
+  .cac-sprites img { width: 16px; height: 16px; }
+  .cac-sprite-fallback { font-size: 11px; }
+}

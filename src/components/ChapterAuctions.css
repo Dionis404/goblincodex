@@ -242,6 +242,38 @@
 }
 .ca-show-all:hover { border-color: var(--green-mid); color: var(--text); }
 
+/* Переключатель видов расписания: календарь / список */
+.ca-widget-header {
+  flex-wrap: wrap;
+}
+.ca-view-toggle {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+}
+.ca-view-btn {
+  padding: 6px 14px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-sec);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+.ca-view-btn:hover { color: var(--text); }
+.ca-view-btn.active {
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+[data-theme="dark"] .ca-view-btn.active { color: var(--green-light); }
+
 /* Loading state — данные аукционов и каталога тянутся с API на клиенте
    (вкладка главы на /codex), SSR показывает этот загрузчик. */
 .ca-loading {

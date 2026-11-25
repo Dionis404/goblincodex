@@ -135,6 +135,11 @@ export default function ChapterTicketLeaderboard() {
             Глава «{chapter_name ?? 'текущая'}»{updatedLabel ? ` · обновлено ${updatedLabel}` : ''}
           </div>
         </div>
+        {(dropped.length > 0 || fallen.length > 0) && (
+          <button type="button" className="ctl-changes-btn" onClick={() => setShowDropped((v) => !v)}>
+            🔻 Кто вышел ({dropped.length + fallen.length})
+          </button>
+        )}
       </div>
 
       <div className="ctl-table">
@@ -154,14 +159,9 @@ export default function ChapterTicketLeaderboard() {
         </button>
       )}
 
-      {(dropped.length > 0 || fallen.length > 0) && (
+      {showDropped && (dropped.length > 0 || fallen.length > 0) && (
         <div className="ctl-changes">
-          <button type="button" className="ctl-changes-toggle" onClick={() => setShowDropped((v) => !v)}>
-            <span className={`ctl-changes-arrow${showDropped ? ' open' : ''}`}>▸</span>
-            🔻 Динамика за сутки: выбыли из топа — {dropped.length}, просели — {fallen.length}
-          </button>
-          {showDropped && (
-            <div className="ctl-changes-body">
+          <div className="ctl-changes-body">
               {dropped.length > 0 && (
                 <>
                   <div className="ctl-changes-caption">Выбыли из топ-500:</div>
@@ -187,7 +187,6 @@ export default function ChapterTicketLeaderboard() {
                 </>
               )}
             </div>
-          )}
         </div>
       )}
     </div>
