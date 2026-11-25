@@ -48,7 +48,7 @@ collections:
         widget: number
         value_type: int
         hint: "Короткий числовой id для /news/{shortId}. Сейчас максимум 181 — бери следующий свободный. Не переиспользовать!"
-      - { label: "Дата публикации", name: date, widget: date, format: "YYYY-MM-DD" }
+      - { label: "Дата публикации", name: date, widget: datetime, type: date, format: "YYYY-MM-DD" }
       - label: "Категория"
         name: category
         widget: select
@@ -90,8 +90,8 @@ collections:
         default: "Общее"
       - { label: "Время чтения (мин)", name: readTime, widget: number, value_type: int, default: 5 }
       - { label: "Иконка (эмодзи)", name: icon, widget: string, default: "📄" }
-      - { label: "Дата публикации", name: publishDate, widget: date, format: "YYYY-MM-DD", required: false }
-      - { label: "Дата обновления", name: updatedDate, widget: date, format: "YYYY-MM-DD", required: false }
+      - { label: "Дата публикации", name: publishDate, widget: datetime, type: date, format: "YYYY-MM-DD", required: false }
+      - { label: "Дата обновления", name: updatedDate, widget: datetime, type: date, format: "YYYY-MM-DD", required: false }
       - label: "Раздел"
         name: section
         widget: select
@@ -122,8 +122,8 @@ collections:
       - { label: "Категория", name: category, widget: string, default: "Основы" }
       - { label: "Время чтения (мин)", name: readTime, widget: number, value_type: int, default: 5 }
       - { label: "Иконка (эмодзи)", name: icon, widget: string, default: "📄" }
-      - { label: "Дата публикации", name: publishDate, widget: date, format: "YYYY-MM-DD", required: false }
-      - { label: "Дата обновления", name: updatedDate, widget: date, format: "YYYY-MM-DD", required: false }
+      - { label: "Дата публикации", name: publishDate, widget: datetime, type: date, format: "YYYY-MM-DD", required: false }
+      - { label: "Дата обновления", name: updatedDate, widget: datetime, type: date, format: "YYYY-MM-DD", required: false }
       - { label: "Черновик", name: draft, widget: boolean, default: false }
       - { label: "Текст статьи", name: body, widget: markdown }
 
