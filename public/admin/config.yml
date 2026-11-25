@@ -1,0 +1,147 @@
+# Sveltia CMS — админка контента GoblinCodex.
+# Вход: кнопка "Sign in with GitHub" -> "use a personal access token"
+# (fine-grained PAT с Contents: read/write на этот репозиторий).
+# Каждое сохранение = коммит в main -> CI сам пересобирает сайт и деплоит.
+
+backend:
+  name: github
+  repo: Dionis404/goblincodex
+  branch: main
+  # Коммиты CMS не триггерят CI немедленно? Нет — триггерят, это и нужно.
+  # Но помечаем, чтобы в истории было видно, откуда коммит:
+  commit_messages:
+    create: "content(cms): создать {{collection}} «{{slug}}»"
+    update: "content(cms): правка {{collection}} «{{slug}}»"
+    delete: "content(cms): удалить {{collection}} «{{slug}}»"
+    uploadMedia: "content(cms): загрузка картинки {{path}}"
+    deleteMedia: "content(cms): удаление картинки {{path}}"
+
+site_url: https://goblincodex.fun
+logo_url: https://goblincodex.fun/favicon-32x32.png
+locale: ru
+
+media_folder: public/blog-images
+public_folder: /blog-images
+
+collections:
+  - name: news
+    label: Новости
+    folder: src/content/news
+    create: true
+    # Имя файла = slug, slug задаём с датой: 2026-11-25-novaya-statya
+    slug: "{{fields.slug}}"
+    summary: "{{date}} — {{title}}"
+    sortable_fields: [date, title]
+    view_filters:
+      - { label: "Черновики", field: draft, pattern: true }
+      - { label: "Sunflower Land", field: game, pattern: sunflower }
+      - { label: "Yakkamon", field: game, pattern: yakkamon }
+    fields:
+      - { label: "Заголовок", name: title, widget: string }
+      - label: "Slug (имя файла и URL)"
+        name: slug
+        widget: string
+        hint: "Формат: ГГГГ-ММ-ДД-korotkoe-nazvanie-latinicey. Файл и URL будут ровно такими."
+        pattern: ['^\d{4}-\d{2}-\d{2}-[a-z0-9-]+$', 'Нужен формат ГГГГ-ММ-ДД-slug латиницей']
+      - label: "shortId"
+        name: shortId
+        widget: number
+        value_type: int
+        hint: "Короткий числовой id для /news/{shortId}. Сейчас максимум 181 — бери следующий свободный. Не переиспользовать!"
+      - { label: "Дата публикации", name: date, widget: date, format: "YYYY-MM-DD" }
+      - label: "Категория"
+        name: category
+        widget: select
+        options: ["Новость", "Стримы", "Бродкаст", "Гайды", "GitHub", "ZeroToHero", "Другое"]
+        default: "Новость"
+      - label: "Игра"
+        name: game
+        widget: select
+        options:
+          - { label: "Sunflower Land", value: sunflower }
+          - { label: "Yakkamon", value: yakkamon }
+        default: sunflower
+      - { label: "Описание (для превью и SEO)", name: description, widget: text }
+      - { label: "Картинка-превью", name: image, widget: image, required: false }
+      - { label: "Ссылка на оригинал", name: originalUrl, widget: string, required: false }
+      - { label: "Черновик", name: draft, widget: boolean, default: false }
+      - { label: "Текст статьи", name: body, widget: markdown }
+
+  - name: guides
+    label: Гайды SFL
+    folder: src/content/guides
+    create: true
+    slug: "{{fields.slug}}"
+    summary: "{{title}}"
+    view_filters:
+      - { label: "Черновики", field: draft, pattern: true }
+    fields:
+      - label: "Slug (имя файла и URL)"
+        name: slug
+        widget: string
+        hint: "Латиницей, через дефис: auction, buy-nft"
+        pattern: ['^[a-z0-9-]+$', 'Только латиница, цифры и дефисы']
+      - { label: "Заголовок", name: title, widget: string }
+      - { label: "Описание", name: description, widget: text }
+      - label: "Категория"
+        name: category
+        widget: select
+        options: ["Основы", "Механики", "Экономика", "Фермерство", "Лайфхаки", "Общее"]
+        default: "Общее"
+      - { label: "Время чтения (мин)", name: readTime, widget: number, value_type: int, default: 5 }
+      - { label: "Иконка (эмодзи)", name: icon, widget: string, default: "📄" }
+      - { label: "Дата публикации", name: publishDate, widget: date, format: "YYYY-MM-DD", required: false }
+      - { label: "Дата обновления", name: updatedDate, widget: date, format: "YYYY-MM-DD", required: false }
+      - label: "Раздел"
+        name: section
+        widget: select
+        options:
+          - { label: "Гайды", value: guides }
+          - { label: "NFT", value: nft }
+        default: guides
+      - { label: "Автор", name: author, widget: string, required: false }
+      - { label: "Соавторы", name: contributors, widget: list, field: { label: "Ник", name: nick, widget: string }, required: false }
+      - { label: "Глава (номер)", name: chapter, widget: number, value_type: int, required: false }
+      - { label: "Черновик", name: draft, widget: boolean, default: false }
+      - { label: "Текст гайда", name: body, widget: markdown }
+
+  - name: yakkamon
+    label: Yakkamon
+    folder: src/content/yakkamon
+    create: true
+    slug: "{{fields.slug}}"
+    summary: "{{title}}"
+    fields:
+      - label: "Slug (имя файла и URL)"
+        name: slug
+        widget: string
+        hint: "Латиницей, через дефис: auction, buy-nft"
+        pattern: ['^[a-z0-9-]+$', 'Только латиница, цифры и дефисы']
+      - { label: "Заголовок", name: title, widget: string }
+      - { label: "Описание", name: description, widget: text }
+      - { label: "Категория", name: category, widget: string, default: "Основы" }
+      - { label: "Время чтения (мин)", name: readTime, widget: number, value_type: int, default: 5 }
+      - { label: "Иконка (эмодзи)", name: icon, widget: string, default: "📄" }
+      - { label: "Дата публикации", name: publishDate, widget: date, format: "YYYY-MM-DD", required: false }
+      - { label: "Дата обновления", name: updatedDate, widget: date, format: "YYYY-MM-DD", required: false }
+      - { label: "Черновик", name: draft, widget: boolean, default: false }
+      - { label: "Текст статьи", name: body, widget: markdown }
+
+  - name: mechanics
+    label: Механики
+    folder: src/content/mechanics
+    create: true
+    slug: "{{fields.slug}}"
+    summary: "{{title}}"
+    fields:
+      - label: "Slug (имя файла и URL)"
+        name: slug
+        widget: string
+        hint: "Латиницей, через дефис: auction, buy-nft"
+        pattern: ['^[a-z0-9-]+$', 'Только латиница, цифры и дефисы']
+      - { label: "Заголовок", name: title, widget: string }
+      - { label: "Описание", name: description, widget: text }
+      - { label: "Иконка (эмодзи)", name: icon, widget: string, default: "⚙️" }
+      - { label: "Порядок в списке", name: order, widget: number, value_type: int, default: 99 }
+      - { label: "Черновик", name: draft, widget: boolean, default: false }
+      - { label: "Текст", name: body, widget: markdown }
