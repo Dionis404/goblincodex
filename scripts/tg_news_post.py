@@ -8,9 +8,13 @@
 workflow), черновики (draft: true) пропускаются.
 
 Переменные окружения:
-  TG_BOT_TOKEN  — токен goblin-bot
-  TG_CHAT_ID    — id группы
-  DRY_RUN=1     — только напечатать пост, не отправлять
+  TG_BOT_TOKEN   — токен goblin-bot
+  TG_CHAT_ID     — id группы
+  LLM_API_KEY    — ключ routerai (если задан, текст поста генерирует LLM;
+                   при любой ошибке — фолбэк на шаблон из frontmatter)
+  LLM_API_BASE   — default https://routerai.ru/api/v1
+  LLM_MODEL      — default google/gemini-2.5-flash
+  DRY_RUN=1      — только напечатать пост, не отправлять
 """
 import html
 import json
@@ -24,9 +28,22 @@ NEWS_DIR = "src/content/news/"
 SITE = "https://blog.goblincodex.fun"
 
 GAME_META = {
-    "sunflower": {"emoji": "🌻", "tag": "#sunflowerLand"},
-    "yakkamon": {"emoji": "🧚", "tag": "#yakkamon"},
+    "sunflower": {"emoji": "🌻", "tag": "#sunflowerLand", "name": "Sunflower Land"},
+    "yakkamon": {"emoji": "🧚", "tag": "#yakkamon", "name": "Yakkamon"},
 }
+
+LLM_PROMPT = """Ты — Гоблин, автор Telegram-канала Goblin Codex про игры {game}.
+Напиши короткий анонс статьи для группы: 2-4 предложения (до 350 символов),
+цепляющий первый рядок, суть статьи своими словами, лёгкий призыв читать.
+Можно 1-2 эмодзи. Пиши по-русски. Не выдумывай факты, числа и даты —
+используй только те, что есть в описании и тексте ниже.
+Без заголовка, без ссылок, без хэштегов — только текст анонса.
+
+Заголовок статьи: {title}
+Описание: {description}
+
+Начало статьи:
+{body}"""
 
 
 def parse_frontmatter(path: str) -> dict | None:
@@ -47,6 +64,52 @@ def parse_frontmatter(path: str) -> dict | None:
     return data
 
 
+def article_body(path: str, limit: int = 1500) -> str:
+    """Первые ~limit символов текста статьи (после frontmatter), без разметки."""
+    text = open(path, encoding="utf-8").read()
+    m = re.match(r"^---\n.*?\n---\n", text, re.S)
+    body = text[m.end():] if m else text
+    body = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", body)      # картинки
+    body = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", body)  # ссылки -> текст
+    body = re.sub(r"[#*`>]", "", body)
+    return re.sub(r"\n{2,}", "\n", body).strip()[:limit]
+
+
+def generate_announce(fm: dict, path: str, game_name: str) -> str | None:
+    """Текст анонса от LLM (routerai, OpenAI-совместимый API) или None."""
+    key = os.environ.get("LLM_API_KEY", "")
+    if not key:
+        return None
+    base = os.environ.get("LLM_API_BASE", "https://routerai.ru/api/v1")
+    model = os.environ.get("LLM_MODEL", "google/gemini-2.5-flash")
+    prompt = LLM_PROMPT.format(
+        game=game_name,
+        title=fm.get("title", ""),
+        description=fm.get("description", ""),
+        body=article_body(path),
+    )
+    payload = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 300,
+        "temperature": 0.7,
+    }
+    req = urllib.request.Request(
+        f"{base}/chat/completions",
+        data=json.dumps(payload).encode(),
+        headers={"Content-Type": "application/json",
+                 "Authorization": f"Bearer {key}"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=40) as resp:
+            data = json.loads(resp.read())
+        text = data["choices"][0]["message"]["content"].strip()
+        return text or None
+    except Exception as e:  # любой сбой LLM не должен ломать постинг
+        print(f"LLM fallback ({e})", file=sys.stderr)
+        return None
+
+
 def build_message(fm: dict, path: str) -> tuple[str, str | None] | None:
     """(html-текст поста, url картинки|None) или None, если пост не нужен."""
     if fm.get("draft", "false").lower() == "true":
@@ -58,15 +121,19 @@ def build_message(fm: dict, path: str) -> tuple[str, str | None] | None:
         return None
 
     meta = GAME_META.get(fm.get("game", "sunflower"), GAME_META["sunflower"])
-    description = fm.get("description", "").strip()
     url = f"{SITE}/news/{short_id}"
+
+    # Текст анонса: LLM, при сбое/отсутствии ключа — description из frontmatter
+    announce = generate_announce(fm, path, meta["name"])
+    if not announce:
+        announce = fm.get("description", "").strip()
 
     lines = [
         f"{meta['emoji']} <b>{html.escape(title)}</b>",
         "",
     ]
-    if description:
-        lines += [html.escape(description), ""]
+    if announce:
+        lines += [html.escape(announce), ""]
     lines.append(f'👉 <a href="{url}">Читать на GoblinCodex</a>')
     lines += ["", meta["tag"]]
 

@@ -104,4 +104,5 @@ jobs:
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_NEWS_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_NEWS_CHAT_ID }}
+          LLM_API_KEY: ${{ secrets.TG_NEWS_LLM_KEY }}
         run: python3 scripts/tg_news_post.py ${{ steps.news.outputs.files }}
