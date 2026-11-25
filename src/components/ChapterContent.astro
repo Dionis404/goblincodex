@@ -155,8 +155,10 @@ const MECHANIC_CARDS = [
 
 <!-- ── Центр аукционов: расписание / история / тиры в одном блоке ── -->
 <section class="gc-chapter-section">
-  <h2 class="gc-block-title-lg">🔨 Аукционы</h2>
-  <ChapterAuctionTabs client:visible chapterName={currentChapter?.name ?? 'текущей главы'} />
+  <div class="gc-auctions-card">
+    <h2 class="gc-block-title-lg">🔨 Аукционы</h2>
+    <ChapterAuctionTabs client:visible chapterName={currentChapter?.name ?? 'текущей главы'} />
+  </div>
 </section>
 
 <!-- ── Лидерборд билетов с пометками о выигранных предметах ── -->
@@ -270,6 +272,16 @@ const MECHANIC_CARDS = [
 
 <style>
 .gc-chapter-section { margin-bottom: 40px; }
+/* Центр аукционов — в рамке-карточке, как лидерборд билетов */
+.gc-auctions-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+@media (max-width: 640px) {
+  .gc-auctions-card { padding: 14px 12px; }
+}
 .gc-chapter-upcoming {
   display: flex;
   align-items: center;
