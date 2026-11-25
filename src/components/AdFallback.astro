@@ -140,6 +140,8 @@
     }
 
     window.addEventListener('load', function () {
+      // На странице доната попап не показываем — там и так про поддержку.
+      if (location.pathname.indexOf('/donate') === 0) { bait.remove(); return; }
       // Даём context.js время догрузиться/отвалиться, затем проверяем.
       setTimeout(function () {
         var baitBlocked = bait.offsetHeight === 0 || bait.offsetParent === null;
