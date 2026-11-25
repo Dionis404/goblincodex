@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
     <title>GoblinCodex — админка контента</title>
-    <script type="module">
-      import CMS from 'https://unpkg.com/@sveltia/cms@latest/dist/sveltia-cms.js';
-      // Конфиг читается из /admin/config.yml автоматически
-    </script>
+    <!-- Sveltia CMS: UMD-сборка, сама инициализируется и читает /admin/config.yml.
+         Версия запинена, чтобы не ловить редирект с @latest. -->
+    <script src="https://unpkg.com/@sveltia/cms@0.272.0/dist/sveltia-cms.js"></script>
   </head>
   <body></body>
 </html>
