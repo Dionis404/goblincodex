@@ -1,73 +1,121 @@
 ---
-// Fallback для посетителей с блокировщиком рекламы.
+// Fallback для посетителей с блокировщиком рекламы — модальное окно.
 // Код вызова РСЯ не трогаем (это запрещено правилами РСЯ) — просто проверяем,
-// догрузился ли context.js, и если нет, показываем собственную плашку с
+// догрузился ли context.js, и если нет, показываем собственный попап с
 // просьбой отключить AdBlock или поддержать проект донатом.
 // Проверка двойная: bait-элемент с «рекламными» классами (его режут
 // CSS-правила блокировщиков) + факт отсутствия window.Ya после load.
+// Закрытие запоминаем в localStorage на 24 часа, чтобы не донимать.
 ---
-<div id="gc-ad-fallback" class="gc-ad-fallback" hidden>
-  <!-- 🥺 — временно, позже заменить на картинку грустного гоблина -->
-  <span class="gc-ad-fallback-emoji" aria-hidden="true">🥺</span>
-  <p class="gc-ad-fallback-text">
-    <strong>Гоблину нужна копеечка</strong> — на семена подсолнухов и оплату сервера.
-    Отключите AdBlock для нашего сайта или поддержите Гоблина донатом —
-    каждая копеечка уйдёт в грядки. 🌻
-  </p>
-  <a href="/donate" class="gc-ad-fallback-btn">Поддержать проект</a>
+<div id="gc-ad-fallback" class="gc-ad-overlay" hidden>
+  <div class="gc-ad-modal" role="dialog" aria-modal="true" aria-labelledby="gc-ad-fallback-title">
+    <button type="button" class="gc-ad-close" aria-label="Закрыть">&times;</button>
+    <!-- 🥺 — временно, позже заменить на картинку грустного гоблина -->
+    <span class="gc-ad-emoji" aria-hidden="true">🥺</span>
+    <p class="gc-ad-text" id="gc-ad-fallback-title">
+      <strong>Гоблину нужна копеечка</strong> — на семена подсолнухов и оплату сервера.
+      Отключите AdBlock для нашего сайта или поддержите Гоблина донатом —
+      каждая копеечка уйдёт в грядки. 🌻
+    </p>
+    <div class="gc-ad-actions">
+      <a href="/donate" class="gc-ad-btn">Поддержать проект</a>
+      <button type="button" class="gc-ad-later">Позже</button>
+    </div>
+  </div>
 </div>
 
 <style>
-  .gc-ad-fallback {
-    max-width: 1160px;
-    margin: 24px auto;
+  .gc-ad-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 16px 22px;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(20, 14, 4, 0.55);
+    backdrop-filter: blur(2px);
+  }
+  .gc-ad-overlay[hidden] { display: none; }
+  .gc-ad-modal {
+    position: relative;
+    max-width: 440px;
+    width: 100%;
+    padding: 28px 26px 24px;
     background: var(--amber-pale);
     border: 1px solid var(--amber);
-    border-radius: 12px;
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    animation: gc-ad-pop 0.18s ease-out;
   }
-  .gc-ad-fallback[hidden] { display: none; }
-  .gc-ad-fallback-emoji {
-    font-size: 34px;
+  @keyframes gc-ad-pop {
+    from { transform: scale(0.94); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .gc-ad-emoji {
+    display: block;
+    font-size: 44px;
     line-height: 1;
-    flex-shrink: 0;
+    margin-bottom: 12px;
   }
-  .gc-ad-fallback-text {
-    flex: 1;
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.5;
+  .gc-ad-text {
+    margin: 0 0 20px;
+    font-size: 15px;
+    line-height: 1.55;
     color: var(--text);
   }
-  .gc-ad-fallback-btn {
-    flex-shrink: 0;
-    font-size: 13px;
+  .gc-ad-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  .gc-ad-btn {
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
     font-weight: 700;
     color: #2B1D0A;
     background: var(--amber);
     border: 1px solid var(--amber);
-    padding: 10px 20px;
+    padding: 12px 20px;
     border-radius: 9px;
     text-decoration: none;
     transition: filter 0.15s;
-    white-space: nowrap;
   }
-  .gc-ad-fallback-btn:hover { filter: brightness(1.06); }
-
-  @media (max-width: 900px) {
-    .gc-ad-fallback { margin: 16px 20px; }
+  .gc-ad-btn:hover { filter: brightness(1.06); }
+  .gc-ad-later {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    font-size: 13px;
+    color: var(--text-muted, #7a6a52);
+    cursor: pointer;
+    text-decoration: underline;
   }
-  @media (max-width: 640px) {
-    .gc-ad-fallback { margin: 16px 12px; flex-wrap: wrap; }
-    .gc-ad-fallback-btn { width: 100%; text-align: center; }
+  .gc-ad-later:hover { color: var(--text); }
+  .gc-ad-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--text-muted, #7a6a52);
+    cursor: pointer;
+    padding: 4px 8px;
   }
+  .gc-ad-close:hover { color: var(--text); }
 </style>
 
 <script is:inline>
   (function () {
+    var DISMISS_KEY = 'gc-ad-fallback-dismissed';
+    var DISMISS_TTL = 24 * 60 * 60 * 1000; // 24 часа
+
     // Bait-элемент: блокировщики прячут элементы с такими классами через
     // CSS (display:none / height:0) — по нему определяем AdBlock надёжнее,
     // чем по одному скрипту.
@@ -76,16 +124,38 @@
     bait.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:10px;height:10px;pointer-events:none;');
     document.body.appendChild(bait);
 
+    function dismissedRecently() {
+      try {
+        var ts = Number(localStorage.getItem(DISMISS_KEY) || 0);
+        return ts && Date.now() - ts < DISMISS_TTL;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function dismiss() {
+      try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch (e) {}
+      var el = document.getElementById('gc-ad-fallback');
+      if (el) el.hidden = true;
+    }
+
     window.addEventListener('load', function () {
       // Даём context.js время догрузиться/отвалиться, затем проверяем.
       setTimeout(function () {
         var baitBlocked = bait.offsetHeight === 0 || bait.offsetParent === null;
         var rsyaBlocked = typeof window.Ya === 'undefined' || !window.Ya.Context;
         bait.remove();
-        if (baitBlocked || rsyaBlocked) {
-          var el = document.getElementById('gc-ad-fallback');
-          if (el) el.hidden = false;
-        }
+        if ((!baitBlocked && !rsyaBlocked) || dismissedRecently()) return;
+
+        var el = document.getElementById('gc-ad-fallback');
+        if (!el) return;
+        el.hidden = false;
+
+        el.querySelector('.gc-ad-close').addEventListener('click', dismiss);
+        el.querySelector('.gc-ad-later').addEventListener('click', dismiss);
+        el.addEventListener('click', function (ev) {
+          if (ev.target === el) dismiss(); // клик по затемнению
+        });
       }, 1500);
     });
   })();
