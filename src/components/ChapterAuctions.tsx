@@ -51,6 +51,10 @@ interface Props {
   // для страницы общего архива (auctions-history), где все аукционы и так
   // уже завершены (фильтр по статусу там бесполезен), а глав несколько.
   showStatusFilter?: boolean;
+  // Ограничивает начальный список первыми N днями расписания с кнопкой
+  // «Показать всё расписание» — для вкладки главы, где будущие аукционы
+  // расписаны на недели вперёд и полный список требует долгого скролла.
+  maxInitialGroups?: number;
 }
 
 interface LeaderboardEntry {
@@ -290,7 +294,7 @@ function SpriteImg({ sprite, name, size = 40 }: { sprite: string | null; name: s
   );
 }
 
-export default function ChapterAuctions({ auctions: auctionsProp, chapterName: chapterNameProp, itemCatalog: itemCatalogProp, initialNow, defaultStatusFilter = 'upcoming', showStatusFilter = true }: Props) {
+export default function ChapterAuctions({ auctions: auctionsProp, chapterName: chapterNameProp, itemCatalog: itemCatalogProp, initialNow, defaultStatusFilter = 'upcoming', showStatusFilter = true, maxInitialGroups }: Props) {
   // Режим самозагрузки (вкладка главы на /codex): данные с двух API доезжают
   // после монтирования, SSR и первый клиентский рендер показывают loader —
   // расхождений гидратации нет. initialNow в этом режиме не нужен (loader не
@@ -490,6 +494,13 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
     return [...map.entries()];
   }, [filtered, tz]);
 
+  // Компактный режим вкладки главы: без активных фильтров/поиска показываем
+  // только первые maxInitialGroups дней — остальное за кнопкой. Как только
+  // пользователь фильтрует/ищет, показываем всё, что под фильтр подошло.
+  const [showAllGroups, setShowAllGroups] = useState(false);
+  const groupsLimited = maxInitialGroups != null && !showAllGroups && !isFiltered;
+  const visibleGroups = groupsLimited ? groups.slice(0, maxInitialGroups) : groups;
+
   return (
     <div className="ca-root">
       {!auctionsProp && fetched === null ? (
@@ -570,7 +581,7 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
       )}
 
       <div className="ca-groups">
-        {groups.map(([day, items]) => (
+        {visibleGroups.map(([day, items]) => (
           <div key={day} className="ca-group">
             <div className="ca-group-title">{day}</div>
             <div className="ca-list">
@@ -643,6 +654,12 @@ export default function ChapterAuctions({ auctions: auctionsProp, chapterName: c
           </div>
         ))}
       </div>
+
+      {groupsLimited && groups.length > maxInitialGroups! && (
+        <button type="button" className="ca-show-all" onClick={() => setShowAllGroups(true)}>
+          Показать всё расписание ({groups.length - maxInitialGroups!} дн. ещё)
+        </button>
+      )}
 
       {selected && createPortal(
         <div className="ca-modal-overlay" onClick={() => setSelected(null)}>

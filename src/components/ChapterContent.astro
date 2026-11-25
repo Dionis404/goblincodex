@@ -112,7 +112,7 @@ const MECHANIC_CARDS = [
 <!-- ── Расписание аукционов — главный рабочий блок страницы ── -->
 <section class="gc-chapter-section">
   <h2 class="gc-block-title-lg">🔨 Аукционы</h2>
-  <ChapterAuctions client:visible chapterName={currentChapter?.name ?? 'текущей главы'} />
+  <ChapterAuctions client:visible chapterName={currentChapter?.name ?? 'текущей главы'} maxInitialGroups={3} />
 </section>
 
 <!-- ── Лидерборд билетов с пометками о выигранных предметах ── -->

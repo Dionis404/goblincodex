@@ -226,6 +226,22 @@
   font-size: 14px;
 }
 
+/* Кнопка «Показать всё расписание» — компактный режим вкладки главы */
+.ca-show-all {
+  margin-top: 14px;
+  width: 100%;
+  padding: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-sec);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.ca-show-all:hover { border-color: var(--green-mid); color: var(--text); }
+
 /* Loading state — данные аукционов и каталога тянутся с API на клиенте
    (вкладка главы на /codex), SSR показывает этот загрузчик. */
 .ca-loading {
