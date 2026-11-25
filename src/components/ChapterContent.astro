@@ -6,6 +6,7 @@
 import { getCollection } from 'astro:content';
 import ChapterAuctions from './ChapterAuctions.tsx';
 import ChapterAuctionItems from './ChapterAuctionItems.astro';
+import ChapterTicketLeaderboard from './ChapterTicketLeaderboard.tsx';
 import { getCurrentChapter, getUpcomingChapter } from '../lib/chapters';
 import { fetchAuctionsInRange, type UiAuction } from '../lib/auctionsApi';
 import type { getCatalogItems } from '../lib/db';
@@ -83,52 +84,40 @@ const MECHANIC_CARDS = [
 ];
 ---
 
-<!-- ── Ссылки на архивы прошлых глав ── -->
+<!-- ── Архивы и аналитика — важные разделы главы, поэтому крупные карточки ── -->
 <div class="gc-chapter-archive-links">
-  <a href="/codex/chapter/past" class="gc-btn-secondary">📜 Прошлые главы</a>
-  <a href="/codex/chapter/auctions-history" class="gc-btn-secondary">🔨 История аукционов</a>
-  <a href="/codex/chapter/auction-tiers" class="gc-btn-secondary">📊 Тиры аукционов</a>
+  <a href="/codex/chapter/past" class="gc-archive-card">
+    <span class="gc-archive-card-icon">📜</span>
+    <span class="gc-archive-card-body">
+      <span class="gc-archive-card-title">Прошлые главы</span>
+      <span class="gc-archive-card-desc">Предметы и аукционы архива</span>
+    </span>
+  </a>
+  <a href="/codex/chapter/auctions-history" class="gc-archive-card">
+    <span class="gc-archive-card-icon">🔨</span>
+    <span class="gc-archive-card-body">
+      <span class="gc-archive-card-title">История аукционов</span>
+      <span class="gc-archive-card-desc">Все завершённые ставки</span>
+    </span>
+  </a>
+  <a href="/codex/chapter/auction-tiers" class="gc-archive-card">
+    <span class="gc-archive-card-icon">📊</span>
+    <span class="gc-archive-card-body">
+      <span class="gc-archive-card-title">Тиры аукционов</span>
+      <span class="gc-archive-card-desc">Медианы и разбор по тирам</span>
+    </span>
+  </a>
 </div>
 
-<!-- ── Основные механики ── -->
+<!-- ── Расписание аукционов — главный рабочий блок страницы ── -->
 <section class="gc-chapter-section">
-  <h2 class="gc-block-title-lg">⚙️ Основные механики</h2>
-  <div class="gc-mechanics-grid">
-    {MECHANIC_CARDS.map(card => (
-      <button type="button" class="gc-mechanic-card" data-mech-open={card.id}>
-        <div class="gc-mechanic-icon">{card.icon}</div>
-        <div class="gc-mechanic-title">{card.title}</div>
-      </button>
-    ))}
-  </div>
+  <h2 class="gc-block-title-lg">🔨 Аукционы</h2>
+  <ChapterAuctions client:visible chapterName={currentChapter?.name ?? 'текущей главы'} />
 </section>
 
-<!-- ── Гайды по механике главы ── -->
+<!-- ── Лидерборд билетов с пометками о выигранных предметах ── -->
 <section class="gc-chapter-section">
-  <h2 class="gc-block-title-lg">📗 Гайды по механике главы</h2>
-  {chapterGuides.length > 0 ? (
-    <div class="gc-guides-grid">
-      {chapterGuides.map(guide => (
-        <a href={`${codexHref}/${guide.id}`} class="gc-card gc-card-hover gc-guide-card">
-          <div class="gc-guide-card-top">
-            <div class="gc-guide-card-icon">{guide.data.icon}</div>
-            <div class="gc-guide-card-info">
-              <div class="gc-guide-card-title">{guide.data.title}</div>
-              <div class="gc-guide-card-meta">
-                <span class="gc-tag gc-tag--green">{guide.data.category}</span>
-                <span class="gc-guide-card-time">⏱ {guide.data.readTime} мин</span>
-              </div>
-            </div>
-          </div>
-          <div class="gc-guide-card-desc">{guide.data.description}</div>
-        </a>
-      ))}
-    </div>
-  ) : (
-    <div class="gc-guides-empty">
-      Гайдов по этой главе пока нет. Загляни в <a href={codexHref}>Кодекс</a> за общими гайдами.
-    </div>
-  )}
+  <ChapterTicketLeaderboard client:visible />
 </section>
 
 {upcomingChapter && (
@@ -187,11 +176,45 @@ const MECHANIC_CARDS = [
 <!-- ── Предметы с аукционов ── -->
 <ChapterAuctionItems auctions={chapterAuctionList} itemCatalog={itemCatalog} />
 
-<!-- ── Расписание аукционов ── -->
-<section class="gc-chapter-section">
-  <h2 class="gc-block-title-lg">🔨 Аукционы</h2>
-  <ChapterAuctions client:visible chapterName={currentChapter?.name ?? 'текущей главы'} />
-</section>
+<!-- ── Гайды по механике главы — показываем, только когда они есть ── -->
+{chapterGuides.length > 0 && (
+  <section class="gc-chapter-section">
+    <h2 class="gc-block-title-lg">📗 Гайды по механике главы</h2>
+    <div class="gc-guides-grid">
+      {chapterGuides.map(guide => (
+        <a href={`${codexHref}/${guide.id}`} class="gc-card gc-card-hover gc-guide-card">
+          <div class="gc-guide-card-top">
+            <div class="gc-guide-card-icon">{guide.data.icon}</div>
+            <div class="gc-guide-card-info">
+              <div class="gc-guide-card-title">{guide.data.title}</div>
+              <div class="gc-guide-card-meta">
+                <span class="gc-tag gc-tag--green">{guide.data.category}</span>
+                <span class="gc-guide-card-time">⏱ {guide.data.readTime} мин</span>
+              </div>
+            </div>
+          </div>
+          <div class="gc-guide-card-desc">{guide.data.description}</div>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
+
+<!-- ── Основные механики: справка для новичков, свёрнута по умолчанию ── -->
+<details class="gc-mech-details">
+  <summary class="gc-mech-summary">
+    ⚙️ Основные механики
+    <span class="gc-mech-hint">справка для новичков</span>
+  </summary>
+  <div class="gc-mechanics-grid">
+    {MECHANIC_CARDS.map(card => (
+      <button type="button" class="gc-mechanic-card" data-mech-open={card.id}>
+        <div class="gc-mechanic-icon">{card.icon}</div>
+        <div class="gc-mechanic-title">{card.title}</div>
+      </button>
+    ))}
+  </div>
+</details>
 
 <style>
 .gc-chapter-section { margin-bottom: 40px; }
@@ -222,10 +245,93 @@ const MECHANIC_CARDS = [
   color: var(--text-sec);
 }
 .gc-chapter-archive-links {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
   margin-bottom: 32px;
+}
+.gc-archive-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.gc-archive-card:hover {
+  border-color: var(--green-mid);
+  transform: translateY(-2px);
+}
+.gc-archive-card-icon {
+  font-size: 24px;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--green-pale);
+  border-radius: 10px;
+}
+.gc-archive-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.gc-archive-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.gc-archive-card-desc {
+  font-size: 12px;
+  color: var(--text-sec);
+}
+@media (max-width: 640px) {
+  .gc-chapter-archive-links { grid-template-columns: 1fr; }
+}
+
+/* ── Основные механики: сворачиваемый блок для новичков ── */
+.gc-mech-details {
+  margin-bottom: 40px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0;
+}
+.gc-mech-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-sec);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.gc-mech-summary::-webkit-details-marker { display: none; }
+.gc-mech-summary::before {
+  content: '▸';
+  display: inline-block;
+  transition: transform 0.15s;
+  color: var(--text-ter);
+}
+.gc-mech-details[open] .gc-mech-summary::before { transform: rotate(90deg); }
+.gc-mech-details[open] .gc-mech-summary { color: var(--text); }
+.gc-mech-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-ter);
+}
+.gc-mech-details .gc-mechanics-grid {
+  padding: 0 20px 20px;
 }
 .gc-block-title-lg {
   font-family: var(--font-head);
