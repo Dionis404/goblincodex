@@ -110,12 +110,14 @@ button.cac-month-nav:disabled { opacity: 0.35; cursor: default; }
 [data-theme="dark"] .cac-cell--today .cac-day-num { color: var(--green-light); }
 
 .cac-sprites {
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   align-items: center;
+  align-content: center;
   justify-content: center;
-  margin: auto 0;
+  width: 100%;
 }
 .cac-sprites img {
   width: 30px;
@@ -132,6 +134,33 @@ button.cac-month-nav:disabled { opacity: 0.35; cursor: default; }
   font-size: 11px;
   font-weight: 700;
   color: var(--text-ter);
+}
+
+/* Значки валют ставок внизу ячейки дня */
+.cac-currencies {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  align-self: flex-end;
+}
+.cac-currencies img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.cac-cur-fallback { font-size: 11px; line-height: 1; }
+/* Валюта в строке модалки дня */
+.cac-pop-cur {
+  display: inline-flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.cac-pop-cur img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 .cac-empty {

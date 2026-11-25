@@ -15,6 +15,9 @@ export interface CalendarAuction {
   collectible?: string;
   wearable?: string;
   nft?: string;
+  /** Ставка во Flower (sfl>0) или ингредиенты (Gem, тикет главы и т.п.). */
+  sfl?: number;
+  ingredients?: Record<string, number>;
 }
 
 interface CatalogEntryLite {
@@ -39,6 +42,26 @@ const TYPE_ICON: Record<CalendarAuction['type'], string> = {
 
 const NFT_SPRITES: Record<string, string> = { Pet: 'icons/pet_nft_egg.png' };
 
+// Значки валют ставки в ячейке дня — те же спрайты игры, что в COST_ICONS
+// у ChapterAuctions. Тикеты без записи тут ищем спрайтом в каталоге
+// (Duende Cap и т.п. — обычные предметы БД), фолбэк — эмодзи 🎫.
+const CURRENCY_SPRITES: Record<string, string> = {
+  Flower: 'icons/flower_token.webp',
+  Gem: 'icons/gem.webp',
+  'Salt Rock': 'icons/salt_rock_ticket.webp',
+  'Shiny Feather': 'icons/shiny_feather.webp',
+  'Duende Cap': 'icons/beetle_wing.webp',
+  'Beetle Wing': 'icons/beetle_wing.webp',
+};
+
+/** Валюты ставки аукциона: Flower, если платят цветком, иначе ингредиенты. */
+function currenciesOf(a: CalendarAuction): string[] {
+  const out: string[] = [];
+  if ((a.sfl ?? 0) > 0) out.push('Flower');
+  out.push(...Object.keys(a.ingredients ?? {}));
+  return out;
+}
+
 const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 const MAX_SPRITES = 4;
 
@@ -48,6 +71,13 @@ function itemName(a: CalendarAuction): string {
 
 function itemSprite(a: CalendarAuction, catalog: Props['catalog']): string | null {
   return catalog[itemName(a)]?.sprite ?? (a.nft ? NFT_SPRITES[a.nft] : undefined) ?? null;
+}
+
+/** Значок валюты: спрайт игры / каталога, либо эмодзи-фолбэк. */
+function CurrencyBadge({ name, catalog, size = 14 }: { name: string; catalog: Props['catalog']; size?: number }) {
+  const sprite = CURRENCY_SPRITES[name] ?? catalog[name]?.sprite;
+  if (!sprite) return <span className="cac-cur-fallback" title={name}>🎫</span>;
+  return <img src={`/sprites/${sprite}`} alt={name} title={name} width={size} height={size} loading="lazy" />;
 }
 
 // Дни и месяцы считаем в МСК — как группировка списка (formatDay там тоже МСК).
@@ -170,6 +200,8 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
           const isToday = cell.key === todayKey;
           const dayNum = Number(cell.key.split('.')[0]);
           const hasLive = dayAuctions.some((a) => now >= a.startAt && now < a.endAt);
+          // Валюты дня без повторов — значки внизу ячейки (Flower / Gem / тикет).
+          const dayCurrencies = [...new Set(dayAuctions.flatMap(currenciesOf))];
           return (
             <div key={cell.ms} className="cac-cell-wrap">
               <button
@@ -199,6 +231,11 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
                     <span className="cac-more">+{uniqueAuctions.length - MAX_SPRITES}</span>
                   )}
                 </span>
+                {dayCurrencies.length > 0 && (
+                  <span className="cac-currencies">
+                    {dayCurrencies.map((c) => <CurrencyBadge key={c} name={c} catalog={catalog} />)}
+                  </span>
+                )}
               </button>
             </div>
           );
@@ -231,6 +268,9 @@ export default function AuctionCalendar({ auctions, catalog, chapterStart, chapt
                     )}
                     <span className="cac-pop-time">
                       {TIME_FMT.format(a.startAt)}–{TIME_FMT.format(a.endAt)}
+                    </span>
+                    <span className="cac-pop-cur">
+                      {currenciesOf(a).map((c) => <CurrencyBadge key={c} name={c} catalog={catalog} size={16} />)}
                     </span>
                     <span className="cac-pop-name">{itemName(a)}</span>
                     {status === 'live' && <span className="cac-pop-live">🔥</span>}
