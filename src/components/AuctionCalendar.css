@@ -1,6 +1,12 @@
 /* Календарь аукционов главы (AuctionCalendar.tsx) */
 
-.cac-root { width: 100%; }
+/* Ширину ограничиваем: ячейки квадратные (aspect-ratio), и на всю ширину
+   контейнера сетка раздувается в гигантский квадрат. */
+.cac-root {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
 
 .cac-weekdays {
   display: grid;
@@ -19,7 +25,7 @@
 .cac-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 4px;
 }
 
 .cac-cell-wrap { position: relative; }
