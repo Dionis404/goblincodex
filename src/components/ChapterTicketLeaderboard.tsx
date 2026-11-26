@@ -164,7 +164,7 @@ export default function ChapterTicketLeaderboard() {
     return <div className="ctl-root"><div className="ctl-loading">Не удалось загрузить лидерборд билетов.</div></div>;
   }
 
-  const { leaderboard, dropped, fallen, updated_at, chapter_name } = state.data;
+  const { leaderboard, dropped, updated_at, chapter_name } = state.data;
   if (leaderboard.length === 0) {
     return <div className="ctl-root"><div className="ctl-loading">Данные лидерборда пока не собраны.</div></div>;
   }
@@ -176,14 +176,13 @@ export default function ChapterTicketLeaderboard() {
 
   // Что показываем в модалке: живое окно (offset 0) или день из архива.
   const viewDropped = dayOffset === 0 ? dropped : archive.status === 'ready' ? archive.dropped : [];
-  const viewFallen = dayOffset === 0 ? fallen : archive.status === 'ready' ? archive.fallen : [];
   const modalTitle = dayOffset === 0
     ? 'За последние сутки'
     : days && days[dayOffset - 1] ? formatDayLabel(days[dayOffset - 1].day) : '…';
 
-  const changesList = (dd: DroppedEntry[], ff: FallenEntry[]) => (
+  const changesList = (dd: DroppedEntry[]) => (
     <>
-      {dd.length === 0 && ff.length === 0 && (
+      {dd.length === 0 && (
         <div className="ctl-changes-empty">Изменений в топе не зафиксировано.</div>
       )}
       {dd.length > 0 && (
@@ -194,18 +193,6 @@ export default function ChapterTicketLeaderboard() {
               <span className="ctl-change-rank">#{d.old_rank} → вне топа</span>
               <span className="ctl-name">{displayName(d.username, d.farm_id)}</span>
               <span className="ctl-change-note">{d.old_tickets} 🎫</span>
-            </div>
-          ))}
-        </>
-      )}
-      {ff.length > 0 && (
-        <>
-          <div className="ctl-changes-caption">Сильно просели (≥50 позиций):</div>
-          {ff.map((f) => (
-            <div key={f.farm_id} className="ctl-change-row">
-              <span className="ctl-change-rank">#{f.old_rank} → #{f.rank}</span>
-              <span className="ctl-name">{displayName(f.username, f.farm_id)}</span>
-              <span className="ctl-change-note">{f.tickets} 🎫</span>
             </div>
           ))}
         </>
@@ -224,7 +211,7 @@ export default function ChapterTicketLeaderboard() {
           </div>
         </div>
         <button type="button" className="ctl-changes-btn" onClick={() => setShowDropped((v) => !v)}>
-          🔻 Кто вышел{dropped.length + fallen.length > 0 ? ` (${dropped.length + fallen.length})` : ''}
+          🔻 Кто вышел{dropped.length > 0 ? ` (${dropped.length})` : ''}
         </button>
       </div>
 
@@ -279,7 +266,7 @@ export default function ChapterTicketLeaderboard() {
               {dayOffset > 0 && archive.status === 'error' && (
                 <div className="ctl-changes-empty">Не удалось загрузить архив за этот день.</div>
               )}
-              {(dayOffset === 0 || archive.status === 'ready') && changesList(viewDropped, viewFallen)}
+              {(dayOffset === 0 || archive.status === 'ready') && changesList(viewDropped)}
             </div>
           </div>
         </div>,
