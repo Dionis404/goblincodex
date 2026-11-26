@@ -92,10 +92,32 @@ function WinBadges({ wins }: { wins: Win[] }) {
   );
 }
 
+interface DayInfo {
+  day: string; // YYYY-MM-DD (UTC)
+  dropped: number;
+  fallen: number;
+}
+
+type ArchiveState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'ready'; dropped: DroppedEntry[]; fallen: FallenEntry[] };
+
+function formatDayLabel(day: string): string {
+  return new Date(`${day}T00:00:00Z`).toLocaleDateString('ru-RU', {
+    day: 'numeric', month: 'long', timeZone: 'UTC',
+  });
+}
+
 export default function ChapterTicketLeaderboard() {
   const [state, setState] = useState<State>({ status: 'loading' });
   const [expanded, setExpanded] = useState(false);
   const [showDropped, setShowDropped] = useState(false);
+  // Архив по дням: dayOffset 0 — живое окно «за 24 часа»; 1..N — дни архива.
+  const [days, setDays] = useState<DayInfo[] | null>(null);
+  const [dayOffset, setDayOffset] = useState(0);
+  const [archive, setArchive] = useState<ArchiveState>({ status: 'idle' });
 
   useEffect(() => {
     let cancelled = false;
@@ -108,6 +130,32 @@ export default function ChapterTicketLeaderboard() {
       .catch(() => { if (!cancelled) setState({ status: 'error' }); });
     return () => { cancelled = true; };
   }, []);
+
+  // Список дней архива подтягиваем при первом открытии модалки.
+  useEffect(() => {
+    if (!showDropped || days !== null) return;
+    let cancelled = false;
+    fetch('/api/top500-changes.json')
+      .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
+      .then((data: { days?: DayInfo[] }) => { if (!cancelled) setDays(data.days ?? []); })
+      .catch(() => { if (!cancelled) setDays([]); });
+    return () => { cancelled = true; };
+  }, [showDropped, days]);
+
+  // Архивный день — отдельный запрос.
+  useEffect(() => {
+    if (!showDropped || dayOffset === 0 || !days || days.length < dayOffset) return;
+    const day = days[dayOffset - 1].day;
+    let cancelled = false;
+    setArchive({ status: 'loading' });
+    fetch(`/api/top500-changes.json?day=${day}`)
+      .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
+      .then((data: { dropped?: DroppedEntry[]; fallen?: FallenEntry[] }) => {
+        if (!cancelled) setArchive({ status: 'ready', dropped: data.dropped ?? [], fallen: data.fallen ?? [] });
+      })
+      .catch(() => { if (!cancelled) setArchive({ status: 'error' }); });
+    return () => { cancelled = true; };
+  }, [showDropped, dayOffset, days]);
 
   if (state.status === 'loading') {
     return <div className="ctl-root"><div className="ctl-loading">Загрузка лидерборда…</div></div>;
@@ -126,6 +174,45 @@ export default function ChapterTicketLeaderboard() {
     ? new Date(updated_at).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
     : null;
 
+  // Что показываем в модалке: живое окно (offset 0) или день из архива.
+  const viewDropped = dayOffset === 0 ? dropped : archive.status === 'ready' ? archive.dropped : [];
+  const viewFallen = dayOffset === 0 ? fallen : archive.status === 'ready' ? archive.fallen : [];
+  const modalTitle = dayOffset === 0
+    ? 'За последние сутки'
+    : days && days[dayOffset - 1] ? formatDayLabel(days[dayOffset - 1].day) : '…';
+
+  const changesList = (dd: DroppedEntry[], ff: FallenEntry[]) => (
+    <>
+      {dd.length === 0 && ff.length === 0 && (
+        <div className="ctl-changes-empty">Изменений в топе не зафиксировано.</div>
+      )}
+      {dd.length > 0 && (
+        <>
+          <div className="ctl-changes-caption">Выбыли из топ-500:</div>
+          {dd.map((d) => (
+            <div key={d.farm_id} className="ctl-change-row">
+              <span className="ctl-change-rank">#{d.old_rank} → вне топа</span>
+              <span className="ctl-name">{displayName(d.username, d.farm_id)}</span>
+              <span className="ctl-change-note">{d.old_tickets} 🎫</span>
+            </div>
+          ))}
+        </>
+      )}
+      {ff.length > 0 && (
+        <>
+          <div className="ctl-changes-caption">Сильно просели (≥50 позиций):</div>
+          {ff.map((f) => (
+            <div key={f.farm_id} className="ctl-change-row">
+              <span className="ctl-change-rank">#{f.old_rank} → #{f.rank}</span>
+              <span className="ctl-name">{displayName(f.username, f.farm_id)}</span>
+              <span className="ctl-change-note">{f.tickets} 🎫</span>
+            </div>
+          ))}
+        </>
+      )}
+    </>
+  );
+
   return (
     <div className="ctl-root">
       <div className="ctl-header">
@@ -136,11 +223,9 @@ export default function ChapterTicketLeaderboard() {
             Глава «{chapter_name ?? 'текущая'}»{updatedLabel ? ` · обновлено ${updatedLabel}` : ''}
           </div>
         </div>
-        {(dropped.length > 0 || fallen.length > 0) && (
-          <button type="button" className="ctl-changes-btn" onClick={() => setShowDropped((v) => !v)}>
-            🔻 Кто вышел ({dropped.length + fallen.length})
-          </button>
-        )}
+        <button type="button" className="ctl-changes-btn" onClick={() => setShowDropped((v) => !v)}>
+          🔻 Кто вышел{dropped.length + fallen.length > 0 ? ` (${dropped.length + fallen.length})` : ''}
+        </button>
       </div>
 
       <div className="ctl-table">
@@ -160,38 +245,41 @@ export default function ChapterTicketLeaderboard() {
         </button>
       )}
 
-      {showDropped && (dropped.length > 0 || fallen.length > 0) && createPortal(
+      {showDropped && createPortal(
         <div className="ctl-modal-overlay" onClick={() => setShowDropped(false)}>
           <div className="ctl-modal" onClick={(e) => e.stopPropagation()}>
             <div className="ctl-modal-head">
-              <span className="ctl-modal-title">🔻 Изменения в топе за сутки</span>
+              <div className="ctl-modal-nav">
+                <button
+                  type="button"
+                  className="ctl-modal-nav-btn"
+                  disabled={!days || dayOffset >= days.length}
+                  onClick={() => setDayOffset((o) => o + 1)}
+                  aria-label="Предыдущий день"
+                >
+                  ‹
+                </button>
+                <span className="ctl-modal-title">🔻 {modalTitle}</span>
+                <button
+                  type="button"
+                  className="ctl-modal-nav-btn"
+                  disabled={dayOffset === 0}
+                  onClick={() => setDayOffset((o) => o - 1)}
+                  aria-label="Следующий день"
+                >
+                  ›
+                </button>
+              </div>
               <button type="button" className="ctl-modal-close" onClick={() => setShowDropped(false)} aria-label="Закрыть">✕</button>
             </div>
             <div className="ctl-changes-body">
-              {dropped.length > 0 && (
-                <>
-                  <div className="ctl-changes-caption">Выбыли из топ-500:</div>
-                  {dropped.map((d) => (
-                    <div key={d.farm_id} className="ctl-change-row">
-                      <span className="ctl-change-rank">#{d.old_rank} → вне топа</span>
-                      <span className="ctl-name">{displayName(d.username, d.farm_id)}</span>
-                      <span className="ctl-change-note">{d.old_tickets} 🎫</span>
-                    </div>
-                  ))}
-                </>
+              {dayOffset > 0 && archive.status === 'loading' && (
+                <div className="ctl-changes-empty">Загрузка дня…</div>
               )}
-              {fallen.length > 0 && (
-                <>
-                  <div className="ctl-changes-caption">Сильно просели (≥50 позиций):</div>
-                  {fallen.map((f) => (
-                    <div key={f.farm_id} className="ctl-change-row">
-                      <span className="ctl-change-rank">#{f.old_rank} → #{f.rank}</span>
-                      <span className="ctl-name">{displayName(f.username, f.farm_id)}</span>
-                      <span className="ctl-change-note">{f.tickets} 🎫</span>
-                    </div>
-                  ))}
-                </>
+              {dayOffset > 0 && archive.status === 'error' && (
+                <div className="ctl-changes-empty">Не удалось загрузить архив за этот день.</div>
               )}
+              {(dayOffset === 0 || archive.status === 'ready') && changesList(viewDropped, viewFallen)}
             </div>
           </div>
         </div>,
